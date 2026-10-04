@@ -4,6 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Learn Thai — Flashcards</title>
+  <link rel="manifest" href="app.webmanifest" />
+  <meta name="theme-color" content="#0f1115" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Learn Thai" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="mobile.css" media="(max-width: 600px)" />
 </head>
@@ -101,6 +108,30 @@
           <input type="search" id="settings-search" placeholder="Search settings…" autocomplete="off" />
         </div>
         <div class="modal-body settings" id="settings-section">
+
+      <details class="settings-cat" data-cat="app" open>
+        <summary>App</summary>
+        <div class="setting-group" data-search="install app home screen iphone add pwa">
+          <label class="setting-row">
+            <span class="setting-label">Install</span>
+            <span class="setting-help" id="install-help"></span>
+          </label>
+          <div class="setting-actions" id="install-actions" hidden>
+            <button type="button" id="install-btn" class="ghost">Install app</button>
+          </div>
+        </div>
+        <div class="setting-group" data-search="offline download audio save storage cache wifi">
+          <label class="setting-row">
+            <span class="setting-label">Offline audio</span>
+            <span class="setting-help" id="offline-help"></span>
+          </label>
+          <progress id="offline-progress" max="1" value="0" hidden></progress>
+          <div class="setting-actions" id="offline-actions">
+            <button type="button" id="offline-download" class="ghost">Download all audio</button>
+            <button type="button" id="offline-delete" class="ghost danger-btn">Delete downloaded audio</button>
+          </div>
+        </div>
+      </details>
 
       <details class="settings-cat" data-cat="display" open>
         <summary>Display</summary>

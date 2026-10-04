@@ -545,10 +545,19 @@ html.modal-open body {
 
 .setting-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   margin-top: 12px;
   padding-top: 12px;
   border-top: 1px solid var(--border);
+}
+.setting-actions[hidden] { display: none; } /* display:flex above would otherwise override [hidden] */
+
+#offline-progress {
+  width: 100%;
+  height: 8px;
+  margin-top: 8px;
+  accent-color: var(--accent);
 }
 
 .settings-footer {

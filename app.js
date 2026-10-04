@@ -55,6 +55,13 @@ const els = {
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
   setTextSize: document.getElementById('setting-text-size'),
+  installHelp: document.getElementById('install-help'),
+  installActions: document.getElementById('install-actions'),
+  installBtn: document.getElementById('install-btn'),
+  offlineHelp: document.getElementById('offline-help'),
+  offlineProgress: document.getElementById('offline-progress'),
+  offlineDownload: document.getElementById('offline-download'),
+  offlineDelete: document.getElementById('offline-delete'),
   setReadRepeats: document.getElementById('setting-read-repeats'),
   setReadPause: document.getElementById('setting-read-pause'),
   setReadEnglish: document.getElementById('setting-read-english'),
@@ -96,6 +103,7 @@ const DEFAULT_SETTINGS = {
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
+  offlineAudio: false,            // user chose "Download all audio": keep every clip cached
   readRepeats: 1,                 // times to repeat each word during read-aloud
   readPauseSec: 1.5,              // seconds of silence between words
   readSpeakEnglish: true,         // whether to speak English after Thai
@@ -827,6 +835,8 @@ function renderSettings() {
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
   els.setThaiSpeed.value = String(s.thaiSpeed);
   els.setTextSize.value = String(s.textSize);
+  renderInstall();
+  renderOffline();
   els.setReadRepeats.value = s.readRepeats;
   els.setReadPause.value = s.readPauseSec;
   els.setReadEnglish.checked = s.readSpeakEnglish;
@@ -884,6 +894,28 @@ function bindSettings() {
     const deck = state.decks.find((d) => d.id === state.currentDeckId);
     if (deck) preloadDeckAudio(deck); // starts (samples) or cancels (browser) preloading
     renderSettings();
+  });
+  els.installBtn.addEventListener('click', async () => {
+    if (!installPrompt) return;
+    await installPrompt.prompt();
+    installPrompt = null;
+    renderInstall();
+  });
+  els.offlineDownload.addEventListener('click', () => {
+    if (offline.running) {
+      setSettings({ offlineAudio: false }); // an explicit Stop also stops auto-download on load
+      offline.abort.abort();
+      return;
+    }
+    setSettings({ offlineAudio: true });
+    navigator.storage?.persist?.(); // ask the browser not to evict the clips under storage pressure
+    downloadAllAudio();
+  });
+  els.offlineDelete.addEventListener('click', async () => {
+    if (!confirm('Delete the downloaded audio? Clips will download again as you play them.')) return;
+    setSettings({ offlineAudio: false });
+    await caches.delete(AUDIO_CACHE);
+    renderOffline();
   });
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
@@ -1666,6 +1698,141 @@ function bindEvents() {
   bindSettings();
 }
 
+// ---------- install & offline ----------
+// sw.js caches the app files and each audio clip as it's fetched. Here: the Settings → App
+// section, "Download all audio", and keeping the audio cache in step with the manifest.
+
+const PUBLIC_URL = 'https://wjsrobertson.github.io/thai/';
+const AUDIO_CACHE = 'learnthai-audio'; // shared with sw.js
+const OFFLINE_JOBS = 6;
+const AVG_CLIP_KB = 13;                // for the size estimate; ~106 MB / 8.3k clips on 2026-10-04
+const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS reports as a Mac
+let installPrompt = null; // Chrome/Android's deferred install prompt; Safari has none
+const offline = { running: false, abort: null, done: 0, total: 0, failed: 0 };
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  installPrompt = e;
+  renderInstall();
+});
+window.addEventListener('appinstalled', () => {
+  installPrompt = null;
+  renderInstall();
+});
+
+function registerServiceWorker() {
+  if (!('serviceWorker' in navigator)) return; // also absent over plain http on a LAN address
+  navigator.serviceWorker.register('sw.js').catch((e) => console.warn('Service worker failed:', e));
+}
+
+function isInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+}
+
+function renderInstall() {
+  els.installActions.hidden = !installPrompt || IS_IOS;
+  els.installHelp.textContent =
+    isInstalled() ? 'Installed: running as an app.' :
+    !window.isSecureContext ? `Installing needs HTTPS. Open ${PUBLIC_URL} instead.` :
+    IS_IOS ? 'Tap Share (□↑), then "Add to Home Screen". It then opens full-screen, like an app.' :
+    installPrompt ? 'Adds Learn Thai to your home screen or app list.' :
+    "Use your browser's menu to install it, if your browser supports that.";
+}
+
+function allAudioFiles() {
+  return [...new Set([...Object.values(sampleFiles.th), ...Object.values(sampleFiles.en)])];
+}
+
+async function cachedAudioFiles(cache) {
+  return new Set((await cache.keys()).map((r) => r.url.split('/').pop()));
+}
+
+const mb = (bytes) => Math.round(bytes / 1e6).toLocaleString();
+
+async function renderOffline() {
+  if (!('caches' in window)) {
+    els.offlineHelp.textContent = `Offline audio needs HTTPS. Open ${PUBLIC_URL} instead.`;
+    els.offlineProgress.hidden = true;
+    els.offlineDownload.parentElement.hidden = true;
+    return;
+  }
+  let { done, total } = offline;
+  if (!offline.running) {
+    const files = allAudioFiles();
+    const have = await cachedAudioFiles(await caches.open(AUDIO_CACHE));
+    done = files.filter((f) => have.has(f)).length;
+    total = files.length;
+  }
+  const used = (await navigator.storage?.estimate?.())?.usage;
+  const n = (x) => x.toLocaleString();
+  const complete = total > 0 && done === total;
+  els.offlineProgress.hidden = !offline.running;
+  els.offlineProgress.value = total ? done / total : 0;
+  els.offlineDownload.hidden = complete && !offline.running;
+  els.offlineDownload.textContent = offline.running ? 'Stop' : done ? 'Download the rest' : 'Download all audio';
+  els.offlineDelete.hidden = offline.running || done === 0;
+  els.offlineHelp.textContent =
+    offline.running ? `Downloading… ${n(done)} of ${n(total)} clips. Keep the app open until it finishes.` :
+    complete ? `All ${n(total)} clips are saved for offline use${used ? ` (${mb(used)} MB)` : ''}. Clips for new cards download automatically.` :
+    `${n(done)} of ${n(total)} clips saved${used ? ` (${mb(used)} MB used)` : ''}. Everything is about ` +
+      `${mb(total * AVG_CLIP_KB * 1000)} MB, best on Wi-Fi. Each deck's audio is saved anyway when you open it.` +
+      (offline.failed ? ` ${n(offline.failed)} failed: check your connection and try again.` : '');
+}
+
+// Fetch every clip that isn't cached yet. Resumable: cached clips are skipped, so a stopped or
+// interrupted run picks up where it left off.
+async function downloadAllAudio() {
+  if (offline.running || !('caches' in window)) return;
+  const cache = await caches.open(AUDIO_CACHE);
+  const files = allAudioFiles();
+  const have = await cachedAudioFiles(cache);
+  const todo = files.filter((f) => !have.has(f));
+  const abort = new AbortController();
+  Object.assign(offline, { running: true, abort, done: files.length - todo.length, total: files.length, failed: 0 });
+  renderOffline();
+  // With the service worker in control it caches each clip on the way through; before it
+  // takes control (the very first visit), store them here.
+  const direct = !navigator.serviceWorker?.controller;
+  let next = 0;
+  let lastRender = 0;
+  async function worker() {
+    while (next < todo.length && !abort.signal.aborted) {
+      const url = `data/audio/${todo[next++]}`;
+      try {
+        const res = await fetch(url, { signal: abort.signal });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (direct) await cache.put(url, res);
+        else await res.arrayBuffer();
+        offline.done += 1;
+      } catch {
+        if (abort.signal.aborted) break;
+        offline.failed += 1;
+      }
+      if (performance.now() - lastRender > 300) {
+        lastRender = performance.now();
+        renderOffline();
+      }
+    }
+  }
+  await Promise.all(Array.from({ length: OFFLINE_JOBS }, worker));
+  offline.running = false;
+  renderOffline();
+}
+
+// On load: drop cached clips that no card uses any more (edited or removed cards), then, if the
+// user chose to download everything, fetch clips for new cards.
+async function syncOfflineAudio() {
+  if (!('caches' in window)) return;
+  const wanted = new Set(allAudioFiles());
+  if (!wanted.size) return; // the manifest didn't load: don't prune everything
+  const cache = await caches.open(AUDIO_CACHE);
+  for (const req of await cache.keys()) {
+    if (!wanted.has(req.url.split('/').pop())) await cache.delete(req);
+  }
+  if (getSettings().offlineAudio) downloadAllAudio();
+}
+
 // ---------- boot ----------
 
 async function init() {
@@ -1726,6 +1893,9 @@ async function init() {
   if (start) {
     selectDeck(start);
   }
+
+  registerServiceWorker();
+  syncOfflineAudio();
 }
 
 init();

@@ -23,13 +23,21 @@ python3 -m http.server 8765    # from the project root, then open http://localho
 It must be served over HTTP, not `file://`, because `app.js` fetches `data/decks.json` and
 `data/audio/manifest.json`.
 
+**Live site:** https://wjsrobertson.github.io/thai/ is served by GitHub Pages from `master` (root,
+with `.nojekyll`). Every push to `master` deploys within a minute or two. The git remote is
+`git@github.com:wjsrobertson/thai.git`.
+
 ```
 index.html            all markup
 styles.css            all styles
+mobile.css            phone overrides (see Phone layout)
 app.js                all JS (ES module)
+sw.js                 service worker (see Offline & install)
+app.webmanifest       web app manifest; icons/ holds its icons
 data/decks.json       all vocabulary
 data/audio/           generated MP3s + manifest.json (see Audio / TTS)
 tools/gen_audio.py    audio generator (dev-time only)
+tools/phone_shots.py  phone-size screenshots via headless Chromium (dev-time only)
 docs/                 these notes
 ```
 
@@ -567,6 +575,54 @@ protocol, using a tiny stdlib WebSocket client because Node 18 has no WebSocket.
   an error if the app doesn't load.
 
 ---
+
+## Offline & install (2026-10-04)
+
+The app installs to the home screen and works offline. It needs HTTPS (or `localhost`), so it
+works on the GitHub Pages site but not over `http://192.168.0.239`.
+
+- **Install:**
+  - On iPhone, a website can't trigger installation; it only happens through Share → Add to Home
+    Screen. Settings → App → Install shows those instructions on iOS.
+  - In Chrome (Android and desktop), the same spot shows a real Install button, driven by
+    `beforeinstallprompt`. The iOS check comes first, because Chromium fires the event even
+    with an iPhone user agent.
+  - The user didn't want a first-visit banner.
+- **`sw.js`:**
+  - **App files** (page, code, styles, `decks.json`, the audio manifest, icons) are
+    network-first, revalidating with `cache: 'no-cache'` and falling back to the cache when
+    offline or after 4 s. So pushes show up on the next load. They're precached on install, in
+    `learnthai-shell-v1`.
+  - **Audio** is cache-first in `learnthai-audio`. Clip names are content hashes, so a cached
+    clip never goes stale.
+  - **Byte ranges:** Safari's `<audio>` requests byte ranges and won't play a plain 200, so
+    `rangeResponse()` answers a `Range` header with a 206 sliced from the cached file.
+- **Offline audio** (Settings → App):
+  - Every clip that passes through the worker is cached, and `preloadDeckAudio()` fetches a whole
+    deck, so opening a deck saves its audio.
+  - **"Download all audio"** fetches the rest with 6 workers and a progress bar, and calls
+    `navigator.storage.persist()`.
+    - **Resumable:** cached clips are skipped.
+    - **Stop** clears `settings.offlineAudio`.
+    - **Delete downloaded audio** clears the cache.
+- **Keeping the cache in step** (`syncOfflineAudio()` on every load):
+  - It deletes cached clips that the manifest no longer lists.
+  - If `offlineAudio` is set, it downloads any missing clips, so new cards' audio arrives
+    automatically.
+- **Storage on iOS:** since iOS 17, a site's quota is a share of free disk, so 107 MB is fine.
+  Safari's 7-day storage wipe doesn't apply to Home Screen apps.
+- **Checked in headless Chromium** against a private server on :8766, which was then killed,
+  because CDP's offline emulation doesn't cover the worker's own fetches:
+  - The worker takes control and precaches 12 shell files.
+  - Opening a deck caches its clips.
+  - Download-all: 8,271 clips in 15 s from localhost.
+  - A `Range: bytes=0-1` request gets a 206.
+  - Stale clips are pruned.
+  - With the server dead: reload, card text, audio playback and switching decks all work.
+  - **Not yet tried on a real iPhone.**
+- **Icons:** a gold ก (Noto Looped Thai Bold) on the app's dark gradient, drawn with Pillow.
+  They're full-bleed squares, because iOS rounds the corners itself, and the glyph sits inside
+  the maskable safe zone. Files: 512, 192, 180 (apple-touch-icon) and a 32px favicon.
 
 ## Backlog
 
