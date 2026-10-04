@@ -1,0 +1,86 @@
+# source: pickup-thai.com standard-vs-colloquial (thai | translit | meaning | standard form)
+ละ | lá | already (colloquial แล้ว) | std: แล้ว
+กะ | gà | with (colloquial กับ) | std: กับ
+หยั่งกะ | yàng-gà | like, as if (colloquial อย่างกับ) | std: อย่างกับ
+มั่ง | mâng | some, any (colloquial บ้าง) | std: บ้าง
+มะ | má | yes/no question (colloquial ไหม) | std: ไหม
+อ๋อ | ɔ̌ɔ | oh, I see | std: หรือ (in some uses)
+ใช่มะ | châi má | right? isn't it? | std: ใช่ไหม
+ใช่เปล่า | châi plàao | right? or not? | std: ใช่หรือเปล่า
+ใช่ปะ | châi pà | right? | std: ใช่หรือเปล่า
+ช่ะ | châ | right? (very casual) | std: ใช่หรือเปล่า
+ปะ | pà | ...or not? | std: หรือเปล่า
+อย่างงี้ | yàang-ngíi | like this | std: อย่างนี้
+หยั่งงี้ | yàng-ngíi | like this | std: อย่างนี้
+งี้ | ngíi | like this | std: อย่างนี้
+อย่างงั้น | yàang-ngán | like that | std: อย่างนั้น
+หยั่งงั้น | yàng-ngán | like that | std: อย่างนั้น
+งั้น | ngán | then, in that case, like that | std: อย่างนั้น
+ยังไง | yang-ngai | how | std: อย่างไร
+ไง | ngai | how / you know / hey (greeting) | std: อย่างไร
+มะไหร่ | má-rài | when | std: เมื่อไหร่
+ไร | rai | what | std: อะไร
+ซะ | sá | (verb +) off, completely; do it already | std: เสีย
+ซัก | sák | about, just one | std: สัก
+ดิ | dì | (imperative / emphatic) | std: สิ
+เดะ | dè | (imperative / emphatic) | std: สิ
+อ่ะดิ | à-dì | exactly! of course! | std: ล่ะสิ
+เหอะ | hə̀ | let's / just (do it) | std: เถอะ
+แล้วรึยัง | lɛ́ɛo rʉ́ yang | yet? | std: แล้วหรือยัง
+ละยัง | lá yang | yet? | std: แล้วหรือยัง
+# source: thai-language.com id pages (via search) + thai-notes.com/notes/particles.html
+ป่าว | pàao | no / or not? (colloquial เปล่า) | std: เปล่า
+น่ะ | nâ | (topic / persuasion particle) | casual
+ล่ะ | lâ | then? / what about...? | casual
+แหละ | lɛ̀ | exactly that, that's it | casual
+จิ | jì | (chat spelling of สิ) | internet
+เด๊ะ | dé | (variant of ดิ) | casual
+จ๊ะ | já | (sweet question particle) | intimate
+จ้ะ | jâ | yes / (sweet statement particle) | intimate
+จ๋า | jǎa | (affectionate vocative) | intimate
+วะ | wá | (rude question particle, between mates) | impolite
+ว่ะ | wâ | (rude statement particle, between mates) | impolite
+โว้ย | wóoi | (rude emphatic particle) | impolite
+เว้ย | wə́əi | (rude emphatic particle, among guys) | impolite
+ฟะ | fá | (softer วะ, among friends) | casual
+เฟ้ย | fə́əi | (softer เว้ย) | casual
+ยะ | yá | (bitchy female particle) | impolite
+ย่ะ | yâ | (bitchy female particle, contempt) | impolite
+ฮะ | há | (casual ครับ/ค่ะ) | casual polite
+ฮ่ะ | hâ | (casual ค่ะ) | casual polite
+อ่ะ | à | (teen softener particle) | casual
+อ่ะนะ | à ná | I see / well... | teen
+เนี่ย | nîa | (this one here; emphasis) | casual
+นี่นา | nîi naa | after all, you know | casual
+เนาะ | nɔ́ | right? (seeking agreement) | casual
+เนอะ | nə́ | right? (seeking agreement) | casual
+เน้อ | nə́ə | (soft agreement-seeking, northern-ish) | casual
+มั้ง | máng | probably, I guess | casual
+เอ่ย | ə̀əi | (cute question particle) | casual
+แฮะ | hɛ́ | huh, well (pondering) | casual
+อ้าว | âao | huh?! (unexpected) | interjection
+เอ๋ | ěe | eh? | interjection
+เอ๊ย | ə́əi | oops, I mean... (correction) | interjection
+ฮั่นแน่ | hân-nɛ̂ɛ | aha! caught you! | interjection
+เฮ้อ | hə̂ə | sigh | interjection
+เฮ้ย | hə́əi | hey! whoa! | interjection, rude-ish
+กรรม | gam | ugh, damn (lit. karma) | interjection
+เวรกรรม | ween-gam | oh God, damn (lit. karmic retribution) | interjection
+กิ๊วๆ | gíu gíu | ooh-la-la (teasing) | interjection
+กรี๊ด | grìit | eeek! (scream) | interjection
+แหม | mɛ̌ɛ | well! jeez! (often sarcastic) | interjection
+มันเขี้ยว | man khîao | so cute I could squish it | expression
+หมั่นไส้ | màn-sâi | annoyed by someone's showing off | expression
+งะ | ngá | (teen surprise particle) | teen
+ง่ะ | ngâ | (teen surprise particle) | teen
+โอ้โห | ôo-hǒo | wow! | interjection
+อ้อ | ɔ̂ɔ | oh right | interjection
+อ๋อ | ɔ̌ɔ | ohh, I see | interjection
+ป๊ะ | pá | huh! (annoyed) | interjection
+แป่ว | pɛ̀ɛo | aww, deflated, foiled | interjection
+ต๊าย | táai | oh my god! (shock, camp) | interjection
+ต๊ายตาย | táai taai | oh my god! | interjection
+อุ๊ย | úi | oops! ouch! | interjection
+ว้า | wáa | aww, damn (disappointment) | interjection
+ว้าย | wáai | eek! | interjection
+เย้ | yéе | yay! | interjection

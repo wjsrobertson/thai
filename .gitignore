@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+# half-written audio from an interrupted tools/gen_audio.py run
+*.part
+# per-machine Claude Code permissions
+.claude/settings.local.json

@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Learn Thai — Flashcards</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="mobile.css" media="(max-width: 600px)" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Learn Thai</h1>
+    <nav class="tabs" role="tablist">
+      <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="true">Flashcards</button>
+      <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Wordlist</button>
+    </nav>
+    <div class="controls">
+      <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
+    </div>
+  </header>
+
+  <div id="deck-picker" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="deck-picker-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="document">
+      <div class="modal-head">
+        <h2 id="deck-picker-title">Choose a deck</h2>
+        <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="modal-search">
+        <input type="search" id="deck-picker-search" placeholder="Search decks…" autocomplete="off" />
+      </div>
+      <div class="modal-body" id="deck-picker-tree" tabindex="-1"></div>
+    </div>
+  </div>
+
+  <main class="stage" data-view="flashcards">
+    <div class="deck-picker-bar">
+      <button type="button" id="deck-button" class="deck-button" aria-haspopup="dialog" aria-expanded="false">
+        <span class="deck-button-icon" aria-hidden="true">📖</span>
+        <span class="deck-button-label" id="deck-button-label">Choose a deck</span>
+        <span class="deck-button-chevron" aria-hidden="true">▾</span>
+      </button>
+      <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
+        <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true">Thai → English</button>
+        <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false">English → Thai</button>
+      </div>
+      <div class="segmented flashcards-only" role="radiogroup" aria-label="Card order">
+        <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Learn</button>
+        <button type="button" role="radio" class="seg-btn" data-order="test" aria-checked="false">Test</button>
+      </div>
+      <div class="wordlist-only seg-with-label">
+        <span class="seg-label">Show first</span>
+        <div class="segmented" role="radiogroup" aria-label="Show first column">
+          <button type="button" role="radio" class="seg-btn" data-primary="thai" aria-checked="true">Thai</button>
+          <button type="button" role="radio" class="seg-btn" data-primary="english" aria-checked="false">English</button>
+        </div>
+      </div>
+      <div class="wordlist-only wordlist-bar-right">
+        <span class="wordlist-count" id="wordlist-count"></span>
+        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through all visible words">🔊 Read all</button>
+      </div>
+    </div>
+    <section class="card-wrap">
+      <div class="card-row">
+        <button type="button" id="prev-btn" class="nav-btn" aria-label="Previous card" title="Previous (←)">‹</button>
+        <div id="card" class="card" role="button" tabindex="0" aria-label="Flashcard. Click or press space to flip.">
+          <div class="face front">
+            <div class="face-overlay">
+              <div class="pos-badge stat-pos">—</div>
+              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
+            </div>
+            <div class="thai" id="card-thai"></div>
+          </div>
+          <div class="face back">
+            <div class="face-overlay">
+              <div class="pos-badge stat-pos">—</div>
+              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
+            </div>
+            <div class="translit" id="card-translit"></div>
+            <div class="english" id="card-english"></div>
+            <div class="note" id="card-note"></div>
+          </div>
+        </div>
+        <button type="button" id="next-btn" class="nav-btn" aria-label="Next card" title="Next (→)">›</button>
+      </div>
+
+      <div class="learn-pills" id="learn-pills" hidden></div>
+
+    </section>
+
+    <div id="settings-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
+      <div class="modal-backdrop" data-close></div>
+      <div class="modal-panel settings-modal-panel" role="document">
+        <div class="modal-head">
+          <h2 id="settings-modal-title">Settings</h2>
+          <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
+        </div>
+        <div class="modal-search">
+          <input type="search" id="settings-search" placeholder="Search settings…" autocomplete="off" />
+        </div>
+        <div class="modal-body settings" id="settings-section">
+
+      <details class="settings-cat" data-cat="display" open>
+        <summary>Display</summary>
+        <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
+          <label class="setting-row">
+            <span class="setting-label">Text size</span>
+            <select id="setting-text-size">
+              <option value="-2">Smallest</option>
+              <option value="-1">Smaller</option>
+              <option value="0" selected>Default</option>
+              <option value="1">Larger</option>
+              <option value="2">Largest</option>
+            </select>
+            <span class="setting-help">Cards, wordlist, deck picker and settings. Buttons and the top bar stay the same size.</span>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="study" open>
+        <summary>Study</summary>
+        <div class="setting-group" data-search="smart order spaced repetition shuffle random">
+          <label class="setting-row">
+            <span class="setting-label">Smart order</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="srs-toggle" checked />
+              <span>Use spaced-repetition scheduling</span>
+            </label>
+            <span class="setting-help">Off = plain random shuffle, ignoring boxes and due dates. Useful for free-form review.</span>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="scheduling" open>
+        <summary>Scheduling</summary>
+        <div class="setting-group" data-search="queue mode due cards caught up study ahead">
+          <label class="setting-row">
+            <span class="setting-label">Queue mode</span>
+            <select id="setting-queue-mode">
+              <option value="due-only">Due cards only (stop when caught up)</option>
+              <option value="due-then-fallback">Due first, then study ahead (Recommended)</option>
+              <option value="mixed">Mixed — interleave due with the rest</option>
+            </select>
+            <span class="setting-help" id="setting-queue-mode-help"></span>
+          </label>
+        </div>
+
+        <div class="setting-group" data-search="review intervals leitner box days custom preset">
+          <label class="setting-row">
+            <span class="setting-label">Review intervals</span>
+            <select id="setting-interval-preset">
+              <option value="standard">Standard Leitner (1d, 3d, 7d, 14d, 30d)</option>
+              <option value="aggressive">Aggressive (4h, 1d, 3d, 7d, 21d)</option>
+              <option value="exponential">Exponential (1d, 2d, 5d, 12d, 30d)</option>
+              <option value="custom">Custom…</option>
+            </select>
+            <span class="setting-help">Time until each box becomes due again after a correct review.</span>
+          </label>
+          <div class="custom-intervals" id="custom-intervals" hidden>
+            <span>Days per box:</span>
+            <label>Box 1 <input type="number" min="0" step="0.1" id="ci-1" /></label>
+            <label>Box 2 <input type="number" min="0" step="0.1" id="ci-2" /></label>
+            <label>Box 3 <input type="number" min="0" step="0.1" id="ci-3" /></label>
+            <label>Box 4 <input type="number" min="0" step="0.1" id="ci-4" /></label>
+            <label>Box 5 <input type="number" min="0" step="0.1" id="ci-5" /></label>
+          </div>
+        </div>
+
+        <div class="setting-group" data-search="again hard fail failure rating session tomorrow demote">
+          <label class="setting-row">
+            <span class="setting-label">When you tap "Again"</span>
+            <select id="setting-again-mode">
+              <option value="session">Show again in the same session (10 min) (Recommended)</option>
+              <option value="tomorrow">Show again tomorrow</option>
+              <option value="demote-only">Just drop one box, no special re-show</option>
+            </select>
+          </label>
+          <label class="setting-row" id="again-delay-row">
+            <span class="setting-label">Again delay (minutes)</span>
+            <input type="number" min="1" max="60" id="setting-again-delay" />
+          </label>
+        </div>
+
+        <div class="setting-group" data-search="learn test mode auto progress advance next button manual correct right wrong answer">
+          <label class="setting-row">
+            <span class="setting-label">Test card auto-progress</span>
+            <select id="setting-learn-auto">
+              <option value="off">Off — press Next (›) to move on</option>
+              <option value="correct">Only after a correct answer</option>
+              <option value="always">After every answer</option>
+            </select>
+            <span class="setting-help">"Only after a correct answer" moves on by itself when you're right, but waits on a wrong answer so you can study the card.</span>
+          </label>
+          <label class="setting-row" id="learn-pause-row">
+            <span class="setting-label">Test-mode pause</span>
+            <input type="number" min="0" max="5000" step="100" id="setting-learn-pause" />
+            <span class="setting-help">Milliseconds to pause after you tap an answer pill, before auto-advancing.</span>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="audio" open>
+        <summary>Audio</summary>
+        <div class="setting-group" data-search="voice audio source thai english samples recorded mp3 browser tts text to speech speech synthesis">
+          <label class="setting-row">
+            <span class="setting-label">Voice</span>
+            <select id="setting-audio-source">
+              <option value="samples">Pre-generated samples (Recommended)</option>
+              <option value="browser">Browser text-to-speech</option>
+            </select>
+            <span class="setting-help" id="setting-audio-source-help"></span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="thai speed slow slower playback rate tempo">
+          <label class="setting-row">
+            <span class="setting-label">Thai speed</span>
+            <select id="setting-thai-speed">
+              <option value="0.5">0.5× (very slow)</option>
+              <option value="0.6">0.6×</option>
+              <option value="0.7">0.7×</option>
+              <option value="0.8">0.8×</option>
+              <option value="0.9">0.9×</option>
+              <option value="1">1× (normal)</option>
+            </select>
+            <span class="setting-help">Slows Thai audio without lowering the pitch. English always plays at normal speed.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="read aloud repeats wordlist playback">
+          <label class="setting-row">
+            <span class="setting-label">Read-aloud repeats</span>
+            <input type="number" min="1" max="10" id="setting-read-repeats" />
+            <span class="setting-help">Times to repeat each word before moving on.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="pause silence between words seconds delay">
+          <label class="setting-row">
+            <span class="setting-label">Pause between words</span>
+            <input type="number" min="0" max="20" step="0.1" id="setting-read-pause" />
+            <span class="setting-help">Seconds of silence between consecutive words.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="speak english translation read aloud language">
+          <label class="setting-row">
+            <span class="setting-label">Speak English too</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-read-english" />
+              <span>Say the English translation after the Thai</span>
+            </label>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="reset">
+        <summary>Reset</summary>
+        <div class="setting-group danger" data-search="reset progress wipe delete deck everything">
+          <label class="setting-row">
+            <span class="setting-label">Reset progress</span>
+            <span class="setting-help" id="reset-deck-help">Wipe study progress. Choose scope.</span>
+          </label>
+          <div class="setting-actions">
+            <button type="button" id="reset-progress" class="ghost danger-btn">Reset current deck</button>
+            <button type="button" id="reset-all" class="ghost danger-btn">Reset everything</button>
+          </div>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="advanced">
+        <summary>Advanced</summary>
+        <div class="setting-group" data-search="migration policy existing cards stagger spread first run">
+          <label class="setting-row">
+            <span class="setting-label">Migration policy</span>
+            <select id="setting-migration-policy">
+              <option value="all-due-now">Mark existing cards as due now (Recommended)</option>
+              <option value="spread">Stagger over a few days based on box</option>
+              <option value="reset">Reset all progress</option>
+            </select>
+            <span class="setting-help">How existing progress was/will-be handled the first time scheduling runs. Change before tapping "Re-run migration".</span>
+          </label>
+          <div class="setting-actions">
+            <button type="button" id="rerun-migration" class="ghost">Re-run migration now</button>
+          </div>
+        </div>
+      </details>
+
+          <div class="settings-empty" id="settings-empty" hidden>No settings match your search.</div>
+
+          <div class="settings-footer">
+            <p class="setting-help">Settings save automatically. Some changes (queue mode, intervals) take effect on the next card.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <section class="wordlist" id="wordlist-section" hidden>
+      <div class="wordlist-toolbar">
+        <input type="search" id="wordlist-filter" placeholder="Filter (Thai, transliteration, or English)…" autocomplete="off" />
+      </div>
+      <div class="wordlist-deck-name" id="wordlist-deck-name"></div>
+      <table class="wordtable" id="wordtable">
+        <thead id="wordtable-head"></thead>
+        <tbody id="wordtable-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>
