@@ -44,6 +44,14 @@ html, body {
   letter-spacing: .5px;
   color: var(--accent);
 }
+.home-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  color: inherit;
+}
 
 .tabs {
   display: flex;
@@ -905,6 +913,12 @@ button {
   display: none !important;
 }
 /* Today shows the deck button only when new cards come from the current deck (renderToday). */
+.stage[data-view="home"] .deck-picker-bar,
+.stage[data-view="home"] .card-wrap,
+.stage[data-view="home"] .flashcards-only,
+.stage[data-view="home"] .wordlist-only,
+.stage[data-view="home"] .today-only,
+.stage:not([data-view="home"]) .home-only,
 .stage[data-view="today"]:not(.today-deck) .deck-picker-bar,
 .stage[data-view="today"] .card-wrap,
 .stage[data-view="today"] .flashcards-only,
@@ -1225,7 +1239,6 @@ button {
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
-.today-done { font-size: calc(20px * var(--fs, 1)); margin: 8px 0; }
 
 .review { display: flex; flex-direction: column; gap: 14px; }
 .review[hidden] { display: none; }
@@ -1313,3 +1326,30 @@ button {
 .grade-good { border-color: var(--good); }
 .grade-easy { border-color: var(--easy); }
 .grade:hover { background: var(--panel-2); }
+
+/* ---------- home page ---------- */
+.home {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 1000px;
+  margin: 24px auto 0;
+}
+.home-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 24px 22px;
+  text-align: left;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  touch-action: manipulation;
+}
+.home-card:hover { border-color: var(--accent); }
+.home-card-title { font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
+.home-card-desc { font-size: calc(16px * var(--fs, 1)); color: var(--muted); line-height: 1.4; }
+.home-card-stat { margin-top: auto; font-size: calc(15px * var(--fs, 1)); color: var(--accent); }
+.home-card-stat:empty { display: none; }

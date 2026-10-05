@@ -16,11 +16,11 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>Learn Thai</h1>
+    <h1><button type="button" class="home-link" id="home-link" title="Home">Learn Thai</button></h1>
     <nav class="tabs" role="tablist">
       <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Decks</button>
       <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Wordlist</button>
-      <button type="button" class="tab" role="tab" data-view="today" aria-selected="true">Review</button>
+      <button type="button" class="tab" role="tab" data-view="today" aria-selected="false">Review</button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -41,7 +41,25 @@
     </div>
   </div>
 
-  <main class="stage" data-view="flashcards">
+  <main class="stage" data-view="home">
+    <section class="home home-only" id="home-section">
+      <button type="button" class="home-card" data-go="flashcards">
+        <span class="home-card-title">📖 Decks</span>
+        <span class="home-card-desc">A deck is a set of flashcards on one topic, like Colours or Football. Flip through to learn, or test yourself.</span>
+        <span class="home-card-stat" id="home-deck-stat"></span>
+      </button>
+      <button type="button" class="home-card" data-go="wordlist">
+        <span class="home-card-title">📋 Wordlist</span>
+        <span class="home-card-desc">See a whole deck as a list: search, sort, and hear every word.</span>
+        <span class="home-card-stat" id="home-wordlist-stat"></span>
+      </button>
+      <button type="button" class="home-card" data-go="today">
+        <span class="home-card-title">🔁 Review</span>
+        <span class="home-card-desc">Your daily spaced-repetition session: words due today from all your decks, plus a few new ones.</span>
+        <span class="home-card-stat" id="home-review-stat"></span>
+      </button>
+    </section>
+
     <div class="deck-picker-bar">
       <button type="button" id="deck-button" class="deck-button" aria-haspopup="dialog" aria-expanded="false">
         <span class="deck-button-icon" aria-hidden="true">📖</span>
@@ -114,7 +132,6 @@
           <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
         </div>
         <button type="button" class="round-again today-start" id="today-start">Start review</button>
-        <p class="today-done" id="today-done" hidden>All done for today.</p>
       </div>
       <table class="today-breakdown" id="today-breakdown" hidden>
         <thead><tr><th>Category</th><th>Due</th><th>New</th><th><span class="visually-hidden">Remove</span></th></tr></thead>

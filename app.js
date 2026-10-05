@@ -53,11 +53,15 @@ const els = {
   todayBreakdown: document.getElementById('today-breakdown'),
   todayBreakdownBody: document.getElementById('today-breakdown-body'),
   todayNewFrom: document.getElementById('today-new-from'),
+  homeLink: document.getElementById('home-link'),
+  homeCards: document.querySelectorAll('.home-card'),
+  homeDeckStat: document.getElementById('home-deck-stat'),
+  homeWordlistStat: document.getElementById('home-wordlist-stat'),
+  homeReviewStat: document.getElementById('home-review-stat'),
   todayHome: document.getElementById('today-home'),
   todayDue: document.getElementById('today-due'),
   todayNew: document.getElementById('today-new'),
   todayStart: document.getElementById('today-start'),
-  todayDone: document.getElementById('today-done'),
   review: document.getElementById('review'),
   reviewLeft: document.getElementById('review-left'),
   reviewDeck: document.getElementById('review-deck'),
@@ -141,7 +145,7 @@ const state = {
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
-  view: 'today',      // 'today' (the Review tab) | 'flashcards' (the Decks tab) | 'wordlist'
+  view: 'home',       // 'home' | 'flashcards' (the Decks tab) | 'wordlist' | 'today' (the Review tab)
   sort: { key: null, dir: 'asc' },
   filter: '',
   primaryCol: 'thai', // 'thai' | 'translit' | 'english' — first column on wordlist
@@ -988,6 +992,7 @@ function setView(view) {
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
   if (view !== 'today' && leaving === 'today') stopAudio();
   if (view === 'today') renderToday();
+  if (view === 'home') renderHome();
   // Back to Decks after reviewing: refresh the cards' progress (the queue order stays).
   if (view === 'flashcards' && leaving === 'today') {
     const deck = state.decks.find((d) => d.id === state.currentDeckId);
@@ -1660,8 +1665,16 @@ function renderToday() {
   els.todayNew.textContent = plan.news.length;
   els.todayNewFrom.textContent = s.newSource === 'current' ? `from ${deckName}` : 'mixed from your decks';
   els.todayStart.hidden = plan.queue.length === 0;
-  els.todayDone.hidden = plan.queue.length > 0;
   renderTodayBreakdown(plan);
+}
+
+// The landing page: a card per view. Decks and Wordlist show the current deck, Review today's counts.
+function renderHome() {
+  if (!state.cardIndex.size) return; // decks not loaded yet
+  const plan = planReview();
+  const deck = state.decks.find((d) => d.id === state.currentDeckId);
+  els.homeDeckStat.textContent = els.homeWordlistStat.textContent = deck ? `Current deck: ${deck.name}` : '';
+  els.homeReviewStat.textContent = `${plan.due.length} due · ${plan.news.length} new`;
 }
 
 // Under the card: the session's due and new counts per category, biggest first.
@@ -2278,6 +2291,9 @@ function bindEvents() {
 
   els.roundAgain.addEventListener('click', () => renderCard());
 
+  els.homeLink.addEventListener('click', () => setView('home'));
+  els.homeCards.forEach((card) => card.addEventListener('click', () => setView(card.dataset.go)));
+
   els.todayStart.addEventListener('click', startReview);
   els.reviewShow.addEventListener('click', revealAnswer);
   els.reviewContinue.addEventListener('click', () => { if (state.review?.answered) nextEntry(); });
@@ -2308,6 +2324,7 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (state.view === 'home') return;
     if (state.view === 'today') {
       handleReviewKey(e);
       return;
@@ -2522,8 +2539,8 @@ async function init() {
     b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false');
   });
 
-  // Review (view id 'today') is the landing tab. View first, so selectDeck's renderCard() knows the card isn't on screen.
-  setView('today');
+  // The app opens on the home page. View first, so selectDeck's renderCard() knows the card isn't on screen.
+  setView('home');
 
   const start =
     state.decks.find((d) => d.id === prefs.currentDeckId)?.id ||
@@ -2532,6 +2549,7 @@ async function init() {
     selectDeck(start);
   }
   renderToday(); // again, now the current deck (a source of new cards) is known
+  renderHome();
 
   registerServiceWorker();
   syncOfflineAudio();

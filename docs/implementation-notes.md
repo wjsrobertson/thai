@@ -331,8 +331,13 @@ Home & Everyday Things; and Southern Idioms.
 
 ## Views
 
-The tabs are **Decks | Wordlist | Review**, and the app always opens on Review (see "Today review
-and scheduling" below).
+The app opens on a **Home** page: three cards (Decks, Wordlist, Review), each with a short
+description. Decks and Wordlist show the current deck, and Review shows today's due/new counts
+(`renderHome`).
+Tapping "Learn Thai" (top left) returns there. No tab is selected on Home. It was added on
+2026-10-05 at the user's request; before that, the app opened on Review.
+
+The tabs are **Decks | Wordlist | Review** (see "Today review and scheduling" below).
 - **Internal ids:** Review's view id and code still say `today` (`renderToday`, `#today-section`,
   `.today-only`). Decks is the old Flashcards view, with view id `flashcards`.
 - **History:** the user renamed Today to Review and moved it to the end on 2026-10-05.

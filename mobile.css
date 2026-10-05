@@ -134,3 +134,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .review-card { min-height: 220px; padding: 44px 14px 20px; }
 .review-grades { gap: 6px; }
 .grade { padding: 12px 2px; font-size: 15px; }
+
+/* Home: the three cards stack */
+.home { grid-template-columns: 1fr; gap: 12px; margin-top: 4px; }
+.home-card { padding: 18px 16px; }
