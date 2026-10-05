@@ -1,6 +1,6 @@
 // Learn Thai — flashcard app
-// Plain JS module, no build step. Loads decks from data/decks.json,
-// presents Leitner-box style spaced repetition, persists progress in localStorage.
+// Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
+// (see docs/review-design.md) and persists progress in localStorage.
 
 const els = {
   stage: document.querySelector('.stage'),
@@ -21,6 +21,12 @@ const els = {
   flipButtons: document.querySelectorAll('.flip-btn'),
   posBadges: document.querySelectorAll('.stat-pos'),
   learnPills: document.getElementById('learn-pills'),
+  roundSummary: document.getElementById('round-summary'),
+  roundScore: document.getElementById('round-score'),
+  roundSub: document.getElementById('round-sub'),
+  roundMissedTitle: document.getElementById('round-missed-title'),
+  roundMissed: document.getElementById('round-missed'),
+  roundAgain: document.getElementById('round-again'),
   prevBtn: document.getElementById('prev-btn'),
   nextBtn: document.getElementById('next-btn'),
   orderButtons: document.querySelectorAll('.seg-btn[data-order]'),
@@ -36,19 +42,44 @@ const els = {
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
-  setQueueMode: document.getElementById('setting-queue-mode'),
-  setIntervalPreset: document.getElementById('setting-interval-preset'),
-  customIntervals: document.getElementById('custom-intervals'),
-  ci1: document.getElementById('ci-1'),
-  ci2: document.getElementById('ci-2'),
-  ci3: document.getElementById('ci-3'),
-  ci4: document.getElementById('ci-4'),
-  ci5: document.getElementById('ci-5'),
-  setAgainMode: document.getElementById('setting-again-mode'),
-  setAgainDelay: document.getElementById('setting-again-delay'),
-  againDelayRow: document.getElementById('again-delay-row'),
-  setMigrationPolicy: document.getElementById('setting-migration-policy'),
-  rerunMigration: document.getElementById('rerun-migration'),
+  setNewPerDay: document.getElementById('setting-new-per-day'),
+  setMaxReviews: document.getElementById('setting-max-reviews'),
+  setRetention: document.getElementById('setting-retention'),
+  setBothDirections: document.getElementById('setting-both-directions'),
+  setSayAloud: document.getElementById('setting-say-aloud'),
+  setNewSource: document.getElementById('setting-new-source'),
+  setReviewScope: document.getElementById('setting-review-scope'),
+  todayDueFrom: document.getElementById('today-due-from'),
+  todayBreakdown: document.getElementById('today-breakdown'),
+  todayBreakdownBody: document.getElementById('today-breakdown-body'),
+  todayNewFrom: document.getElementById('today-new-from'),
+  todayHome: document.getElementById('today-home'),
+  todayDue: document.getElementById('today-due'),
+  todayNew: document.getElementById('today-new'),
+  todayStart: document.getElementById('today-start'),
+  todayDone: document.getElementById('today-done'),
+  review: document.getElementById('review'),
+  reviewLeft: document.getElementById('review-left'),
+  reviewDeck: document.getElementById('review-deck'),
+  reviewQuit: document.getElementById('review-quit'),
+  reviewBadge: document.getElementById('review-badge'),
+  reviewPrompt: document.getElementById('review-prompt'),
+  reviewSpeak: document.getElementById('review-speak'),
+  reviewHint: document.getElementById('review-hint'),
+  reviewAnswer: document.getElementById('review-answer'),
+  reviewMain: document.getElementById('review-main'),
+  reviewTranslit: document.getElementById('review-translit'),
+  reviewNote: document.getElementById('review-note'),
+  reviewPills: document.getElementById('review-pills'),
+  reviewShow: document.getElementById('review-show'),
+  reviewContinue: document.getElementById('review-continue'),
+  reviewGrades: document.getElementById('review-grades'),
+  reviewSummary: document.getElementById('review-summary'),
+  reviewScore: document.getElementById('review-score'),
+  reviewSub: document.getElementById('review-sub'),
+  reviewMissedTitle: document.getElementById('review-missed-title'),
+  reviewMissed: document.getElementById('review-missed'),
+  reviewDone: document.getElementById('review-done'),
   resetDeckHelp: document.getElementById('reset-deck-help'),
   resetAll: document.getElementById('reset-all'),
   setAudioSource: document.getElementById('setting-audio-source'),
@@ -67,6 +98,7 @@ const els = {
   setReadEnglish: document.getElementById('setting-read-english'),
   setLearnPause: document.getElementById('setting-learn-pause'),
   setLearnAuto: document.getElementById('setting-learn-auto'),
+  setTestOrder: document.getElementById('setting-test-order'),
   learnPauseRow: document.getElementById('learn-pause-row'),
   settingsSearch: document.getElementById('settings-search'),
   settingsEmpty: document.getElementById('settings-empty'),
@@ -74,32 +106,22 @@ const els = {
 
 const STORAGE_KEY = 'learnthai:v1';
 
-// Leitner: 5 boxes. Box 1 = brand new / failed, Box 5 = mastered.
-// Lower box → more frequent in the queue.
+// Deck Test mode's study-ahead weighting, by a box derived from FSRS stability (boxForStability).
+// Lower box → weaker card → tends to come earlier.
 const BOX_WEIGHTS = [0, 8, 4, 2, 1, 0.5]; // index = box number
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
-// Interval presets — minutes per box, index = box number, index 0 unused.
-const INTERVAL_PRESETS = {
-  standard: { label: 'Standard Leitner (1d, 3d, 7d, 14d, 30d)',
-              minutes: [0, 1 * DAY / MINUTE, 3 * DAY / MINUTE, 7 * DAY / MINUTE, 14 * DAY / MINUTE, 30 * DAY / MINUTE] },
-  aggressive: { label: 'Aggressive (4h, 1d, 3d, 7d, 21d)',
-                minutes: [0, 4 * HOUR / MINUTE, 1 * DAY / MINUTE, 3 * DAY / MINUTE, 7 * DAY / MINUTE, 21 * DAY / MINUTE] },
-  exponential: { label: 'Exponential (1d, 2d, 5d, 12d, 30d)',
-                 minutes: [0, 1 * DAY / MINUTE, 2 * DAY / MINUTE, 5 * DAY / MINUTE, 12 * DAY / MINUTE, 30 * DAY / MINUTE] },
-};
-
 const DEFAULT_SETTINGS = {
-  queueMode: 'due-then-fallback', // 'due-only' | 'due-then-fallback' | 'mixed'
-  intervalPreset: 'standard',     // key of INTERVAL_PRESETS, or 'custom'
-  customIntervalsMin: null,       // array [0, b1, b2, b3, b4, b5] when intervalPreset === 'custom'
-  againMode: 'session',           // 'session' (10 min) | 'tomorrow' (1 day) | 'demote-only'
-  againDelayMin: 10,              // minutes (for 'session' mode)
-  migrationDone: false,           // set true after first-run migration
-  migrationPolicy: 'all-due-now', // 'all-due-now' | 'reset' | 'spread'
+  newPerDay: 15,                  // new items introduced per study day (Today, and first answers in deck Test mode)
+  maxReviews: 200,                // due reviews per study day
+  retention: 0.9,                 // FSRS desired retention
+  bothDirections: true,           // also schedule English → Thai items (unlocked per word; see gradeItem)
+  sayAloud: true,                 // recall prompt says "Say it aloud…"
+  newSource: 'started',           // where Today's new cards come from: 'started' decks | 'current' deck
+  reviewScope: 'all',             // which due items Today reviews: 'all' decks | 'current' deck
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
@@ -107,8 +129,9 @@ const DEFAULT_SETTINGS = {
   readRepeats: 1,                 // times to repeat each word during read-aloud
   readPauseSec: 1.5,              // seconds of silence between words
   readSpeakEnglish: true,         // whether to speak English after Thai
-  learnPauseMs: 1000,             // pause after answering before auto-advancing (Test mode)
-  learnAutoProgress: 'off',       // 'off' (wait for Next) | 'always' | 'correct' (only on a right answer); older saves hold true/false
+  learnPauseMs: 1500,             // pause after answering before auto-advancing (Test mode)
+  testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
+  learnAutoProgress: 'correct',   // 'off' (wait for Next) | 'always' | 'correct' (only on a right answer); older saves hold true/false
 };
 
 const state = {
@@ -118,7 +141,7 @@ const state = {
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
-  view: 'flashcards', // 'flashcards' | 'wordlist'
+  view: 'today',      // 'today' (the Review tab) | 'flashcards' (the Decks tab) | 'wordlist'
   sort: { key: null, dir: 'asc' },
   filter: '',
   primaryCol: 'thai', // 'thai' | 'translit' | 'english' — first column on wordlist
@@ -127,38 +150,38 @@ const state = {
   pickerOpen: false,
   pickerFilter: '',
   settingsOpen: false,
-  expandedCategories: new Set(), // user-toggled-open categories (in addition to the one containing the current deck)
+  expandedCategories: new Set(), // open picker categories; reset to the current deck's on each open (openDeckPicker)
   expandedGroups: new Set(),     // same for deck groups, keyed `${category}::${group}`
   lastFocus: null,
   reading: { active: false, token: 0, currentKey: null },
   pendingLearnRating: null, // 'good' | 'again' | null — set when user answered but hasn't committed
+  roundOver: false,         // the end-of-round score is showing (Test mode)
   learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen } for this session
+  cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
+  review: null,             // Today's review session while it runs (see startReview)
 };
 
 // ---------- storage ----------
 
+// The parsed store is cached: progress is read on every card, and re-parsing thousands of items
+// each time would add up. Another tab writing the store drops the cache (the storage event).
+let storeCache = null;
+window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) storeCache = null; });
+
 function loadStore() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-  } catch {
-    return {};
+  if (!storeCache) {
+    try {
+      storeCache = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch {
+      storeCache = {};
+    }
   }
+  return storeCache;
 }
 
 function saveStore(store) {
+  storeCache = store;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
-}
-
-function getProgress(deckId) {
-  const store = loadStore();
-  return (store.decks && store.decks[deckId]) || { cards: {} };
-}
-
-function setProgress(deckId, progress) {
-  const store = loadStore();
-  store.decks = store.decks || {};
-  store.decks[deckId] = progress;
-  saveStore(store);
 }
 
 function getPreferences() {
@@ -177,23 +200,195 @@ function getSettings() {
   return { ...DEFAULT_SETTINGS, ...(store.settings || {}) };
 }
 
+// One-off moves of saved settings onto a new default. Settings are saved in full, so a save made
+// before a default changed still holds the old one. Each step runs once per browser (recorded in
+// store.settingsMigrations), so a value the user picks afterwards sticks.
+const SETTINGS_MIGRATIONS = [
+  // 2026-10-03: Test-mode pause default 3000 -> 1000 ms.
+  ['pause-1000', (s) => (s.learnPauseMs === 3000 ? { learnPauseMs: 1000 } : null)],
+  // 2026-10-05: Test card auto-progress default 'off' -> 'correct' (older saves hold false).
+  ['auto-progress-correct', (s) => ([false, 'off'].includes(s.learnAutoProgress) ? { learnAutoProgress: 'correct' } : null)],
+  // 2026-10-05: Test-mode pause default 1000 -> 1500 ms. Runs after pause-1000, so 3000 ends at 1500.
+  ['pause-1500', (s) => (s.learnPauseMs === 1000 ? { learnPauseMs: 1500 } : null)],
+];
+
+function migrateSettings() {
+  const store = loadStore();
+  const done = new Set(store.settingsMigrations || []);
+  for (const [id, step] of SETTINGS_MIGRATIONS) {
+    if (done.has(id)) continue;
+    const patch = store.settings && step(store.settings);
+    if (patch) store.settings = { ...store.settings, ...patch };
+    done.add(id);
+  }
+  store.settingsMigrations = [...done];
+  saveStore(store);
+}
+
 function setSettings(patch) {
   const store = loadStore();
   store.settings = { ...DEFAULT_SETTINGS, ...(store.settings || {}), ...patch };
   saveStore(store);
 }
 
-function currentIntervalsMin() {
-  const s = getSettings();
-  if (s.intervalPreset === 'custom' && Array.isArray(s.customIntervalsMin)) {
-    return s.customIntervalsMin;
-  }
-  return (INTERVAL_PRESETS[s.intervalPreset] || INTERVAL_PRESETS.standard).minutes;
+// ---------- review items & FSRS ----------
+// Progress is kept per item: one card (by cardKey) in one direction, 'th-en' (see the Thai,
+// recall the meaning) or 'en-th' (see the English, produce the Thai). Items live in store.items,
+// global across decks, so a word that appears in several decks is learned once.
+// Item fields: s stability (days), d difficulty (1–10), due, last (ms), reps, lapses,
+// mc / mcOk (multiple-choice answers / was the last one right), rc (recall answers),
+// u (th-en only: the en-th item is unlocked).
+// Scheduling is FSRS-5 with its default parameters; see docs/review-design.md.
+
+const FSRS_W = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192,
+  1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
+const FSRS_DECAY = -0.5;
+const FSRS_FACTOR = 19 / 81;             // with DECAY, makes retrievability 90% after S days
+const AGAIN_DELAY = 10 * MINUTE;         // a missed item is due again shortly (and requeued in-session)
+const DAY_ROLLOVER_HOURS = 4;            // a study day runs 4 am to 4 am, so late-night reviews count for that day
+
+const itemKeyOf = (key, dir) => `${key}##${dir}`;
+const splitItemKey = (itemKey) => itemKey.split('##');
+
+function getItem(itemKey) {
+  return loadStore().items?.[itemKey] || null;
 }
 
-function intervalForBox(box) {
-  const intervals = currentIntervalsMin();
-  return (intervals[clamp(box, 1, intervals.length - 1)] || 0) * MINUTE;
+const fsrsR = (days, s) => Math.pow(1 + FSRS_FACTOR * days / s, FSRS_DECAY);   // retrievability
+const fsrsInterval = (s, retention) => (s / FSRS_FACTOR) * (Math.pow(retention, 1 / FSRS_DECAY) - 1);
+const fsrsClampD = (d) => Math.min(10, Math.max(1, d));
+const fsrsInitD = (g) => fsrsClampD(FSRS_W[4] - Math.exp(FSRS_W[5] * (g - 1)) + 1);
+
+function fsrsNextD(d, g) {
+  const damped = d - FSRS_W[6] * (g - 3) * (10 - d) / 9;
+  return fsrsClampD(FSRS_W[7] * fsrsInitD(4) + (1 - FSRS_W[7]) * damped);   // mean reversion
+}
+
+function fsrsRecallS(d, s, r, g) {
+  const hard = g === 2 ? FSRS_W[15] : 1;
+  const easy = g === 4 ? FSRS_W[16] : 1;
+  return s * (Math.exp(FSRS_W[8]) * (11 - d) * Math.pow(s, -FSRS_W[9]) * (Math.exp(FSRS_W[10] * (1 - r)) - 1) * hard * easy + 1);
+}
+
+function fsrsForgetS(d, s, r) {
+  return Math.min(s, FSRS_W[11] * Math.pow(d, -FSRS_W[12]) * (Math.pow(s + 1, FSRS_W[13]) - 1) * Math.exp(FSRS_W[14] * (1 - r)));
+}
+
+// The item after grading it g (1 Again, 2 Hard, 3 Good, 4 Easy) at `now`. Pure: doesn't save.
+function scheduleItem(prev, g, now) {
+  const it = { ...(prev || {}) };
+  if (it.s == null) {
+    it.s = FSRS_W[g - 1];
+    it.d = fsrsInitD(g);
+  } else {
+    const days = Math.max(0, (now - it.last) / DAY);
+    const d = it.d;
+    it.d = fsrsNextD(d, g);
+    if (days < 1) {
+      it.s *= Math.exp(FSRS_W[17] * (g - 3 + FSRS_W[18]));   // same-day review
+    } else if (g === 1) {
+      it.s = fsrsForgetS(d, it.s, fsrsR(days, it.s));
+      it.lapses = (it.lapses || 0) + 1;
+    } else {
+      it.s = fsrsRecallS(d, it.s, fsrsR(days, it.s), g);
+    }
+  }
+  it.s = Math.max(0.01, Math.round(it.s * 1000) / 1000);
+  it.d = Math.round(it.d * 1000) / 1000;
+  const interval = Math.max(1, Math.round(fsrsInterval(it.s, getSettings().retention)));
+  it.due = g === 1 ? now + AGAIN_DELAY : now + interval * DAY;
+  it.last = now;
+  it.reps = (it.reps || 0) + 1;
+  return it;
+}
+
+// Grade an item and save it. mode: 'mc' (multiple choice) or 'recall'. deckId: where the card was
+// met, for the per-deck new-card count.
+function gradeItem(key, dir, g, { mode = 'recall', deckId = null, now = Date.now() } = {}) {
+  const itemKey = itemKeyOf(key, dir);
+  const prev = getItem(itemKey);
+  const it = scheduleItem(prev, g, now);
+  if (mode === 'mc') {
+    it.mc = (it.mc || 0) + 1;
+    it.mcOk = g > 1;
+  } else {
+    it.rc = (it.rc || 0) + 1;
+  }
+  // A word's en-th item unlocks once its meaning has been recalled after a gap of a day or more.
+  if (dir === 'th-en' && g > 1 && prev?.last && now - prev.last >= 0.9 * DAY) it.u = 1;
+  const store = loadStore();
+  (store.items ||= {})[itemKey] = it;
+  const day = dayLog(store, now);
+  day.g = (day.g || 0) + 1;
+  if (g > 1) day.ok = (day.ok || 0) + 1;
+  if (!prev) {
+    day.n = (day.n || 0) + 1;
+    if (deckId) (day.nd ||= {})[deckId] = (day.nd?.[deckId] || 0) + 1;
+  }
+  saveStore(store);
+  return it;
+}
+
+// Study days: 4 am to 4 am local time.
+function dayKey(ts = Date.now()) {
+  const d = new Date(ts - DAY_ROLLOVER_HOURS * HOUR);
+  return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+}
+
+function endOfStudyDay(ts = Date.now()) {
+  const d = new Date(ts - DAY_ROLLOVER_HOURS * HOUR);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime() + DAY + DAY_ROLLOVER_HOURS * HOUR;
+}
+
+// Today's counters in store.daily (g gradings, ok correct, n new items, nd new per deck,
+// rv due reviews done). Keeps the last 60 days.
+function dayLog(store, now = Date.now()) {
+  store.daily ||= {};
+  const key = dayKey(now);
+  if (!store.daily[key]) {
+    store.daily[key] = {};
+    const keys = Object.keys(store.daily);
+    for (const old of keys.slice(0, Math.max(0, keys.length - 60))) delete store.daily[old];
+  }
+  return store.daily[key];
+}
+
+function todayLog() {
+  return loadStore().daily?.[dayKey()] || {};
+}
+
+// Deck Test mode orders study-ahead cards by box (boxWeightedQueue); derive one from stability.
+function boxForStability(s) {
+  if (s == null || s < 2) return 1;
+  if (s < 5) return 2;
+  if (s < 12) return 3;
+  return s < 30 ? 4 : 5;
+}
+
+// One-off (2026-10-05): per-deck Leitner progress becomes th-en items. Box → rough stability; due
+// dates are kept. Cards already reviewed skip multiple choice (rc: 1); box 2+ unlocks en-th.
+function migrateLeitnerToItems() {
+  const store = loadStore();
+  const done = new Set(store.settingsMigrations || []);
+  if (done.has('fsrs-items')) return;
+  const items = store.items || {};
+  const stabilityForBox = [0, 1, 3, 7, 14, 30];
+  const now = Date.now();
+  for (const prog of Object.values(store.decks || {})) {
+    for (const [key, p] of Object.entries(prog?.cards || {})) {
+      if (!p || !(p.seen > 0)) continue;
+      const itemKey = itemKeyOf(key, 'th-en');
+      const s = stabilityForBox[clamp(p.box || 1, 1, 5)];
+      if (items[itemKey] && items[itemKey].s >= s) continue; // the same card may be further on in another deck
+      items[itemKey] = { s, d: 5, due: p.dueAt || now, last: p.lastSeen || now, reps: p.seen, lapses: 0, rc: 1, ...(p.box >= 2 ? { u: 1 } : {}) };
+    }
+  }
+  store.items = items;
+  delete store.decks;
+  done.add('fsrs-items');
+  store.settingsMigrations = [...done];
+  saveStore(store);
 }
 
 // ---------- data loading ----------
@@ -224,51 +419,27 @@ function cardKey(card) {
   return `${card.thai}::${card.english}`;
 }
 
-function mergeProgressIntoCards(deckCards, progress) {
+// Deck mode's view of progress: each card with its item in the current direction.
+function mergeProgressIntoCards(deckCards) {
+  const items = loadStore().items || {};
   return deckCards.map((c) => {
     const key = cardKey(c);
-    const p = progress.cards[key] || { box: 1, seen: 0, lastSeen: 0, dueAt: 0 };
-    return {
-      ...c,
-      key,
-      box: p.box,
-      seen: p.seen,
-      lastSeen: p.lastSeen,
-      // dueAt = 0 means brand new (always eligible).
-      dueAt: p.dueAt ?? 0,
-    };
+    const it = items[itemKeyOf(key, state.direction)];
+    // dueAt 0 = never answered (always eligible).
+    return { ...c, key, seen: it?.reps || 0, dueAt: it ? it.due : 0, box: boxForStability(it?.s) };
   });
 }
 
-function migrateProgressIfNeeded() {
-  const s = getSettings();
-  if (s.migrationDone) return;
-  const store = loadStore();
-  if (!store.decks) {
-    setSettings({ migrationDone: true });
-    return;
-  }
-  const now = Date.now();
-  for (const deckId of Object.keys(store.decks)) {
-    const prog = store.decks[deckId];
-    if (!prog?.cards) continue;
-    for (const key of Object.keys(prog.cards)) {
-      const card = prog.cards[key];
-      if (card.dueAt != null) continue; // already migrated
-      if (s.migrationPolicy === 'reset') {
-        prog.cards[key] = { box: 1, seen: 0, lastSeen: 0, dueAt: 0 };
-      } else if (s.migrationPolicy === 'spread') {
-        // Higher box → due further out (small offset so they're not all overdue immediately)
-        const offsetDays = (card.box - 1) * 0.5; // 0, 0.5, 1, 1.5, 2 days
-        card.dueAt = now + offsetDays * DAY;
-      } else {
-        // 'all-due-now' (default): existing cards become immediately due
-        card.dueAt = now;
-      }
+// cardKey -> { card, deckIds }: Today's review works across all decks.
+function buildCardIndex() {
+  state.cardIndex = new Map();
+  for (const d of state.decks) {
+    for (const c of d.cards) {
+      const key = cardKey(c);
+      if (!state.cardIndex.has(key)) state.cardIndex.set(key, { card: c, deckIds: [] });
+      state.cardIndex.get(key).deckIds.push(d.id);
     }
   }
-  saveStore(store);
-  setSettings({ migrationDone: true });
 }
 
 // ---------- queue building ----------
@@ -283,12 +454,16 @@ function buildQueue(cards, srsOn) {
   if (state.orderMode === 'practice') {
     return cards.map((_, i) => i);
   }
-  // 'test' mode falls through to SRS scheduling.
+  // Test mode. Settings → "Test card order" picks random or deck order (as Learn mode and the
+  // wordlist show them). With Smart order on, it orders cards within each tier: due first, then
+  // study-ahead.
+  const settings = getSettings();
+  const deckOrder = settings.testOrder === 'deck';
   if (!srsOn) {
-    return shuffled(cards.map((_, i) => i));
+    const all = cards.map((_, i) => i);
+    return deckOrder ? all : shuffled(all);
   }
   const now = Date.now();
-  const settings = getSettings();
 
   const dueIndices = [];
   const notDueIndices = [];
@@ -297,26 +472,14 @@ function buildQueue(cards, srsOn) {
     else notDueIndices.push(i);
   });
 
-  // Order due cards by how overdue they are (most overdue first),
-  // with brand-new cards interleaved.
-  const dueSorted = dueIndices.slice().sort((a, b) => {
-    const aDue = cards[a].dueAt || now; // brand-new = now
-    const bDue = cards[b].dueAt || now;
-    return aDue - bDue;
-  });
+  // Each round covers every due card, so they're ordered for variety, not urgency. (Until
+  // 2026-10-05 they were sorted most-overdue first, which put a new deck, all due "now", in deck
+  // order.) Not-due cards: deck order, or box-weighted random so weaker cards tend to come first.
+  const due = deckOrder ? dueIndices : shuffled(dueIndices);
+  const ahead = deckOrder ? notDueIndices : boxWeightedQueue(notDueIndices, cards);
 
-  if (settings.queueMode === 'due-only') {
-    return dueSorted;
-  }
-
-  if (settings.queueMode === 'due-then-fallback') {
-    // After due cards, fall back to box-weighted not-due cards
-    // so the user can keep studying ahead of schedule.
-    return [...dueSorted, ...boxWeightedQueue(notDueIndices, cards)];
-  }
-
-  // 'mixed' — interleave due cards (priority) with the rest, box-weighted.
-  return interleave(dueSorted, boxWeightedQueue(notDueIndices, cards));
+  // After due cards, the rest, so you can keep studying ahead of schedule.
+  return [...due, ...ahead];
 }
 
 function boxWeightedQueue(indices, cards) {
@@ -327,18 +490,6 @@ function boxWeightedQueue(indices, cards) {
     .map((i) => [i, Math.random() ** (1 / Math.max(BOX_WEIGHTS[cards[i].box] ?? 1, 0.1))])
     .sort((a, b) => b[1] - a[1])
     .map(([i]) => i);
-}
-
-function interleave(a, b) {
-  // Round-robin merge with a slightly weighted toward priority.
-  const out = [];
-  let i = 0, j = 0;
-  while (i < a.length || j < b.length) {
-    if (i < a.length) out.push(a[i++]);
-    if (i < a.length) out.push(a[i++]); // 2:1 ratio favoring priority
-    if (j < b.length) out.push(b[j++]);
-  }
-  return out;
 }
 
 function shuffled(arr) {
@@ -359,6 +510,7 @@ function currentCard() {
 }
 
 function renderCard() {
+  hideRoundSummary(); // the next round was set up when the summary opened
   const c = currentCard();
   if (!c) {
     els.learnPills.hidden = true;
@@ -448,53 +600,20 @@ function flipCard() {
   setFlipped(!state.showingBack);
 }
 
+// Deck Test mode answers ('good' or 'again') update the same items as Today's review.
+function saveDeckRating(c, rating) {
+  const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId: state.currentDeckId });
+  c.dueAt = it.due;
+  c.seen = it.reps;
+  c.box = boxForStability(it.s);
+}
+
 function rateCard(rating) {
   const c = currentCard();
   if (!c) return;
-
-  const settings = getSettings();
-  const now = Date.now();
-
-  // Box transitions
-  if (rating === 'again') {
-    // Apply againMode policy
-    if (settings.againMode === 'demote-only') {
-      c.box = clamp(c.box - 2, 1, 5);
-      c.dueAt = now + intervalForBox(c.box);
-    } else if (settings.againMode === 'tomorrow') {
-      c.box = 1;
-      c.dueAt = now + 1 * DAY;
-    } else {
-      // 'session' (default) — show again in N minutes
-      c.box = 1;
-      c.dueAt = now + (settings.againDelayMin || 10) * MINUTE;
-    }
-  } else {
-    const delta = { hard: 0, good: 1, easy: 2 }[rating] ?? 0;
-    c.box = clamp(c.box + delta, 1, 5);
-    c.dueAt = now + intervalForBox(c.box);
-  }
-
-  c.seen = (c.seen || 0) + 1;
-  c.lastSeen = now;
-
-  // Persist
-  const progress = getProgress(state.currentDeckId);
-  progress.cards[c.key] = {
-    box: c.box,
-    seen: c.seen,
-    lastSeen: c.lastSeen,
-    dueAt: c.dueAt,
-  };
-  setProgress(state.currentDeckId, progress);
-
-  showRatingFeedback(rating, c.dueAt);
-  if (state.view === 'wordlist') renderWordlist();
-  if (state.pickerOpen) renderDeckPicker();
-}
-
-function showRatingFeedback(rating, dueAt) {
+  saveDeckRating(c, rating);
   advance();
+  if (state.pickerOpen) renderDeckPicker();
 }
 
 function clamp(n, lo, hi) {
@@ -504,11 +623,79 @@ function clamp(n, lo, hi) {
 function advance() {
   state.pos += 1;
   if (state.pos >= state.queue.length) {
+    if (state.orderMode === 'test' && state.learnAnswers.size) {
+      showRoundSummary();
+      return;
+    }
     // Rebuild queue at end of pass so newly-due cards come up sooner.
     state.queue = buildQueue(state.cards, els.srsToggle.checked);
     state.pos = 0;
   }
   renderCard();
+}
+
+// ---------- end of a Test round ----------
+
+// At the end of a Test-mode pass: show the score and the missed cards. The next round is set up
+// underneath straight away (answers cleared, queue rebuilt), so whatever re-renders the card next
+// (Start again, or changing deck, direction or mode) starts it fresh.
+function showRoundSummary() {
+  const answers = [...state.learnAnswers.entries()];
+  const total = answers.length;
+  const correct = answers.filter(([, a]) => a.isCorrect).length;
+  const missed = answers.filter(([, a]) => !a.isCorrect)
+    .map(([key]) => state.cards.find((c) => c.key === key))
+    .filter(Boolean);
+
+  state.learnAnswers = new Map();
+  state.pendingLearnRating = null;
+  // Rebuild at the end of a pass so newly-due cards come up sooner.
+  state.queue = buildQueue(state.cards, els.srsToggle.checked);
+  state.pos = 0;
+
+  const pct = Math.round((correct / total) * 100);
+  els.roundScore.textContent = `${correct} / ${total}`;
+  els.roundSub.textContent = `${pct}% correct · ` + (
+    pct === 100 ? 'Perfect round!' : pct >= 80 ? 'Great work.' : pct >= 50 ? 'Getting there.' : 'Keep at it.');
+  fillMissedList(els.roundMissed, els.roundMissedTitle, missed);
+
+  stopAudio();
+  state.roundOver = true;
+  els.stage.classList.add('round-over');
+  els.roundSummary.hidden = false;
+  els.roundAgain.focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
+}
+
+// The "Missed (n)" list on an end-of-round screen: each card with its translit, meaning and 🔊.
+function fillMissedList(list, title, cards) {
+  title.textContent = cards.length ? `Missed (${cards.length})` : '';
+  title.hidden = !cards.length;
+  list.hidden = !cards.length;
+  list.replaceChildren(...cards.map((c) => {
+    const li = document.createElement('li');
+    for (const [cls, text] of [['rm-thai', c.thai], ['rm-translit', c.translit], ['rm-english', c.english]]) {
+      const span = document.createElement('span');
+      span.className = cls;
+      span.textContent = text;
+      li.appendChild(span);
+    }
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'rm-speak';
+    btn.setAttribute('aria-label', 'Play audio');
+    btn.textContent = '🔊';
+    btn.addEventListener('click', () => speak(c.thai));
+    li.appendChild(btn);
+    return li;
+  }));
+}
+
+function hideRoundSummary() {
+  if (!state.roundOver) return;
+  state.roundOver = false;
+  els.stage.classList.remove('round-over');
+  els.roundSummary.hidden = true;
 }
 
 function goPrev() {
@@ -522,33 +709,13 @@ function goPrev() {
 }
 
 function commitPendingRatingWithoutAdvance() {
-  // Like rateCard but doesn't trigger animation/advance — used when leaving a pending card
-  // via Prev so the SRS gets updated but navigation isn't hijacked.
+  // Like rateCard but without advancing: used when leaving a pending card via Prev, so the
+  // answer is saved but navigation isn't hijacked.
   const r = state.pendingLearnRating;
   state.pendingLearnRating = null;
   const c = currentCard();
   if (!c || !r) return;
-  const settings = getSettings();
-  const now = Date.now();
-  if (r === 'again') {
-    if (settings.againMode === 'demote-only') {
-      c.box = clamp(c.box - 2, 1, 5);
-    } else {
-      c.box = 1;
-    }
-    c.dueAt = settings.againMode === 'tomorrow' ? now + DAY :
-              settings.againMode === 'demote-only' ? now + intervalForBox(c.box) :
-              now + (settings.againDelayMin || 10) * MINUTE;
-  } else {
-    const delta = { hard: 0, good: 1, easy: 2 }[r] ?? 0;
-    c.box = clamp(c.box + delta, 1, 5);
-    c.dueAt = now + intervalForBox(c.box);
-  }
-  c.seen = (c.seen || 0) + 1;
-  c.lastSeen = now;
-  const progress = getProgress(state.currentDeckId);
-  progress.cards[c.key] = { box: c.box, seen: c.seen, lastSeen: c.lastSeen, dueAt: c.dueAt };
-  setProgress(state.currentDeckId, progress);
+  saveDeckRating(c, r);
 }
 
 function goNext() {
@@ -576,13 +743,8 @@ function selectDeck(deckId) {
   if (state.reading.active) stopReadAloud();
   state.pendingLearnRating = null;
   state.learnAnswers = new Map();
-  // When changing decks, clear user-expanded categories so the new current category's group
-  // is the only one open by default next time the picker is opened.
-  state.expandedCategories.clear();
-  state.expandedGroups.clear();
   state.currentDeckId = deckId;
-  const progress = getProgress(deckId);
-  state.cards = mergeProgressIntoCards(deck.cards, progress);
+  state.cards = mergeProgressIntoCards(deck.cards);
   state.queue = buildQueue(state.cards, els.srsToggle.checked);
   state.pos = 0;
   setPreferences({ currentDeckId: deckId });
@@ -590,26 +752,26 @@ function selectDeck(deckId) {
   preloadDeckAudio(deck);
   renderCard();
   renderWordlist();
+  if (state.view === 'today') renderToday();
 }
 
 // ---------- deck picker modal ----------
 
+// "Known" = the meaning (th-en) is held for 10 days or more.
 function deckProgress(deckId, deck) {
-  const progress = getProgress(deckId);
+  const items = loadStore().items || {};
   let known = 0;
   for (const c of deck.cards) {
-    const p = progress.cards[`${c.thai}::${c.english}`];
-    if (p && p.box >= 4) known += 1;
+    if ((items[itemKeyOf(cardKey(c), 'th-en')]?.s || 0) >= 10) known += 1;
   }
   return { known, total: deck.cards.length };
 }
 
 // The picker tree: category -> items, where an item is a deck or a group of decks (a deck's
 // optional `group` field). Order follows decks.json. With a search query, only matching decks
-// are kept and everything is open; otherwise a category or group is open if it holds the
-// current deck or the user expanded it.
+// are kept and everything is open; otherwise what's open is state.expandedCategories / Groups.
+// openDeckPicker resets those to the current deck's category and group.
 function pickerModel(q) {
-  const current = state.decks.find((d) => d.id === state.currentDeckId);
   const cats = new Map();
   for (const d of state.decks) {
     const cat = d.category || 'Uncategorized';
@@ -617,7 +779,7 @@ function pickerModel(q) {
     if (!cats.has(cat)) {
       cats.set(cat, {
         name: cat,
-        open: !!q || cat === current?.category || state.expandedCategories.has(cat),
+        open: !!q || state.expandedCategories.has(cat),
         deckCount: 0,
         items: [],
         groups: new Map(),
@@ -634,7 +796,7 @@ function pickerModel(q) {
       const g = {
         name: d.group,
         key,
-        open: !!q || (cat === current?.category && d.group === current?.group) || state.expandedGroups.has(key),
+        open: !!q || state.expandedGroups.has(key),
         decks: [],
       };
       c.groups.set(d.group, g);
@@ -646,7 +808,10 @@ function pickerModel(q) {
 }
 
 // Collapsible header for a category ('cat') or group ('sub'); toggling records the choice in openSet.
+// It's an accordion: opening one closes its open siblings (other categories, or other groups in
+// the same category).
 function pickerHeader(prefix, name, countText, container, q, openSet, key) {
+  container.dataset.key = key;
   const header = document.createElement('button');
   header.type = 'button';
   header.className = `${prefix}-header`;
@@ -656,8 +821,18 @@ function pickerHeader(prefix, name, countText, container, q, openSet, key) {
   header.addEventListener('click', () => {
     if (q) return; // collapsing while searching would be confusing
     const nowOpen = container.classList.toggle('collapsed') === false;
-    if (nowOpen) openSet.add(key);
-    else openSet.delete(key);
+    if (!nowOpen) {
+      openSet.delete(key);
+      return;
+    }
+    openSet.add(key);
+    for (const sib of container.parentElement.querySelectorAll(`:scope > .${prefix}-group`)) {
+      if (sib === container || sib.classList.contains('collapsed')) continue;
+      sib.classList.add('collapsed');
+      openSet.delete(sib.dataset.key);
+    }
+    // A section closing above can move this one off screen.
+    header.scrollIntoView({ block: 'nearest' });
   });
   return header;
 }
@@ -748,7 +923,16 @@ function openDeckPicker() {
   els.deckButton.setAttribute('aria-expanded', 'true');
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
+  // Every open starts from the current deck: its category and group open, the rest closed.
+  const current = state.decks.find((d) => d.id === state.currentDeckId);
+  state.expandedCategories.clear();
+  state.expandedGroups.clear();
+  if (current) {
+    state.expandedCategories.add(current.category || 'Uncategorized');
+    if (current.group) state.expandedGroups.add(`${current.category || 'Uncategorized'}::${current.group}`);
+  }
   renderDeckPicker();
+  els.deckPickerTree.querySelector('.deck-row.current')?.scrollIntoView({ block: 'center' });
   // Focus search after the modal becomes visible.
   if (!TOUCH_SCREEN) setTimeout(() => els.deckPickerSearch.focus(), 0);
 }
@@ -789,6 +973,7 @@ function closeSettings() {
 // ---------- view switching ----------
 
 function setView(view) {
+  const leaving = state.view;
   state.view = view;
   els.stage.dataset.view = view;
   els.tabs.forEach((t) => {
@@ -796,6 +981,13 @@ function setView(view) {
   });
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
+  if (view !== 'today' && leaving === 'today') stopAudio();
+  if (view === 'today') renderToday();
+  // Back to Decks after reviewing: refresh the cards' progress (the queue order stays).
+  if (view === 'flashcards' && leaving === 'today') {
+    const deck = state.decks.find((d) => d.id === state.currentDeckId);
+    if (deck) state.cards = mergeProgressIntoCards(deck.cards);
+  }
   setPreferences({ view });
 }
 
@@ -811,25 +1003,13 @@ function applyTextSize() {
 
 function renderSettings() {
   const s = getSettings();
-  els.setQueueMode.value = s.queueMode;
-  els.setIntervalPreset.value = s.intervalPreset;
-  els.setAgainMode.value = s.againMode;
-  els.setAgainDelay.value = s.againDelayMin;
-  els.setMigrationPolicy.value = s.migrationPolicy;
-
-  // Custom intervals visibility + values
-  const showCustom = s.intervalPreset === 'custom';
-  els.customIntervals.hidden = !showCustom;
-  const mins = currentIntervalsMin();
-  // Convert minutes to days for display.
-  els.ci1.value = +(mins[1] / 1440).toFixed(2);
-  els.ci2.value = +(mins[2] / 1440).toFixed(2);
-  els.ci3.value = +(mins[3] / 1440).toFixed(2);
-  els.ci4.value = +(mins[4] / 1440).toFixed(2);
-  els.ci5.value = +(mins[5] / 1440).toFixed(2);
-
-  // Again delay row only relevant for 'session' mode
-  els.againDelayRow.style.display = s.againMode === 'session' ? '' : 'none';
+  els.setNewPerDay.value = s.newPerDay;
+  els.setMaxReviews.value = s.maxReviews;
+  els.setRetention.value = String(s.retention);
+  els.setBothDirections.checked = s.bothDirections;
+  els.setSayAloud.checked = s.sayAloud;
+  els.setNewSource.value = s.newSource;
+  els.setReviewScope.value = s.reviewScope;
 
   els.setAudioSource.value = s.audioSource;
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
@@ -841,6 +1021,7 @@ function renderSettings() {
   els.setReadPause.value = s.readPauseSec;
   els.setReadEnglish.checked = s.readSpeakEnglish;
   els.setLearnPause.value = s.learnPauseMs;
+  els.setTestOrder.value = s.testOrder;
   els.setLearnAuto.value = autoProgressMode(s);
   els.learnPauseRow.style.display = autoProgressMode(s) === 'off' ? 'none' : '';
 
@@ -854,39 +1035,34 @@ function renderSettings() {
 }
 
 function bindSettings() {
-  els.setQueueMode.addEventListener('change', () => {
-    setSettings({ queueMode: els.setQueueMode.value });
-    rebuildCurrentQueue();
+  els.setNewPerDay.addEventListener('change', () => {
+    const n = parseInt(els.setNewPerDay.value, 10);
+    if (n >= 0 && n <= 100) setSettings({ newPerDay: n });
+    renderToday();
   });
-
-  els.setIntervalPreset.addEventListener('change', () => {
-    setSettings({ intervalPreset: els.setIntervalPreset.value });
-    renderSettings();
+  els.setMaxReviews.addEventListener('change', () => {
+    const n = parseInt(els.setMaxReviews.value, 10);
+    if (n >= 10 && n <= 1000) setSettings({ maxReviews: n });
+    renderToday();
   });
-
-  // Custom interval fields write back when edited (only relevant when preset === 'custom')
-  for (const [idx, el] of [[1, els.ci1], [2, els.ci2], [3, els.ci3], [4, els.ci4], [5, els.ci5]]) {
-    el.addEventListener('change', () => {
-      const days = parseFloat(el.value) || 0;
-      const mins = currentIntervalsMin().slice();
-      mins[idx] = days * 1440;
-      setSettings({ intervalPreset: 'custom', customIntervalsMin: mins });
-      els.setIntervalPreset.value = 'custom';
-    });
-  }
-
-  els.setAgainMode.addEventListener('change', () => {
-    setSettings({ againMode: els.setAgainMode.value });
-    renderSettings();
+  els.setRetention.addEventListener('change', () => {
+    const r = parseFloat(els.setRetention.value);
+    if (r >= 0.7 && r <= 0.97) setSettings({ retention: r });
   });
-
-  els.setAgainDelay.addEventListener('change', () => {
-    const n = parseInt(els.setAgainDelay.value, 10);
-    if (n >= 1 && n <= 60) setSettings({ againDelayMin: n });
+  els.setBothDirections.addEventListener('change', () => {
+    setSettings({ bothDirections: els.setBothDirections.checked });
+    renderToday();
   });
-
-  els.setMigrationPolicy.addEventListener('change', () => {
-    setSettings({ migrationPolicy: els.setMigrationPolicy.value });
+  els.setSayAloud.addEventListener('change', () => {
+    setSettings({ sayAloud: els.setSayAloud.checked });
+  });
+  els.setNewSource.addEventListener('change', () => {
+    setSettings({ newSource: els.setNewSource.value });
+    renderToday();
+  });
+  els.setReviewScope.addEventListener('change', () => {
+    setSettings({ reviewScope: els.setReviewScope.value });
+    renderToday();
   });
 
   els.setAudioSource.addEventListener('change', () => {
@@ -943,27 +1119,26 @@ function bindSettings() {
     const n = parseInt(els.setLearnPause.value, 10);
     if (n >= 0 && n <= 5000) setSettings({ learnPauseMs: n });
   });
+  els.setTestOrder.addEventListener('change', () => {
+    setSettings({ testOrder: els.setTestOrder.value });
+    if (state.orderMode === 'test') rebuildCurrentQueue();
+  });
   els.setLearnAuto.addEventListener('change', () => {
     setSettings({ learnAutoProgress: els.setLearnAuto.value });
     renderSettings();
   });
 
-  els.rerunMigration.addEventListener('click', () => {
-    const s = getSettings();
-    const msg = {
-      'all-due-now': 'Re-mark all existing cards as due now?',
-      'spread': 'Stagger existing cards over a few days based on box?',
-      'reset': 'Reset ALL progress on every deck? This cannot be undone.',
-    }[s.migrationPolicy];
-    if (!confirm(msg)) return;
-    setSettings({ migrationDone: false });
-    migrateProgressIfNeeded();
-    // Reload current deck so changes show immediately.
-    if (state.currentDeckId) selectDeck(state.currentDeckId);
-    alert('Migration complete.');
-  });
-
   els.settingsSearch.addEventListener('input', (e) => filterSettings(e.target.value));
+
+  // Sections start closed and work as an accordion: opening one closes the rest (not while
+  // searching, when every section with a match is open).
+  const cats = els.settingsSection.querySelectorAll('.settings-cat');
+  for (const cat of cats) {
+    cat.addEventListener('toggle', () => {
+      if (!cat.open || els.settingsSearch.value.trim()) return;
+      for (const other of cats) if (other !== cat) other.open = false;
+    });
+  }
 }
 
 function filterSettings(q) {
@@ -979,12 +1154,19 @@ function filterSettings(q) {
     if (match) anyVisible = true;
   }
 
-  // Hide categories whose groups are all filtered out; expand any with matches when searching.
+  // Hide categories whose groups are all filtered out; open any with matches while searching,
+  // and close those again when the search is cleared.
   for (const cat of cats) {
     const visibleGroups = cat.querySelectorAll('.setting-group:not(.search-hidden)');
     const hide = visibleGroups.length === 0;
     cat.classList.toggle('search-hidden', hide);
-    if (query && !hide) cat.open = true;
+    if (query && !hide && !cat.open) {
+      cat.open = true;
+      cat.dataset.searchOpened = '1';
+    } else if (!query && cat.dataset.searchOpened) {
+      cat.open = false;
+      delete cat.dataset.searchOpened;
+    }
   }
 
   els.settingsEmpty.hidden = anyVisible;
@@ -992,6 +1174,10 @@ function filterSettings(q) {
 
 function rebuildCurrentQueue() {
   if (!state.currentDeckId) return;
+  // A rebuilt queue is a new round: clear Test answers so cards don't come back pre-answered.
+  // An answer still waiting for Next is saved to the SRS first.
+  if (state.pendingLearnRating) commitPendingRatingWithoutAdvance();
+  state.learnAnswers = new Map();
   state.queue = buildQueue(state.cards, els.srsToggle.checked);
   state.pos = 0;
   renderCard();
@@ -1029,10 +1215,10 @@ function setDirection(direction) {
     b.setAttribute('aria-checked', b.dataset.direction === direction ? 'true' : 'false');
   });
   setPreferences({ direction });
-  // Changing direction invalidates Learn answers (different pills shown).
-  state.learnAnswers = new Map();
-  state.pendingLearnRating = null;
-  renderCard();
+  // Each direction has its own progress, so re-read it; a new round starts.
+  const deck = state.decks.find((d) => d.id === state.currentDeckId);
+  if (deck) state.cards = mergeProgressIntoCards(deck.cards);
+  rebuildCurrentQueue();
 }
 
 // ---------- wordlist ----------
@@ -1305,11 +1491,392 @@ function handleLearnPick(btn, isCorrect) {
 
   const settings = getSettings();
   if (shouldAutoAdvance(autoProgressMode(settings), isCorrect)) {
-    setTimeout(() => rateCard(isCorrect ? 'good' : 'again'), settings.learnPauseMs ?? 1000);
+    setTimeout(() => rateCard(isCorrect ? 'good' : 'again'), settings.learnPauseMs ?? 1500);
   } else {
     // Stash pending rating; applied when user advances.
     state.pendingLearnRating = isCorrect ? 'good' : 'again';
     updateStats();
+  }
+}
+
+// ---------- Today: daily review ----------
+// One session across all decks: due items first (weakest first), with new cards mixed in. New
+// items start with multiple choice; after that it's recall and self-grading. New and missed items
+// come back a few cards later in the same session (successive relearning).
+// See docs/review-design.md.
+
+const NEW_PER_DECK = 5;        // new cards per deck per day, to mix categories (relaxed if the budget would go unfilled)
+const REQUEUE_GAP = [5, 8];    // a missed or just-introduced item comes back this many cards later
+
+// Decks new cards come from: the current deck, plus (by default) every deck with a word you've started.
+function newCardDecks(items, source) {
+  const current = state.decks.find((d) => d.id === state.currentDeckId);
+  if (source === 'current') return current ? [current] : [];
+  const started = new Set();
+  for (const itemKey of Object.keys(items)) {
+    const entry = state.cardIndex.get(splitItemKey(itemKey)[0]);
+    if (entry) entry.deckIds.forEach((id) => started.add(id));
+  }
+  const others = state.decks.filter((d) => started.has(d.id) && d.id !== current?.id);
+  return current ? [current, ...others] : others;
+}
+
+// Today's plan: due and new entries, and the session queue mixing them. An entry is
+// { key, dir, deckId, kind: 'due' | 'new' }.
+function planReview(now = Date.now()) {
+  const s = getSettings();
+  const items = loadStore().items || {};
+  const log = todayLog();
+  const end = endOfStudyDay(now);
+
+  const due = [];
+  for (const [itemKey, it] of Object.entries(items)) {
+    if (it.due > end) continue;
+    const [key, dir] = splitItemKey(itemKey);
+    const deckId = reviewDeckId(key, dir, s);
+    if (deckId) due.push({ key, dir, deckId, kind: 'due', r: fsrsR(Math.max(0, (now - it.last) / DAY), it.s) });
+  }
+  due.sort((a, b) => a.r - b.r);
+  due.splice(Math.max(0, s.maxReviews - (log.rv || 0)));
+
+  let budget = Math.max(0, s.newPerDay - (log.n || 0));
+  const news = [];
+  // English → Thai for words whose meaning is known: up to half the budget, oldest unlock first.
+  if (s.bothDirections) {
+    const unlocked = Object.entries(items)
+      .filter(([k, it]) => it.u && k.endsWith('##th-en'))
+      .map(([k, it]) => ({ key: splitItemKey(k)[0], last: it.last }))
+      .filter((u) => !items[itemKeyOf(u.key, 'en-th')] && state.cardIndex.has(u.key))
+      .sort((a, b) => a.last - b.last)
+      .slice(0, Math.ceil(budget / 2));
+    for (const u of unlocked) news.push({ key: u.key, dir: 'en-th', deckId: state.cardIndex.get(u.key).deckIds[0], kind: 'new' });
+    budget -= unlocked.length;
+  }
+  // New words in deck order, round-robin across decks: NEW_PER_DECK each first, then whatever fills the budget.
+  const taken = new Set();
+  const decks = newCardDecks(items, s.newSource).map((d) => ({ deck: d, i: 0, n: log.nd?.[d.id] || 0 }));
+  for (const cap of [NEW_PER_DECK, Infinity]) {
+    let added = true;
+    while (budget > 0 && added) {
+      added = false;
+      for (const d of decks) {
+        if (budget <= 0) break;
+        if (d.n >= cap) continue;
+        while (d.i < d.deck.cards.length) {
+          const key = cardKey(d.deck.cards[d.i++]);
+          if (items[itemKeyOf(key, 'th-en')] || taken.has(key)) continue;
+          taken.add(key);
+          news.push({ key, dir: 'th-en', deckId: d.deck.id, kind: 'new' });
+          d.n += 1;
+          budget -= 1;
+          added = true;
+          break;
+        }
+      }
+    }
+  }
+
+  // Spread the new cards evenly through the reviews.
+  const queue = [];
+  const every = news.length ? Math.max(1, Math.floor(due.length / news.length)) : 0;
+  let ni = 0;
+  due.forEach((e, i) => {
+    queue.push(e);
+    if (every && (i + 1) % every === 0 && ni < news.length) queue.push(news[ni++]);
+  });
+  queue.push(...news.slice(ni));
+  return { due, news, queue };
+}
+
+// The deck a due item is reviewed under, or null if Today skips it: its card was edited or
+// removed, its direction is off, or "Due reviews from: Current deck only" excludes its decks.
+function reviewDeckId(key, dir, s) {
+  const entry = state.cardIndex.get(key);
+  if (!entry || (dir === 'en-th' && !s.bothDirections)) return null;
+  if (s.reviewScope !== 'current') return entry.deckIds[0];
+  return entry.deckIds.includes(state.currentDeckId) ? state.currentDeckId : null;
+}
+
+// For the end-of-session screen.
+function dueTomorrow(now = Date.now()) {
+  const s = getSettings();
+  const end = endOfStudyDay(now);
+  let n = 0;
+  for (const [itemKey, it] of Object.entries(loadStore().items || {})) {
+    if (it.due <= end || it.due > end + DAY) continue;
+    const [key, dir] = splitItemKey(itemKey);
+    if (reviewDeckId(key, dir, s)) n += 1;
+  }
+  return n;
+}
+
+function renderToday() {
+  if (!state.cardIndex.size) return; // decks not loaded yet
+  const r = state.review;
+  // With either "Current deck only" option, show the deck button (same place as on Decks) so the deck can be changed here.
+  const s = getSettings();
+  els.stage.classList.toggle('today-deck', !r && (s.newSource === 'current' || s.reviewScope === 'current'));
+  els.todayHome.hidden = !!r;
+  els.todayBreakdown.hidden = true; // shown below when there's something to break down
+  els.review.hidden = !r || r.finished;
+  els.reviewSummary.hidden = !r?.finished;
+  if (r) return;
+  const plan = planReview();
+  const deckName = state.decks.find((d) => d.id === state.currentDeckId)?.name || 'this deck';
+  els.todayDue.textContent = plan.due.length;
+  els.todayDueFrom.textContent = s.reviewScope === 'current' ? `in ${deckName}` : 'across all decks';
+  els.todayNew.textContent = plan.news.length;
+  els.todayNewFrom.textContent = s.newSource === 'current' ? `from ${deckName}` : 'mixed from your decks';
+  els.todayStart.hidden = plan.queue.length === 0;
+  els.todayDone.hidden = plan.queue.length > 0;
+  renderTodayBreakdown(plan);
+}
+
+// Under the card: the session's due and new counts per category, biggest first.
+function renderTodayBreakdown(plan) {
+  const byCat = new Map();
+  const categoryOf = (deckId) => state.decks.find((d) => d.id === deckId)?.category || 'Uncategorized';
+  for (const [list, field] of [[plan.due, 'due'], [plan.news, 'new']]) {
+    for (const e of list) {
+      const cat = categoryOf(e.deckId);
+      if (!byCat.has(cat)) byCat.set(cat, { due: 0, new: 0 });
+      byCat.get(cat)[field] += 1;
+    }
+  }
+  const rows = [...byCat].sort((a, b) => (b[1].due + b[1].new) - (a[1].due + a[1].new) || a[0].localeCompare(b[0]));
+  els.todayBreakdownBody.replaceChildren(...rows.map(([cat, n]) => {
+    const tr = document.createElement('tr');
+    for (const text of [cat, n.due || '–', n.new || '–']) {
+      const td = document.createElement('td');
+      td.textContent = text;
+      tr.appendChild(td);
+    }
+    return tr;
+  }));
+  els.todayBreakdown.hidden = rows.length === 0;
+}
+
+function startReview() {
+  const plan = planReview();
+  if (!plan.queue.length) return;
+  state.review = {
+    queue: plan.queue, pos: 0, mode: null, revealed: false, answered: false, finished: false,
+    graded: 0, ok: 0, seen: new Set(), newItems: new Set(), missed: new Map(),
+  };
+  preloadDeckAudio({ cards: plan.queue.map((e) => state.cardIndex.get(e.key).card) });
+  renderToday();
+  presentEntry();
+}
+
+function endReview() {
+  stopAudio();
+  state.review = null;
+  renderToday();
+}
+
+// New items start with multiple choice; a second multiple-choice go only if the first was wrong.
+function reviewMode(it) {
+  return !it || (!it.rc && (it.mc || 0) < 2 && !it.mcOk) ? 'mc' : 'recall';
+}
+
+function presentEntry() {
+  const r = state.review;
+  const e = r.queue[r.pos];
+  if (!e) {
+    finishReview();
+    return;
+  }
+  const { card } = state.cardIndex.get(e.key);
+  const it = getItem(itemKeyOf(e.key, e.dir));
+  const thaiFirst = e.dir === 'th-en';
+  r.mode = reviewMode(it);
+  r.revealed = false;
+  r.answered = false;
+
+  els.reviewPrompt.textContent = thaiFirst ? card.thai : card.english;
+  els.reviewPrompt.className = 'review-prompt thai' + (thaiFirst ? '' : ' front-en');
+  els.reviewMain.textContent = thaiFirst ? card.english : card.thai;
+  els.reviewMain.className = 'review-main english' + (thaiFirst ? '' : ' back-th');
+  els.reviewTranslit.textContent = card.translit;
+  els.reviewNote.textContent = card.note || '';
+  els.reviewAnswer.hidden = true;
+  const badge = [e.again && 'Again', !it && 'New', !thaiFirst && 'English → Thai'].filter(Boolean).join(' · ');
+  els.reviewBadge.textContent = badge;
+  els.reviewBadge.hidden = !badge;
+  els.reviewDeck.textContent = state.decks.find((d) => d.id === e.deckId)?.name || '';
+  els.reviewLeft.textContent = `${r.queue.length - r.pos} left`;
+  els.reviewGrades.hidden = true;
+  els.reviewContinue.hidden = true;
+  if (r.mode === 'mc') {
+    els.reviewHint.textContent = 'Pick the answer';
+    els.reviewShow.hidden = true;
+    renderReviewPills(e, card);
+  } else {
+    els.reviewHint.textContent = getSettings().sayAloud ? 'Say it aloud, then tap Show' : 'Recall it, then tap Show';
+    els.reviewPills.replaceChildren();
+    els.reviewPills.hidden = true;
+    els.reviewShow.hidden = false;
+  }
+  // English → Thai: no audio until the answer is shown, or it would give the answer away.
+  els.reviewSpeak.hidden = !thaiFirst;
+  if (thaiFirst) speak(card.thai);
+}
+
+function renderReviewPills(e, card) {
+  const deck = state.decks.find((d) => d.id === e.deckId);
+  const field = e.dir === 'th-en' ? 'english' : 'thai';
+  const others = shuffled((deck?.cards || []).filter((c) => c[field] !== card[field])).slice(0, 2);
+  els.reviewPills.innerHTML = '';
+  els.reviewPills.classList.remove('locked');
+  for (const c of shuffled([card, ...others])) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'learn-pill' + (field === 'thai' ? ' thai-pill' : '');
+    btn.textContent = c[field];
+    btn.addEventListener('click', () => pickReviewPill(btn, c === card));
+    els.reviewPills.appendChild(btn);
+  }
+  els.reviewPills.hidden = false;
+}
+
+function pickReviewPill(btn, isCorrect) {
+  const r = state.review;
+  if (!r || r.answered) return;
+  r.answered = true;
+  els.reviewPills.classList.add('locked');
+  const { card } = state.cardIndex.get(r.queue[r.pos].key);
+  const answer = r.queue[r.pos].dir === 'th-en' ? card.english : card.thai;
+  for (const p of els.reviewPills.querySelectorAll('.learn-pill')) {
+    if (p.textContent === answer) p.classList.add('correct');
+    else p.classList.add(p === btn ? 'wrong' : 'dimmed');
+  }
+  recordGrade(isCorrect ? 3 : 1);
+  revealAnswer();
+  const s = getSettings();
+  if (shouldAutoAdvance(autoProgressMode(s), isCorrect)) {
+    const at = r.pos;
+    setTimeout(() => { if (state.review === r && r.pos === at) nextEntry(); }, s.learnPauseMs ?? 1500);
+  } else {
+    els.reviewContinue.hidden = false;
+  }
+}
+
+function revealAnswer() {
+  const r = state.review;
+  if (!r || r.revealed) return;
+  const e = r.queue[r.pos];
+  r.revealed = true;
+  els.reviewAnswer.hidden = false;
+  els.reviewShow.hidden = true;
+  els.reviewSpeak.hidden = false;
+  if (e.dir === 'en-th') speak(state.cardIndex.get(e.key).card.thai);
+  if (r.mode !== 'recall') return;
+  // Label each grade with when the card would come back.
+  const it = getItem(itemKeyOf(e.key, e.dir));
+  const now = Date.now();
+  for (const btn of els.reviewGrades.querySelectorAll('.grade')) {
+    btn.querySelector('span').textContent = formatInterval(scheduleItem(it, Number(btn.dataset.grade), now).due - now);
+  }
+  els.reviewGrades.hidden = false;
+}
+
+function formatInterval(ms) {
+  if (ms < HOUR) return `${Math.max(1, Math.round(ms / MINUTE))}m`;
+  if (ms < DAY) return `${Math.round(ms / HOUR)}h`;
+  const days = Math.round(ms / DAY);
+  if (days < 30) return `${days}d`;
+  return days < 365 ? `${Math.round(days / 30)}mo` : `${(days / 365).toFixed(1)}y`;
+}
+
+// Save the grade, keep session stats, and requeue: multiple choice always earns a recall go
+// later in the session, and a miss comes back until it's right.
+function recordGrade(g) {
+  const r = state.review;
+  const e = r.queue[r.pos];
+  const itemKey = itemKeyOf(e.key, e.dir);
+  gradeItem(e.key, e.dir, g, { mode: r.mode, deckId: e.deckId });
+  r.graded += 1;
+  if (g > 1) r.ok += 1;
+  r.seen.add(itemKey);
+  if (e.kind === 'new') r.newItems.add(itemKey);
+  if (g === 1) r.missed.set(itemKey, e);
+  if (e.kind === 'due' && !e.again && !e.requeued) {
+    const store = loadStore();
+    const day = dayLog(store);
+    day.rv = (day.rv || 0) + 1;
+    saveStore(store);
+  }
+  if (r.mode === 'mc' || g === 1) {
+    const [lo, hi] = REQUEUE_GAP;
+    const at = Math.min(r.queue.length, r.pos + 1 + lo + Math.floor(Math.random() * (hi - lo + 1)));
+    r.queue.splice(at, 0, { ...e, again: g === 1, requeued: true });
+  }
+}
+
+function gradeCurrent(g) {
+  const r = state.review;
+  if (!r || !r.revealed || r.mode !== 'recall' || r.answered) return;
+  r.answered = true;
+  recordGrade(g);
+  nextEntry();
+}
+
+function nextEntry() {
+  state.review.pos += 1;
+  presentEntry();
+}
+
+function finishReview() {
+  const r = state.review;
+  r.finished = true;
+  stopAudio();
+  const reviewed = r.seen.size;
+  const pct = r.graded ? Math.round((r.ok / r.graded) * 100) : 0;
+  els.reviewScore.textContent = String(reviewed);
+  els.reviewSub.textContent = `${reviewed === 1 ? 'card' : 'cards'} reviewed · ${pct}% right · ` +
+    `${r.newItems.size} new · ${dueTomorrow()} due tomorrow`;
+  fillMissedList(els.reviewMissed, els.reviewMissedTitle, [...r.missed.values()].map((e) => state.cardIndex.get(e.key).card));
+  renderToday();
+  els.reviewDone.focus({ preventScroll: true });
+  window.scrollTo({ top: 0 });
+}
+
+function handleReviewKey(e) {
+  const r = state.review;
+  const enter = e.key === 'Enter' || e.key === ' ';
+  if (!r) {
+    if (enter && !els.todayStart.hidden) {
+      e.preventDefault();
+      startReview();
+    }
+    return;
+  }
+  if (r.finished) {
+    if (enter) {
+      e.preventDefault();
+      endReview();
+    }
+    return;
+  }
+  if (r.mode === 'mc') {
+    if (!r.answered && ['1', '2', '3'].includes(e.key)) {
+      els.reviewPills.querySelectorAll('.learn-pill')[Number(e.key) - 1]?.click();
+    } else if (r.answered && (enter || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      nextEntry();
+    }
+    return;
+  }
+  if (!r.revealed) {
+    if (enter) {
+      e.preventDefault();
+      revealAnswer();
+    }
+  } else if (['1', '2', '3', '4'].includes(e.key)) {
+    gradeCurrent(Number(e.key));
+  } else if (enter) {
+    e.preventDefault();
+    gradeCurrent(3); // Good
   }
 }
 
@@ -1382,18 +1949,25 @@ function toggleReadAloud() {
 function resetDeckProgress() {
   if (!state.currentDeckId) return;
   const deck = state.decks.find((d) => d.id === state.currentDeckId);
-  if (!confirm(`Reset progress for "${deck?.name ?? 'this deck'}"?\n\nThis cannot be undone.`)) return;
-  setProgress(state.currentDeckId, { cards: {} });
+  if (!confirm(`Reset progress for "${deck?.name ?? 'this deck'}"?\n\nIts words are reset in every deck they appear in. This cannot be undone.`)) return;
+  const store = loadStore();
+  for (const c of deck.cards) {
+    for (const dir of ['th-en', 'en-th']) delete store.items?.[itemKeyOf(cardKey(c), dir)];
+  }
+  saveStore(store);
   selectDeck(state.currentDeckId);
+  renderToday();
 }
 
 function resetAllProgress() {
   if (!confirm(`Reset ALL progress across every deck?\n\nThis wipes study history on ${state.decks.length} decks and cannot be undone. Your settings will be kept.`)) return;
   const store = loadStore();
-  store.decks = {};
+  store.items = {};
+  store.daily = {};
   saveStore(store);
   if (state.currentDeckId) selectDeck(state.currentDeckId);
-  alert('All deck progress reset.');
+  renderToday();
+  alert('All progress reset.');
 }
 
 // ---------- TTS ----------
@@ -1613,9 +2187,7 @@ function bindEvents() {
 
   els.srsToggle.addEventListener('change', () => {
     setPreferences({ srsOn: els.srsToggle.checked });
-    state.queue = buildQueue(state.cards, els.srsToggle.checked);
-    state.pos = 0;
-    renderCard();
+    rebuildCurrentQueue();
   });
 
   els.resetBtn.addEventListener('click', resetDeckProgress);
@@ -1661,6 +2233,22 @@ function bindEvents() {
     btn.addEventListener('click', () => setDirection(btn.dataset.direction));
   });
 
+  els.roundAgain.addEventListener('click', () => renderCard());
+
+  els.todayStart.addEventListener('click', startReview);
+  els.reviewShow.addEventListener('click', revealAnswer);
+  els.reviewContinue.addEventListener('click', () => { if (state.review?.answered) nextEntry(); });
+  els.reviewGrades.addEventListener('click', (e) => {
+    const btn = e.target.closest('.grade');
+    if (btn) gradeCurrent(Number(btn.dataset.grade));
+  });
+  els.reviewSpeak.addEventListener('click', () => {
+    const entry = state.review?.queue[state.review.pos];
+    if (entry) speak(state.cardIndex.get(entry.key).card.thai);
+  });
+  els.reviewQuit.addEventListener('click', endReview);
+  els.reviewDone.addEventListener('click', endReview);
+
   document.addEventListener('keydown', (e) => {
     if (state.pickerOpen) {
       if (e.key === 'Escape') {
@@ -1676,7 +2264,18 @@ function bindEvents() {
       }
       return;
     }
-    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (state.view === 'today') {
+      handleReviewKey(e);
+      return;
+    }
+    if (state.roundOver) {
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        renderCard();
+      }
+      return;
+    }
     if (e.key === ' ') {
       e.preventDefault();
       flipCard();
@@ -1840,6 +2439,7 @@ async function init() {
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));
+    buildCardIndex();
   } catch (e) {
     els.thai.textContent = '⚠';
     els.english.textContent = 'Could not load decks.json. Are you serving over http://?';
@@ -1849,12 +2449,8 @@ async function init() {
 
   bindEvents();
 
-  // Migrate any pre-existing progress to the new scheduled-due format.
-  migrateProgressIfNeeded();
-
-  // The Test-mode pause default went from 3000 to 1000 ms (2026-10-03). Settings are saved in
-  // full, so saves still holding the old default move with it; a value the user chose is kept.
-  if (loadStore().settings?.learnPauseMs === 3000) setSettings({ learnPauseMs: 1000 });
+  migrateSettings();
+  migrateLeitnerToItems();
 
   const prefs = getPreferences();
   els.srsToggle.checked = prefs.srsOn !== false;
@@ -1883,9 +2479,8 @@ async function init() {
     b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false');
   });
 
-  // View first, so selectDeck's renderCard() knows whether the card is on screen.
-  const validViews = ['flashcards', 'wordlist'];
-  setView(validViews.includes(prefs.view) ? prefs.view : 'flashcards');
+  // Review (view id 'today') is the landing tab. View first, so selectDeck's renderCard() knows the card isn't on screen.
+  setView('today');
 
   const start =
     state.decks.find((d) => d.id === prefs.currentDeckId)?.id ||
@@ -1893,6 +2488,7 @@ async function init() {
   if (start) {
     selectDeck(start);
   }
+  renderToday(); // again, now the current deck (a source of new cards) is known
 
   registerServiceWorker();
   syncOfflineAudio();

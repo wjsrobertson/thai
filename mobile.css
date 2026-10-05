@@ -128,4 +128,9 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .modal-body { overflow-x: hidden; touch-action: pan-y pinch-zoom; }
 .setting-row { grid-template-columns: minmax(0, 1fr); }
 .setting-row select { min-width: 0; max-width: 100%; }
-.custom-intervals input { font-size: max(16px, calc(16px * var(--fs, 1))); } /* iOS zooms into inputs under 16px */
+
+/* Today */
+.today-home { padding: 24px 16px; }
+.review-card { min-height: 220px; padding: 44px 14px 20px; }
+.review-grades { gap: 6px; }
+.grade { padding: 12px 2px; font-size: 15px; }

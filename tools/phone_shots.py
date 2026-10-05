@@ -1,7 +1,7 @@
 """Screenshot the app at phone sizes via headless Chromium + a minimal stdlib WebSocket CDP client.
 
     python3 -u tools/phone_shots.py <out_dir> <label>   # needs the server on :8765 and snap chromium
-Takes flashcards (learn + test), wordlist, deck picker and settings at iPhone 14 and iPhone SE sizes.
+Takes Today, a review card, Decks (learn + test), wordlist, deck picker and settings at iPhone 14 and iPhone SE sizes.
 """
 import base64, json, os, shutil, socket, struct, subprocess, sys, time, urllib.request
 
@@ -98,6 +98,11 @@ def main():
             print(f'{dev}: stylesheets {css}')
             time.sleep(0.5)
             p = lambda name: os.path.join(out, f'{label}-{dev}-{name}.png')
+            shot(ws, p('0-today'))
+            js(ws, "document.querySelector('#today-start')?.click()"); time.sleep(0.5)
+            shot(ws, p('0b-review'))
+            js(ws, "document.querySelector('#review-quit')?.click()")
+            js(ws, "document.querySelector('.tab[data-view=flashcards]').click()"); time.sleep(0.4)
             shot(ws, p('1-learn'))
             js(ws, "document.querySelector('#next-btn').click()"); time.sleep(0.4)   # card 2 has a note
             js(ws, "document.querySelector('.front .flip-btn').click()"); time.sleep(0.8)

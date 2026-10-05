@@ -18,8 +18,9 @@
   <header class="topbar">
     <h1>Learn Thai</h1>
     <nav class="tabs" role="tablist">
-      <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="true">Flashcards</button>
+      <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Decks</button>
       <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Wordlist</button>
+      <button type="button" class="tab" role="tab" data-view="today" aria-selected="true">Review</button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -97,6 +98,67 @@
 
     </section>
 
+    <section class="round-summary flashcards-only" id="round-summary" hidden>
+      <h2 class="round-title">Round complete</h2>
+      <div class="round-score" id="round-score"></div>
+      <div class="round-sub" id="round-sub"></div>
+      <h3 class="round-missed-title" id="round-missed-title"></h3>
+      <ul class="round-missed" id="round-missed"></ul>
+      <button type="button" class="round-again" id="round-again">Start again</button>
+    </section>
+
+    <section class="today today-only" id="today-section">
+      <div class="today-home" id="today-home">
+        <div class="today-counts">
+          <span class="today-num" id="today-due">0</span><span class="today-kind">due</span><span class="today-from" id="today-due-from"></span>
+          <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
+        </div>
+        <button type="button" class="round-again today-start" id="today-start">Start review</button>
+        <p class="today-done" id="today-done" hidden>All done for today.</p>
+      </div>
+      <table class="today-breakdown" id="today-breakdown" hidden>
+        <thead><tr><th>Category</th><th>Due</th><th>New</th></tr></thead>
+        <tbody id="today-breakdown-body"></tbody>
+      </table>
+
+      <div class="review" id="review" hidden>
+        <div class="review-top">
+          <span class="review-left" id="review-left"></span>
+          <span class="review-deck" id="review-deck"></span>
+          <button type="button" class="review-quit" id="review-quit" aria-label="Stop reviewing" title="Stop">✕</button>
+        </div>
+        <div class="review-card">
+          <div class="review-badge" id="review-badge" hidden></div>
+          <div class="review-prompt" id="review-prompt"></div>
+          <button type="button" class="review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+          <div class="review-hint" id="review-hint"></div>
+          <div class="review-answer" id="review-answer" hidden>
+            <div class="review-main" id="review-main"></div>
+            <div class="translit" id="review-translit"></div>
+            <div class="note" id="review-note"></div>
+          </div>
+        </div>
+        <div class="learn-pills" id="review-pills" hidden></div>
+        <button type="button" class="round-again review-show" id="review-show">Show</button>
+        <button type="button" class="round-again review-continue" id="review-continue" hidden>Continue</button>
+        <div class="review-grades" id="review-grades" hidden>
+          <button type="button" class="grade grade-again" data-grade="1">Again<span></span></button>
+          <button type="button" class="grade grade-hard" data-grade="2">Hard<span></span></button>
+          <button type="button" class="grade grade-good" data-grade="3">Good<span></span></button>
+          <button type="button" class="grade grade-easy" data-grade="4">Easy<span></span></button>
+        </div>
+      </div>
+
+      <section class="round-summary" id="review-summary" hidden>
+        <h2 class="round-title">Review complete</h2>
+        <div class="round-score" id="review-score"></div>
+        <div class="round-sub" id="review-sub"></div>
+        <h3 class="round-missed-title" id="review-missed-title"></h3>
+        <ul class="round-missed" id="review-missed"></ul>
+        <button type="button" class="round-again" id="review-done">Done</button>
+      </section>
+    </section>
+
     <div id="settings-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
       <div class="modal-backdrop" data-close></div>
       <div class="modal-panel settings-modal-panel" role="document">
@@ -109,7 +171,7 @@
         </div>
         <div class="modal-body settings" id="settings-section">
 
-      <details class="settings-cat" data-cat="app" open>
+      <details class="settings-cat" data-cat="app">
         <summary>App</summary>
         <div class="setting-group" data-search="install app home screen iphone add pwa">
           <label class="setting-row">
@@ -133,7 +195,7 @@
         </div>
       </details>
 
-      <details class="settings-cat" data-cat="display" open>
+      <details class="settings-cat" data-cat="display">
         <summary>Display</summary>
         <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
           <label class="setting-row">
@@ -150,89 +212,118 @@
         </div>
       </details>
 
-      <details class="settings-cat" data-cat="study" open>
-        <summary>Study</summary>
-        <div class="setting-group" data-search="smart order spaced repetition shuffle random">
+      <details class="settings-cat" data-cat="review">
+        <summary>Daily review</summary>
+        <div class="setting-group" data-search="new cards per day limit daily">
           <label class="setting-row">
-            <span class="setting-label">Smart order</span>
+            <span class="setting-label">New cards per day</span>
+            <input type="number" min="0" max="100" id="setting-new-per-day" />
+            <span class="setting-help">Includes cards answered for the first time in deck Test mode.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="due reviews from scope decks all current deck">
+          <label class="setting-row">
+            <span class="setting-label">Due reviews from</span>
+            <select id="setting-review-scope">
+              <option value="all">All decks (Recommended)</option>
+              <option value="current">Current deck only</option>
+            </select>
+            <span class="setting-help">With "Current deck only", words due in other decks wait until you switch back, and the longer they're overdue the more you'll have forgotten.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="new cards from source decks started current deck">
+          <label class="setting-row">
+            <span class="setting-label">New cards from</span>
+            <select id="setting-new-source">
+              <option value="started">Decks I've started</option>
+              <option value="current">Current deck only</option>
+            </select>
+            <span class="setting-help">"Decks I've started" mixes the current deck with every deck you've studied a word from, at most 5 new cards from each a day where possible.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="maximum reviews per day limit daily">
+          <label class="setting-row">
+            <span class="setting-label">Maximum reviews per day</span>
+            <input type="number" min="10" max="1000" step="10" id="setting-max-reviews" />
+          </label>
+        </div>
+        <div class="setting-group" data-search="desired retention fsrs scheduling intervals remember percent">
+          <label class="setting-row">
+            <span class="setting-label">Desired retention</span>
+            <select id="setting-retention">
+              <option value="0.8">80% (fewer reviews)</option>
+              <option value="0.85">85%</option>
+              <option value="0.9">90% (Recommended)</option>
+              <option value="0.95">95% (many more reviews)</option>
+            </select>
+            <span class="setting-help">How likely you should be to remember a card when it comes up. Higher means shorter gaps and more reviews.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="both directions english to thai production reverse">
+          <label class="setting-row">
+            <span class="setting-label">Both directions</span>
             <label class="checkbox-inline">
-              <input type="checkbox" id="srs-toggle" checked />
-              <span>Use spaced-repetition scheduling</span>
+              <input type="checkbox" id="setting-both-directions" />
+              <span>Also practise English → Thai</span>
             </label>
-            <span class="setting-help">Off = plain random shuffle, ignoring boxes and due dates. Useful for free-form review.</span>
+            <span class="setting-help">A word's English → Thai card unlocks once you've recalled its meaning after a gap of a day or more.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="say aloud speak prompt pronounce">
+          <label class="setting-row">
+            <span class="setting-label">Say it aloud</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-say-aloud" />
+              <span>Prompt me to say the answer before showing it</span>
+            </label>
+            <span class="setting-help">Saying words aloud helps you remember them.</span>
           </label>
         </div>
       </details>
 
-      <details class="settings-cat" data-cat="scheduling" open>
-        <summary>Scheduling</summary>
-        <div class="setting-group" data-search="queue mode due cards caught up study ahead">
+      <details class="settings-cat" data-cat="deck-mode">
+        <summary>Deck mode</summary>
+        <div class="setting-group" data-search="smart order spaced repetition shuffle random due">
           <label class="setting-row">
-            <span class="setting-label">Queue mode</span>
-            <select id="setting-queue-mode">
-              <option value="due-only">Due cards only (stop when caught up)</option>
-              <option value="due-then-fallback">Due first, then study ahead (Recommended)</option>
-              <option value="mixed">Mixed — interleave due with the rest</option>
-            </select>
-            <span class="setting-help" id="setting-queue-mode-help"></span>
+            <span class="setting-label">Smart order</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="srs-toggle" checked />
+              <span>Due cards first in Test mode</span>
+            </label>
+            <span class="setting-help">Off = every card once per round, ignoring due dates.</span>
           </label>
         </div>
 
-        <div class="setting-group" data-search="review intervals leitner box days custom preset">
+        <div class="setting-group" data-search="test mode card order random shuffle deck order sequence list">
           <label class="setting-row">
-            <span class="setting-label">Review intervals</span>
-            <select id="setting-interval-preset">
-              <option value="standard">Standard Leitner (1d, 3d, 7d, 14d, 30d)</option>
-              <option value="aggressive">Aggressive (4h, 1d, 3d, 7d, 21d)</option>
-              <option value="exponential">Exponential (1d, 2d, 5d, 12d, 30d)</option>
-              <option value="custom">Custom…</option>
+            <span class="setting-label">Test card order</span>
+            <select id="setting-test-order">
+              <option value="random">Random</option>
+              <option value="deck">Deck order</option>
             </select>
-            <span class="setting-help">Time until each box becomes due again after a correct review.</span>
-          </label>
-          <div class="custom-intervals" id="custom-intervals" hidden>
-            <span>Days per box:</span>
-            <label>Box 1 <input type="number" min="0" step="0.1" id="ci-1" /></label>
-            <label>Box 2 <input type="number" min="0" step="0.1" id="ci-2" /></label>
-            <label>Box 3 <input type="number" min="0" step="0.1" id="ci-3" /></label>
-            <label>Box 4 <input type="number" min="0" step="0.1" id="ci-4" /></label>
-            <label>Box 5 <input type="number" min="0" step="0.1" id="ci-5" /></label>
-          </div>
-        </div>
-
-        <div class="setting-group" data-search="again hard fail failure rating session tomorrow demote">
-          <label class="setting-row">
-            <span class="setting-label">When you tap "Again"</span>
-            <select id="setting-again-mode">
-              <option value="session">Show again in the same session (10 min) (Recommended)</option>
-              <option value="tomorrow">Show again tomorrow</option>
-              <option value="demote-only">Just drop one box, no special re-show</option>
-            </select>
-          </label>
-          <label class="setting-row" id="again-delay-row">
-            <span class="setting-label">Again delay (minutes)</span>
-            <input type="number" min="1" max="60" id="setting-again-delay" />
+            <span class="setting-help">Deck order is the order Learn mode and the wordlist show. With Smart order on, due cards still come first.</span>
           </label>
         </div>
 
-        <div class="setting-group" data-search="learn test mode auto progress advance next button manual correct right wrong answer">
+        <div class="setting-group" data-search="learn test mode auto progress advance next button manual correct right wrong answer multiple choice">
           <label class="setting-row">
-            <span class="setting-label">Test card auto-progress</span>
+            <span class="setting-label">Auto-progress after multiple choice</span>
             <select id="setting-learn-auto">
               <option value="off">Off — press Next (›) to move on</option>
               <option value="correct">Only after a correct answer</option>
               <option value="always">After every answer</option>
             </select>
-            <span class="setting-help">"Only after a correct answer" moves on by itself when you're right, but waits on a wrong answer so you can study the card.</span>
+            <span class="setting-help">Deck Test mode, and multiple-choice cards on the Review tab. "Only after a correct answer" waits on a wrong one so you can study the card.</span>
           </label>
           <label class="setting-row" id="learn-pause-row">
-            <span class="setting-label">Test-mode pause</span>
+            <span class="setting-label">Pause before moving on</span>
             <input type="number" min="0" max="5000" step="100" id="setting-learn-pause" />
-            <span class="setting-help">Milliseconds to pause after you tap an answer pill, before auto-advancing.</span>
+            <span class="setting-help">Milliseconds to pause after you tap an answer, before auto-advancing.</span>
           </label>
         </div>
       </details>
 
-      <details class="settings-cat" data-cat="audio" open>
+      <details class="settings-cat" data-cat="audio">
         <summary>Audio</summary>
         <div class="setting-group" data-search="voice audio source thai english samples recorded mp3 browser tts text to speech speech synthesis">
           <label class="setting-row">
@@ -297,28 +388,10 @@
         </div>
       </details>
 
-      <details class="settings-cat" data-cat="advanced">
-        <summary>Advanced</summary>
-        <div class="setting-group" data-search="migration policy existing cards stagger spread first run">
-          <label class="setting-row">
-            <span class="setting-label">Migration policy</span>
-            <select id="setting-migration-policy">
-              <option value="all-due-now">Mark existing cards as due now (Recommended)</option>
-              <option value="spread">Stagger over a few days based on box</option>
-              <option value="reset">Reset all progress</option>
-            </select>
-            <span class="setting-help">How existing progress was/will-be handled the first time scheduling runs. Change before tapping "Re-run migration".</span>
-          </label>
-          <div class="setting-actions">
-            <button type="button" id="rerun-migration" class="ghost">Re-run migration now</button>
-          </div>
-        </div>
-      </details>
-
           <div class="settings-empty" id="settings-empty" hidden>No settings match your search.</div>
 
           <div class="settings-footer">
-            <p class="setting-help">Settings save automatically. Some changes (queue mode, intervals) take effect on the next card.</p>
+            <p class="setting-help">Settings save automatically.</p>
           </div>
         </div>
       </div>

@@ -13,6 +13,9 @@ These come from the user; don't break them without asking.
 - Central Thai is the default. Dialect content lives in its own category, with a deck-level
   `dialect` field, and is never mixed into Central decks. Southern Thai was added on 2026-10-03
   at the user's request; Northern and Isaan are not planned.
+- **Study progress never needs preserving** (user, 2026-10-05: "We don't need to worry about
+  progress on existing decks. Not ever"). Restructure, rename, merge or delete decks and cards
+  freely.
 
 ## Running
 
@@ -59,11 +62,11 @@ Audio / TTS → Generator).
 - **New or changed content isn't done until it has audio:** run `tools/gen_audio.py` (the user
   expects this without being asked).
 - **Card identity is `cardKey()` = `${thai}::${english}`.** Changing either text resets that
-  card's progress, and changing the formula orphans *all* progress. Extend decks by appending.
+  card's progress. That's acceptable: see Constraints.
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-03 there are 4587 cards in 151 decks across 23 categories.
+- As of 2026-10-05 there are 6578 cards in 231 decks across 37 categories.
 
 **Writing cards.** Match the existing style:
 
@@ -73,7 +76,8 @@ Audio / TTS → Generator).
   - consonants: ก = g, ป = p, ต = t, จ = j; aspirated sounds are kh, th, ph, ch
   - spacing: hyphens between syllables of a word, spaces between words
 - **Consistency:** the same Thai should have the same transliteration in every deck, so check
-  against existing cards.
+  against existing cards. App conventions: ไม้ is `máai` and ช่าง is `châng`; น้ำ is mixed
+  (`náam`/`nám`).
 - **Content:**
   - Notes are short and practical: a literal meaning, an everyday second sense, or a usage
     pattern.
@@ -186,6 +190,103 @@ decks, by design).
   - Royal news at 8 pm.
   - The royal anthem plays before cinema screenings.
 
+**Vehicles** was added on 2026-10-05, after Travel (144 new cards, 5 new decks).
+
+- **Groups:**
+  - "On the Road": Driving & Scooters (moved from Travel), Types of Vehicle, Car Parts,
+    Motorcycle Parts
+  - "Air & Sea": Aircraft, Ships & Boats
+- **No word appears twice in Vehicles.** Car Parts leaves the controls (brake, clutch, steering
+  wheel, mirrors, lights) to Driving & Scooters.
+
+**Home → Appliances & Gadgets** was added on 2026-10-05 (32 cards, ungrouped, after House &
+Home). It covers the appliances the room decks lacked:
+- Kitchen: dishwasher, toaster, coffee machine, freezer, induction hob, cooker hood, hotpot.
+- Water: hot-water flask, water dispenser and filter.
+- Around the home: hairdryer, robot vacuum, sewing machine, doorbell, torch.
+- Mosquitoes: the electric racket and repellent.
+- Using them: switch on/off, timer, broken, warranty, power-hungry, the No. 5 energy label.
+
+**Eleven categories added on 2026-10-05** (1211 cards, 48 decks). The user asked for everything
+on a brainstormed list except History.
+
+- **Thai Values & Etiquette** (after Culture): Thai Values, Etiquette & Taboos, Hierarchy & Forms
+  of Address.
+- **Describing People** (after People & Life): Appearance, Personality (the ขี้- family),
+  ใจ Words (50 cards), Compliments & Criticism.
+- **Dating & Relationships:** Dating & Flirting, Being a Couple, Marriage & Family Life, Jealousy
+  & Break-ups. Wedding ceremony words stay in Culture → Life Events.
+- **Errands & Services** (after Travel):
+  - "Shops & Deliveries": At 7-Eleven, Delivery & Ride Apps, Post Office & Parcels, Phone & SIM
+  - "Personal Services": Hair & Beauty Salon, Massage & Spa, Tailor & Repairs
+- **Visas & Paperwork:** Immigration & Visas (90-day report, TM30, work permit), Government
+  Offices & Forms, ID & Documents.
+- **Work & Careers** (after Money & Finance):
+  - "Getting a Job": Jobs & Professions, Job Hunting & Interviews
+  - "At Work": Work & Office (moved from People & Life), Business & Meetings, Email & Formal
+    Phrases
+  - Ungrouped: The Economy
+- **Education:** School & Classroom, School & University Subjects, Exams & Grades, University &
+  Studying Abroad.
+- **Activities** gained More Sports and Games & Esports. Five sports already in Gym were left out
+  of More Sports.
+- **Nature & Environment** (after Food & Drink): Plants & Trees, Thai Flowers, Landscapes,
+  Environment & Pollution (PM2.5, burning season), Floods & Natural Disasters.
+- **Places & Geography:** Regions & Provinces; Countries, Nationalities & Languages; Bangkok &
+  Transit.
+- **News & Media:** Reading Thai News (headline verbs like เผย, ชี้, ซัด, ปัด), TV & Lakorn, Film,
+  Social Media & Influencers.
+- **Talking About Language** (after Grammar): Asking About Words, Grammar & Linguistics Terms
+  (including the tone names), Reading & Writing, Thai Literature & Poetry.
+
+**How duplicates were handled:**
+- No Thai word appears twice within a category; that check includes the old decks in Activities
+  and Work & Careers.
+- 156 cards repeat a word from another category, e.g. the core ใจ words that are also in Emotions.
+  That's allowed.
+- Older duplicates inside Activities (แพ้, กรรมการ, ว่ายน้ำ) were left as they were.
+
+**Translit fixes made on the way:**
+- Home → รีโมท `rii-mòot` → `rii-móot`.
+- Music → ไม้กลอง → `máai-glɔɔng`.
+- New cards whose Thai already existed took the existing transliteration.
+
+**Music** was added on 2026-10-05, after Activities (356 cards, 15 decks).
+
+- **Groups:**
+  - "Instruments": Thai Instruments, Western Instruments, Learning an Instrument
+  - "Theory": Notes, Scales & Chords; Rhythm & Reading Music
+  - "Singing & Songs": Singing & the Voice, Genres & Thai Styles, Describing Music, Love-Song
+    Words
+  - "The Music Scene": Making & Performing Music; Concerts, Festivals & Fan Culture; Listening &
+    Audio Gear; The Music Industry
+  - "Thai Traditions": Thai Music Traditions & Folk Forms, Dance & Thai Performing Arts
+- **No Thai word appears in two Music decks.** Hobbies still has song, music and "to sing".
+- **The playing verb depends on the instrument:** Thai Instruments opens with ดีด / สี / ตี / เป่า
+  (pluck / bow / strike / blow). Western instruments take เล่น.
+- **Science → Electricity, Light & Sound** gained 11 acoustics cards: pitch, amplitude, loudness,
+  decibel, speed of sound, medium, resonance, ultrasonic waves, noise, soundproof and acoustics.
+  The user didn't want a separate acoustics deck.
+- **Translit fix:** Interjections → กรี๊ด was `grìit`. A mid-class consonant with ๊ is high tone,
+  so it's now `gríit`.
+
+**Animals** was added on 2026-10-05, after People & Life (268 cards, 12 decks). It replaced People
+& Life → Animals (31 cards), whose cards were spread across the new decks.
+
+- **Groups:**
+  - "Kinds of Animal": Pets, Farm Animals, Wild Animals, Birds, Sea & River Life, Reptiles &
+    Amphibians, Insects & Pests
+  - "Talking About Animals": Animal Words (classes, male/female, the classifier ตัว,
+    conservation), Animal Body Parts, Animal Sounds (onomatopoeia and the verbs), Animal Actions
+  - Ungrouped: Thai Zodiac Years (ปีชวด…ปีกุน, plus ปีนักษัตร, ปีชง and "what year were you
+    born?")
+- **No Thai word appears in two Animals decks.** Duplicates with other categories are fine, e.g.
+  Food (crab, shrimp), Beach and Thai Script.
+- **Notes flag slang senses:** ควาย, หมู, แรด, ชะนี, งูเห่า, ปลาไหล, หอย, นกเขา, แมงดา. The water
+  monitor card is its polite name ตัวเงินตัวทอง; the note explains why เหี้ย is avoided.
+- **เขา "horn"** is transliterated khǎo, its written tone. The pronoun เขา is kháo, as spoken. The
+  validation flagged this, and it's deliberate.
+
 **Southern Thai** was added on 2026-10-03 and sits after Slang. It has 171 cards in 7 decks:
 Fruit, Food & Plants; Everyday Words; Phrases; Time, Amounts & Questions; People & Personality;
 Home & Everyday Things; and Southern Idioms.
@@ -230,13 +331,23 @@ Home & Everyday Things; and Southern Idioms.
 
 ## Views
 
-**Flashcards** show one card at a time. The corner buttons (position pill, 🔊, flip) exist on
+The tabs are **Decks | Wordlist | Review**, and the app always opens on Review (see "Today review
+and scheduling" below).
+- **Internal ids:** Review's view id and code still say `today` (`renderToday`, `#today-section`,
+  `.today-only`). Decks is the old Flashcards view, with view id `flashcards`.
+- **History:** the user renamed Today to Review and moved it to the end on 2026-10-05.
+
+**Decks** shows one card at a time. The corner buttons (position pill, 🔊, flip) exist on
 *both* faces, so they rotate with the card when it flips. The controls row holds:
 
 - The **deck picker**, a modal with collapsible categories and optional collapsible groups
   inside them, search, and per-deck progress.
-  - Only the current deck's category and group are open. Group headers show the deck count and
-    combined progress.
+  - **On every open,** only the current deck's category and group are open, and the current deck
+    is scrolled to the centre (`openDeckPicker`). Group headers show the deck count and combined
+    progress.
+  - **Accordion** (since 2026-10-05): opening a category closes the other open category, and
+    opening a group closes the other groups in that category (`pickerHeader`). What you open
+    lasts until the picker closes; reopening starts from the current deck again.
   - Search matches deck name, description, category and group, and opens everything that
     matches.
   - `pickerModel()` builds the tree as plain data; the render functions only draw it.
@@ -266,28 +377,123 @@ Keyboard: Space flips, `P` plays, ←/→ navigate.
    you've answered.
    - **"Test card auto-progress"** (`settings.learnAutoProgress`) is `'off'`, `'always'` or
      `'correct'`. `'correct'` advances by itself after a right answer but waits after a wrong one,
-     so you can study it.
-   - **Timing:** advancing happens after `learnPauseMs`, default 1000 ms (it was 3000 until
-     2026-10-03). `init()` moves saves still holding exactly 3000 to 1000, because settings
-     are saved in full and the old default would otherwise stick.
+     so you can study it. It's the default since 2026-10-05; before that the default was `'off'`.
+   - **Timing:** advancing happens after `learnPauseMs`, default 1500 ms. It was 3000 until
+     2026-10-03, then 1000 until 2026-10-05.
+   - **Changed defaults reach old saves through `migrateSettings()`.** Settings are saved in
+     full, so a save made before a default changed still holds the old value. Each entry in
+     `SETTINGS_MIGRATIONS` moves the old default to the new one: 3000 → 1000 → 1500 ms, and
+     `'off'`/`false` → `'correct'`. It runs once per browser and is recorded in
+     `store.settingsMigrations`, so a value the user picks afterwards sticks. (The first version
+     of the pause fix ran on every load, which would have undone a deliberate 3000.)
    - **Old saves:** they stored a boolean, which `autoProgressMode()` maps (true → `'always'`,
      false → `'off'`).
    - **Decision:** `shouldAutoAdvance()` makes the call.
 
-## Spaced repetition
+6. **End of a round** (2026-10-05): at the end of a pass, `advance()` calls
+   `showRoundSummary()` instead of wrapping straight back to card 1. It shows the score (from
+   `state.learnAnswers`), the percentage and the missed cards (with 🔊), plus a Start again button
+   (Enter, Space or → also work).
+   - **The next round is set up when the summary opens:** answers are cleared and the queue is
+     rebuilt. Before this, wrapping round showed every card already answered.
+   - **Leaving the summary:** `renderCard()` hides it. So Start again, picking a deck, or
+     changing direction or mode all leave the summary for a fresh round.
+   - **Learn mode** never reaches this: Next stops at the last card.
 
-This is a Leitner system with 5 boxes. Each card stores `{ box, seen, lastSeen, dueAt }`.
+## Today review and scheduling (2026-10-05)
 
-- **Ratings:** `hard` +0, `good` +1, `easy` +2, clamped to 1–5. Test mode only ever produces
-  `good` or `again`. What `again` does depends on `againMode`:
-  - `session` (the default): box 1, due again in `againDelayMin` (10) minutes.
-  - `tomorrow`: box 1, due in 1 day.
-  - `demote-only`: drop 2 boxes, with that box's normal interval.
-- **Intervals:** the standard, aggressive or exponential preset, or custom days per box.
-- **Queue mode:** `due-only`, `due-then-fallback` (the default) or `mixed`. Turning "Smart order"
-  off gives a plain shuffle that ignores SRS.
-- **Migration:** the first time scheduling runs, existing progress is handled according to
-  `migrationPolicy` (default `all-due-now`). It can be re-run from Settings → Advanced.
+Phase 1 of `docs/review-design.md`. It replaced the per-deck Leitner boxes.
+
+**Items.** Progress is per **item**: one card (`cardKey`) in one direction, `th-en` or `en-th`.
+Items live in `store.items[`<cardKey>##<dir>`]`, global across decks, so a word in several decks
+is learned once.
+- **Fields:** `s` stability (days), `d` difficulty, `due`, `last`, `reps`, `lapses`, `mc`/`mcOk`
+  (multiple-choice answers / was the last right), `rc` (recall answers), and `u` (th-en only: the
+  en-th item is unlocked).
+- **Unlock rule:** `u` is set when th-en is graded Hard or better at least about a day after its
+  previous review (`gradeItem`).
+
+**FSRS.** Uses FSRS-5 with the default `FSRS_W` parameters (`scheduleItem`; pure, so the grade
+buttons can preview it).
+- **Two update rules:** a review under a day after the last one uses the same-day stability rule;
+  later reviews use the forgetting curve.
+- **Again:** due in 10 minutes and requeued in-session.
+- **Otherwise:** due in `round(interval(S, retention))` days, at least 1.
+- **Desired retention** is a setting (default 0.9).
+
+**Today** (`planReview` → `startReview`):
+- **The Review screen** shows only the due and new counts and Start. Under the card, a table
+  breaks the session down by category, biggest first (`renderTodayBreakdown`; a due item counts
+  under the deck it's reviewed in). A Tomorrow / next 7 days
+  forecast line was removed on 2026-10-05 as noise.
+- **Due items** are everything due by the end of the study day (days roll over at 4 am), weakest
+  (lowest retrievability) first, capped by `maxReviews` minus today's `rv`.
+  - They come from all decks.
+  - Settings → "Due reviews from: Current deck only" (`reviewScope`) limits them, and "due tomorrow",
+    to items whose card is in the current deck (`reviewDeckId`).
+  - The heading says which: "55 due across all decks / in Time of Day", "14 new mixed from your
+    decks / from Time of Day". The user was confused when "New cards from: Current deck only"
+    still showed due words from other decks.
+- **New items** come from the `newPerDay` budget minus today's `n`:
+  - English → Thai items for unlocked words take up to half the budget, oldest unlock first.
+  - Then new words in deck order, round-robin across the current deck plus every "started" deck
+    (any deck with a word that has an item). That's at most `NEW_PER_DECK` (5) per deck per day
+    first, then relaxed to fill the budget.
+  - Settings → Daily review → "New cards from" can limit this to the current deck. Today then
+    shows the deck button (the `today-deck` class on `.stage`), in the same place as on Decks.
+    The same happens with "Due reviews from: Current deck only". It's hidden during a session.
+- **New items** are spread evenly through the reviews.
+
+**A card in the session:**
+- **Mode:** a new item is multiple choice, with a second MC go only if the first was wrong; after
+  that it's recall (`reviewMode`).
+- **Recall:** the front says "Say it aloud, then tap Show" (setting). Show reveals the answer, and
+  four grade buttons show each grade's next interval.
+- **Audio:** th-en plays the Thai on the front. en-th plays nothing until the answer is shown,
+  which fixed the old English-first giveaway.
+- **Requeue:** an MC answer always earns a recall go 5–8 cards later, and Again requeues until
+  it's right once (`recordGrade`).
+- **End screen:** cards reviewed, % right, new count, due tomorrow, and the missed list.
+- **Keys:** Enter/Space show the answer or continue, 1–4 grade, and 1–3 pick an MC answer.
+
+**Daily counters** live in `store.daily[dayKey]` (`g` gradings, `ok`, `n` new, `nd` new per deck,
+`rv` due reviews), and only the last 60 days are kept.
+
+**Deck mode now uses items too.**
+- **Test answers** are graded `good`→3 / `again`→1 as MC (`saveDeckRating`). A first answer there
+  counts against the day's new budget.
+- **`mergeProgressIntoCards`** gives each card `dueAt`/`seen` from the item for the current
+  direction. It also gives a `box` derived from stability (`boxForStability`) for
+  `boxWeightedQueue`.
+- **Switching direction** re-reads progress and starts a new round.
+- **Picker "known"** means th-en stability ≥ 10 days.
+- **Leitner conversion** (`migrateLeitnerToItems`, once, recorded as `fsrs-items`):
+  - every Leitner card with `seen > 0` became a th-en item: box 1–5 → stability 1/3/7/14/30
+    days, the due date kept, `rc: 1` (so no multiple choice), and `u` for box 2+
+  - `store.decks` was deleted
+- **Removed:** queue mode, interval presets, Again mode and the migration policy. Deck Test mode
+  always runs due first, then study-ahead.
+
+**Store cache:** `loadStore()` caches the parsed store (items are read on every card). The
+`storage` event drops the cache if another tab writes.
+
+**Checked in headless Chromium:**
+- a fresh-profile session: 15 new cards, MC → recall, a forced miss requeued and passed, the end
+  screen, and "All done"
+- intervals: first-day Good 4d, and three days later Good 8d / Easy 19d
+- the conversion from an old Leitner save
+- deck Test answers saving items
+- the unlock rule (two days' gap unlocks, three hours doesn't)
+- the both-directions setting
+- settings, wordlist and Learn mode, with no JS errors and no overflow at iPhone sizes
+
+**Test card order** (`settings.testOrder`, added 2026-10-05; deck Test mode) is `'random'` (the
+default) or `'deck'`.
+- **With Smart order on,** due cards come first, then study-ahead. Random means shuffled due
+  cards, then `boxWeightedQueue()`.
+- **Learn mode** is always deck order.
+- **A rebuilt queue is a new round** (`rebuildCurrentQueue()`): changing mode, direction, Smart
+  order or Test card order clears Test answers. An answer still waiting for Next is saved first.
 
 ## Storage and settings
 
@@ -296,10 +502,14 @@ Everything lives in localStorage under `learnthai:v1`:
 - `.settings` is merged over `DEFAULT_SETTINGS` in `getSettings()`, so a new setting gets its
   default for existing users automatically.
 - `.prefs` holds the current deck, direction, mode, view and so on.
-- `.decks[deckId].cards[cardKey]` holds the SRS state.
+- `.items[cardKey##dir]` holds review progress, and `.daily[day]` the daily counters (see Today
+  review).
 
 The settings modal (gear icon, top right) is searchable through each group's `data-search`
-keywords. Its sections are Display, Study, Scheduling, Audio, Reset and Advanced.
+keywords. Its sections are App, Display, Daily review, Deck mode, Audio and Reset.
+- **Accordion** (since 2026-10-05): the sections start closed, and opening one closes the others.
+- **Searching** opens every section with a match, and clearing the search closes those again
+  (`data-search-opened`).
 
 **Text size** (Display, added 2026-10-03) has five steps, -2 to 2, and `TEXT_SCALES` maps them to
 0.8, 0.9, 1, 1.15 and 1.3.
@@ -630,4 +840,4 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
   settings and reset, including the new audio.
 - **More decks.** The user often asks for specific topics.
 - **Persist Test-mode locked answers across sessions?** They're session-only at the moment.
-- **English→Thai auto-play** gives away the answer (see Audio / TTS → Known gaps).
+- **English→Thai auto-play** in deck mode still gives away the answer (Today's review doesn't).

@@ -515,33 +515,6 @@ html.modal-open body {
   background: rgba(248, 113, 113, .1);
 }
 
-.custom-intervals {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-  font-size: calc(14px * var(--fs, 1));
-  color: var(--muted);
-}
-.custom-intervals[hidden] { display: none; } /* display:flex above would otherwise override [hidden] */
-.custom-intervals label {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  color: var(--muted);
-}
-.custom-intervals input {
-  width: 70px;
-  background: var(--panel-2);
-  color: var(--ink);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 4px 8px;
-  font-size: calc(15px * var(--fs, 1));
-}
 
 .setting-actions {
   display: flex;
@@ -890,6 +863,7 @@ button {
   opacity: 0.35;
   pointer-events: none;
 }
+.learn-pills[hidden] { display: none; } /* display:flex above would otherwise override [hidden] */
 .learn-pills.locked .learn-pill {
   pointer-events: none;
 }
@@ -928,6 +902,14 @@ button {
 }
 .stage[data-view="flashcards"] .wordlist,
 .stage[data-view="flashcards"] .wordlist-only {
+  display: none !important;
+}
+/* Today shows the deck button only when new cards come from the current deck (renderToday). */
+.stage[data-view="today"]:not(.today-deck) .deck-picker-bar,
+.stage[data-view="today"] .card-wrap,
+.stage[data-view="today"] .flashcards-only,
+.stage[data-view="today"] .wordlist-only,
+.stage:not([data-view="today"]) .today-only {
   display: none !important;
 }
 
@@ -1087,3 +1069,226 @@ button {
   padding: 32px;
 }
 
+
+/* ---------- end-of-round score (Test mode) ---------- */
+.stage.round-over .card-wrap { display: none; }
+.round-summary {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 28px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.round-title {
+  margin: 0 0 6px;
+  font-size: calc(14px * var(--fs, 1));
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.round-score {
+  font-size: calc(56px * var(--fs, 1));
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.round-sub {
+  margin: 6px 0 22px;
+  font-size: calc(18px * var(--fs, 1));
+  color: var(--ink);
+}
+.round-missed-title {
+  margin: 0 0 8px;
+  font-size: calc(13px * var(--fs, 1));
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+}
+.round-missed {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.round-missed li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 2px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.round-missed li:last-child { border-bottom: 0; }
+.round-missed span { grid-column: 1; min-width: 0; }
+.round-missed .rm-thai { font-size: calc(22px * var(--fs, 1)); }
+.round-missed .rm-translit { font-size: calc(15px * var(--fs, 1)); color: var(--accent); font-style: italic; }
+.round-missed .rm-english { font-size: calc(16px * var(--fs, 1)); }
+.round-missed .rm-speak {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 14px;
+}
+.round-missed .rm-speak:hover { color: var(--accent); border-color: var(--accent); }
+.round-again {
+  background: var(--accent);
+  color: #111;
+  border: 0;
+  border-radius: 10px;
+  padding: 12px 32px;
+  font-size: 17px;
+  font-weight: 600;
+  touch-action: manipulation;
+}
+.round-again:hover { filter: brightness(1.08); }
+
+/* ---------- Today: daily review ---------- */
+.today { max-width: 720px; margin: 0 auto; }
+.today-home {
+  padding: 32px 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+/* Number | due/new | where from, as a grid so the two lines line up. */
+.today-counts {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  justify-content: center;
+  align-items: baseline;
+  column-gap: 10px;
+  row-gap: 4px;
+  font-size: calc(20px * var(--fs, 1));
+  color: var(--muted);
+  text-align: left;
+  margin-bottom: 22px;
+}
+.today-counts .today-num { justify-self: end; }
+.today-from { font-size: calc(16px * var(--fs, 1)); }
+.today-num { font-size: calc(44px * var(--fs, 1)); font-weight: 700; color: var(--accent); vertical-align: -4px; }
+.today-start { font-size: 19px; padding: 14px 40px; }
+.today-breakdown {
+  width: 100%;
+  max-width: 460px;
+  margin: 18px auto 0;
+  border-collapse: collapse;
+  font-size: calc(15px * var(--fs, 1));
+  color: var(--muted);
+}
+.today-breakdown[hidden] { display: none; }
+.today-breakdown th {
+  font-size: calc(12px * var(--fs, 1));
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 0 6px 6px;
+  border-bottom: 1px solid var(--border);
+}
+.today-breakdown td { padding: 7px 6px; border-bottom: 1px solid var(--border); }
+.today-breakdown td:first-child { color: var(--ink); }
+.today-breakdown th:not(:first-child),
+.today-breakdown td:not(:first-child) { text-align: right; width: 4em; font-variant-numeric: tabular-nums; }
+.today-done { font-size: calc(20px * var(--fs, 1)); margin: 8px 0; }
+
+.review { display: flex; flex-direction: column; gap: 14px; }
+.review[hidden] { display: none; }
+.review-top { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.review-deck { flex: 1; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.review-quit {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 16px;
+}
+.review-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 260px;
+  padding: 44px 24px 28px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+.review-badge {
+  position: absolute;
+  top: 12px;
+  left: 14px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+}
+.review-speak {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 20px;
+}
+.review-speak[hidden] { display: none; }
+.review-speak:hover { color: var(--accent); border-color: var(--accent); }
+.review-prompt { margin: 8px 0 4px; overflow-wrap: anywhere; }
+.review-hint { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.review-answer {
+  width: 100%;
+  margin-top: 10px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+.review-answer[hidden] { display: none; }
+.review-main { margin-bottom: 6px; overflow-wrap: anywhere; }
+.review-answer .note { max-width: none; }
+.review-show, .review-continue { align-self: center; min-width: 200px; }
+.review-show[hidden], .review-continue[hidden] { display: none; }
+.review-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.review-grades[hidden] { display: none; }
+.grade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 12px 6px;
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  font-size: 16px;
+  font-weight: 600;
+  touch-action: manipulation;
+}
+.grade span { font-size: 12px; font-weight: 400; color: var(--muted); }
+.grade-again { border-color: var(--again); }
+.grade-hard { border-color: var(--hard); }
+.grade-good { border-color: var(--good); }
+.grade-easy { border-color: var(--easy); }
+.grade:hover { background: var(--panel-2); }
