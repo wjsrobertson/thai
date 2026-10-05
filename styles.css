@@ -1204,6 +1204,27 @@ button {
 .today-breakdown td:first-child { color: var(--ink); }
 .today-breakdown th:not(:first-child),
 .today-breakdown td:not(:first-child) { text-align: right; width: 4em; font-variant-numeric: tabular-nums; }
+.today-breakdown th:last-child,
+.today-breakdown td:last-child { width: 2.6em; padding-right: 0; }
+.bd-remove {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  line-height: 1;
+}
+.bd-remove:hover { color: var(--again); border-color: var(--again); }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
 .today-done { font-size: calc(20px * var(--fs, 1)); margin: 8px 0; }
 
 .review { display: flex; flex-direction: column; gap: 14px; }

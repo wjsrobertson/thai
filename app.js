@@ -602,6 +602,11 @@ function flipCard() {
 
 // Deck Test mode answers ('good' or 'again') update the same items as Today's review.
 function saveDeckRating(c, rating) {
+  const store = loadStore();
+  if (store.reviewExcluded?.includes(state.currentDeckId)) {  // testing a removed deck brings it back to Review
+    store.reviewExcluded = store.reviewExcluded.filter((id) => id !== state.currentDeckId);
+    saveStore(store);
+  }
   const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId: state.currentDeckId });
   c.dueAt = it.due;
   c.seen = it.reps;
@@ -1508,8 +1513,9 @@ function handleLearnPick(btn, isCorrect) {
 const NEW_PER_DECK = 5;        // new cards per deck per day, to mix categories (relaxed if the budget would go unfilled)
 const REQUEUE_GAP = [5, 8];    // a missed or just-introduced item comes back this many cards later
 
-// Decks new cards come from: the current deck, plus (by default) every deck with a word you've started.
-function newCardDecks(items, source) {
+// Decks new cards come from: the current deck, plus (by default) every deck with a word you've
+// started, minus decks removed from Review ("Current deck only" ignores removals: it's explicit).
+function newCardDecks(items, source, excluded) {
   const current = state.decks.find((d) => d.id === state.currentDeckId);
   if (source === 'current') return current ? [current] : [];
   const started = new Set();
@@ -1517,8 +1523,8 @@ function newCardDecks(items, source) {
     const entry = state.cardIndex.get(splitItemKey(itemKey)[0]);
     if (entry) entry.deckIds.forEach((id) => started.add(id));
   }
-  const others = state.decks.filter((d) => started.has(d.id) && d.id !== current?.id);
-  return current ? [current, ...others] : others;
+  const others = state.decks.filter((d) => started.has(d.id) && d.id !== current?.id && !excluded.has(d.id));
+  return current && !excluded.has(current.id) ? [current, ...others] : others;
 }
 
 // Today's plan: due and new entries, and the session queue mixing them. An entry is
@@ -1529,11 +1535,12 @@ function planReview(now = Date.now()) {
   const log = todayLog();
   const end = endOfStudyDay(now);
 
+  const excluded = excludedDecks();
   const due = [];
   for (const [itemKey, it] of Object.entries(items)) {
     if (it.due > end) continue;
     const [key, dir] = splitItemKey(itemKey);
-    const deckId = reviewDeckId(key, dir, s);
+    const deckId = reviewDeckId(key, dir, s, excluded);
     if (deckId) due.push({ key, dir, deckId, kind: 'due', r: fsrsR(Math.max(0, (now - it.last) / DAY), it.s) });
   }
   due.sort((a, b) => a.r - b.r);
@@ -1554,7 +1561,7 @@ function planReview(now = Date.now()) {
   }
   // New words in deck order, round-robin across decks: NEW_PER_DECK each first, then whatever fills the budget.
   const taken = new Set();
-  const decks = newCardDecks(items, s.newSource).map((d) => ({ deck: d, i: 0, n: log.nd?.[d.id] || 0 }));
+  const decks = newCardDecks(items, s.newSource, excluded).map((d) => ({ deck: d, i: 0, n: log.nd?.[d.id] || 0 }));
   for (const cap of [NEW_PER_DECK, Infinity]) {
     let added = true;
     while (budget > 0 && added) {
@@ -1590,11 +1597,35 @@ function planReview(now = Date.now()) {
 
 // The deck a due item is reviewed under, or null if Today skips it: its card was edited or
 // removed, its direction is off, or "Due reviews from: Current deck only" excludes its decks.
-function reviewDeckId(key, dir, s) {
+// With all decks, it's the first of the card's decks that hasn't been removed from Review.
+function reviewDeckId(key, dir, s, excluded) {
   const entry = state.cardIndex.get(key);
   if (!entry || (dir === 'en-th' && !s.bothDirections)) return null;
-  if (s.reviewScope !== 'current') return entry.deckIds[0];
-  return entry.deckIds.includes(state.currentDeckId) ? state.currentDeckId : null;
+  if (s.reviewScope === 'current') return entry.deckIds.includes(state.currentDeckId) ? state.currentDeckId : null;
+  return entry.deckIds.find((id) => !excluded.has(id)) || null;
+}
+
+// Decks removed from Review with the breakdown's ✕. A deck comes back when you answer one of its
+// cards in deck Test mode (saveDeckRating).
+function excludedDecks() {
+  return new Set(loadStore().reviewExcluded || []);
+}
+
+function removeCategoryFromReview(cat) {
+  const ids = new Set(state.decks.filter((d) => (d.category || 'Uncategorized') === cat).map((d) => d.id));
+  const store = loadStore();
+  const excluded = new Set(store.reviewExcluded || []);
+  // Delete the items reviewed under this category (worked out before excluding it), so words it
+  // shares with a category you keep stay with that one.
+  const s = { ...getSettings(), bothDirections: true, reviewScope: 'all' };
+  for (const itemKey of Object.keys(store.items || {})) {
+    const [key, dir] = splitItemKey(itemKey);
+    if (ids.has(reviewDeckId(key, dir, s, excluded))) delete store.items[itemKey];
+  }
+  ids.forEach((id) => excluded.add(id));
+  store.reviewExcluded = [...excluded];
+  saveStore(store);
+  renderToday();
 }
 
 // For the end-of-session screen.
@@ -1602,10 +1633,11 @@ function dueTomorrow(now = Date.now()) {
   const s = getSettings();
   const end = endOfStudyDay(now);
   let n = 0;
+  const excluded = excludedDecks();
   for (const [itemKey, it] of Object.entries(loadStore().items || {})) {
     if (it.due <= end || it.due > end + DAY) continue;
     const [key, dir] = splitItemKey(itemKey);
-    if (reviewDeckId(key, dir, s)) n += 1;
+    if (reviewDeckId(key, dir, s, excluded)) n += 1;
   }
   return n;
 }
@@ -1651,6 +1683,16 @@ function renderTodayBreakdown(plan) {
       td.textContent = text;
       tr.appendChild(td);
     }
+    const td = document.createElement('td');
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'bd-remove';
+    btn.textContent = '✕';
+    btn.title = `Remove ${cat} from Review`;
+    btn.setAttribute('aria-label', btn.title);
+    btn.addEventListener('click', () => removeCategoryFromReview(cat));
+    td.appendChild(btn);
+    tr.appendChild(td);
     return tr;
   }));
   els.todayBreakdown.hidden = rows.length === 0;
@@ -1964,6 +2006,7 @@ function resetAllProgress() {
   const store = loadStore();
   store.items = {};
   store.daily = {};
+  store.reviewExcluded = [];
   saveStore(store);
   if (state.currentDeckId) selectDeck(state.currentDeckId);
   renderToday();

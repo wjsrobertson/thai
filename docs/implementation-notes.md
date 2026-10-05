@@ -424,7 +424,17 @@ buttons can preview it).
 **Today** (`planReview` → `startReview`):
 - **The Review screen** shows only the due and new counts and Start. Under the card, a table
   breaks the session down by category, biggest first (`renderTodayBreakdown`; a due item counts
-  under the deck it's reviewed in). A Tomorrow / next 7 days
+  under the deck it's reviewed in).
+  - **Each row's ✕** (`removeCategoryFromReview`, no confirm: the user didn't want one) does two
+    things:
+    - It deletes the items reviewed under that category, so they aren't due today or later.
+      Words shared with a kept category stay with that one.
+    - It adds the category's decks to `store.reviewExcluded`. New cards don't come from those
+      decks, and due items skip them when choosing their deck.
+  - **Why:** for decks the user was only trying out.
+  - **Bringing a deck back:** answering one of its cards in deck Test mode removes it from the
+    list (`saveDeckRating`). "Current deck only" ignores removals, and Reset everything clears
+    them. A Tomorrow / next 7 days
   forecast line was removed on 2026-10-05 as noise.
 - **Due items** are everything due by the end of the study day (days roll over at 4 am), weakest
   (lowest retrievability) first, capped by `maxReviews` minus today's `rv`.
