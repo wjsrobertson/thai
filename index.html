@@ -6,6 +6,17 @@
   <title>Learn Thai — Flashcards</title>
   <link rel="manifest" href="app.webmanifest" />
   <meta name="theme-color" content="#0f1115" />
+  <script>
+    // The theme before anything is drawn, so a light theme never flashes dark first.
+    // app.js applyTheme() keeps it up to date (Settings → Display → Theme).
+    (function () {
+      try {
+        var theme = ((JSON.parse(localStorage.getItem('learnthai:v1')) || {}).settings || {}).theme || 'dark';
+        if (theme === 'system') theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        if (theme !== 'dark') document.documentElement.dataset.theme = theme;
+      } catch (e) { /* no saved settings: the default dark theme */ }
+    })();
+  </script>
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   <meta name="apple-mobile-web-app-title" content="Learn Thai" />
@@ -258,6 +269,20 @@
 
       <details class="settings-cat" data-cat="display">
         <summary>Display</summary>
+        <div class="setting-group" data-search="theme colour color dark light dim sepia night mode appearance eyes contrast">
+          <label class="setting-row">
+            <span class="setting-label">Theme</span>
+            <select id="setting-theme">
+              <option value="dark">Dark (high contrast)</option>
+              <option value="dim">Dim (softer dark)</option>
+              <option value="light">Light (best in daylight)</option>
+              <option value="sepia">Sepia (warm paper)</option>
+              <option value="night">Night (warm, for bedtime)</option>
+              <option value="system">Match device (Light or Dark)</option>
+            </select>
+            <span class="setting-help">Dark text on a light page reads most accurately in daylight. Dim and Sepia are gentler over long sessions. Night is warm and dim with little blue light, kinder to sleep when you study in bed.</span>
+          </label>
+        </div>
         <div class="setting-group" data-search="spelling spell school method letter names dictation sound out สะกด">
           <label class="setting-row">
             <span class="setting-label">Spelling</span>

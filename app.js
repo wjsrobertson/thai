@@ -113,6 +113,8 @@ const els = {
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
   setSpelling: document.getElementById('setting-spelling'),
+  setTheme: document.getElementById('setting-theme'),
+  themeColorMeta: document.querySelector('meta[name="theme-color"]'),
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
   installHelp: document.getElementById('install-help'),
@@ -155,6 +157,7 @@ const DEFAULT_SETTINGS = {
   reviewScope: 'all',             // which due items Today reviews: 'all' decks | 'current' deck
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
+  theme: 'dark',                  // Settings → Display → Theme: dark | dim | light | sepia | night | system
   spellingStyle: 'letters',       // card-back spelling and the spell-aloud buttons: 'letters' (names) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
@@ -626,7 +629,10 @@ function renderCard() {
   // changing a setting from the wordlist re-renders the hidden card too), and only if the Thai is
   // showing: English → Thai keeps quiet until the card is flipped (flipCard, handleLearnPick), or the
   // sound would give the answer away. An answered Test card opens on its Thai back.
-  if (state.view === 'flashcards' && !state.reading.active && (state.direction === 'th-en' || state.showingBack)) speak(c.thai);
+  if (state.view === 'flashcards' && !state.reading.active) {
+    if (state.direction === 'th-en' || state.showingBack) speak(c.thai);
+    else stopAudio(); // nothing to say yet, but don't carry on with the last card's word or spelling
+  }
 }
 
 function formatRelative(ts) {
@@ -1094,6 +1100,21 @@ function applyTextSize() {
   document.documentElement.style.setProperty('--fs', TEXT_SCALES[getSettings().textSize] ?? 1);
 }
 
+// The colour theme: data-theme on <html> picks a palette in styles.css (dark is the default, with
+// no attribute). "system" follows the device's light/dark setting, live. The status-bar colour
+// (meta theme-color) follows the page. index.html applies the saved theme before first paint.
+const THEMES = ['dark', 'dim', 'light', 'sepia', 'night', 'system'];
+const lightQuery = window.matchMedia?.('(prefers-color-scheme: light)');
+function applyTheme() {
+  let theme = getSettings().theme;
+  if (!THEMES.includes(theme)) theme = 'dark';
+  if (theme === 'system') theme = lightQuery?.matches ? 'light' : 'dark';
+  if (theme === 'dark') delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme = theme;
+  els.themeColorMeta?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
+}
+lightQuery?.addEventListener?.('change', () => { if (getSettings().theme === 'system') applyTheme(); });
+
 function renderSettings() {
   const s = getSettings();
   els.setNewPerDay.value = s.newPerDay;
@@ -1109,6 +1130,7 @@ function renderSettings() {
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
   els.setThaiSpeed.value = String(s.thaiSpeed);
   els.setSpelling.value = s.spellingStyle;
+  els.setTheme.value = THEMES.includes(s.theme) ? s.theme : 'dark';
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
   renderInstall();
@@ -1200,6 +1222,10 @@ function bindSettings() {
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
     applyTextSize();
+  });
+  els.setTheme.addEventListener('change', () => {
+    setSettings({ theme: els.setTheme.value });
+    applyTheme();
   });
   els.setSpelling.addEventListener('change', () => {
     setSettings({ spellingStyle: els.setSpelling.value === 'school' ? 'school' : 'letters' });
@@ -1442,7 +1468,7 @@ function renderWordlist() {
         sp.append(spellIcon());
         sp.title = `Spell ${c.thai} aloud`;
         sp.setAttribute('aria-label', sp.title);
-        sp.addEventListener('click', () => speakSpelling(c));
+        sp.addEventListener('click', () => speakSpelling(c, [sp]));
         audioTd.append(sp);
       }
       const btn = document.createElement('button');
@@ -2449,6 +2475,7 @@ async function resetSettings() {
   store.settings = store.settings?.offlineAudio ? { offlineAudio: true } : {};
   saveStore(store);
   applyTextSize();
+  applyTheme();
   renderSettings();
   renderSpelling();
   updateReviewToggle();
@@ -2572,6 +2599,10 @@ function audioSourceHelpText(source) {
 // Stop whatever is playing, sample or TTS. Pending speakAndWait() calls resolve.
 function stopAudio() {
   spellRun += 1; // ends a spelling being read out
+  if (spelling) {
+    markSpelling(spelling.buttons, false);
+    spelling = null;
+  }
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   sampleAudio.pause();
   if (finishSample) finishSample(true);
@@ -2601,18 +2632,57 @@ function renderSpelling() {
 // recording for the whole word, and a short pause between syllables. Any other audio stops it.
 let spellRun = 0;
 const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-async function speakSpelling(card) {
+let spelling = null; // the spelling being read out: { key, run, buttons }
+// The pace of a spelling. The parts are recorded with their silence trimmed off
+// (tools/gen_audio.py), so these pauses alone set it: a beat between letters (or sounds), a
+// longer one between syllables.
+const SPELL_STEP_PAUSE = 180;
+const SPELL_SYLLABLE_PAUSE = 450;
+
+// The buttons of the spelling being read out light up (and their waves pulse): pressing one
+// again stops it.
+function markSpelling(buttons, on) {
+  for (const b of buttons) {
+    b.classList.toggle('playing', on);
+    b.setAttribute('aria-pressed', String(on));
+  }
+}
+
+// Read a card's spelling out, lighting up `buttons` meanwhile. Pressing a button for the word
+// already being spelled stops it instead. Any other sound (stopAudio) stops it too.
+async function speakSpelling(card, buttons = []) {
+  if (!card) return;
+  const key = cardKey(card);
+  if (spelling?.key === key) {
+    stopAudio();
+    return;
+  }
   const groups = spellingFor(card);
   if (!groups) return;
   stopAudio();
   const run = spellRun;
-  for (const steps of groups) {
-    for (const step of steps) {
-      if (run !== spellRun) return;
-      if (step.gap) await pause(250);
-      else await (step.word ? speakAndWait(card.thai, 'th') : speakAndWait(step.say, 'sp'));
+  spelling = { key, run, buttons };
+  markSpelling(buttons, true);
+  try {
+    let wait = 0; // the pause before the next spoken part
+    for (const steps of groups) {
+      for (const step of steps) {
+        if (step.gap) {
+          wait = SPELL_SYLLABLE_PAUSE;
+          continue;
+        }
+        if (wait) await pause(wait);
+        if (run !== spellRun) return;
+        await (step.word ? speakAndWait(card.thai, 'th') : speakAndWait(step.say, 'sp'));
+        wait = SPELL_STEP_PAUSE;
+      }
+      wait = SPELL_SYLLABLE_PAUSE; // groups are syllables (school method) or words
     }
-    await pause(350);
+  } finally {
+    if (spelling?.run === run) {
+      markSpelling(buttons, false);
+      spelling = null;
+    }
   }
 }
 
@@ -2737,7 +2807,7 @@ function bindEvents() {
 
   [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a flip
-    speakSpelling(currentCard());
+    speakSpelling(currentCard(), [els.cardSpell, els.cardSpellFront]);
   }));
   els.card.addEventListener('click', (e) => {
     // Don't flip if clicking the speak or flip button (flip-btn calls flipCard itself).
@@ -3073,6 +3143,7 @@ async function syncOfflineAudio() {
 
 async function init() {
   applyTextSize(); // before anything renders, so the text never jumps size
+  applyTheme();
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));

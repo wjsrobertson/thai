@@ -9,6 +9,10 @@ samples up in the manifest and falls back to browser TTS for anything missing.
 It also records the parts spellings are read out with (data/spelling-parts.json, written by
 `node tools/spelling.mjs --write`): letter names, sounds, vowel and tone-mark names, syllables.
 They're keyed under the manifest section `sp`, so a part never collides with a card's text.
+Parts are trimmed of the silence edge-tts pads every clip with (about 0.2 s before and 1.2–1.5 s
+after the speech), so a spelling plays briskly; the app sets the pause between parts. Trimming
+needs ffmpeg, and makes a part from the untrimmed recording if one exists (a card's, or an older
+run's), else records one.
 
 Re-runs skip samples that already exist, so it's cheap to run after adding cards:
 
@@ -20,6 +24,8 @@ import asyncio
 import hashlib
 import json
 import re
+import shutil
+import subprocess
 import sys
 from pathlib import Path
 
@@ -68,6 +74,33 @@ def sample_name(text, voice, rate):
     return hashlib.sha1(f'{voice}|{rate}|{text}'.encode()).hexdigest()[:16] + '.mp3'
 
 
+def trimmed_name(text, voice, rate):
+    # A spelling part's trimmed clip. Named apart from the untrimmed recording, which a card can
+    # share (a part such as กา can also be a card's word), and so phones that cached an untrimmed
+    # part fetch the new one.
+    return hashlib.sha1(f'{voice}|{rate}|trim|{text}'.encode()).hexdigest()[:16] + '.mp3'
+
+
+# Keep 0.03 s before the speech and 0.1 s after: silenceremove on the start, then on the reversed
+# clip for the end. -50 dB (peak) is below the quietest speech tails (a final ด or บ).
+TRIM_FILTER = ('silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.03:detection=peak,'
+               'areverse,silenceremove=start_periods=1:start_threshold=-50dB:start_silence=0.1:detection=peak,'
+               'areverse')
+
+
+def trim_silence(src, dest):
+    """Write src without its padding to dest, in edge-tts's own format (24 kHz mono, 48 kbit/s)."""
+    tmp = dest.with_suffix('.part')
+    r = subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', str(src), '-af', TRIM_FILTER,
+                        '-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-b:a', '48k', '-f', 'mp3', str(tmp)],
+                       capture_output=True, text=True)
+    if r.returncode or not tmp.exists() or tmp.stat().st_size == 0:
+        tmp.unlink(missing_ok=True)
+        return r.stderr.strip() or 'ffmpeg failed'
+    tmp.replace(dest)
+    return None
+
+
 async def synth(text, voice, rate, dest, attempts):
     """Write one sample, retrying: the service intermittently returns no audio."""
     tmp = dest.with_suffix('.part')
@@ -112,7 +145,7 @@ async def main():
     decks = json.loads(DECKS.read_text())['decks']
     # (lang, card text) -> sample filename
     entries = {}
-    # sample filename -> (spoken text, voice); several card texts can share one sample
+    # sample filename -> (spoken text, voice, trimmed); several card texts can share one sample
     samples = {}
     for d in decks:
         for c in d['cards']:
@@ -126,18 +159,20 @@ async def main():
                 if entries.get((lang, c[field]), name) != name:
                     print(f'warning: {c[field]!r} is said two ways; using {said!r} ({d["id"]})')
                 entries[(lang, c[field])] = name
-                samples[name] = (said, voice)
+                samples[name] = (said, voice, False)
     # Spelling parts, read by the Thai voice (see the module docstring).
     if SPELLING_PARTS.exists():
         for part in json.loads(SPELLING_PARTS.read_text()):
             said = spoken_text(part, 'th')
-            name = sample_name(said, voices['th'], args.rate)
+            name = trimmed_name(said, voices['th'], args.rate)
             entries[('sp', part)] = name
-            samples[name] = (said, voices['th'])
+            samples[name] = (said, voices['th'], True)
     AUDIO_DIR.mkdir(exist_ok=True)
 
-    todo = [(name, said, voice) for name, (said, voice) in sorted(samples.items())
+    todo = [(name, said, voice, trim) for name, (said, voice, trim) in sorted(samples.items())
             if not (AUDIO_DIR / name).exists()]
+    if any(trim for *_, trim in todo) and not shutil.which('ffmpeg'):
+        sys.exit('ffmpeg is needed to trim spelling parts (see the module docstring)')
     print(f'{len(samples)} samples needed ({voices["th"]}, {voices["en"]}, rate {args.rate}); '
           f'{len(samples) - len(todo)} already exist; {len(todo)} to generate with {args.jobs} jobs')
 
@@ -145,10 +180,21 @@ async def main():
     failed = []
     done = 0
 
-    async def one(name, said, voice):
+    async def one(name, said, voice, trim):
         nonlocal done
+        dest = AUDIO_DIR / name
         async with sem:
-            err = await synth(said, voice, args.rate, AUDIO_DIR / name, args.attempts)
+            if not trim:
+                err = await synth(said, voice, args.rate, dest, args.attempts)
+            else:
+                # Trim the untrimmed recording if there is one, else record a throwaway one.
+                src = AUDIO_DIR / sample_name(said, voice, args.rate)
+                raw = src if src.exists() else dest.with_suffix('.raw.mp3')
+                err = None if raw.exists() else await synth(said, voice, args.rate, raw, args.attempts)
+                if not err:
+                    err = await asyncio.to_thread(trim_silence, raw, dest)
+                if raw != src:
+                    raw.unlink(missing_ok=True)
         done += 1
         if err:
             failed.append(said)

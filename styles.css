@@ -1,18 +1,74 @@
+/* Themes (Settings → Display → Theme; applyTheme() in app.js and the inline script in index.html
+   set data-theme on <html>). Dark is the default; every colour in the app comes from these. */
 :root {
+  color-scheme: dark;
   --bg: #0f1115;
+  --bg-glow: #1a2030;                       /* the soft glow at the top of the page */
   --panel: #171a21;
   --panel-2: #1f232c;
   --ink: #e8ecf2;
   --muted: #93a0b3;
   --accent: #f7b733;
+  --on-accent: #111;                        /* text on accent-coloured buttons */
+  --accent-soft: rgba(247, 183, 51, .08);   /* the row being read aloud */
+  --accent-glow: rgba(247, 183, 51, .45);   /* the pulsing Next button */
   --good: #4ade80;
   --hard: #fbbf24;
   --again: #f87171;
   --easy: #60a5fa;
+  --danger-line: rgba(248, 113, 113, .3);
+  --danger-soft: rgba(248, 113, 113, .1);
   --border: #262b36;
+  --border-strong: #3a4150;                 /* hovered borders */
+  --hover: rgba(255, 255, 255, .02);        /* hovered table rows */
+  --topbar: rgba(15, 17, 21, .7);
+  --backdrop: rgba(0, 0, 0, .6);
   --radius: 14px;
   --shadow: 0 10px 30px rgba(0,0,0,.35);
   --fs: 1; /* text scale from Settings → Display → Text size; set by applyTextSize() in app.js */
+}
+/* Dim: a softer dark grey with off-white text: less glare and less "halation" (bright text
+   blooming on black) over long sessions. */
+:root[data-theme="dim"] {
+  --bg: #1d2027; --bg-glow: #252a33; --panel: #252931; --panel-2: #2d323b;
+  --ink: #d6dbe3; --muted: #99a3b1; --accent: #e3b456; --on-accent: #1b1b1b;
+  --accent-soft: rgba(227, 180, 86, .1); --accent-glow: rgba(227, 180, 86, .4);
+  --good: #72cf92; --hard: #e3b84f; --again: #e88a84; --easy: #82b2e6;
+  --danger-line: rgba(232, 138, 132, .35); --danger-soft: rgba(232, 138, 132, .1);
+  --border: #353b46; --border-strong: #4a5262; --hover: rgba(255, 255, 255, .03);
+  --topbar: rgba(29, 32, 39, .78); --backdrop: rgba(0, 0, 0, .5); --shadow: 0 8px 24px rgba(0,0,0,.28);
+}
+/* Light: dark text on an off-white page, which reads most accurately in daylight. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f4f0; --bg-glow: #ffffff; --panel: #ffffff; --panel-2: #eeece6;
+  --ink: #1f2328; --muted: #5b6471; --accent: #a35d00; --on-accent: #ffffff;
+  --accent-soft: rgba(163, 93, 0, .08); --accent-glow: rgba(163, 93, 0, .35);
+  --good: #17784a; --hard: #9a5b00; --again: #c0392b; --easy: #2457c5;
+  --danger-line: rgba(192, 57, 43, .35); --danger-soft: rgba(192, 57, 43, .07);
+  --border: #dedad1; --border-strong: #bdb7aa; --hover: rgba(0, 0, 0, .025);
+  --topbar: rgba(245, 244, 240, .85); --backdrop: rgba(20, 20, 20, .35); --shadow: 0 8px 24px rgba(40, 35, 20, .1);
+}
+/* Sepia: warm cream and brown, like an e-reader. */
+:root[data-theme="sepia"] {
+  color-scheme: light;
+  --bg: #f2e9d6; --bg-glow: #faf4e6; --panel: #f9f3e5; --panel-2: #ebe0c8;
+  --ink: #3a2f23; --muted: #74644f; --accent: #94530f; --on-accent: #fffaf0;
+  --accent-soft: rgba(148, 83, 15, .09); --accent-glow: rgba(148, 83, 15, .35);
+  --good: #3d7536; --hard: #8a5a00; --again: #ac3a2c; --easy: #2f5d86;
+  --danger-line: rgba(172, 58, 44, .35); --danger-soft: rgba(172, 58, 44, .07);
+  --border: #dacdb0; --border-strong: #bfae8c; --hover: rgba(80, 60, 30, .04);
+  --topbar: rgba(242, 233, 214, .88); --backdrop: rgba(40, 30, 20, .35); --shadow: 0 8px 24px rgba(80, 60, 30, .14);
+}
+/* Night: very dark and warm, amber text and little blue, for studying in bed. */
+:root[data-theme="night"] {
+  --bg: #13100d; --bg-glow: #1d1813; --panel: #1b1713; --panel-2: #231e18;
+  --ink: #e4d0ae; --muted: #9f8a6c; --accent: #d98f2b; --on-accent: #1a130b;
+  --accent-soft: rgba(217, 143, 43, .1); --accent-glow: rgba(217, 143, 43, .4);
+  --good: #9fba69; --hard: #d9a440; --again: #d9755f; --easy: #a6b59d;
+  --danger-line: rgba(217, 117, 95, .35); --danger-soft: rgba(217, 117, 95, .1);
+  --border: #2d2720; --border-strong: #463c31; --hover: rgba(255, 230, 190, .03);
+  --topbar: rgba(19, 16, 13, .82); --backdrop: rgba(0, 0, 0, .6); --shadow: 0 10px 30px rgba(0,0,0,.4);
 }
 
 * { box-sizing: border-box; }
@@ -22,7 +78,7 @@ html, body {
   padding: 0;
   /* A solid colour under the gradient: without it, anything showing past the page's edge (an iOS
      bounce) is the browser's default white. */
-  background: radial-gradient(1200px 800px at 50% -10%, #1a2030 0%, var(--bg) 60%) fixed var(--bg);
+  background: radial-gradient(1200px 800px at 50% -10%, var(--bg-glow) 0%, var(--bg) 60%) fixed var(--bg);
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Thai", sans-serif;
   min-height: 100vh;
@@ -43,7 +99,7 @@ html, body { overscroll-behavior: none; }
   gap: 16px;
   padding: 16px 24px;
   border-bottom: 1px solid var(--border);
-  background: rgba(15,17,21,.7);
+  background: var(--topbar);
   backdrop-filter: blur(8px);
   position: sticky; top: 0; z-index: 10;
 }
@@ -164,7 +220,7 @@ html, body { overscroll-behavior: none; }
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.6);
+  background: var(--backdrop);
   backdrop-filter: blur(4px);
 }
 .modal-panel {
@@ -520,7 +576,7 @@ html.modal-open body {
 }
 
 .setting-group.danger {
-  border-color: rgba(248, 113, 113, .3);
+  border-color: var(--danger-line);
 }
 .setting-group.danger .setting-label {
   color: var(--again);
@@ -530,7 +586,7 @@ html.modal-open body {
   border-color: var(--again);
 }
 .danger-btn:hover {
-  background: rgba(248, 113, 113, .1);
+  background: var(--danger-soft);
 }
 
 
@@ -593,7 +649,7 @@ button {
   padding: 6px 10px;
   font-size: 15px;
 }
-.ghost:hover { color: var(--ink); border-color: #3a4150; }
+.ghost:hover { color: var(--ink); border-color: var(--border-strong); }
 
 .stage {
   position: relative;
@@ -681,6 +737,11 @@ button {
   stroke-linecap: round;
 }
 .spell-btn:hover { color: var(--accent); border-color: var(--accent); }
+/* A spelling being read out: the button lights up and its waves pulse; pressing it again stops it. */
+.spell-btn.playing, .wordtable .row-spell.playing { color: var(--accent); border-color: var(--accent); }
+.playing .spell-waves { animation: spellWaves 1s ease-in-out infinite; }
+@keyframes spellWaves { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .playing .spell-waves { animation: none; } }
 .stage[data-order="test"] .flip-btn {
   display: none;
 }
@@ -758,7 +819,7 @@ button {
 }
 .nav-btn:hover:not(:disabled) {
   color: var(--ink);
-  border-color: #3a4150;
+  border-color: var(--border-strong);
   background: var(--panel-2);
 }
 .nav-btn:disabled {
@@ -771,8 +832,8 @@ button {
   animation: navPulse 1.4s ease-in-out infinite;
 }
 @keyframes navPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(247, 183, 51, 0.45); }
-  50%      { box-shadow: 0 0 0 8px rgba(247, 183, 51, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); }
+  50%      { box-shadow: 0 0 0 8px transparent; }
 }
 
 .card {
@@ -932,7 +993,7 @@ button {
   align-items: center;
   justify-content: center;
 }
-.learn-pill:hover { border-color: #3a4150; background: var(--panel-2); }
+.learn-pill:hover { border-color: var(--border-strong); background: var(--panel-2); }
 .learn-pill.thai-pill { font-size: calc(28px * var(--fs, 1)); }
 .learn-pill.correct {
   background: var(--good);
@@ -1056,7 +1117,7 @@ button {
 }
 
 .wordtable tbody tr.now-playing {
-  background: rgba(247, 183, 51, .08);
+  background: var(--accent-soft);
 }
 .wordtable tbody tr.now-playing td:first-child {
   border-left: 3px solid var(--accent);
@@ -1095,7 +1156,7 @@ button {
   font-size: calc(17px * var(--fs, 1));
 }
 .wordtable tbody tr:last-child td { border-bottom: 0; }
-.wordtable tbody tr:hover { background: rgba(255,255,255,.02); }
+.wordtable tbody tr:hover { background: var(--hover); }
 
 .wordtable .col-thai {
   font-size: calc(26px * var(--fs, 1));
@@ -1219,7 +1280,7 @@ button {
 .round-missed .rm-speak:hover { color: var(--accent); border-color: var(--accent); }
 .round-again {
   background: var(--accent);
-  color: #111;
+  color: var(--on-accent);
   border: 0;
   border-radius: 10px;
   padding: 12px 32px;
@@ -1481,7 +1542,7 @@ button {
 .update-bar[hidden] { display: none; }
 .update-bar button {
   background: var(--accent);
-  color: #111;
+  color: var(--on-accent);
   border: 0;
   border-radius: 999px;
   padding: 6px 14px;
@@ -1619,7 +1680,7 @@ button {
 .review-toggle .review-icon { width: 20px; height: 20px; margin: 0; display: block; }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .confirm-actions button { padding: 10px 20px; font-size: 16px; }
-.confirm-actions .round-again.danger { background: var(--again); color: #111; } /* can't be undone */
+.confirm-actions .round-again.danger { background: var(--again); color: var(--on-accent); } /* can't be undone */
 
 /* ---------- toast (toast()) ---------- */
 .toast {

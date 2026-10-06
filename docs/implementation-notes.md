@@ -749,6 +749,30 @@ Audio, Confirmations and Reset. Search doesn't look at section names, so each Fl
 - **Searching** opens every section with a match, and clearing the search closes those again
   (`data-search-opened`).
 
+**Theme** (Display, added 2026-10-06): `theme` is one of `dark` (the default, the original
+look), `dim`, `light`, `sepia`, `night`, or `system`.
+
+- **Palettes:** each theme is a set of CSS variables in `styles.css`. Dark is plain `:root`; the
+  others are `:root[data-theme="…"]`. Every colour in the styles comes from a variable, including
+  hovers, the top bar, the modal backdrop, the danger tints, `--on-accent` (text on accent
+  buttons) and `--bg-glow` (the page gradient). A new theme is just a new block. Light themes
+  also set `color-scheme: light`, so native controls (selects, checkboxes, scrollbars) match.
+- **Applying it:** `applyTheme()` in `app.js` sets `data-theme` on `<html>`, or removes it for
+  dark. It also sets `<meta name="theme-color">` (the iPhone status bar) to the theme's `--bg`. An
+  inline script in `index.html`'s `<head>` applies the saved theme before first paint, so a light
+  theme never flashes dark on load.
+- **`system`** picks Light or Dark from `prefers-color-scheme` and follows changes live.
+- **Contrast:** text is at least 5:1 against its panel in every theme (checked: ink 10–16:1;
+  muted, accent and the rating colours 5–10:1).
+- **Rationale given to the user:**
+  - No colour scheme is shown to improve memory directly.
+  - Dark text on a light page reads more accurately (positive-polarity studies, e.g. Piepenbrock
+    et al. 2013).
+  - Softer contrast avoids halation, i.e. bright text blooming on black, worse with astigmatism.
+  - Night is warm, dim and low in blue light for studying in bed, since sleep consolidates
+    memories (cf. Chang et al. 2014 on evening screens).
+  - "Hard-to-read fonts aid recall" (the disfluency effect) didn't replicate, so it isn't used.
+
 **Text size** (Display, added 2026-10-03) has five steps, -2 to 2, and `TEXT_SCALES` maps them to
 0.8, 0.9, 1, 1.15 and 1.3.
 
@@ -876,7 +900,14 @@ waves, `spellIcon()`) reads it aloud.
   - Each step plays its recording from the manifest's **`sp`** section, falling back to the
     browser voice.
   - The final whole word or phrase uses the card's own recording.
-  - There are pauses between syllables and words, and any other audio stops it.
+  - **Pace** (2026-10-06, the user found it slow): `SPELL_STEP_PAUSE` (180 ms) between parts and
+    `SPELL_SYLLABLE_PAUSE` (450 ms) between syllables and words. That's all the gap there is,
+    because the part recordings are trimmed (below). Before, every part was a 1.87 s clip with
+    about 0.4 s of speech, so there was 1.4 s or more of silence after each letter.
+  - **Stopping:** while a spelling plays, its buttons get `.playing` (accent colour, pulsing
+    waves, `aria-pressed`). Pressing a spell button for the word being spelled stops it. Any
+    other audio stops it too, and so does moving to another card, even in English → Thai, where
+    the move itself is silent.
 - **Recordings are per part, never per word** (the user's call):
   - `node tools/spelling.mjs --write` lists every distinct spoken step across all cards and both
     styles (letter names like กอ ไก่, sounds, vowel and tone-mark names, syllables, the words of
@@ -885,6 +916,18 @@ waves, `spellIcon()`) reads it aloud.
     example, the vowel step อา isn't the Thai Script card อา, whose recording says สระอา.
   - Recordings are named by what's said, so a part that's also a card word reuses that file.
     Only 2465 were new.
+  - **Trimmed** (2026-10-06): edge-tts pads every clip with about 0.2 s of silence before and
+    1.2–1.5 s after.
+    - `gen_audio.py` cuts parts to 0.03 s before and 0.1 s after the speech. It uses ffmpeg
+      `silenceremove` at −50 dB peak, once forwards and once on the reversed clip, then re-encodes
+      at edge-tts's own 24 kHz mono 48 kbit/s. Clips went from 1.87 s to about 0.4–0.9 s, and
+      checks with `silencedetect` showed no speech lost.
+    - A trimmed part has its own name (`trimmed_name`, `trim` in the hash). That way a card's
+      recording of the same text stays untrimmed, and phones that cached the old part fetch the
+      new one.
+    - It's made from the untrimmed recording when one exists, else from a throwaway recording.
+    - Card recordings stay untrimmed: their trailing silence is the gap between words in Read
+      all.
 - **Card back layout:**
   - The back's text sits in `.face-body`: centred when it fits, scrolling when it doesn't, with
     the corner buttons fixed.
