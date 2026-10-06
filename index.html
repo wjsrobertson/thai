@@ -129,6 +129,7 @@
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="review-toggle" aria-label="Add to Review" title="Add to Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></button>
+              <button type="button" class="spell-btn" id="card-spell-front" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
             <div class="thai" id="card-thai"></div>
           </div>
@@ -138,10 +139,14 @@
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="review-toggle" aria-label="Add to Review" title="Add to Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></button>
+              <button type="button" class="spell-btn" id="card-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
-            <div class="translit" id="card-translit"></div>
-            <div class="english" id="card-english"></div>
-            <div class="note" id="card-note"></div>
+            <div class="face-body">
+              <div class="translit" id="card-translit"></div>
+              <div class="english" id="card-english"></div>
+              <div class="note" id="card-note"></div>
+              <div class="spelling" id="card-spelling" hidden></div>
+            </div>
           </div>
         </div>
         <button type="button" id="next-btn" class="nav-btn" aria-label="Next card" title="Next (→)">›</button>
@@ -253,6 +258,16 @@
 
       <details class="settings-cat" data-cat="display">
         <summary>Display</summary>
+        <div class="setting-group" data-search="spelling spell school method letter names dictation sound out สะกด">
+          <label class="setting-row">
+            <span class="setting-label">Spelling</span>
+            <select id="setting-spelling">
+              <option value="school">School method (sounds)</option>
+              <option value="letters">Letter names (dictation)</option>
+            </select>
+            <span class="setting-help">How the spelling on card backs, and the spell-aloud buttons on cards and in Wordlists, spell a word. School method: ข้าว = ขอ – อา – วอ – ขาว – ไม้โท – ข้าว. Letter names: ข ไข่ · ไม้โท · สระอา · ว แหวน. The few words the school method can't be worked out for use letter names.</span>
+          </label>
+        </div>
         <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
           <label class="setting-row">
             <span class="setting-label">Text size</span>

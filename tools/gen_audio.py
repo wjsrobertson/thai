@@ -6,6 +6,10 @@ Writes data/audio/<hash>.mp3 plus data/audio/manifest.json, which maps each
 card's exact `thai` / `english` string to its file, per language. The app looks
 samples up in the manifest and falls back to browser TTS for anything missing.
 
+It also records the parts spellings are read out with (data/spelling-parts.json, written by
+`node tools/spelling.mjs --write`): letter names, sounds, vowel and tone-mark names, syllables.
+They're keyed under the manifest section `sp`, so a part never collides with a card's text.
+
 Re-runs skip samples that already exist, so it's cheap to run after adding cards:
 
     python3 -u tools/gen_audio.py            # generate missing samples
@@ -25,6 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DECKS = ROOT / 'data' / 'decks.json'
 AUDIO_DIR = ROOT / 'data' / 'audio'
 MANIFEST = AUDIO_DIR / 'manifest.json'
+SPELLING_PARTS = ROOT / 'data' / 'spelling-parts.json'
 
 # manifest language -> card field
 FIELDS = {'th': 'thai', 'en': 'english'}
@@ -82,11 +87,11 @@ async def synth(text, voice, rate, dest, attempts):
 
 def write_manifest(entries, voices, rate):
     manifest = {}
-    for lang in FIELDS:
+    for lang in [*FIELDS, 'sp']:
         files = {key: name for (l, key), name in entries.items()
                  if l == lang and (AUDIO_DIR / name).exists()}
-        # 'voice' is the language's main voice; see voice_for() for exceptions.
-        manifest[lang] = {'voice': voices[lang], 'rate': rate, 'files': files}
+        # 'voice' is the language's main voice; see voice_for() for exceptions. sp is Thai.
+        manifest[lang] = {'voice': voices['th' if lang == 'sp' else lang], 'rate': rate, 'files': files}
     tmp = MANIFEST.with_suffix('.part')
     tmp.write_text(json.dumps(manifest, ensure_ascii=False, indent=1, sort_keys=True))
     tmp.replace(MANIFEST)
@@ -122,6 +127,13 @@ async def main():
                     print(f'warning: {c[field]!r} is said two ways; using {said!r} ({d["id"]})')
                 entries[(lang, c[field])] = name
                 samples[name] = (said, voice)
+    # Spelling parts, read by the Thai voice (see the module docstring).
+    if SPELLING_PARTS.exists():
+        for part in json.loads(SPELLING_PARTS.read_text()):
+            said = spoken_text(part, 'th')
+            name = sample_name(said, voices['th'], args.rate)
+            entries[('sp', part)] = name
+            samples[name] = (said, voices['th'])
     AUDIO_DIR.mkdir(exist_ok=True)
 
     todo = [(name, said, voice) for name, (said, voice) in sorted(samples.items())
@@ -149,7 +161,7 @@ async def main():
     finally:
         # Written even on Ctrl-C so whatever finished is usable.
         manifest = write_manifest(entries, voices, args.rate)
-        for lang, field in FIELDS.items():
+        for lang, field in [*FIELDS.items(), ('sp', 'spelling-part')]:
             total = sum(1 for l, _ in entries if l == lang)
             print(f'manifest {lang}: {len(manifest[lang]["files"])}/{total} {field} strings have samples')
 

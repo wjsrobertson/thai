@@ -643,6 +643,39 @@ button {
 .flip-btn:active {
   transform: rotate(180deg);
 }
+
+/* กข on the card back, between 🔊 and ⟳: reads the spelling aloud (speakSpelling). */
+.spell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 30px;
+  line-height: 1;
+  z-index: 3;
+  transition: color .15s, border-color .15s;
+}
+.spell-btn[hidden] { display: none; }
+/* ก with sound waves: "letters, spoken". The waves are a line icon in the text colour. */
+.spell-icon { display: inline-flex; align-items: center; gap: 1px; font-weight: 600; line-height: 1; }
+.spell-waves {
+  width: .5em;
+  height: 1.2em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+.spell-btn:hover { color: var(--accent); border-color: var(--accent); }
 .stage[data-order="test"] .flip-btn {
   display: none;
 }
@@ -815,6 +848,34 @@ button {
   color: var(--muted);
   max-width: 80%;
 }
+
+/* The back's text sits in its own box: centred when it fits, scrolling (from the top) when a long
+   note or spelling doesn't, while the corner buttons stay put. The spacers do the centring:
+   justify-content: center would cut off the top of overflowing content. */
+.card .face-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 6px; /* clear of the corner buttons */
+}
+.card .face-body::before,
+.card .face-body::after { content: ''; flex: 1 0 0; }
+
+/* The word's spelling (spell.js), under the note on the card back. */
+.spelling {
+  margin-top: 10px;
+  max-width: 92%;
+  font-size: calc(14px * var(--fs, 1));
+  line-height: 1.5;
+  color: var(--muted);
+  opacity: .9;
+}
+.spelling[hidden] { display: none; }
 
 .speak {
   position: absolute;
@@ -1452,7 +1513,8 @@ button {
    as less important than the speaker; the speakers stay lined up on the right. */
 .wordtable td.col-audio { text-align: right; white-space: nowrap; }
 .wordtable .row-speak { vertical-align: middle; }
-.wordtable .row-review {
+.wordtable .row-review,
+.wordtable .row-spell {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1471,6 +1533,9 @@ button {
 .wordtable .row-review .review-icon { width: 18px; height: 18px; margin: 0; }
 .wordtable .row-review:hover { color: var(--accent); background: var(--panel-2); }
 .wordtable .row-review.added { color: var(--good); }
+/* กข: read the spelling aloud (between the Review button and the speaker). */
+.wordtable .row-spell { width: auto; min-width: 34px; padding: 0 6px; font-size: 17px; }
+.wordtable .row-spell:hover { color: var(--accent); background: var(--panel-2); }
 .wordlist-add-all[hidden] { display: none; }
 .wordlist-add-all.all-in { display: inline-grid; justify-items: center; color: var(--good); border-color: var(--good); }
 .wordlist-add-all.all-in > span { grid-area: 1 / 1; }

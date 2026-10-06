@@ -11,12 +11,12 @@
 //   "Download all audio" fetches the rest (app.js uses the same AUDIO_CACHE).
 // - Anything else on the site is network-first, falling back to the cache.
 
-const SHELL_CACHE = 'learnthai-shell-v2';  // bump if SHELL changes, so stale entries are dropped
+const SHELL_CACHE = 'learnthai-shell-v3';  // bump if SHELL changes, so stale entries are dropped
 const AUDIO_CACHE = 'learnthai-audio';
 const NETWORK_TIMEOUT_MS = 4000;
 // Paths relative to the service worker's scope ('' is the app's root URL).
 const SHELL = [
-  '', 'index.html', 'app.js', 'styles.css', 'mobile.css', 'app.webmanifest',
+  '', 'index.html', 'app.js', 'spell.js', 'styles.css', 'mobile.css', 'app.webmanifest',
   'data/decks.json', 'data/audio/manifest.json',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png',
 ];

@@ -1,3 +1,5 @@
+import { letterSpelling, schoolSpelling, spellingText, isSpellable } from './spell.js';
+
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
 // (see docs/review-design.md) and persists progress in localStorage.
@@ -17,6 +19,9 @@ const els = {
   translit: document.getElementById('card-translit'),
   english: document.getElementById('card-english'),
   note: document.getElementById('card-note'),
+  cardSpelling: document.getElementById('card-spelling'),
+  cardSpell: document.getElementById('card-spell'),
+  cardSpellFront: document.getElementById('card-spell-front'), // Thai → English only: the front is Thai
   speakButtons: document.querySelectorAll('.speak-btn'),
   flipButtons: document.querySelectorAll('.flip-btn'),
   posBadges: document.querySelectorAll('.stat-pos'),
@@ -107,6 +112,7 @@ const els = {
   setAudioSource: document.getElementById('setting-audio-source'),
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
+  setSpelling: document.getElementById('setting-spelling'),
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
   installHelp: document.getElementById('install-help'),
@@ -149,6 +155,7 @@ const DEFAULT_SETTINGS = {
   reviewScope: 'all',             // which due items Today reviews: 'all' decks | 'current' deck
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
+  spellingStyle: 'school',        // card-back spelling and the spell-aloud buttons: 'school' (sounds) | 'letters' (names)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
   readRepeats: 1,                 // times to repeat each word during read-aloud
@@ -457,7 +464,7 @@ async function loadDecks() {
 
 // Built by tools/gen_audio.py. If it's missing, everything just uses browser TTS.
 async function loadAudioManifest() {
-  const files = { th: {}, en: {} };
+  const files = { th: {}, en: {}, sp: {} };   // sp: spelling parts (tools/spelling.mjs)
   try {
     const res = await fetch('data/audio/manifest.json');
     if (!res.ok) return files;
@@ -585,6 +592,9 @@ function renderCard() {
       els.english.textContent = 'No cards available.';
       els.note.textContent = '';
     }
+    els.cardSpelling.hidden = true;
+    els.cardSpell.hidden = true;
+    els.cardSpellFront.hidden = true;
     setFlipped(false);
     updateStats();
     return;
@@ -605,6 +615,7 @@ function renderCard() {
     els.english.classList.add('back-th');
   }
   textWithArrows(els.note, c.note || '');
+  renderSpelling();
   setFlipped(false);
   updateStats();
   renderLearnPills();
@@ -1091,6 +1102,7 @@ function renderSettings() {
   els.setAudioSource.value = s.audioSource;
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
   els.setThaiSpeed.value = String(s.thaiSpeed);
+  els.setSpelling.value = s.spellingStyle;
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
   renderInstall();
@@ -1189,6 +1201,10 @@ function bindSettings() {
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
     applyTextSize();
+  });
+  els.setSpelling.addEventListener('change', () => {
+    setSettings({ spellingStyle: els.setSpelling.value === 'letters' ? 'letters' : 'school' });
+    renderSpelling();
   });
   els.setThaiSpeed.addEventListener('change', () => {
     const n = parseFloat(els.setThaiSpeed.value);
@@ -1419,6 +1435,16 @@ function renderWordlist() {
           toast(added ? `Removed ${c.thai} from Review` : `✓ Added ${c.thai} to Review`, { tone: added ? '' : 'good' });
         });
         audioTd.append(rv);
+      }
+      if (isSpellable(c.thai)) {
+        const sp = document.createElement('button');
+        sp.type = 'button';
+        sp.className = 'row-spell';
+        sp.append(spellIcon());
+        sp.title = `Spell ${c.thai} aloud`;
+        sp.setAttribute('aria-label', sp.title);
+        sp.addEventListener('click', () => speakSpelling(c));
+        audioTd.append(sp);
       }
       const btn = document.createElement('button');
       btn.type = 'button';
@@ -1802,6 +1828,15 @@ function lineIcon(cls, viewBox, d, label = '') {
   path.setAttribute('d', d);
   svg.append(path);
   return svg;
+}
+
+// The "spell it aloud" icon: ก with sound waves (the card back has the same markup in index.html).
+function spellIcon() {
+  const icon = document.createElement('span');
+  icon.className = 'spell-icon';
+  icon.setAttribute('aria-hidden', 'true');
+  icon.append('ก', lineIcon('spell-waves', '0 0 10 24', 'M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11'));
+  return icon;
 }
 
 // The "add to Review" icon: Home's 🔁 as a line icon, so it matches the muted controls around it.
@@ -2400,7 +2435,7 @@ async function resetAllProgress() {
 
 let thaiVoice = null;
 let englishVoice = null;
-let sampleFiles = { th: {}, en: {} };  // lang -> card text -> MP3 in data/audio/ (see loadAudioManifest)
+let sampleFiles = { th: {}, en: {}, sp: {} };  // lang -> text -> MP3 in data/audio/ (see loadAudioManifest)
 let sayText = new Map();  // card thai -> what to say instead, from the optional `say` field (e.g. ก -> กอ ไก่)
 const sampleAudio = new Audio();
 let finishSample = null;    // settles the in-flight playSample() promise
@@ -2493,9 +2528,49 @@ function audioSourceHelpText(source) {
 
 // Stop whatever is playing, sample or TTS. Pending speakAndWait() calls resolve.
 function stopAudio() {
+  spellRun += 1; // ends a spelling being read out
   if ('speechSynthesis' in window) window.speechSynthesis.cancel();
   sampleAudio.pause();
   if (finishSample) finishSample(true);
+}
+
+// ---------- spelling (spell.js) ----------
+
+// A card's spelling in the chosen style; the school method falls back to letter names where it
+// can't be worked out. null for a lone letter or symbol.
+function spellingFor(card) {
+  if (!card || !isSpellable(card.thai)) return null;
+  const school = getSettings().spellingStyle !== 'letters' && schoolSpelling(card.thai, card.translit);
+  return school || letterSpelling(card.thai);
+}
+
+// The spelling line on the current card's back.
+function renderSpelling() {
+  const groups = spellingFor(currentCard());
+  els.cardSpelling.textContent = groups ? spellingText(groups) : '';
+  els.cardSpelling.hidden = !groups;
+  els.cardSpell.hidden = !groups;
+  // On the front only when it shows the Thai: in English → Thai it would give the answer away.
+  els.cardSpellFront.hidden = !groups || state.direction !== 'th-en';
+}
+
+// Read a spelling aloud step by step: each part's recording (manifest section sp), the card's own
+// recording for the whole word, and a short pause between syllables. Any other audio stops it.
+let spellRun = 0;
+const pause = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+async function speakSpelling(card) {
+  const groups = spellingFor(card);
+  if (!groups) return;
+  stopAudio();
+  const run = spellRun;
+  for (const steps of groups) {
+    for (const step of steps) {
+      if (run !== spellRun) return;
+      if (step.gap) await pause(250);
+      else await (step.word ? speakAndWait(card.thai, 'th') : speakAndWait(step.say, 'sp'));
+    }
+    await pause(350);
+  }
 }
 
 function speak(text, lang = 'th') {
@@ -2504,7 +2579,7 @@ function speak(text, lang = 'th') {
 }
 
 function speedFor(lang) {
-  return lang === 'th' ? getSettings().thaiSpeed : 1;
+  return lang === 'en' ? 1 : getSettings().thaiSpeed; // th, and sp (Thai spelling parts)
 }
 
 // Resolves true once the sample has played (or been stopped), false if it couldn't load.
@@ -2548,6 +2623,7 @@ async function speakAndWait(text, lang) {
   const url = sampleUrl(text, lang);
   if (url && await playSample(url, speedFor(lang))) return;
   // No sample for this text, or it failed to load: fall back to browser TTS.
+  if (lang === 'sp') return ttsAndWait(text, 'th');
   return ttsAndWait(lang === 'th' ? sayText.get(text) ?? text : text, lang);
 }
 
@@ -2615,10 +2691,15 @@ function bindEvents() {
   els.resetBtn.addEventListener('click', resetDeckProgress);
   els.resetAll.addEventListener('click', resetAllProgress);
 
+  [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
+    e.stopPropagation(); // not a flip
+    speakSpelling(currentCard());
+  }));
   els.card.addEventListener('click', (e) => {
     // Don't flip if clicking the speak or flip button (flip-btn calls flipCard itself).
     if (e.target.closest('.speak-btn')) return;
     if (e.target.closest('.review-toggle')) return;
+    if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     flipCard();
   });
@@ -2852,7 +2933,7 @@ function renderInstall() {
 }
 
 function allAudioFiles() {
-  return [...new Set([...Object.values(sampleFiles.th), ...Object.values(sampleFiles.en)])];
+  return [...new Set([...Object.values(sampleFiles.th), ...Object.values(sampleFiles.en), ...Object.values(sampleFiles.sp)])];
 }
 
 async function cachedAudioFiles(cache) {

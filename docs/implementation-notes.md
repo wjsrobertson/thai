@@ -34,7 +34,8 @@ with `.nojekyll`). Every push to `master` deploys within a minute or two. The gi
 index.html            all markup
 styles.css            all styles
 mobile.css            phone overrides (see Phone layout)
-app.js                all JS (ES module)
+app.js                all JS (ES module); imports spell.js
+spell.js              spelling a Thai word aloud: school method and letter names (see Spelling)
 sw.js                 service worker (see Offline & install)
 app.webmanifest       web app manifest; icons/ holds its icons
 data/decks.json       all vocabulary
@@ -42,6 +43,7 @@ data/audio/           generated MP3s + manifest.json (see Audio / TTS)
 tools/gen_audio.py    audio generator (dev-time only)
 tools/phone_shots.py  phone-size screenshots via headless Chromium (dev-time only)
 tools/audit_decks.py  content audit of decks.json; exits 1 on errors (dev-time only)
+tools/spelling.mjs    spelling coverage report; writes data/spelling-parts.json (dev-time only)
 docs/                 these notes
 ```
 
@@ -65,8 +67,8 @@ Audio / TTS → Generator).
 - **`formerIds` (optional, on a topic):** old topic ids it replaces. The app resolves a saved current
   topic through them, so splitting or regrouping topics doesn't strand anyone. When splitting,
   give the first part the original id instead.
-- **New or changed content isn't done until it has audio:** run `tools/gen_audio.py` (the user
-  expects this without being asked).
+- **New or changed content isn't done until it has audio:** run `node tools/spelling.mjs --write`
+  (spelling parts) and then `tools/gen_audio.py` (the user expects this without being asked).
 - **Card identity is `cardKey()` = `${thai}::${english}`.** Changing either text resets that
   card's progress. That's acceptable: see Constraints.
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
@@ -814,6 +816,64 @@ character, which some fonts draw noticeably low.
 - **The one exception** is the "Next (→)" tooltip, since a `title` can't hold markup.
 
 ---
+
+## Spelling (2026-10-06), `spell.js`
+
+Every word and phrase card shows its spelling on the card back. A spell-aloud button (ก with sound
+waves, `spellIcon()`) reads it aloud.
+- **On the card:** bottom centre, between 🔊 and ⟳.
+  - It's always on the back.
+  - It's on the front only in Thai → English mode, where the front shows the Thai (added
+    2026-10-06 at the user's request). In English → Thai mode the front is English, and spelling
+    the Thai there would give the answer away.
+- **In Wordlists:** on each row, between the Review button and the speaker.
+- **No spelling for single letters:** Thai Script's letter and symbol cards get none (`isSpellable`).
+- **Two styles** (Settings → Display → Spelling, `settings.spellingStyle`):
+  - **School method (`school`, default):** สะกดคำ. Each syllable is built up: consonant sound +
+    vowel name (+ final sound) → syllable, then the tone mark's name and the toned syllable.
+    Words of several syllables end with the whole word; a phrase spells word by word and ends with
+    the whole phrase.
+    - บ้าน: บอ – อา – นอ – บาน – ไม้โท – บ้าน
+    - สบาย: สอ – อะ – สะ · บอ – อา – ยอ – บาย · สบาย
+  - **Letter names (`letters`):** dictation. Every symbol in written (typing) order by its name,
+    so leading vowels come first. ข้าว: ข ไข่ · ไม้โท · สระอา · ว แหวน.
+- **How the school method is worked out (`schoolSpelling`):** Thai doesn't mark syllables or every
+  vowel, so the parser tries every reading the spelling allows and keeps the one whose sounds match
+  the card's transliteration, syllable for syllable.
+  - Matching ignores tone, vowel length and aspiration: only the grouping into syllables is being
+    checked.
+  - It handles:
+    - hidden vowels: คน โอะ, สบาย อะ, บริษัท ออ, อักษร ออ + ร
+    - reused finals: ผลไม้, วิทยา, จักรยาน = จัก-กระ
+    - clusters, silent leading ห and อ, รร (กรรม, ภรรยา), ฤ, ไทย
+    - silent letters: ์, ญาติ, บุตร, พุทธ
+    - loanwords with ร์ before a final (พอร์ต)
+    - a leading vowel belonging to the second consonant (เสมอ = สะ-เมอ)
+    - ๆ
+  - If nothing matches, it returns null and the letter names are used. As of 2026-10-06 it spells
+    5442 of 5496 words and phrases (99%). The rest are abbreviations, digits, irregular loanwords
+    and transliteration oddities.
+- **Reading aloud (`speakSpelling`):**
+  - Each step plays its recording from the manifest's **`sp`** section, falling back to the
+    browser voice.
+  - The final whole word or phrase uses the card's own recording.
+  - There are pauses between syllables and words, and any other audio stops it.
+- **Recordings are per part, never per word** (the user's call):
+  - `node tools/spelling.mjs --write` lists every distinct spoken step across all cards and both
+    styles (letter names like กอ ไก่, sounds, vowel and tone-mark names, syllables, the words of
+    phrases): 4060 parts.
+  - `tools/gen_audio.py` records them under `sp`, so a part never clashes with a card's text. For
+    example, the vowel step อา isn't the Thai Script card อา, whose recording says สระอา.
+  - Recordings are named by what's said, so a part that's also a card word reuses that file.
+    Only 2465 were new.
+- **Card back layout:**
+  - The back's text sits in `.face-body`: centred when it fits, scrolling when it doesn't, with
+    the corner buttons fixed.
+  - Spacer pseudo-elements do the centring, because `justify-content: center` would cut off the
+    top of overflowing content.
+  - The longest spelling (about 280 characters, an idiom) fits a 390px phone without scrolling.
+- **Check coverage after content changes:** `node tools/spelling.mjs --failed 60` lists words
+  that fall back; `--samples --random` prints spellings to eyeball.
 
 ## Audio / TTS (2026-10-02)
 
