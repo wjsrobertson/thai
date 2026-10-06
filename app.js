@@ -2990,8 +2990,11 @@ async function init() {
   // The app opens on the home page. View first, so selectDeck's renderCard() knows the card isn't on screen.
   setView('home');
 
+  // A topic that was split or regrouped lists its old ids in `formerIds` (decks.json), so a saved
+  // current topic still resolves.
   const start =
     state.decks.find((d) => d.id === prefs.currentDeckId)?.id ||
+    state.decks.find((d) => d.formerIds?.includes(prefs.currentDeckId))?.id ||
     state.decks[0]?.id;
   if (start) {
     selectDeck(start);

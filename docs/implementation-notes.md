@@ -57,9 +57,14 @@ Audio / TTS → Generator).
 
 - Edit and reload; new categories appear in the deck picker automatically, in file order.
 - **`group` (optional)** nests decks one level deeper in the picker: category → group → deck.
-  Use it to split long lists, for example "Spoken Top 500" as 10 decks of 50. Decks sharing a
+  Use it for long lists, for example "Spoken Top 500" as 25 topics of 20. Decks sharing a
   `group` within a category form one collapsible block, placed where the first of them appears.
-  Keep each deck to about 50 cards or fewer.
+- **Topic size: about 20 cards, never over 25** (the user's rule since 2026-10-06; bigger topics
+  are a pain to study). Split a growing topic along real sub-themes and name the parts
+  "Topic: Sub-theme" when the sub-theme alone wouldn't say which topic it is.
+- **`formerIds` (optional, on a topic):** old topic ids it replaces. The app resolves a saved current
+  topic through them, so splitting or regrouping topics doesn't strand anyone. When splitting,
+  give the first part the original id instead.
 - **New or changed content isn't done until it has audio:** run `tools/gen_audio.py` (the user
   expects this without being asked).
 - **Card identity is `cardKey()` = `${thai}::${english}`.** Changing either text resets that
@@ -67,7 +72,8 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-06 there are 6649 cards in 231 decks across 37 categories.
+- As of 2026-10-06 there are 6649 cards in 373 topics across 22 categories (see Topic list order
+  and Topic splits).
 
 **Writing cards.** Match the existing style:
 
@@ -127,8 +133,8 @@ Audio / TTS → Generator).
 **Spoken Thai, Slang, and Swearing & Insults** were added on 2026-10-02 (889 cards, 22 decks),
 built from `research/` (see that section).
 
-- **Spoken Thai → "Top 500 Spoken Words"** (group) is 10 decks of 50 in subtitle frequency
-  order.
+- **Spoken Thai → "Top 500 Spoken Words"** (group) is 25 topics of 20 in subtitle frequency
+  order (10 of 50 until 2026-10-06; see Topic splits).
   - **Duplicates are allowed** (user's call): many words also have cards in other decks.
   - **Removed:** character-name fragments, letters and abbreviations, plus a few ambiguous
     syllables (มิ, ชิ, นา, ลา…) and a duplicate spelling (มั๊ย).
@@ -327,6 +333,63 @@ Home & Everyday Things; and Southern Idioms.
   - Phuket Hokkien words (โก่ปี้, กิ้ดเหล้ง) are marked as such.
 - **Audio uses the Central voice**, so the tones are Central, not Southern. Each deck description
   says so, and the user accepted this. Transliterations follow the Thai spelling.
+
+**Topic list order, 2026-10-06** (scratchpad `decks/merge17.py`). The list had grown in the order
+things were added: 37 categories, beginner material scattered (Survival #28, Grammar #26), many
+two- or three-topic categories, and the middle level used only by big categories. The user asked
+for Talking About Language early and a review of the order and hierarchy.
+- **Now 22 categories**, from beginner essentials to specialist. Small categories became groups
+  in bigger ones, so nothing is nested deeper than category → group → topic:
+  1. Basics (First Words, Everyday Words, Time & Date)
+  2. Talking About Language
+  3. Thai Script
+  4. Grammar
+  5. Spoken Thai
+  6. Slang & Swearing
+  7. Southern Thai
+  8. People & Relationships
+  9. Culture & Values
+  10. Food & Drink
+  11. Home
+  12. Shopping & Errands (Shopping, Services, Money, Visas & Paperwork)
+  13. Getting Around (Travel, Places, On the Road, Air & Sea)
+  14. Work & Education
+  15. Health & Medicine (Health & Doctor joined At the Doctor)
+  16. Nature & Animals
+  17. Sport & Leisure (with TV, Film & Social Media)
+  18. Music
+  19. News & Politics (News, Politics, Military)
+  20. Crime & Law
+  21. Mathematics
+  22. Science
+- **Moves:**
+  - Thai Literature & Poetry went to Culture & Values.
+  - Common Adjectives went to Basics; Weather to Nature & Animals; Clothing and Negotiation &
+    Bargaining to Shopping; Hobbies to Sport & Leisure; The Economy to News & Politics.
+  - Categories that already had their own groups (Thai Script, Spoken Thai, Home, Music, Crime &
+    Law, Mathematics, Science, Medicine) kept them.
+- **Only `category`, `group` and file order changed;** topic ids, names and cards didn't, so
+  progress and Review are untouched.
+- **A new user now starts on Greetings & Politeness,** the first topic in the file (it was Time of
+  Day).
+- **The history paragraphs below use the category names of their time.**
+
+**Topic splits, 2026-10-06** (scratchpad `decks/splits.py`, applied by `decks/merge18.py`). The
+user found topics over ~20 cards a pain. Every topic over 25 cards was split, by hand, along real
+sub-themes, so nothing is now over 25.
+- **The numbers:** 130 topics became 272; there are 373 topics in all. Parts are 12–22 cards,
+  averaging about 16.
+- **Naming:** parts are named for their content, prefixed with the old topic when needed, for
+  example "Family: Parents & Children" or "Body: Head & Upper Body".
+- **Where parts go:** each part stays in the old topic's category and group. The first part keeps
+  the old topic's id.
+- **Spoken Top 500** was regrouped by rank into 25 topics of 20: "Spoken 1–20" and so on. Each new
+  topic lists the old ids it absorbed in `formerIds`, on the topic holding the old one's first
+  word.
+- **Cards are unchanged:** exactly the same cards, only regrouped. Progress is per card, so
+  nothing is lost.
+- **Checks:** the merge script checks that every card is placed exactly once, part sizes, unique
+  names and ids, and no duplicate Thai or English within a part.
 
 **Register ladders, 2026-10-06** (+39 new cards, +32 existing cards shared into these topics).
 The user asked for slang and casual versions beside the polite words, starting with pronouns and
