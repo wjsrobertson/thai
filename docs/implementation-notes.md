@@ -41,6 +41,7 @@ data/decks.json       all vocabulary
 data/audio/           generated MP3s + manifest.json (see Audio / TTS)
 tools/gen_audio.py    audio generator (dev-time only)
 tools/phone_shots.py  phone-size screenshots via headless Chromium (dev-time only)
+tools/audit_decks.py  content audit of decks.json; exits 1 on errors (dev-time only)
 docs/                 these notes
 ```
 
@@ -66,7 +67,7 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-05 there are 6578 cards in 231 decks across 37 categories.
+- As of 2026-10-06 there are 6649 cards in 231 decks across 37 categories.
 
 **Writing cards.** Match the existing style:
 
@@ -87,6 +88,26 @@ Audio / TTS → Generator).
   - **Keep Thai script out of `english`** and put it in the note instead. An English gloss
     containing Thai gets read by the Thai voice (see Audio / TTS → Voices).
     The 2026-10-02 merge moved bracketed Thai, like "(cutesy จังเลย)", into notes automatically.
+  - **Same word, same meaning → reuse the exact existing `english`.** Card identity is
+    `thai::english`, so "above / upstairs" and "upstairs / above" are two cards. You'd review the
+    word twice, and a ✓ in one topic wouldn't show in the other. A genuinely different sense
+    (เข่า "knee" vs "knee (strike)") should stay a separate card.
+  - **Alternatives are written "a / b"** with spaces, not "a/b" or "a, b". Fixed terms like
+    "yes/no" are fine.
+- **Run `python3 -u tools/audit_decks.py` after content changes.** It exits 1 on errors (always
+  fix: duplicates within a topic, Thai typing slips, Thai in `english`, "a/b" slashes, the same
+  meaning worded differently) and lists judgement calls under "Worth a look". Add `--errors` for
+  errors only. Known intentional cases are allowed in the script (เขา's two transliterations).
+- **Audit, 2026-10-06** (now `tools/audit_decks.py`; the fixes were scratchpad `decks/merge16.py`):
+  - **Folded:** 40 same-meaning glosses worded differently (order, commas, plurals). Each word kept
+    an existing wording, so no new audio was needed.
+  - **Rewritten:** two English glosses that contained Thai (พึ่ง, เถิด), with the Thai moved to the
+    note, and five "a/b" slashes.
+  - **Clean:** the audit found no Thai typing errors, no duplicates within a topic, and nothing
+    structural.
+  - **Left alone on purpose:** broader vs narrower glosses (mostly the multi-sense Spoken Top-500
+    cards), different senses of one word, the plain example meanings in Tone Rules and Final
+    Consonant Sounds notes, and notes that differ by topic.
 
 **Mathematics and Science** were added on 2026-10-02.
 
@@ -307,6 +328,29 @@ Home & Everyday Things; and Southern Idioms.
 - **Audio uses the Central voice**, so the tones are Central, not Southern. Each deck description
   says so, and the user accepted this. Transliterations follow the Thai spelling.
 
+**Register ladders, 2026-10-06** (+39 new cards, +32 existing cards shared into these topics).
+The user asked for slang and casual versions beside the polite words, starting with pronouns and
+people. A shared card is copied exactly from its other topic (same `cardKey`, progress and audio).
+Script: scratchpad `decks/merge15.py`.
+- **Pronouns & People** (13 → 46) was rebuilt as a ladder from formal to rude:
+  - I: ข้าพเจ้า, กระผม, ผม, ดิฉัน, ฉัน, ชั้น, หนู, เรา, ข้า, อั๊ว, กู
+  - you: ท่าน, คุณ, เธอ, ตัวเอง, นาย, แก, ลื้อ, มึง, พวกคุณ, ทุกคน
+  - he/she/they/we: เขา, เค้า, หล่อน, มัน, พวกเรา, พวกเขา, พวกเค้า
+  - people: formal ชาย, หญิง, สุภาพบุรุษ, สุภาพสตรี; หนุ่ม, สาว, วัยรุ่น; ผู้สูงอายุ (polite) vs
+    คนแก่ (blunt); เพื่อนซี้; ฝรั่ง, ชาวต่างชาติ
+  - Each note says who uses the word with whom.
+- **Family:** ป๊า, หม่าม๊า; คุณพ่อ, คุณแม่; บิดา, มารดา (forms); บุตร; ผัว, เมีย, คู่สมรส; and plain
+  gaps: พี่น้อง, ลูกพี่ลูกน้อง (cousin), ลูกคนโต, ลูกคนเล็ก.
+- **Greetings & Politeness:** หวัดดี, ดีจ้า, ว่าไง, ขอบใจ, แต๊งกิ้ว, โทษที, บ๊ายบาย, ไปก่อนนะ, ฝันดี, จ้า.
+- **Second pass:**
+  - Common Verbs: รับประทาน, แดก (beside กิน, ทาน)
+  - Shopping & Money: ตังค์
+  - Bathroom: ห้องน้ำ, สุขา (beside ส้วม)
+  - Body Parts: ศีรษะ, พุง, ก้น, ตูด. หน้าอก was skipped because อก is already there.
+  - Life Events: ตาย, เสียชีวิต, ถึงแก่กรรม, ม่องเท่ง, ซี้แหงแก๋
+- **เขา's two transliterations are deliberate:** kháo for the pronoun (as it's said), khǎo for horn
+  or mountain.
+
 **Thai Script** was added on 2026-10-03, right after Basics (185 cards, 12 decks).
 
 - **Groups:**
@@ -331,19 +375,40 @@ Home & Everyday Things; and Southern Idioms.
 
 ## Views
 
-The app opens on a **Home** page: three cards (Decks, Wordlist, Review), each with a short
-description. Decks and Wordlist show the current deck, and Review shows today's due/new counts
+The app opens on a **Home** page: three cards (Flashcards, Wordlists, Review), each with a short
+description. Flashcards and Wordlists show the current deck ("Topic: Time of Day"), and Review shows today's due/new counts
 (`renderHome`).
 Tapping "Learn Thai" (top left) returns there. No tab is selected on Home. It was added on
 2026-10-05 at the user's request; before that, the app opened on Review.
 
-The tabs are **Decks | Wordlist | Review** (see "Today review and scheduling" below).
+The tabs are **Flashcards | Wordlists | Review** (see "Today review and scheduling" below).
 - **Internal ids:** Review's view id and code still say `today` (`renderToday`, `#today-section`,
-  `.today-only`). Decks is the old Flashcards view, with view id `flashcards`.
-- **History:** the user renamed Today to Review and moved it to the end on 2026-10-05.
+  `.today-only`). Flashcards has view id `flashcards`, and Wordlists `wordlist`.
+- **History:**
+  - 2026-10-05: the user renamed Today to Review and moved it to the end.
+  - 2026-10-06: Decks went back to being called Flashcards (tab, Home card, the Settings section
+    that was "Deck mode") and Wordlist became Wordlists.
+  - 2026-10-06: a set of words is now called a **topic** on Home ("Topic: Time of Day") and
+    throughout Settings: "All topics" / "Current topic only", "Reset current topic", the reset
+    dialogs, and the Test card order option "List order" (was "Deck order"). The same day the rest
+    of the UI followed: the picker ("Choose a topic", "Search topics…", "3 topics" counts, "No
+    topics match"), Review's "across all topics" / "mixed from your topics", and the empty and
+    load-error messages. No "deck" is left on screen. The code, the data (`decks.json`), element
+    ids and setting values still say deck; Settings groups that mention it accept both words in
+    search.
+- **Phone top bar:** the tabs have 8px side padding (6px at 380px wide or less, where the title
+  also drops its letter-spacing), so the bar fits down to 375px. At 320px it still overflows by
+  32px, as it did before the rename.
 
-**Decks** shows one card at a time. The corner buttons (position pill, 🔊, flip) exist on
-*both* faces, so they rotate with the card when it flips. The controls row holds:
+**Flashcards** shows one card at a time. The corner buttons (position pill, 🔊, flip) exist on
+*both* faces, so they rotate with the card when it flips.
+
+**Moving on from a flipped card** jumps straight to the front, with no animation
+(`setFlipped(false, { instant: true })` in `renderCard`, using `.card.no-anim`). Before
+2026-10-06 it flipped back with the animation after the new text was in, so the next card's
+answer showed for about the first 140ms of the turn. Flips you make yourself still animate.
+
+The controls row holds:
 
 - The **deck picker**, a modal with collapsible categories and optional collapsible groups
   inside them, search, and per-deck progress.
@@ -420,11 +485,78 @@ is learned once.
 
 **FSRS.** Uses FSRS-5 with the default `FSRS_W` parameters (`scheduleItem`; pure, so the grade
 buttons can preview it).
-- **Two update rules:** a review under a day after the last one uses the same-day stability rule;
-  later reviews use the forgetting curve.
+- **Two update rules:** a review on the same study day (`dayKey`, 4 am rollover) as the last one
+  uses the same-day stability rule; later reviews use the forgetting curve.
 - **Again:** due in 10 minutes and requeued in-session.
 - **Otherwise:** due in `round(interval(S, retention))` days, at least 1.
-- **Desired retention** is a setting (default 0.9).
+- **Desired retention** is a setting (default 0.9). 95% roughly halves every interval.
+
+**Changes to plain FSRS (2026-10-06).** The user found the defaults far too long, for example
+"Hard 10d". That came from an old Leitner box-3 word converted to S = 7. FSRS counts Hard as a
+success, so even a new word rated Hard every time went 3 → 5 → 7 → 10 → 13 days.
+- **Hard means "only just":** the interval is at most 1.2× the last gap, and at least a day more
+  than it. The last gap is the interval the item was given, or the time since its last review if
+  longer (reviewed late). S is lowered to match, so later reviews start from it too.
+- **A correct multiple-choice answer is scheduled as Hard** (`scheduleItem(…, { mc })`, from
+  `gradeItem`'s `mode`). That covers Flashcards Test mode and Review's first goes. Picking from
+  three is recognition, so the first real recall check is the next day, not in 3.
+- **Same-day repeats don't lengthen the gap.** On the same study day, the short-term update can
+  only lower S (Again, Hard). A correct multiple-choice repeat, such as another Test round, leaves
+  the item unchanged. Before, each same-day Good multiplied S by about 1.4, so four right answers
+  in one day meant 9 days.
+- **Effect on a new word** (one correct MC answer, then rated the same each time it's due):
+
+  | Each time | Plain FSRS | Now |
+  |---|---|---|
+  | Hard | 3 → 5 → 7 → 10 → 13 days | 1 → 2 → 3 → 4 → 5 days |
+  | Good | 3 → 11 → 35 → 101 days | 1 → 3 → 9 → 25 → 64 days |
+
+- **Carried-over Leitner progress** still holds the generous converted S, so an old box-3 word
+  shows Hard 8d. The user was advised to use Settings → Reset everything, since old progress
+  doesn't need keeping.
+
+**The Review icon** marks every "add to Review" control: "Add all to Review", the button on each
+Wordlists row, and the corner button on a Flashcards card. Words already in Review show ✓
+instead.
+- **What it is:** Home's 🔁 redrawn as a line SVG (`reviewIcon()`, `.review-icon`) in the text
+  colour. The emoji itself was too colourful next to the muted controls; the Home card keeps the
+  emoji, beside 📖 and 📋.
+- **Built with `lineIcon(cls, viewBox, d, label)`,** which the → arrows use too.
+
+**What Review covers** (Settings → Daily review → "Adding to Review", `settings.newSource`; since
+2026-10-06):
+- **"Only words I add" (`manual`, the default)** covers only the words in `store.reviewWords`
+  (`{ cardKey: addedAt }`).
+  - **Review starts empty,** with a note on how to add words; the Home card says "Nothing added
+    yet". The `review-manual` settings migration moved both automatic values to manual, and the
+    user chose to start from an empty set.
+  - **Ways to add:**
+    - **"Add to Review…" on a deck Test round's score screen** opens a dialog of that round's
+      words (`state.lastRound`).
+      - Nothing is ticked at first; All / Missed only / None pick quickly.
+      - Words already in Review are shown ticked and greyed out.
+    - **Wordlists: a Review button on each row, left of the speaker** (`.row-review`): the Review
+      icon, or a green ✓ once added. Tapping it toggles and shows a toast naming the word.
+      - It's a plain icon with no border, so it reads as less important than the speaker.
+      - History: a bordered + button there first looked as important as the speaker. On
+        2026-10-06 it was replaced by press-and-hold (click with a mouse) opening a strip under
+        the row. That was removed the same day, at the user's request, in favour of this button.
+      - "Add all to Review" is in the toolbar.
+    - **🔁 in the top-right of a Flashcards card,** in Learn and Test mode (`updateReviewToggle`;
+      Test mode since 2026-10-06). It becomes ✓ once added,
+      and tapping it again takes the word out.
+  - **There's no daily limit:** every added word that hasn't started yet shows up as new straight
+    away, in the order added.
+  - **Words already answered** in deck Test mode keep that progress: a miss is due within about
+    10 minutes, a correct answer the next day (multiple choice counts as Hard; see "Changes to
+    plain FSRS").
+  - **The ✕ in the breakdown** takes words out of the set (`setInReview(keys, false)`) and keeps
+    their progress, so re-adding carries on.
+- **Automatic (`started` / `current`)** is the earlier behaviour: every word with progress, new cards
+  drawn from started decks or the current deck within "New cards per day", and ✕ deleting
+  progress (`reviewExcluded` / `reviewExcludedCards`).
+- **`reviewFilter()`** is the single test both modes go through, used by `planReview` and
+  `dueTomorrow`.
 
 **Today** (`planReview` → `startReview`):
 - **The Review screen** shows only the due and new counts and Start. Under the card, a table
@@ -437,6 +569,12 @@ buttons can preview it).
     - It adds the category's decks to `store.reviewExcluded`. New cards don't come from those
       decks, and due items skip them when choosing their deck.
   - **Why:** for decks the user was only trying out.
+  - **Single words:** tapping a category row expands its words for today, one category at a time
+    (`state.breakdownOpen`). Each word shows its Thai, translit, English and whether it's due or
+    new, plus a ✕.
+    - `removeWordFromReview` deletes the word's items (both directions) and adds its `cardKey` to
+      `store.reviewExcludedCards`, which `planReview` skips for due and new.
+    - Answering the word in deck Test mode brings it back.
   - **Bringing a deck back:** answering one of its cards in deck Test mode removes it from the
     list (`saveDeckRating`). "Current deck only" ignores removals, and Reset everything clears
     them. A Tomorrow / next 7 days
@@ -455,7 +593,7 @@ buttons can preview it).
     (any deck with a word that has an item). That's at most `NEW_PER_DECK` (5) per deck per day
     first, then relaxed to fill the budget.
   - Settings → Daily review → "New cards from" can limit this to the current deck. Today then
-    shows the deck button (the `today-deck` class on `.stage`), in the same place as on Decks.
+    shows the deck button (the `today-deck` class on `.stage`), in the same place as on Flashcards.
     The same happens with "Due reviews from: Current deck only". It's hidden during a session.
 - **New items** are spread evenly through the reviews.
 
@@ -474,7 +612,7 @@ buttons can preview it).
 **Daily counters** live in `store.daily[dayKey]` (`g` gradings, `ok`, `n` new, `nd` new per deck,
 `rv` due reviews), and only the last 60 days are kept.
 
-**Deck mode now uses items too.**
+**Flashcards (deck Test mode) now uses items too.**
 - **Test answers** are graded `good`→3 / `again`→1 as MC (`saveDeckRating`). A first answer there
   counts against the day's new budget.
 - **`mergeProgressIntoCards`** gives each card `dueAt`/`seen` from the item for the current
@@ -521,7 +659,9 @@ Everything lives in localStorage under `learnthai:v1`:
   review).
 
 The settings modal (gear icon, top right) is searchable through each group's `data-search`
-keywords. Its sections are App, Display, Daily review, Deck mode, Audio and Reset.
+keywords. Its sections are App, Display, Daily review, Flashcards (was "Deck mode"), Audio,
+Confirmations and Reset. Search doesn't look at section names, so each Flashcards group has
+"flashcards" in its `data-search`.
 - **Accordion** (since 2026-10-05): the sections start closed, and opening one closes the others.
 - **Searching** opens every section with a match, and clearing the search closes those again
   (`data-search-opened`).
@@ -549,6 +689,58 @@ keywords. Its sections are App, Display, Daily review, Deck mode, Audio and Rese
 3. Add the element to `els`.
 4. Set its value in `renderSettings()`.
 5. Add a listener in `bindSettings()`.
+
+**Confirm dialog** (`confirmDialog`, 2026-10-06): the app's one confirm component, a small
+centred card on every screen size (mobile.css turns the other modals into full-screen sheets).
+
+- **Call:** `await confirmDialog({ title, message, confirmLabel, cancelLabel, setting, danger })`
+  resolves `true` for the confirm button, `false` for Cancel, the backdrop or Escape. `message`
+  can hold `\n` line breaks. Focus starts on the confirm button, so Enter confirms.
+- **`danger`** (for what can't be undone): a red confirm button, and focus starts on Cancel so
+  Enter doesn't confirm. No `setting` with it: these always ask.
+- **"Don't ask again":** with `setting` (a boolean setting, `true` = ask), the dialog shows the
+  checkbox. Ticking it and confirming sets the setting to `false`; ticking it and cancelling
+  changes nothing. While the setting is `false`, the call resolves `true` straight away.
+- **To add one:**
+  1. Add the setting (default `true`) to `DEFAULT_SETTINGS`.
+  2. Add a checkbox with `data-confirm-setting="<name>"` to Settings → Confirmations.
+     `renderSettings` and its listener handle every such checkbox, so no `els` entry is needed.
+  3. Call `confirmDialog({ …, setting: '<name>' })`.
+- **Uses:**
+  - **Wordlist "Add all to Review"** (`confirmAddAll`): "Add all 22 words in <deck> to Review?",
+    or "Add the 3 words in <deck> that aren't in Review yet?" when some already are.
+  - **Settings → Reset** (`danger`, always asks): "Reset <deck>?" and "Reset all progress?". A
+    toast confirms when it's done (this replaced the browser's `confirm()` / `alert()`).
+  - **Settings → App "Delete downloaded audio"**: not `danger`, since clips download again as
+    they're played. A toast confirms.
+  - **Wordlist "✓ All in Review"** (`confirmRemoveAll`): once the whole deck is in Review, the same
+    button removes it all: "Remove all 22 words in <deck> from Review? Your progress on them is
+    kept." With a mouse, hovering it reads "− Remove all" (both labels share one grid cell, so the width
+    doesn't change).
+
+**Toast** (`toast(message, { ms, tone })`, 2026-10-06): a pill at the bottom of the screen that
+fades in, then out after `ms` (default 2000). A new one replaces any still showing. It's
+`role="status"` (read out by screen readers), ignores taps (`pointer-events: none`), and sits above
+the "new version" bar when that's showing. `tone: 'good'` makes it green.
+- **Uses:**
+  - **The 🔁 / ✓ on a Flashcards card:** "✓ Added to Review" / "Removed from Review". It doesn't
+    name the word, since that could give away the side of the card not yet seen.
+  - **Wordlists:** the row button ("✓ Added เวลา to Review" / "Removed เวลา from Review") and
+    the whole-deck button ("✓ Added 22 words to Review" / "Removed 22 words from
+    Review"). These name the word, since it's on screen anyway.
+
+**Arrows** (2026-10-06): every → shown in the UI is an inline SVG (`.arrow-icon`), not the →
+character, which some fonts draw noticeably low.
+- **Static text** uses the SVG in `index.html`. Text set from JS goes through
+  `textWithArrows(el, text, { caps })`, including content from `decks.json`: topic descriptions
+  (picker, Wordlists heading) and card notes (card back, Wordlists, Review). 8 descriptions and 2
+  notes contain → as of 2026-10-06.
+- **Centring:** `vertical-align: middle` centres it on lowercase letters; `.caps` centres it on
+  capitals, for the "EN→TH" tag in Review's word breakdown. Measured within 0.3px of centre
+  everywhere.
+- **Screen readers** read it as "to" (`role="img" aria-label="to"`). The Settings → Confirmations
+  one is `aria-hidden`.
+- **The one exception** is the "Next (→)" tooltip, since a `title` can't hold markup.
 
 ---
 
@@ -814,10 +1006,27 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
     with an iPhone user agent.
   - The user didn't want a first-visit banner.
 - **`sw.js`:**
-  - **App files** (page, code, styles, `decks.json`, the audio manifest, icons) are
-    network-first, revalidating with `cache: 'no-cache'` and falling back to the cache when
-    offline or after 4 s. So pushes show up on the next load. They're precached on install, in
-    `learnthai-shell-v1`.
+  - **App files (`SHELL`) are cache-first** in `learnthai-shell-v2`, precached on install. The app
+    opens instantly whatever the connection.
+    - **Why:** until 2026-10-06 they were network-first with a 4 s fallback. On a weak signal the
+      user waited about 5 s to see the home page.
+    - **Measured** with a local server adding a delay to every request (installed service worker,
+      time until the home page's counts appear):
+
+      | Delay per request | Network-first | Cache-first |
+      |---|---|---|
+      | 0 ms | 0.1 s | 0.1 s |
+      | 300 ms | 0.7 s | 0.1 s |
+      | 1500 ms | 3.1–4.9 s | 0.1 s |
+
+  - **Updates (`refreshShell`):** each launch (navigation) revalidates every shell file in the
+    background with `cache: 'no-cache'`, mostly cheap 304s.
+    - If any file's ETag or Last-Modified changed, the whole set is stored together, so the page
+      never mixes files from two versions (a new `app.js` with an old `index.html` would break).
+    - Open pages then get an `update-ready` message, and show a "A new version is ready ·
+      Reload" bar (`#update-bar`).
+    - Offline, or if a file fails, the current version stays.
+  - **Anything else on the site** is still network-first with the 4 s fallback.
   - **Audio** is cache-first in `learnthai-audio`. Clip names are content hashes, so a cached
     clip never goes stale.
   - **Byte ranges:** Safari's `<audio>` requests byte ranges and won't play a plain 200, so

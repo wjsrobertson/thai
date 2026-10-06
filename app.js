@@ -34,7 +34,6 @@ const els = {
   wordlistSection: document.getElementById('wordlist-section'),
   wordlistDeckName: document.getElementById('wordlist-deck-name'),
   wordlistFilter: document.getElementById('wordlist-filter'),
-  wordlistCount: document.getElementById('wordlist-count'),
   wordtable: document.getElementById('wordtable'),
   wordtableHead: document.getElementById('wordtable-head'),
   wordtableBody: document.getElementById('wordtable-body'),
@@ -53,6 +52,26 @@ const els = {
   todayBreakdown: document.getElementById('today-breakdown'),
   todayBreakdownBody: document.getElementById('today-breakdown-body'),
   todayNewFrom: document.getElementById('today-new-from'),
+  todayCounts: document.getElementById('today-counts'),
+  todayEmpty: document.getElementById('today-empty'),
+  wordlistAddAll: document.getElementById('wordlist-add-all'),
+  reviewToggles: document.querySelectorAll('.review-toggle'),
+  roundAdd: document.getElementById('round-add'),
+  confirmModal: document.getElementById('confirm-modal'),
+  confirmTitle: document.getElementById('confirm-title'),
+  confirmMessage: document.getElementById('confirm-message'),
+  confirmDontAskRow: document.getElementById('confirm-dont-ask-row'),
+  confirmDontAsk: document.getElementById('confirm-dont-ask'),
+  confirmOk: document.getElementById('confirm-ok'),
+  confirmCancel: document.getElementById('confirm-cancel'),
+  confirmSettings: document.querySelectorAll('[data-confirm-setting]'),
+  addModal: document.getElementById('add-modal'),
+  addList: document.getElementById('add-list'),
+  addConfirm: document.getElementById('add-confirm'),
+  addPicks: document.querySelectorAll('[data-pick]'),
+  updateBar: document.getElementById('update-bar'),
+  toast: document.getElementById('toast'),
+  updateReload: document.getElementById('update-reload'),
   homeLink: document.getElementById('home-link'),
   homeCards: document.querySelectorAll('.home-card'),
   homeDeckStat: document.getElementById('home-deck-stat'),
@@ -124,7 +143,9 @@ const DEFAULT_SETTINGS = {
   retention: 0.9,                 // FSRS desired retention
   bothDirections: true,           // also schedule English → Thai items (unlocked per word; see gradeItem)
   sayAloud: true,                 // recall prompt says "Say it aloud…"
-  newSource: 'started',           // where Today's new cards come from: 'started' decks | 'current' deck
+  confirmAddAll: true,            // Wordlist "Add all to Review" asks first (Settings → Confirmations)
+  confirmRemoveAll: true,         // Wordlist "✓ All in Review" (remove all) asks first
+  newSource: 'manual',            // what Review covers: 'manual' (words you add) | automatic from 'started' decks | the 'current' deck
   reviewScope: 'all',             // which due items Today reviews: 'all' decks | 'current' deck
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
@@ -145,7 +166,7 @@ const state = {
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
-  view: 'home',       // 'home' | 'flashcards' (the Decks tab) | 'wordlist' | 'today' (the Review tab)
+  view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (Wordlists) | 'today' (the Review tab)
   sort: { key: null, dir: 'asc' },
   filter: '',
   primaryCol: 'thai', // 'thai' | 'translit' | 'english' — first column on wordlist
@@ -163,6 +184,10 @@ const state = {
   learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen } for this session
   cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
   review: null,             // Today's review session while it runs (see startReview)
+  breakdownOpen: null,      // the Review breakdown category showing its words (renderTodayBreakdown)
+  lastRound: [],            // the last deck Test round's answers, [{ key, isCorrect }], for "Add to Review…"
+  addOpen: false,           // the "Add to Review" dialog is open
+  confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
 };
 
 // ---------- storage ----------
@@ -214,6 +239,8 @@ const SETTINGS_MIGRATIONS = [
   ['auto-progress-correct', (s) => ([false, 'off'].includes(s.learnAutoProgress) ? { learnAutoProgress: 'correct' } : null)],
   // 2026-10-05: Test-mode pause default 1000 -> 1500 ms. Runs after pause-1000, so 3000 ends at 1500.
   ['pause-1500', (s) => (s.learnPauseMs === 1000 ? { learnPauseMs: 1500 } : null)],
+  // 2026-10-06: Review became manual by default (words you add); both automatic sources move to it.
+  ['review-manual', (s) => (['started', 'current'].includes(s.newSource) ? { newSource: 'manual' } : null)],
 ];
 
 function migrateSettings() {
@@ -242,7 +269,13 @@ function setSettings(patch) {
 // Item fields: s stability (days), d difficulty (1–10), due, last (ms), reps, lapses,
 // mc / mcOk (multiple-choice answers / was the last one right), rc (recall answers),
 // u (th-en only: the en-th item is unlocked).
-// Scheduling is FSRS-5 with its default parameters; see docs/review-design.md.
+// Scheduling is FSRS-5 with its default parameters (see docs/review-design.md), plus three
+// changes made 2026-10-06 because the defaults felt far too long for a beginner (scheduleItem,
+// gradeItem):
+//  - Hard means "only just": the next gap is at most 1.2× the last one, and at least a day longer.
+//  - A correct multiple-choice answer counts as Hard: recognition is weaker evidence than recall.
+//  - Answers repeated on the same study day don't lengthen the gap; only the first one each day
+//    does. Misses on the same day still shorten it.
 
 const FSRS_W = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.0046, 1.54575, 0.1192,
   1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
@@ -279,27 +312,45 @@ function fsrsForgetS(d, s, r) {
 }
 
 // The item after grading it g (1 Again, 2 Hard, 3 Good, 4 Easy) at `now`. Pure: doesn't save.
-function scheduleItem(prev, g, now) {
+// `mc`: a multiple-choice answer. A correct one is scheduled as Hard (picking from three is
+// recognition, weaker evidence than recall), and on the same day leaves the item as it was.
+function scheduleItem(prev, grade, now, { mc = false } = {}) {
   const it = { ...(prev || {}) };
+  const retention = getSettings().retention;
+  const g = mc && grade > 2 ? 2 : grade;
   if (it.s == null) {
     it.s = FSRS_W[g - 1];
     it.d = fsrsInitD(g);
   } else {
     const days = Math.max(0, (now - it.last) / DAY);
+    const sameDay = dayKey(now) === dayKey(it.last);
+    if (sameDay && mc && grade > 1) {
+      it.reps = (it.reps || 0) + 1; // a correct multiple-choice repeat on the same day: no change
+      return it;
+    }
     const d = it.d;
     it.d = fsrsNextD(d, g);
-    if (days < 1) {
-      it.s *= Math.exp(FSRS_W[17] * (g - 3 + FSRS_W[18]));   // same-day review
+    if (sameDay) {
+      // Same study day: FSRS's short-term update, but never upwards, so repeating a word (another
+      // Test round, a requeue) doesn't push it further out. Misses and Hard still shorten it.
+      it.s *= Math.min(1, Math.exp(FSRS_W[17] * (g - 3 + FSRS_W[18])));
     } else if (g === 1) {
       it.s = fsrsForgetS(d, it.s, fsrsR(days, it.s));
       it.lapses = (it.lapses || 0) + 1;
     } else {
       it.s = fsrsRecallS(d, it.s, fsrsR(days, it.s), g);
     }
+    if (g === 2) {
+      // Hard: at most 1.2× the last gap, and at least a day more than it. The last gap is the one
+      // the item was given, or the time since its last review if that's longer (reviewed late).
+      const gap = Math.max(days, (prev.due - prev.last) / DAY || 0);
+      const cap = Math.max(Math.round(gap) + 1, Math.round(gap * 1.2));
+      it.s = Math.min(it.s, cap / fsrsInterval(1, retention)); // the stability whose interval is `cap`
+    }
   }
   it.s = Math.max(0.01, Math.round(it.s * 1000) / 1000);
   it.d = Math.round(it.d * 1000) / 1000;
-  const interval = Math.max(1, Math.round(fsrsInterval(it.s, getSettings().retention)));
+  const interval = Math.max(1, Math.round(fsrsInterval(it.s, retention)));
   it.due = g === 1 ? now + AGAIN_DELAY : now + interval * DAY;
   it.last = now;
   it.reps = (it.reps || 0) + 1;
@@ -311,7 +362,7 @@ function scheduleItem(prev, g, now) {
 function gradeItem(key, dir, g, { mode = 'recall', deckId = null, now = Date.now() } = {}) {
   const itemKey = itemKeyOf(key, dir);
   const prev = getItem(itemKey);
-  const it = scheduleItem(prev, g, now);
+  const it = scheduleItem(prev, g, now, { mc: mode === 'mc' });
   if (mode === 'mc') {
     it.mc = (it.mc || 0) + 1;
     it.mcOk = g > 1;
@@ -515,6 +566,9 @@ function currentCard() {
 
 function renderCard() {
   hideRoundSummary(); // the next round was set up when the summary opened
+  // Showing the back? Jump to the front before the new card's text goes in. Flipping back with
+  // the animation would show the new card's answer for the first half of the turn.
+  if (state.showingBack) setFlipped(false, { instant: true });
   const c = currentCard();
   if (!c) {
     els.learnPills.hidden = true;
@@ -522,7 +576,7 @@ function renderCard() {
     els.translit.textContent = '';
     const dueLater = state.cards.find((card) => card.dueAt > Date.now());
     if (state.cards.length === 0) {
-      els.english.textContent = 'No cards in this deck.';
+      els.english.textContent = 'No cards in this topic.';
       els.note.textContent = '';
     } else if (dueLater) {
       els.english.textContent = 'All caught up for now!';
@@ -550,10 +604,11 @@ function renderCard() {
     els.english.textContent = c.thai;
     els.english.classList.add('back-th');
   }
-  els.note.textContent = c.note || '';
+  textWithArrows(els.note, c.note || '');
   setFlipped(false);
   updateStats();
   renderLearnPills();
+  updateReviewToggle();
   // Auto-play Thai audio on navigation, only while the card is on screen: picking a deck or
   // changing a setting from the wordlist re-renders the hidden card too.
   if (state.view === 'flashcards' && !state.reading.active) speak(c.thai);
@@ -588,9 +643,15 @@ function updateStats() {
   els.nextBtn.classList.toggle('pulse', !!state.pendingLearnRating);
 }
 
-function setFlipped(flipped) {
+// `instant` skips the flip animation (.no-anim).
+function setFlipped(flipped, { instant = false } = {}) {
   state.showingBack = flipped;
+  if (instant) els.card.classList.add('no-anim');
   els.card.classList.toggle('flipped', flipped);
+  if (instant) {
+    void els.card.offsetWidth; // apply the new side before the transition comes back
+    els.card.classList.remove('no-anim');
+  }
 }
 
 // ---------- actions ----------
@@ -607,8 +668,10 @@ function flipCard() {
 // Deck Test mode answers ('good' or 'again') update the same items as Today's review.
 function saveDeckRating(c, rating) {
   const store = loadStore();
-  if (store.reviewExcluded?.includes(state.currentDeckId)) {  // testing a removed deck brings it back to Review
-    store.reviewExcluded = store.reviewExcluded.filter((id) => id !== state.currentDeckId);
+  // Testing a removed deck, or a removed word, brings it back to Review.
+  if (store.reviewExcluded?.includes(state.currentDeckId) || store.reviewExcludedCards?.includes(c.key)) {
+    store.reviewExcluded = (store.reviewExcluded || []).filter((id) => id !== state.currentDeckId);
+    store.reviewExcludedCards = (store.reviewExcludedCards || []).filter((key) => key !== c.key);
     saveStore(store);
   }
   const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId: state.currentDeckId });
@@ -656,6 +719,9 @@ function showRoundSummary() {
     .map(([key]) => state.cards.find((c) => c.key === key))
     .filter(Boolean);
 
+  state.lastRound = answers.map(([key, a]) => ({ key, isCorrect: a.isCorrect }));
+  els.roundAdd.hidden = getSettings().newSource !== 'manual';
+  els.roundAdd.textContent = 'Add to Review…';
   state.learnAnswers = new Map();
   state.pendingLearnRating = null;
   // Rebuild at the end of a pass so newly-due cards come up sooner.
@@ -861,7 +927,7 @@ function pickerDeckRow(d) {
     <span class="deck-row-count">${known}/${cards}</span>
   `;
   row.querySelector('.deck-row-name').textContent = d.name;
-  row.querySelector('.deck-row-desc').textContent = d.description || '';
+  textWithArrows(row.querySelector('.deck-row-desc'), d.description || '');
   row.addEventListener('click', () => {
     selectDeck(d.id);
     closeDeckPicker();
@@ -879,7 +945,7 @@ function pickerGroup(g, q) {
     known += p.known;
     cards += p.total;
   }
-  const count = `${g.decks.length} deck${g.decks.length === 1 ? '' : 's'} · ${known}/${cards}`;
+  const count = `${g.decks.length} topic${g.decks.length === 1 ? '' : 's'} · ${known}/${cards}`;
   wrap.appendChild(pickerHeader('sub', g.name, count, wrap, q, state.expandedGroups, g.key));
   const list = document.createElement('div');
   list.className = 'sub-decks';
@@ -896,7 +962,7 @@ function renderDeckPicker() {
   for (const c of cats) {
     const group = document.createElement('div');
     group.className = 'cat-group' + (c.open ? '' : ' collapsed');
-    const count = `${c.deckCount} deck${c.deckCount === 1 ? '' : 's'}`;
+    const count = `${c.deckCount} topic${c.deckCount === 1 ? '' : 's'}`;
     group.appendChild(pickerHeader('cat', c.name, count, group, q, state.expandedCategories, c.name));
     const list = document.createElement('div');
     list.className = 'cat-decks';
@@ -910,7 +976,7 @@ function renderDeckPicker() {
   if (cats.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
-    empty.textContent = `No decks match "${state.pickerFilter}".`;
+    empty.textContent = `No topics match "${state.pickerFilter}".`;
     els.deckPickerTree.appendChild(empty);
   }
 }
@@ -1018,6 +1084,7 @@ function renderSettings() {
   els.setRetention.value = String(s.retention);
   els.setBothDirections.checked = s.bothDirections;
   els.setSayAloud.checked = s.sayAloud;
+  for (const box of els.confirmSettings) box.checked = s[box.dataset.confirmSetting] !== false;
   els.setNewSource.value = s.newSource;
   els.setReviewScope.value = s.reviewScope;
 
@@ -1038,7 +1105,7 @@ function renderSettings() {
   // Reset help shows the current deck name.
   const deck = state.decks.find((d) => d.id === state.currentDeckId);
   if (deck) {
-    els.resetDeckHelp.textContent = `"Reset current deck" wipes only "${deck.name}". "Reset everything" wipes all ${state.decks.length} decks.`;
+    els.resetDeckHelp.textContent = `"Reset current topic" wipes only "${deck.name}". "Reset everything" wipes all ${state.decks.length} topics.`;
   } else {
     els.resetDeckHelp.textContent = 'Wipe study progress. Choose scope.';
   }
@@ -1066,9 +1133,14 @@ function bindSettings() {
   els.setSayAloud.addEventListener('change', () => {
     setSettings({ sayAloud: els.setSayAloud.checked });
   });
+  els.confirmSettings.forEach((box) => box.addEventListener('change', () => {
+    setSettings({ [box.dataset.confirmSetting]: box.checked });
+  }));
   els.setNewSource.addEventListener('change', () => {
     setSettings({ newSource: els.setNewSource.value });
     renderToday();
+    renderWordlist();     // the + buttons only show with manual adding
+    updateReviewToggle();
   });
   els.setReviewScope.addEventListener('change', () => {
     setSettings({ reviewScope: els.setReviewScope.value });
@@ -1098,10 +1170,16 @@ function bindSettings() {
     downloadAllAudio();
   });
   els.offlineDelete.addEventListener('click', async () => {
-    if (!confirm('Delete the downloaded audio? Clips will download again as you play them.')) return;
+    const ok = await confirmDialog({
+      title: 'Delete downloaded audio?',
+      message: 'Clips will download again as you play them.',
+      confirmLabel: 'Delete',
+    });
+    if (!ok) return;
     setSettings({ offlineAudio: false });
     await caches.delete(AUDIO_CACHE);
     renderOffline();
+    toast('Downloaded audio deleted');
   });
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
@@ -1262,7 +1340,9 @@ function renderWordlist() {
   const deck = state.decks.find((d) => d.id === state.currentDeckId);
   if (!deck) return;
 
-  els.wordlistDeckName.textContent = `${deck.name} — ${deck.description}`;
+  textWithArrows(els.wordlistDeckName, `${deck.name} — ${deck.description}`);
+  const manual = getSettings().newSource === 'manual';
+  const words = reviewWords();
 
   const rows = visibleWordlistRows();
 
@@ -1311,9 +1391,11 @@ function renderWordlist() {
     const frag = document.createDocumentFragment();
     for (const c of rows) {
       const tr = document.createElement('tr');
+      tr.dataset.key = c.key;
       if (state.reading.active && state.reading.currentKey === c.key) {
         tr.classList.add('now-playing');
       }
+      const added = manual && c.key in words;
       for (const key of cols) {
         const td = document.createElement('td');
         td.className = COL_META[key].cls;
@@ -1322,12 +1404,26 @@ function renderWordlist() {
         if (key === 'english' && c.note) {
           const span = document.createElement('span');
           span.className = 'col-note';
-          span.textContent = c.note;
-          td.appendChild(span);
+          td.appendChild(textWithArrows(span, c.note));
         }
         tr.appendChild(td);
       }
       const audioTd = document.createElement('td');
+      audioTd.className = 'col-audio';
+      if (manual) {
+        // Add to / remove from Review, left of the speaker: the Review icon, or ✓ once added.
+        const rv = document.createElement('button');
+        rv.type = 'button';
+        rv.className = 'row-review' + (added ? ' added' : '');
+        rv.replaceChildren(added ? '✓' : reviewIcon());
+        rv.title = added ? `Remove ${c.thai} from Review` : `Add ${c.thai} to Review`;
+        rv.setAttribute('aria-label', rv.title);
+        rv.addEventListener('click', () => {
+          setInReview([c.key], !added);
+          toast(added ? `Removed ${c.thai} from Review` : `✓ Added ${c.thai} to Review`, { tone: added ? '' : 'good' });
+        });
+        audioTd.append(rv);
+      }
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'row-speak';
@@ -1341,9 +1437,18 @@ function renderWordlist() {
     els.wordtableBody.appendChild(frag);
   }
 
-  const total = state.cards.length;
-  els.wordlistCount.textContent =
-    rows.length === total ? `${total} entries` : `${rows.length} of ${total}`;
+  const allIn = state.cards.every((c) => c.key in words);
+  els.wordlistAddAll.hidden = !manual;
+  // With the whole deck in Review, the button reads "✓ All in Review" and removes them all.
+  els.wordlistAddAll.classList.toggle('all-in', allIn);
+  if (allIn) {
+    // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
+    const label = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
+    els.wordlistAddAll.replaceChildren(label('label-idle', '✓ All in Review'), label('label-hover', '− Remove all'));
+  } else {
+    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Review');
+  }
+  els.wordlistAddAll.title = allIn ? 'Remove all from Review' : '';
 }
 
 // ---------- Learn mode ----------
@@ -1540,33 +1645,44 @@ function planReview(now = Date.now()) {
   const log = todayLog();
   const end = endOfStudyDay(now);
 
-  const excluded = excludedDecks();
+  const f = reviewFilter();
   const due = [];
   for (const [itemKey, it] of Object.entries(items)) {
     if (it.due > end) continue;
     const [key, dir] = splitItemKey(itemKey);
-    const deckId = reviewDeckId(key, dir, s, excluded);
+    if (!f.has(key)) continue;
+    const deckId = reviewDeckId(key, dir, s, f.excluded);
     if (deckId) due.push({ key, dir, deckId, kind: 'due', r: fsrsR(Math.max(0, (now - it.last) / DAY), it.s) });
   }
   due.sort((a, b) => a.r - b.r);
   due.splice(Math.max(0, s.maxReviews - (log.rv || 0)));
 
-  let budget = Math.max(0, s.newPerDay - (log.n || 0));
+  // Words you add all show up straight away; automatic adding has a daily allowance.
+  let budget = f.manual ? Infinity : Math.max(0, s.newPerDay - (log.n || 0));
   const news = [];
   // English → Thai for words whose meaning is known: up to half the budget, oldest unlock first.
   if (s.bothDirections) {
     const unlocked = Object.entries(items)
       .filter(([k, it]) => it.u && k.endsWith('##th-en'))
       .map(([k, it]) => ({ key: splitItemKey(k)[0], last: it.last }))
-      .filter((u) => !items[itemKeyOf(u.key, 'en-th')] && state.cardIndex.has(u.key))
+      .filter((u) => !items[itemKeyOf(u.key, 'en-th')] && state.cardIndex.has(u.key) && f.has(u.key))
       .sort((a, b) => a.last - b.last)
       .slice(0, Math.ceil(budget / 2));
     for (const u of unlocked) news.push({ key: u.key, dir: 'en-th', deckId: state.cardIndex.get(u.key).deckIds[0], kind: 'new' });
     budget -= unlocked.length;
   }
-  // New words in deck order, round-robin across decks: NEW_PER_DECK each first, then whatever fills the budget.
+  if (f.manual) {
+    // Words you've added that haven't started yet, in the order you added them.
+    for (const key of Object.keys(f.words).sort((a, b) => f.words[a] - f.words[b])) {
+      if (items[itemKeyOf(key, 'th-en')]) continue;
+      const deckId = reviewDeckId(key, 'th-en', s, f.excluded);
+      if (deckId) news.push({ key, dir: 'th-en', deckId, kind: 'new' });
+    }
+  }
+  // Automatic: new words in deck order, round-robin across decks: NEW_PER_DECK each first, then
+  // whatever fills the budget.
   const taken = new Set();
-  const decks = newCardDecks(items, s.newSource, excluded).map((d) => ({ deck: d, i: 0, n: log.nd?.[d.id] || 0 }));
+  const decks = f.manual ? [] : newCardDecks(items, s.newSource, f.excluded).map((d) => ({ deck: d, i: 0, n: log.nd?.[d.id] || 0 }));
   for (const cap of [NEW_PER_DECK, Infinity]) {
     let added = true;
     while (budget > 0 && added) {
@@ -1576,7 +1692,7 @@ function planReview(now = Date.now()) {
         if (d.n >= cap) continue;
         while (d.i < d.deck.cards.length) {
           const key = cardKey(d.deck.cards[d.i++]);
-          if (items[itemKeyOf(key, 'th-en')] || taken.has(key)) continue;
+          if (items[itemKeyOf(key, 'th-en')] || taken.has(key) || !f.has(key)) continue;
           taken.add(key);
           news.push({ key, dir: 'th-en', deckId: d.deck.id, kind: 'new' });
           d.n += 1;
@@ -1616,8 +1732,204 @@ function excludedDecks() {
   return new Set(loadStore().reviewExcluded || []);
 }
 
+// What Review covers. "Only words I add" (manual): the words in store.reviewWords ({ cardKey:
+// addedAt }). Automatic: every word with progress, minus removed decks and words.
+function reviewFilter() {
+  const store = loadStore();
+  if (getSettings().newSource === 'manual') {
+    const words = store.reviewWords || {};
+    return { manual: true, words, has: (key) => key in words, excluded: new Set() };
+  }
+  const removed = new Set(store.reviewExcludedCards || []);
+  return { manual: false, words: null, has: (key) => !removed.has(key), excluded: new Set(store.reviewExcluded || []) };
+}
+
+function reviewWords() {
+  return loadStore().reviewWords || {};
+}
+
+// Add words to (on) or take them out of Review. Taking out keeps their progress, so adding them
+// again carries on where they left off.
+function setInReview(keys, on) {
+  const store = loadStore();
+  store.reviewWords ||= {};
+  let t = Date.now();
+  for (const key of keys) {
+    if (on && !(key in store.reviewWords)) store.reviewWords[key] = t++; // keeps the order added
+    if (!on) delete store.reviewWords[key];
+  }
+  saveStore(store);
+  renderToday();
+  if (state.view === 'home') renderHome();
+  if (state.view === 'wordlist') renderWordlist();
+  updateReviewToggle();
+}
+
+// The 🔁 icon / ✓ on a Flashcards card, in Learn and Test mode (manual adding only).
+function updateReviewToggle() {
+  const c = currentCard();
+  const show = !!c && getSettings().newSource === 'manual';
+  const added = show && c.key in reviewWords();
+  for (const btn of els.reviewToggles) {
+    btn.hidden = !show;
+    btn.replaceChildren(added ? '✓' : reviewIcon());
+    btn.classList.toggle('added', added);
+    btn.title = added ? 'In Review: tap to remove it' : 'Add to Review';
+    btn.setAttribute('aria-label', btn.title);
+  }
+}
+
+// Sets el's text, drawing each → as the SVG arrow (.arrow-icon), since the → glyph sits low in
+// some fonts. `caps` centres the arrow on capitals (EN→TH) rather than lowercase letters.
+function textWithArrows(el, text, { caps = false } = {}) {
+  el.replaceChildren();
+  text.split(/\s*→\s*/).forEach((part, i) => {
+    if (i) el.append(lineIcon('arrow-icon' + (caps ? ' caps' : ''), '0 0 16 16', 'M2.5 8h10.5M9 4l4 4-4 4', 'to'));
+    el.append(part);
+  });
+  return el;
+}
+
+// A line icon: an SVG path stroked in the text colour (styled by `cls`). With a `label` screen
+// readers read it; without, they skip it.
+function lineIcon(cls, viewBox, d, label = '') {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', cls);
+  svg.setAttribute('viewBox', viewBox);
+  if (label) {
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', label);
+  } else {
+    svg.setAttribute('aria-hidden', 'true');
+  }
+  const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+  path.setAttribute('d', d);
+  svg.append(path);
+  return svg;
+}
+
+// The "add to Review" icon: Home's 🔁 as a line icon, so it matches the muted controls around it.
+const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4');
+
+// A toast: a short message at the bottom of the screen that fades out after `ms`. A new one
+// replaces any still showing.
+let toastTimer = null;
+function toast(message, { ms = 2000, tone = '' } = {}) {
+  const el = els.toast;
+  el.textContent = message;
+  el.className = 'toast' + (tone ? ` ${tone}` : '');
+  el.hidden = false;
+  void el.offsetWidth; // restart the fade-in
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.classList.remove('show');
+    toastTimer = setTimeout(() => { el.hidden = true; }, 250); // after the fade-out
+  }, ms);
+}
+
+// A confirm dialog. Resolves true for the confirm button, false for Cancel, the backdrop or
+// Escape. `message` can hold \n line breaks. `danger` (for what can't be undone) makes the
+// confirm button red and starts focus on Cancel, so Enter doesn't confirm. With `setting` (a boolean setting, true = ask; listed under Settings →
+// Confirmations), it offers "Don't ask again", which turns the setting off when confirming; while
+// it's off, it resolves true straight away without showing anything.
+function confirmDialog({ title, message, confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false }) {
+  if (setting && getSettings()[setting] === false) return Promise.resolve(true);
+  if (state.confirm) closeConfirm(false);
+  els.confirmTitle.textContent = title;
+  els.confirmMessage.textContent = message;
+  els.confirmMessage.hidden = !message;
+  els.confirmOk.textContent = confirmLabel;
+  els.confirmOk.classList.toggle('danger', danger);
+  els.confirmCancel.textContent = cancelLabel;
+  els.confirmDontAskRow.hidden = !setting;
+  els.confirmDontAsk.checked = false;
+  els.confirmModal.hidden = false;
+  setModalOpen(true);
+  return new Promise((resolve) => {
+    state.confirm = { resolve, setting, lastFocus: document.activeElement };
+    (danger ? els.confirmCancel : els.confirmOk).focus();
+  });
+}
+
+function closeConfirm(ok) {
+  const c = state.confirm;
+  if (!c) return;
+  state.confirm = null;
+  if (ok && c.setting && els.confirmDontAsk.checked) {
+    setSettings({ [c.setting]: false });
+    renderSettings();
+  }
+  els.confirmModal.hidden = true;
+  setModalOpen(!!document.querySelector('.modal:not([hidden])')); // another dialog may be under it
+  c.lastFocus?.focus?.();
+  c.resolve(ok);
+}
+
+// "Add to Review…" after a deck Test round: the round's words, none ticked; All / Missed only / None.
+function openAddModal() {
+  const words = reviewWords();
+  els.addList.replaceChildren(...state.lastRound.map(({ key, isCorrect }) => {
+    const c = state.cards.find((card) => card.key === key);
+    const row = document.createElement('label');
+    row.className = 'add-row';
+    const box = document.createElement('input');
+    box.type = 'checkbox';
+    box.dataset.key = key;
+    box.dataset.missed = String(!isCorrect);
+    box.checked = box.disabled = key in words;
+    const span = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
+    const detail = span('bw-detail', '');
+    detail.append(span('bw-translit', c?.translit || ''), ' ', span('bw-english', c?.english || ''));
+    const tag = key in words ? 'in Review' : isCorrect ? '' : 'missed';
+    row.append(box, span('bw-thai', c?.thai || key), detail, span('bw-kind' + (tag === 'missed' ? ' missed' : ''), tag));
+    return row;
+  }));
+  updateAddConfirm();
+  state.addOpen = true;
+  els.addModal.hidden = false;
+  setModalOpen(true);
+}
+
+function closeAddModal() {
+  state.addOpen = false;
+  els.addModal.hidden = true;
+  setModalOpen(false);
+}
+
+function addChoices() {
+  return [...els.addList.querySelectorAll('input:not(:disabled)')];
+}
+
+function updateAddConfirm() {
+  const n = addChoices().filter((b) => b.checked).length;
+  els.addConfirm.textContent = n ? `Add ${n} to Review` : 'Add to Review';
+  els.addConfirm.disabled = n === 0;
+}
+
+// A word removed from Review (the ✕ in a breakdown category's word list): its progress is
+// deleted and it isn't offered as a new card. Answering it in deck Test mode brings it back
+// (saveDeckRating).
+function removeWordFromReview(key) {
+  if (getSettings().newSource === 'manual') {
+    setInReview([key], false);
+    return;
+  }
+  const store = loadStore();
+  for (const dir of ['th-en', 'en-th']) delete store.items?.[itemKeyOf(key, dir)];
+  store.reviewExcludedCards = [...new Set([...(store.reviewExcludedCards || []), key])];
+  saveStore(store);
+  renderToday();
+}
+
 function removeCategoryFromReview(cat) {
   const ids = new Set(state.decks.filter((d) => (d.category || 'Uncategorized') === cat).map((d) => d.id));
+  if (getSettings().newSource === 'manual') {
+    // Take out the added words listed under this category (progress is kept).
+    const s = { ...getSettings(), bothDirections: true };
+    setInReview(Object.keys(reviewWords()).filter((key) => ids.has(reviewDeckId(key, 'th-en', s, new Set()))), false);
+    return;
+  }
   const store = loadStore();
   const excluded = new Set(store.reviewExcluded || []);
   // Delete the items reviewed under this category (worked out before excluding it), so words it
@@ -1638,11 +1950,11 @@ function dueTomorrow(now = Date.now()) {
   const s = getSettings();
   const end = endOfStudyDay(now);
   let n = 0;
-  const excluded = excludedDecks();
+  const f = reviewFilter();
   for (const [itemKey, it] of Object.entries(loadStore().items || {})) {
     if (it.due <= end || it.due > end + DAY) continue;
     const [key, dir] = splitItemKey(itemKey);
-    if (reviewDeckId(key, dir, s, excluded)) n += 1;
+    if (f.has(key) && reviewDeckId(key, dir, s, f.excluded)) n += 1;
   }
   return n;
 }
@@ -1659,12 +1971,17 @@ function renderToday() {
   els.reviewSummary.hidden = !r?.finished;
   if (r) return;
   const plan = planReview();
-  const deckName = state.decks.find((d) => d.id === state.currentDeckId)?.name || 'this deck';
+  const deckName = state.decks.find((d) => d.id === state.currentDeckId)?.name || 'this topic';
   els.todayDue.textContent = plan.due.length;
-  els.todayDueFrom.textContent = s.reviewScope === 'current' ? `in ${deckName}` : 'across all decks';
+  els.todayDueFrom.textContent = s.reviewScope === 'current' ? `in ${deckName}` : 'across all topics';
   els.todayNew.textContent = plan.news.length;
-  els.todayNewFrom.textContent = s.newSource === 'current' ? `from ${deckName}` : 'mixed from your decks';
-  els.todayStart.hidden = plan.queue.length === 0;
+  els.todayNewFrom.textContent = s.newSource === 'manual' ? "you've added"
+    : s.newSource === 'current' ? `from ${deckName}` : 'mixed from your topics';
+  // "Only words I add" with nothing added yet: say how to add words instead of 0 / 0.
+  const empty = s.newSource === 'manual' && Object.keys(reviewWords()).length === 0;
+  els.todayEmpty.hidden = !empty;
+  els.todayCounts.hidden = empty;
+  els.todayStart.hidden = empty || plan.queue.length === 0;
   renderTodayBreakdown(plan);
 }
 
@@ -1673,42 +1990,84 @@ function renderHome() {
   if (!state.cardIndex.size) return; // decks not loaded yet
   const plan = planReview();
   const deck = state.decks.find((d) => d.id === state.currentDeckId);
-  els.homeDeckStat.textContent = els.homeWordlistStat.textContent = deck ? `Current deck: ${deck.name}` : '';
-  els.homeReviewStat.textContent = `${plan.due.length} due · ${plan.news.length} new`;
+  els.homeDeckStat.textContent = els.homeWordlistStat.textContent = deck ? `Topic: ${deck.name}` : '';
+  const empty = getSettings().newSource === 'manual' && Object.keys(reviewWords()).length === 0;
+  els.homeReviewStat.textContent = empty ? 'Nothing added yet' : `${plan.due.length} due · ${plan.news.length} new`;
 }
 
 // Under the card: the session's due and new counts per category, biggest first.
+// Tapping a category row shows its words (one category at a time), each with its own ✕.
 function renderTodayBreakdown(plan) {
   const byCat = new Map();
   const categoryOf = (deckId) => state.decks.find((d) => d.id === deckId)?.category || 'Uncategorized';
   for (const [list, field] of [[plan.due, 'due'], [plan.news, 'new']]) {
     for (const e of list) {
       const cat = categoryOf(e.deckId);
-      if (!byCat.has(cat)) byCat.set(cat, { due: 0, new: 0 });
-      byCat.get(cat)[field] += 1;
+      if (!byCat.has(cat)) byCat.set(cat, { due: 0, new: 0, words: new Map() });
+      const c = byCat.get(cat);
+      c[field] += 1;
+      // A word can be both due and new (one direction each): list it once.
+      if (!c.words.has(e.key)) c.words.set(e.key, { card: state.cardIndex.get(e.key).card, kinds: new Set() });
+      c.words.get(e.key).kinds.add(e.dir === 'en-th' ? `${field} EN→TH` : field);
     }
   }
   const rows = [...byCat].sort((a, b) => (b[1].due + b[1].new) - (a[1].due + a[1].new) || a[0].localeCompare(b[0]));
-  els.todayBreakdownBody.replaceChildren(...rows.map(([cat, n]) => {
+  if (!byCat.has(state.breakdownOpen)) state.breakdownOpen = null;
+  els.todayBreakdownBody.replaceChildren(...rows.flatMap(([cat, n]) => {
+    const open = state.breakdownOpen === cat;
     const tr = document.createElement('tr');
+    tr.className = 'bd-row' + (open ? ' open' : '');
+    tr.setAttribute('aria-expanded', String(open));
     for (const text of [cat, n.due || '–', n.new || '–']) {
       const td = document.createElement('td');
       td.textContent = text;
       tr.appendChild(td);
     }
+    tr.firstChild.classList.add('bd-cat');
+    tr.addEventListener('click', () => {
+      state.breakdownOpen = open ? null : cat;
+      renderToday();
+    });
     const td = document.createElement('td');
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'bd-remove';
-    btn.textContent = '✕';
-    btn.title = `Remove ${cat} from Review`;
-    btn.setAttribute('aria-label', btn.title);
-    btn.addEventListener('click', () => removeCategoryFromReview(cat));
-    td.appendChild(btn);
+    td.appendChild(removeButton(`Remove ${cat} from Review`, () => removeCategoryFromReview(cat)));
     tr.appendChild(td);
-    return tr;
+    if (!open) return [tr];
+
+    const wordsRow = document.createElement('tr');
+    wordsRow.className = 'bd-words';
+    const cell = document.createElement('td');
+    cell.colSpan = 4;
+    const list = document.createElement('ul');
+    // One line per word: Thai, then translit and meaning (cut short if long), then due/new and ✕.
+    const span = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
+    list.replaceChildren(...[...n.words].map(([key, w]) => {
+      const li = document.createElement('li');
+      const detail = span('bw-detail', '');
+      detail.append(span('bw-translit', w.card.translit), ' ', span('bw-english', w.card.english));
+      detail.title = `${w.card.translit} · ${w.card.english}`;
+      li.append(span('bw-thai', w.card.thai), detail, textWithArrows(span('bw-kind', ''), [...w.kinds].join(' · '), { caps: true }),
+        removeButton(`Remove ${w.card.thai} from Review`, () => removeWordFromReview(key)));
+      return li;
+    }));
+    cell.appendChild(list);
+    wordsRow.appendChild(cell);
+    return [tr, wordsRow];
   }));
   els.todayBreakdown.hidden = rows.length === 0;
+}
+
+function removeButton(label, onClick) {
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'bd-remove';
+  btn.textContent = '✕';
+  btn.title = label;
+  btn.setAttribute('aria-label', label);
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation(); // don't also toggle the row
+    onClick();
+  });
+  return btn;
 }
 
 function startReview() {
@@ -1753,10 +2112,10 @@ function presentEntry() {
   els.reviewMain.textContent = thaiFirst ? card.english : card.thai;
   els.reviewMain.className = 'review-main english' + (thaiFirst ? '' : ' back-th');
   els.reviewTranslit.textContent = card.translit;
-  els.reviewNote.textContent = card.note || '';
+  textWithArrows(els.reviewNote, card.note || '');
   els.reviewAnswer.hidden = true;
   const badge = [e.again && 'Again', !it && 'New', !thaiFirst && 'English → Thai'].filter(Boolean).join(' · ');
-  els.reviewBadge.textContent = badge;
+  textWithArrows(els.reviewBadge, badge);
   els.reviewBadge.hidden = !badge;
   els.reviewDeck.textContent = state.decks.find((d) => d.id === e.deckId)?.name || '';
   els.reviewLeft.textContent = `${r.queue.length - r.pos} left`;
@@ -2001,10 +2360,17 @@ function toggleReadAloud() {
   else startReadAloud();
 }
 
-function resetDeckProgress() {
+async function resetDeckProgress() {
   if (!state.currentDeckId) return;
   const deck = state.decks.find((d) => d.id === state.currentDeckId);
-  if (!confirm(`Reset progress for "${deck?.name ?? 'this deck'}"?\n\nIts words are reset in every deck they appear in. This cannot be undone.`)) return;
+  if (!deck) return;
+  const ok = await confirmDialog({
+    title: `Reset ${deck.name}?`,
+    message: `This wipes your progress on its ${deck.cards.length} words, including where they appear in other topics.\nThis can't be undone.`,
+    confirmLabel: 'Reset',
+    danger: true,
+  });
+  if (!ok) return;
   const store = loadStore();
   for (const c of deck.cards) {
     for (const dir of ['th-en', 'en-th']) delete store.items?.[itemKeyOf(cardKey(c), dir)];
@@ -2012,18 +2378,26 @@ function resetDeckProgress() {
   saveStore(store);
   selectDeck(state.currentDeckId);
   renderToday();
+  toast(`Progress reset for ${deck.name}`);
 }
 
-function resetAllProgress() {
-  if (!confirm(`Reset ALL progress across every deck?\n\nThis wipes study history on ${state.decks.length} decks and cannot be undone. Your settings will be kept.`)) return;
+async function resetAllProgress() {
+  const ok = await confirmDialog({
+    title: 'Reset all progress?',
+    message: `This wipes your study history on all ${state.decks.length} topics. Your settings are kept.\nThis can't be undone.`,
+    confirmLabel: 'Reset everything',
+    danger: true,
+  });
+  if (!ok) return;
   const store = loadStore();
   store.items = {};
   store.daily = {};
   store.reviewExcluded = [];
+  store.reviewExcludedCards = [];
   saveStore(store);
   if (state.currentDeckId) selectDeck(state.currentDeckId);
   renderToday();
-  alert('All progress reset.');
+  toast('All progress reset');
 }
 
 // ---------- TTS ----------
@@ -2252,6 +2626,7 @@ function bindEvents() {
   els.card.addEventListener('click', (e) => {
     // Don't flip if clicking the speak or flip button (flip-btn calls flipCard itself).
     if (e.target.closest('.speak-btn')) return;
+    if (e.target.closest('.review-toggle')) return;
     if (e.target.closest('.flip-btn')) return;
     flipCard();
   });
@@ -2294,6 +2669,71 @@ function bindEvents() {
   els.homeLink.addEventListener('click', () => setView('home'));
   els.homeCards.forEach((card) => card.addEventListener('click', () => setView(card.dataset.go)));
 
+  // Adding to Review by hand
+  els.wordlistAddAll.addEventListener('click', async () => {
+    const words = reviewWords();
+    const deck = state.decks.find((d) => d.id === state.currentDeckId);
+    const keys = state.cards.map((c) => c.key).filter((key) => !(key in words));
+    if (!keys.length) {
+      // All in Review: remove them all (their progress is kept).
+      const n = state.cards.length;
+      const ok = await confirmDialog({
+        title: 'Remove all from Review?',
+        message: `Remove all ${n} words in ${deck.name} from Review? Your progress on them is kept.`,
+        confirmLabel: `Remove ${n}`,
+        setting: 'confirmRemoveAll',
+      });
+      if (ok) {
+        setInReview(state.cards.map((c) => c.key), false);
+        toast(`Removed ${n} words from Review`);
+      }
+      return;
+    }
+    const n = keys.length;
+    const ok = await confirmDialog({
+      title: 'Add all to Review?',
+      message: n === state.cards.length
+        ? `Add all ${n} words in ${deck.name} to Review?`
+        : `Add the ${n} words in ${deck.name} that aren't in Review yet?`,
+      confirmLabel: `Add ${n}`,
+      setting: 'confirmAddAll',
+    });
+    if (ok) {
+      setInReview(keys, true);
+      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Review`, { tone: 'good' });
+    }
+  });
+  els.confirmOk.addEventListener('click', () => closeConfirm(true));
+  els.confirmCancel.addEventListener('click', () => closeConfirm(false));
+  els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
+  els.reviewToggles.forEach((btn) => btn.addEventListener('click', (e) => {
+    e.stopPropagation(); // not a flip
+    const c = currentCard();
+    if (!c) return;
+    const add = !(c.key in reviewWords());
+    setInReview([c.key], add);
+    // No word in the message: it could give away the side of the card you haven't seen.
+    toast(add ? '✓ Added to Review' : 'Removed from Review', { tone: add ? 'good' : '' });
+  }));
+  els.roundAdd.addEventListener('click', openAddModal);
+  els.addModal.addEventListener('click', (e) => {
+    if (e.target.dataset.close !== undefined) closeAddModal();
+  });
+  els.addPicks.forEach((btn) => btn.addEventListener('click', () => {
+    for (const box of addChoices()) {
+      box.checked = btn.dataset.pick === 'all' || (btn.dataset.pick === 'missed' && box.dataset.missed === 'true');
+    }
+    updateAddConfirm();
+  }));
+  els.addList.addEventListener('change', updateAddConfirm);
+  els.addConfirm.addEventListener('click', () => {
+    const keys = addChoices().filter((b) => b.checked).map((b) => b.dataset.key);
+    if (!keys.length) return;
+    setInReview(keys, true);
+    closeAddModal();
+    els.roundAdd.textContent = `✓ Added ${keys.length} to Review`;
+  });
+
   els.todayStart.addEventListener('click', startReview);
   els.reviewShow.addEventListener('click', revealAnswer);
   els.reviewContinue.addEventListener('click', () => { if (state.review?.answered) nextEntry(); });
@@ -2309,10 +2749,24 @@ function bindEvents() {
   els.reviewDone.addEventListener('click', endReview);
 
   document.addEventListener('keydown', (e) => {
+    if (state.confirm) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeConfirm(false);
+      }
+      return; // Enter / Space act on the focused button
+    }
     if (state.pickerOpen) {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeDeckPicker();
+      }
+      return;
+    }
+    if (state.addOpen) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeAddModal();
       }
       return;
     }
@@ -2382,6 +2836,12 @@ window.addEventListener('appinstalled', () => {
 
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return; // also absent over plain http on a LAN address
+  // The app opens from the saved copy; sw.js checks for a new version in the background and
+  // says so when it has stored one, and a reload then shows it.
+  navigator.serviceWorker.addEventListener('message', (e) => {
+    if (e.data?.type === 'update-ready') els.updateBar.hidden = false;
+  });
+  els.updateReload.addEventListener('click', () => location.reload());
   navigator.serviceWorker.register('sw.js').catch((e) => console.warn('Service worker failed:', e));
 }
 
@@ -2435,7 +2895,7 @@ async function renderOffline() {
     offline.running ? `Downloading… ${n(done)} of ${n(total)} clips. Keep the app open until it finishes.` :
     complete ? `All ${n(total)} clips are saved for offline use${used ? ` (${mb(used)} MB)` : ''}. Clips for new cards download automatically.` :
     `${n(done)} of ${n(total)} clips saved${used ? ` (${mb(used)} MB used)` : ''}. Everything is about ` +
-      `${mb(total * AVG_CLIP_KB * 1000)} MB, best on Wi-Fi. Each deck's audio is saved anyway when you open it.` +
+      `${mb(total * AVG_CLIP_KB * 1000)} MB, best on Wi-Fi. Each topic's audio is saved anyway when you open it.` +
       (offline.failed ? ` ${n(offline.failed)} failed: check your connection and try again.` : '');
 }
 
@@ -2502,7 +2962,7 @@ async function init() {
     buildCardIndex();
   } catch (e) {
     els.thai.textContent = '⚠';
-    els.english.textContent = 'Could not load decks.json. Are you serving over http://?';
+    els.english.textContent = 'Could not load the topics (data/decks.json). Are you serving over http://?';
     console.error(e);
     return;
   }

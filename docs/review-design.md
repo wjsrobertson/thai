@@ -13,6 +13,14 @@ four phases; implementation details go in `implementation-notes.md` as each phas
   dropped, since progress never needs preserving).
 - **15 new cards a day** is the default.
 - **No personal notes field:** the user didn't want one.
+- **2026-10-06: shorter intervals for a beginner.** Three changes to plain FSRS: Hard caps the next
+  gap at 1.2× the last one (at least +1 day), a correct multiple-choice answer counts as Hard, and
+  answers repeated on the same day don't lengthen the gap. See "Changes to plain FSRS" in
+  `implementation-notes.md`.
+- **2026-10-06: Review is manual by default.** It only holds words you add: from a deck Test
+  round's score screen (a dialog, nothing pre-ticked), Wordlists (a button on each row), or a
+  Flashcards card. There's
+  no daily limit on added words. It started empty. Automatic adding stays available as a setting.
 
 ## Why (research summary)
 

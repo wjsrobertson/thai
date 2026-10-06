@@ -541,8 +541,13 @@ html.modal-open body {
   accent-color: var(--accent);
 }
 
+/* "Settings save automatically" sits centred in the space left below the sections; when they fill
+   the panel it just follows them. The list is a column so the footer's auto margins can do that. */
+#settings-section { display: flex; flex-direction: column; }
+#settings-section > * { flex-shrink: 0; }
 .settings-footer {
-  margin-top: 24px;
+  margin: auto 0;
+  padding: 24px 0;
   text-align: center;
 }
 
@@ -769,6 +774,7 @@ button {
 
 .card.flipped .front { transform: rotateY(180deg); }
 .card.flipped .back  { transform: rotateY(360deg); }
+.card.no-anim .face { transition: none; } /* setFlipped(…, { instant: true }) */
 
 .thai {
   font-size: calc(clamp(40px, 7vw, 80px) * var(--fs, 1));
@@ -965,12 +971,6 @@ button {
 #wordlist-filter:focus {
   outline: none;
   border-color: var(--accent);
-}
-
-.wordlist-count {
-  color: var(--muted);
-  font-size: calc(15px * var(--fs, 1));
-  white-space: nowrap;
 }
 
 .seg-with-label {
@@ -1220,6 +1220,51 @@ button {
 .today-breakdown td:not(:first-child) { text-align: right; width: 4em; font-variant-numeric: tabular-nums; }
 .today-breakdown th:last-child,
 .today-breakdown td:last-child { width: 2.6em; padding-right: 0; }
+.bd-row { cursor: pointer; }
+.bd-row:hover td { background: var(--panel-2); }
+.bd-cat::before {
+  content: "▸";
+  display: inline-block;
+  width: 1.1em;
+  color: var(--muted);
+  font-size: .8em;
+}
+.bd-row.open .bd-cat::before { content: "▾"; }
+.bd-row.open td { border-bottom-color: transparent; }
+.today-breakdown .bd-words td { padding: 0 0 10px; text-align: left; width: auto; }
+.bd-words ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.bd-words li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 6px 5px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.bd-words li:last-child { border-bottom: 0; }
+.bw-thai { flex: none; font-size: calc(17px * var(--fs, 1)); color: var(--ink); }
+.bw-detail {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: calc(14px * var(--fs, 1));
+}
+.bw-translit { color: var(--accent); font-style: italic; }
+.bw-english { color: var(--ink); }
+.bw-kind { flex: none; font-size: calc(12px * var(--fs, 1)); color: var(--muted); }
+.bd-words .bd-remove { flex: none; width: 24px; height: 24px; font-size: 11px; }
+.bd-remove { grid-column: 2; grid-row: 1 / span 4; }
+.bw-thai { font-size: calc(20px * var(--fs, 1)); color: var(--ink); }
+.bw-translit { font-size: calc(14px * var(--fs, 1)); color: var(--accent); font-style: italic; }
+.bw-english { font-size: calc(14px * var(--fs, 1)); color: var(--ink); }
+.bw-kind { font-size: calc(12px * var(--fs, 1)); color: var(--muted); }
 .bd-remove {
   background: transparent;
   color: var(--muted);
@@ -1353,3 +1398,188 @@ button {
 .home-card-desc { font-size: calc(16px * var(--fs, 1)); color: var(--muted); line-height: 1.4; }
 .home-card-stat { margin-top: auto; font-size: calc(15px * var(--fs, 1)); color: var(--accent); }
 .home-card-stat:empty { display: none; }
+
+/* "A new version is ready" (sw.js found an update) */
+.update-bar {
+  position: fixed;
+  left: 50%;
+  bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: calc(100% - 32px);
+  padding: 10px 12px 10px 16px;
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: 15px;
+}
+.update-bar[hidden] { display: none; }
+.update-bar button {
+  background: var(--accent);
+  color: #111;
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-weight: 600;
+}
+
+/* ---------- adding words to Review by hand ---------- */
+.today-counts[hidden] { display: none; }
+.today-empty { margin: 0; font-size: calc(17px * var(--fs, 1)); color: var(--muted); line-height: 1.5; }
+.today-empty[hidden] { display: none; }
+
+.review-toggle {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  font-size: 22px;
+  line-height: 1;
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.review-toggle[hidden] { display: none; }
+.review-toggle:hover { color: var(--accent); border-color: var(--accent); }
+.review-toggle.added { color: var(--good); border-color: var(--good); }
+
+/* Wordlists: the Review button sits left of the speaker. A plain icon with no border, so it reads
+   as less important than the speaker; the speakers stay lined up on the right. */
+.wordtable td.col-audio { text-align: right; white-space: nowrap; }
+.wordtable .row-speak { vertical-align: middle; }
+.wordtable .row-review {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 34px;
+  height: 34px;
+  margin-right: 6px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 600;
+}
+.wordtable .row-review .review-icon { width: 18px; height: 18px; margin: 0; }
+.wordtable .row-review:hover { color: var(--accent); background: var(--panel-2); }
+.wordtable .row-review.added { color: var(--good); }
+.wordlist-add-all[hidden] { display: none; }
+.wordlist-add-all.all-in { display: inline-grid; justify-items: center; color: var(--good); border-color: var(--good); }
+.wordlist-add-all.all-in > span { grid-area: 1 / 1; }
+.wordlist-add-all .label-hover { visibility: hidden; }
+@media (hover: hover) {
+  /* Hovering "✓ All in Review" says what a click does. */
+  .wordlist-add-all.all-in:hover { color: var(--again); border-color: var(--again); }
+  .wordlist-add-all.all-in:hover .label-idle { visibility: hidden; }
+  .wordlist-add-all.all-in:hover .label-hover { visibility: visible; }
+}
+
+.round-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; align-items: center; }
+.round-add { padding: 12px 18px; font-size: 16px; }
+.round-add[hidden] { display: none; }
+
+#add-modal .modal-panel { max-width: 560px; }
+.add-quick { display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.add-row input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); }
+.add-row:has(input:disabled) { opacity: .6; cursor: default; }
+.bw-kind.missed { color: var(--again); }
+.add-foot { padding: 12px 16px; border-top: 1px solid var(--border); text-align: center; }
+.add-foot .round-again:disabled { opacity: .45; cursor: default; }
+
+/* ---------- confirm dialog (confirmDialog) ---------- */
+/* A small centred card on every screen size (mobile.css turns other modals into full-screen sheets). */
+.modal.confirm-modal { z-index: 110; padding: 16px; align-items: center; }
+.modal-panel.confirm-panel {
+  width: min(420px, 100%);
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  gap: 12px;
+}
+.confirm-panel h2 { margin: 0; font-size: calc(19px * var(--fs, 1)); color: var(--ink); }
+.confirm-panel p { margin: 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.45; white-space: pre-line; }
+.confirm-panel p[hidden], .confirm-dont-ask[hidden] { display: none; }
+.confirm-dont-ask { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+.confirm-dont-ask input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.confirm-dont-ask .setting-help { padding-left: 26px; } /* lines up with "Don't ask again": box 18px + gap 8px */
+/* Every → in the UI is this SVG arrow (index.html, textWithArrows), since the → glyph sits low in
+   some fonts. `middle` centres it on the lowercase letters; .caps centres it on capitals (EN→TH). */
+.arrow-icon {
+  flex: none;
+  width: 0.9em;
+  height: 0.9em;
+  margin: 0 0.3em;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.arrow-icon.caps { vertical-align: -0.09em; }
+/* The "add to Review" icon (reviewIcon): Home's 🔁 as a line icon in the text colour. */
+.review-icon {
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0.4em;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.review-toggle .review-icon { width: 20px; height: 20px; margin: 0; display: block; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
+.confirm-actions button { padding: 10px 20px; font-size: 16px; }
+.confirm-actions .round-again.danger { background: var(--again); color: #111; } /* can't be undone */
+
+/* ---------- toast (toast()) ---------- */
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  transform: translate(-50%, 8px);
+  z-index: 120;
+  max-width: calc(100% - 32px);
+  padding: 10px 18px;
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  font-size: 16px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none; /* never in the way of a tap */
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.toast[hidden] { display: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.good { color: var(--good); border-color: var(--good); }
+/* Above the "new version" bar when that's showing. */
+.update-bar:not([hidden]) ~ .toast { bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }

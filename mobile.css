@@ -16,9 +16,13 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 }
 
 /* ---------- top bar ---------- */
-.topbar { padding: 10px 12px; gap: 8px; }
+.topbar { padding: 10px 12px; gap: 6px; }
 .topbar h1 { font-size: 16px; white-space: nowrap; }
-.tab { padding: 6px 12px; }
+.tab { padding: 6px 8px; } /* Flashcards | Wordlists | Review */
+@media (max-width: 380px) { /* iPhone SE/mini width: a little tighter so the gear keeps its margin */
+  .tab { padding: 6px 6px; }
+  .topbar h1 { letter-spacing: 0; }
+}
 .tab-icon { padding: 6px 9px; }
 
 .stage { padding: 12px 12px 24px; }
@@ -138,3 +142,8 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 /* Home: the three cards stack */
 .home { grid-template-columns: 1fr; gap: 12px; margin-top: 4px; }
 .home-card { padding: 18px 16px; }
+
+/* Adding to Review */
+.review-toggle { width: 40px; height: 40px; top: 10px; right: 10px; font-size: 20px; }
+/* The Review button and speaker sit side by side, centred in the row's height. */
+.wordtable tbody td.col-audio { align-self: stretch; display: flex; align-items: center; justify-content: flex-end; }

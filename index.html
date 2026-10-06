@@ -18,8 +18,8 @@
   <header class="topbar">
     <h1><button type="button" class="home-link" id="home-link" title="Home">Learn Thai</button></h1>
     <nav class="tabs" role="tablist">
-      <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Decks</button>
-      <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Wordlist</button>
+      <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Flashcards</button>
+      <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Wordlists</button>
       <button type="button" class="tab" role="tab" data-view="today" aria-selected="false">Review</button>
     </nav>
     <div class="controls">
@@ -31,31 +31,71 @@
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel" role="document">
       <div class="modal-head">
-        <h2 id="deck-picker-title">Choose a deck</h2>
+        <h2 id="deck-picker-title">Choose a topic</h2>
         <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
       </div>
       <div class="modal-search">
-        <input type="search" id="deck-picker-search" placeholder="Search decks…" autocomplete="off" />
+        <input type="search" id="deck-picker-search" placeholder="Search topics…" autocomplete="off" />
       </div>
       <div class="modal-body" id="deck-picker-tree" tabindex="-1"></div>
+    </div>
+  </div>
+
+  <!-- Confirm dialog (confirmDialog in app.js) -->
+  <div id="confirm-modal" class="modal confirm-modal" hidden role="alertdialog" aria-modal="true"
+       aria-labelledby="confirm-title" aria-describedby="confirm-message">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel confirm-panel" role="document">
+      <h2 id="confirm-title"></h2>
+      <p id="confirm-message"></p>
+      <div class="confirm-dont-ask" id="confirm-dont-ask-row">
+        <label class="checkbox-inline">
+          <input type="checkbox" id="confirm-dont-ask" />
+          <span>Don't ask again</span>
+        </label>
+        <span class="setting-help">You can turn this back on in Settings<svg class="arrow-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Confirmations.</span>
+      </div>
+      <div class="confirm-actions">
+        <button type="button" class="ghost" id="confirm-cancel">Cancel</button>
+        <button type="button" class="round-again" id="confirm-ok">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="add-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel" role="document">
+      <div class="modal-head">
+        <h2 id="add-modal-title">Add to Review</h2>
+        <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="add-quick">
+        <button type="button" class="ghost" data-pick="all">All</button>
+        <button type="button" class="ghost" data-pick="missed">Missed only</button>
+        <button type="button" class="ghost" data-pick="none">None</button>
+      </div>
+      <div class="modal-body" id="add-list"></div>
+      <div class="add-foot">
+        <button type="button" class="round-again" id="add-confirm">Add to Review</button>
+      </div>
     </div>
   </div>
 
   <main class="stage" data-view="home">
     <section class="home home-only" id="home-section">
       <button type="button" class="home-card" data-go="flashcards">
-        <span class="home-card-title">📖 Decks</span>
-        <span class="home-card-desc">A deck is a set of flashcards on one topic, like Colours or Football. Flip through to learn, or test yourself.</span>
+        <span class="home-card-title">📖 Flashcards</span>
+        <span class="home-card-desc">Flip cards to learn a topic, then test yourself</span>
         <span class="home-card-stat" id="home-deck-stat"></span>
       </button>
       <button type="button" class="home-card" data-go="wordlist">
-        <span class="home-card-title">📋 Wordlist</span>
-        <span class="home-card-desc">See a whole deck as a list: search, sort, and hear every word.</span>
+        <span class="home-card-title">📋 Wordlists</span>
+        <span class="home-card-desc">Every word in a topic, with audio</span>
         <span class="home-card-stat" id="home-wordlist-stat"></span>
       </button>
       <button type="button" class="home-card" data-go="today">
         <span class="home-card-title">🔁 Review</span>
-        <span class="home-card-desc">Your daily spaced-repetition session: words due today from all your decks, plus a few new ones.</span>
+        <span class="home-card-desc">Practise the words you've added</span>
         <span class="home-card-stat" id="home-review-stat"></span>
       </button>
     </section>
@@ -63,12 +103,12 @@
     <div class="deck-picker-bar">
       <button type="button" id="deck-button" class="deck-button" aria-haspopup="dialog" aria-expanded="false">
         <span class="deck-button-icon" aria-hidden="true">📖</span>
-        <span class="deck-button-label" id="deck-button-label">Choose a deck</span>
+        <span class="deck-button-label" id="deck-button-label">Choose a topic</span>
         <span class="deck-button-chevron" aria-hidden="true">▾</span>
       </button>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
-        <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true">Thai → English</button>
-        <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false">English → Thai</button>
+        <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true">Thai<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>English</button>
+        <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false">English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai</button>
       </div>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card order">
         <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Learn</button>
@@ -82,7 +122,7 @@
         </div>
       </div>
       <div class="wordlist-only wordlist-bar-right">
-        <span class="wordlist-count" id="wordlist-count"></span>
+        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Review</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through all visible words">🔊 Read all</button>
       </div>
     </div>
@@ -95,6 +135,7 @@
               <div class="pos-badge stat-pos">—</div>
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
+              <button type="button" class="review-toggle" aria-label="Add to Review" title="Add to Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></button>
             </div>
             <div class="thai" id="card-thai"></div>
           </div>
@@ -103,6 +144,7 @@
               <div class="pos-badge stat-pos">—</div>
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
+              <button type="button" class="review-toggle" aria-label="Add to Review" title="Add to Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></button>
             </div>
             <div class="translit" id="card-translit"></div>
             <div class="english" id="card-english"></div>
@@ -122,16 +164,20 @@
       <div class="round-sub" id="round-sub"></div>
       <h3 class="round-missed-title" id="round-missed-title"></h3>
       <ul class="round-missed" id="round-missed"></ul>
-      <button type="button" class="round-again" id="round-again">Start again</button>
+      <div class="round-actions">
+        <button type="button" class="ghost round-add" id="round-add">Add to Review…</button>
+        <button type="button" class="round-again" id="round-again">Start again</button>
+      </div>
     </section>
 
     <section class="today today-only" id="today-section">
       <div class="today-home" id="today-home">
-        <div class="today-counts">
+        <div class="today-counts" id="today-counts">
           <span class="today-num" id="today-due">0</span><span class="today-kind">due</span><span class="today-from" id="today-due-from"></span>
           <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
         </div>
         <button type="button" class="round-again today-start" id="today-start">Start review</button>
+        <p class="today-empty" id="today-empty" hidden>Review is empty. Add words from Flashcards or Wordlists.</p>
       </div>
       <table class="today-breakdown" id="today-breakdown" hidden>
         <thead><tr><th>Category</th><th>Due</th><th>New</th><th><span class="visually-hidden">Remove</span></th></tr></thead>
@@ -224,7 +270,7 @@
               <option value="1">Larger</option>
               <option value="2">Largest</option>
             </select>
-            <span class="setting-help">Cards, wordlist, deck picker and settings. Buttons and the top bar stay the same size.</span>
+            <span class="setting-help">Cards, wordlists, topic picker and settings. Buttons and the top bar stay the same size.</span>
           </label>
         </div>
       </details>
@@ -235,27 +281,28 @@
           <label class="setting-row">
             <span class="setting-label">New cards per day</span>
             <input type="number" min="0" max="100" id="setting-new-per-day" />
-            <span class="setting-help">Includes cards answered for the first time in deck Test mode.</span>
+            <span class="setting-help">Automatic adding only (see "Adding to Review"). Words you add yourself all show up straight away.</span>
           </label>
         </div>
-        <div class="setting-group" data-search="due reviews from scope decks all current deck">
+        <div class="setting-group" data-search="due reviews from scope decks all current deck topic">
           <label class="setting-row">
             <span class="setting-label">Due reviews from</span>
             <select id="setting-review-scope">
-              <option value="all">All decks (Recommended)</option>
-              <option value="current">Current deck only</option>
+              <option value="all">All topics (Recommended)</option>
+              <option value="current">Current topic only</option>
             </select>
-            <span class="setting-help">With "Current deck only", words due in other decks wait until you switch back, and the longer they're overdue the more you'll have forgotten.</span>
+            <span class="setting-help">With "Current topic only", words due in other topics wait until you switch back, and the longer they're overdue the more you'll have forgotten.</span>
           </label>
         </div>
-        <div class="setting-group" data-search="new cards from source decks started current deck">
+        <div class="setting-group" data-search="adding to review manual automatic add words new cards from source decks started current deck topic">
           <label class="setting-row">
-            <span class="setting-label">New cards from</span>
+            <span class="setting-label">Adding to Review</span>
             <select id="setting-new-source">
-              <option value="started">Decks I've started</option>
-              <option value="current">Current deck only</option>
+              <option value="manual">Only words I add (Recommended)</option>
+              <option value="started">Automatically, from topics I've started</option>
+              <option value="current">Automatically, from the current topic</option>
             </select>
-            <span class="setting-help">"Decks I've started" mixes the current deck with every deck you've studied a word from, at most 5 new cards from each a day where possible.</span>
+            <span class="setting-help">Add words from Flashcards or Wordlists. Automatic adding brings in up to "New cards per day" new words a day, mixing the current topic with every topic you've studied a word from.</span>
           </label>
         </div>
         <div class="setting-group" data-search="maximum reviews per day limit daily">
@@ -281,9 +328,9 @@
             <span class="setting-label">Both directions</span>
             <label class="checkbox-inline">
               <input type="checkbox" id="setting-both-directions" />
-              <span>Also practise English → Thai</span>
+              <span>Also practise English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai</span>
             </label>
-            <span class="setting-help">A word's English → Thai card unlocks once you've recalled its meaning after a gap of a day or more.</span>
+            <span class="setting-help">A word's English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai card unlocks once you've recalled its meaning after a gap of a day or more.</span>
           </label>
         </div>
         <div class="setting-group" data-search="say aloud speak prompt pronounce">
@@ -299,8 +346,8 @@
       </details>
 
       <details class="settings-cat" data-cat="deck-mode">
-        <summary>Deck mode</summary>
-        <div class="setting-group" data-search="smart order spaced repetition shuffle random due">
+        <summary>Flashcards</summary>
+        <div class="setting-group" data-search="flashcards smart order spaced repetition shuffle random due">
           <label class="setting-row">
             <span class="setting-label">Smart order</span>
             <label class="checkbox-inline">
@@ -311,18 +358,18 @@
           </label>
         </div>
 
-        <div class="setting-group" data-search="test mode card order random shuffle deck order sequence list">
+        <div class="setting-group" data-search="flashcards test mode card order random shuffle deck order sequence list topic">
           <label class="setting-row">
             <span class="setting-label">Test card order</span>
             <select id="setting-test-order">
               <option value="random">Random</option>
-              <option value="deck">Deck order</option>
+              <option value="deck">List order</option>
             </select>
-            <span class="setting-help">Deck order is the order Learn mode and the wordlist show. With Smart order on, due cards still come first.</span>
+            <span class="setting-help">List order is the order Learn mode and Wordlists show. With Smart order on, due cards still come first.</span>
           </label>
         </div>
 
-        <div class="setting-group" data-search="learn test mode auto progress advance next button manual correct right wrong answer multiple choice">
+        <div class="setting-group" data-search="flashcards learn test mode auto progress advance next button manual correct right wrong answer multiple choice">
           <label class="setting-row">
             <span class="setting-label">Auto-progress after multiple choice</span>
             <select id="setting-learn-auto">
@@ -330,7 +377,7 @@
               <option value="correct">Only after a correct answer</option>
               <option value="always">After every answer</option>
             </select>
-            <span class="setting-help">Deck Test mode, and multiple-choice cards on the Review tab. "Only after a correct answer" waits on a wrong one so you can study the card.</span>
+            <span class="setting-help">Flashcards Test mode, and multiple-choice cards on the Review tab. "Only after a correct answer" waits on a wrong one so you can study the card.</span>
           </label>
           <label class="setting-row" id="learn-pause-row">
             <span class="setting-label">Pause before moving on</span>
@@ -391,15 +438,37 @@
         </div>
       </details>
 
+      <details class="settings-cat" data-cat="confirm">
+        <summary>Confirmations</summary>
+        <div class="setting-group" data-search="confirm confirmation ask before add all whole deck review don't ask again topic">
+          <label class="setting-row">
+            <span class="setting-label">Add all to Review</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" data-confirm-setting="confirmAddAll" />
+              <span>Ask before adding a whole topic</span>
+            </label>
+          </label>
+        </div>
+        <div class="setting-group" data-search="confirm confirmation ask before remove all whole deck review don't ask again topic">
+          <label class="setting-row">
+            <span class="setting-label">Remove all from Review</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
+              <span>Ask before removing a whole topic</span>
+            </label>
+          </label>
+        </div>
+      </details>
+
       <details class="settings-cat" data-cat="reset">
         <summary>Reset</summary>
-        <div class="setting-group danger" data-search="reset progress wipe delete deck everything">
+        <div class="setting-group danger" data-search="reset progress wipe delete deck everything topic">
           <label class="setting-row">
             <span class="setting-label">Reset progress</span>
             <span class="setting-help" id="reset-deck-help">Wipe study progress. Choose scope.</span>
           </label>
           <div class="setting-actions">
-            <button type="button" id="reset-progress" class="ghost danger-btn">Reset current deck</button>
+            <button type="button" id="reset-progress" class="ghost danger-btn">Reset current topic</button>
             <button type="button" id="reset-all" class="ghost danger-btn">Reset everything</button>
           </div>
         </div>
@@ -408,7 +477,7 @@
           <div class="settings-empty" id="settings-empty" hidden>No settings match your search.</div>
 
           <div class="settings-footer">
-            <p class="setting-help">Settings save automatically.</p>
+            <p class="setting-help">Settings save automatically</p>
           </div>
         </div>
       </div>
@@ -425,6 +494,14 @@
       </table>
     </section>
   </main>
+
+  <div class="update-bar" id="update-bar" hidden>
+    <span>A new version is ready.</span>
+    <button type="button" id="update-reload">Reload</button>
+  </div>
+
+  <!-- Toast (toast() in app.js): a short message that fades out by itself -->
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
 
   <script src="app.js" type="module"></script>
 </body>
