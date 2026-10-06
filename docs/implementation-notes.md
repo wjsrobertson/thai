@@ -431,8 +431,10 @@ The controls row holds:
 - The **mode** toggle, Learn / Test. Internally these are `practice` / `test`; legacy pref values
   are migrated in `init()`. Learn has no scoring and flips freely.
 
-**Wordlist** shows the deck as a sortable, filterable table. "Show first" puts the Thai or
-English column first, and each row has a 🔊 button. "Read all" walks the visible (filtered and
+**Wordlists** shows the topic as a sortable, filterable table, and each row has a 🔊 button. Which
+column comes first, Thai or English, is the Settings → Wordlists "Show first" setting
+(`settings.wordlistFirst`). It moved off the page on 2026-10-06; an English choice saved in the
+old `prefs.primaryCol` carries over once. "Read all" walks the visible (filtered and
 sorted) rows, highlighting and scrolling to the current one. A view or deck change cancels it.
 
 Keyboard: Space flips, `P` plays, ←/→ navigate.
@@ -665,8 +667,8 @@ Everything lives in localStorage under `learnthai:v1`:
   review).
 
 The settings modal (gear icon, top right) is searchable through each group's `data-search`
-keywords. Its sections are App, Display, Daily review, Flashcards (was "Deck mode"), Audio,
-Confirmations and Reset. Search doesn't look at section names, so each Flashcards group has
+keywords. Its sections are App, Display, Daily review, Flashcards (was "Deck mode"), Wordlists,
+Audio, Confirmations and Reset. Search doesn't look at section names, so each Flashcards group has
 "flashcards" in its `data-search`.
 - **Accordion** (since 2026-10-05): the sections start closed, and opening one closes the others.
 - **Searching** opens every section with a match, and clearing the search closes those again
@@ -955,6 +957,8 @@ untouched. It fixes what made the app cramped on iPhone:
   - The card is `clamp(240px, 42vh, 380px)` tall instead of 16:9.
   - The corner buttons shrink from 72px to 48px, so they no longer cover the word.
 - **Wordlist:** each table row becomes a grid card (text stacked on the left, 🔊 on the right).
+  "Add all to Review" and "Read all" share their row in two equal halves, under the full-width
+  topic button.
   The header row stays as a compact sort bar.
 - **Modals:** the deck picker and Settings become full-screen sheets; the deck rows
   drop the progress bar.

@@ -37,7 +37,6 @@ const els = {
   wordtable: document.getElementById('wordtable'),
   wordtableHead: document.getElementById('wordtable-head'),
   wordtableBody: document.getElementById('wordtable-body'),
-  wordlistPrimaryButtons: document.querySelectorAll('.seg-btn[data-primary]'),
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
@@ -109,6 +108,7 @@ const els = {
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
   setTextSize: document.getElementById('setting-text-size'),
+  setWordlistFirst: document.getElementById('setting-wordlist-first'),
   installHelp: document.getElementById('install-help'),
   installActions: document.getElementById('install-actions'),
   installBtn: document.getElementById('install-btn'),
@@ -156,6 +156,7 @@ const DEFAULT_SETTINGS = {
   readSpeakEnglish: true,         // whether to speak English after Thai
   learnPauseMs: 1500,             // pause after answering before auto-advancing (Test mode)
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
+  wordlistFirst: 'thai',          // Wordlists' first column: 'thai' | 'english' (Settings → Wordlists)
   learnAutoProgress: 'correct',   // 'off' (wait for Next) | 'always' | 'correct' (only on a right answer); older saves hold true/false
 };
 
@@ -169,7 +170,6 @@ const state = {
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (Wordlists) | 'today' (the Review tab)
   sort: { key: null, dir: 'asc' },
   filter: '',
-  primaryCol: 'thai', // 'thai' | 'translit' | 'english' — first column on wordlist
   orderMode: 'practice', // 'practice' | 'test' — card sequencing in flashcards
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back)
   pickerOpen: false,
@@ -1092,6 +1092,7 @@ function renderSettings() {
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
   els.setThaiSpeed.value = String(s.thaiSpeed);
   els.setTextSize.value = String(s.textSize);
+  els.setWordlistFirst.value = s.wordlistFirst;
   renderInstall();
   renderOffline();
   els.setReadRepeats.value = s.readRepeats;
@@ -1180,6 +1181,10 @@ function bindSettings() {
     await caches.delete(AUDIO_CACHE);
     renderOffline();
     toast('Downloaded audio deleted');
+  });
+  els.setWordlistFirst.addEventListener('change', () => {
+    setSettings({ wordlistFirst: els.setWordlistFirst.value === 'english' ? 'english' : 'thai' });
+    renderWordlist();
   });
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
@@ -1286,16 +1291,6 @@ function setOrderMode(mode) {
   rebuildCurrentQueue();
 }
 
-function setPrimaryCol(col) {
-  if (!['thai', 'english'].includes(col)) return;
-  state.primaryCol = col;
-  els.wordlistPrimaryButtons.forEach((b) => {
-    b.setAttribute('aria-checked', b.dataset.primary === col ? 'true' : 'false');
-  });
-  setPreferences({ primaryCol: col });
-  renderWordlist();
-}
-
 function setDirection(direction) {
   if (!['en-th', 'th-en'].includes(direction)) return;
   state.direction = direction;
@@ -1353,7 +1348,8 @@ function renderWordlist() {
     english:  { label: 'English',        cls: 'col-english' },
   };
   const fixedOrder = ['thai', 'translit', 'english'];
-  const cols = [state.primaryCol, ...fixedOrder.filter((k) => k !== state.primaryCol)];
+  const first = getSettings().wordlistFirst === 'english' ? 'english' : 'thai';
+  const cols = [first, ...fixedOrder.filter((k) => k !== first)];
 
   // Render header
   els.wordtableHead.innerHTML = '';
@@ -2586,10 +2582,6 @@ function bindEvents() {
     renderWordlist();
   });
 
-  els.wordlistPrimaryButtons.forEach((btn) => {
-    btn.addEventListener('click', () => setPrimaryCol(btn.dataset.primary));
-  });
-
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
 
   // Deck picker
@@ -2974,14 +2966,10 @@ async function init() {
 
   const prefs = getPreferences();
   els.srsToggle.checked = prefs.srsOn !== false;
-  // Migrate legacy 'translit' to 'thai' since the option no longer exists.
-  const incomingPrimary = prefs.primaryCol === 'translit' ? 'thai' : prefs.primaryCol;
-  if (['thai', 'english'].includes(incomingPrimary)) {
-    state.primaryCol = incomingPrimary;
+  // 2026-10-06: Wordlists' "Show first" moved from the page (prefs.primaryCol) to Settings.
+  if (prefs.primaryCol === 'english' && !('wordlistFirst' in (loadStore().settings || {}))) {
+    setSettings({ wordlistFirst: 'english' });
   }
-  els.wordlistPrimaryButtons.forEach((b) => {
-    b.setAttribute('aria-checked', b.dataset.primary === state.primaryCol ? 'true' : 'false');
-  });
   // Migrate legacy values: 'list' → 'practice', 'shuffle' → 'practice', 'learn' → 'test'.
   const legacy = { list: 'practice', shuffle: 'practice', learn: 'test' };
   const incoming = legacy[prefs.orderMode] || prefs.orderMode;

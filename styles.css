@@ -978,17 +978,6 @@ button {
   border-color: var(--accent);
 }
 
-.seg-with-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-}
-.seg-label {
-  font-size: 13px;
-  color: var(--muted);
-  white-space: nowrap;
-}
-
 .read-aloud {
   white-space: nowrap;
   margin-left: auto;

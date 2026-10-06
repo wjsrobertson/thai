@@ -39,9 +39,9 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .deck-button-label { flex: 1; max-width: none; text-align: left; }
 .deck-picker-bar .segmented { flex: 1 1 auto; }
 .deck-picker-bar .seg-btn { flex: 1; padding: 8px 6px; font-size: 13px; white-space: nowrap; }
-.seg-with-label { flex: 1 1 auto; gap: 8px; }
-.wordlist-bar-right { gap: 8px; }
-.read-aloud { min-width: 0; padding: 8px 10px; }
+/* "Add all to Review" and "Read all" share their row in two equal halves. */
+.wordlist-bar-right { flex: 1 1 100%; gap: 8px; }
+.wordlist-bar-right > button { flex: 1 1 0; min-width: 0; margin-left: 0; padding: 8px 10px; justify-content: center; text-align: center; }
 
 /* ---------- flashcard: full-width card, answer pills, then prev/next under the thumb ---------- */
 .card-wrap {

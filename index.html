@@ -114,13 +114,6 @@
         <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Learn</button>
         <button type="button" role="radio" class="seg-btn" data-order="test" aria-checked="false">Test</button>
       </div>
-      <div class="wordlist-only seg-with-label">
-        <span class="seg-label">Show first</span>
-        <div class="segmented" role="radiogroup" aria-label="Show first column">
-          <button type="button" role="radio" class="seg-btn" data-primary="thai" aria-checked="true">Thai</button>
-          <button type="button" role="radio" class="seg-btn" data-primary="english" aria-checked="false">English</button>
-        </div>
-      </div>
       <div class="wordlist-only wordlist-bar-right">
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Review</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through all visible words">🔊 Read all</button>
@@ -383,6 +376,20 @@
             <span class="setting-label">Pause before moving on</span>
             <input type="number" min="0" max="5000" step="100" id="setting-learn-pause" />
             <span class="setting-help">Milliseconds to pause after you tap an answer, before auto-advancing.</span>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="wordlists">
+        <summary>Wordlists</summary>
+        <div class="setting-group" data-search="wordlists show first column thai english order table">
+          <label class="setting-row">
+            <span class="setting-label">Show first</span>
+            <select id="setting-wordlist-first">
+              <option value="thai">Thai</option>
+              <option value="english">English</option>
+            </select>
+            <span class="setting-help">Which column comes first in Wordlists. Transliteration always follows the Thai.</span>
           </label>
         </div>
       </details>
