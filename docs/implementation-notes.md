@@ -454,7 +454,7 @@ The tabs are **Flashcards | Wordlists | Review** (see "Today review and scheduli
   - 2026-10-06: Decks went back to being called Flashcards (tab, Home card, the Settings section
     that was "Deck mode") and Wordlist became Wordlists.
   - 2026-10-06: a set of words is now called a **topic** on Home ("Topic: Time of Day") and
-    throughout Settings: "All topics" / "Current topic only", "Reset current topic", the reset
+    throughout Settings: "All topics" / "Current topic only", "Reset current topic" (since removed), the reset
     dialogs, and the Test card order option "List order" (was "Deck order"). The same day the rest
     of the UI followed: the picker ("Choose a topic", "Search topics…", "3 topics" counts, "No
     topics match"), Review's "across all topics" / "mixed from your topics", and the empty and
@@ -473,6 +473,12 @@ The tabs are **Flashcards | Wordlists | Review** (see "Today review and scheduli
 
 **Flashcards** shows one card at a time. The corner buttons (position pill, 🔊, flip) exist on
 *both* faces, so they rotate with the card when it flips.
+
+**Auto-play follows the Thai** (2026-10-06):
+- **Thai → English:** moving to a card plays its Thai.
+- **English → Thai:** moving to a card stays quiet, since the sound would give the answer away. The
+  Thai plays when the card is flipped to it, or when a Test answer reveals it.
+- **An answered Test card** opens on its Thai back, so moving to it plays the Thai.
 
 **Moving on from a flipped card** jumps straight to the front, with no animation
 (`setFlipped(false, { instant: true })` in `renderCard`, using `.card.no-anim`). Before
@@ -585,7 +591,7 @@ success, so even a new word rated Hard every time went 3 → 5 → 7 → 10 → 
   | Good | 3 → 11 → 35 → 101 days | 1 → 3 → 9 → 25 → 64 days |
 
 - **Carried-over Leitner progress** still holds the generous converted S, so an old box-3 word
-  shows Hard 8d. The user was advised to use Settings → Reset everything, since old progress
+  shows Hard 8d. The user was advised to use Settings → Reset (now "Reset all progress"), since old progress
   doesn't need keeping.
 
 **The Review icon** marks every "add to Review" control: "Add all to Review", the button on each
@@ -649,7 +655,7 @@ instead.
       `store.reviewExcludedCards`, which `planReview` skips for due and new.
     - Answering the word in deck Test mode brings it back.
   - **Bringing a deck back:** answering one of its cards in deck Test mode removes it from the
-    list (`saveDeckRating`). "Current deck only" ignores removals, and Reset everything clears
+    list (`saveDeckRating`). "Current deck only" ignores removals, and Reset all progress clears
     them. A Tomorrow / next 7 days
   forecast line was removed on 2026-10-05 as noise.
 - **Due items** are everything due by the end of the study day (days roll over at 4 am), weakest
@@ -782,8 +788,16 @@ centred card on every screen size (mobile.css turns the other modals into full-s
 - **Uses:**
   - **Wordlist "Add all to Review"** (`confirmAddAll`): "Add all 22 words in <deck> to Review?",
     or "Add the 3 words in <deck> that aren't in Review yet?" when some already are.
-  - **Settings → Reset** (`danger`, always asks): "Reset <deck>?" and "Reset all progress?". A
-    toast confirms when it's done (this replaced the browser's `confirm()` / `alert()`).
+  - **Settings → Reset** (`danger`, always asks): "Reset all progress?", "Reset the Review list?"
+    and "Reset all settings?".
+    A toast confirms when it's done (this replaced the browser's `confirm()` / `alert()`).
+    - **"Reset current topic" was removed** on 2026-10-06 at the user's request.
+    - **"Reset Review list"** empties `store.reviewWords` (the "Only words I add" list) and keeps
+      progress, so re-adding a word carries on. With nothing in Review it just says so. The
+      Settings order is: progress, Review list, settings.
+    - **"Reset settings"** clears `store.settings`, so every value falls back to `DEFAULT_SETTINGS`.
+      It keeps `offlineAudio`, so downloaded audio stays downloaded. It then re-renders what
+      settings drive directly, without redrawing the card, which would play its word.
   - **Settings → App "Delete downloaded audio"**: not `danger`, since clips download again as
     they're played. A toast confirms.
   - **Wordlist "✓ All in Review"** (`confirmRemoveAll`): once the whole deck is in Review, the same
@@ -829,13 +843,14 @@ waves, `spellIcon()`) reads it aloud.
 - **In Wordlists:** on each row, between the Review button and the speaker.
 - **No spelling for single letters:** Thai Script's letter and symbol cards get none (`isSpellable`).
 - **Two styles** (Settings → Display → Spelling, `settings.spellingStyle`):
-  - **School method (`school`, default):** สะกดคำ. Each syllable is built up: consonant sound +
+  - **School method (`school`):** สะกดคำ. Each syllable is built up: consonant sound +
     vowel name (+ final sound) → syllable, then the tone mark's name and the toned syllable.
     Words of several syllables end with the whole word; a phrase spells word by word and ends with
     the whole phrase.
     - บ้าน: บอ – อา – นอ – บาน – ไม้โท – บ้าน
     - สบาย: สอ – อะ – สะ · บอ – อา – ยอ – บาย · สบาย
-  - **Letter names (`letters`):** dictation. Every symbol in written (typing) order by its name,
+  - **Letter names (`letters`, the default since 2026-10-06; the `spelling-letters` migration moved
+    saves on the old default):** dictation. Every symbol in written (typing) order by its name,
     so leading vowels come first. ข้าว: ข ไข่ · ไม้โท · สระอา · ว แหวน.
 - **How the school method is worked out (`schoolSpelling`):** Thai doesn't mark syllables or every
   vowel, so the parser tries every reading the spelling allows and keeps the one whose sounds match
@@ -1167,6 +1182,10 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
 - **Offline audio** (Settings → App):
   - Every clip that passes through the worker is cached, and `preloadDeckAudio()` fetches a whole
     deck, so opening a deck saves its audio.
+  - **Spelling parts too** (since 2026-10-06): after the deck's Thai and English clips, it fetches
+    the spelling parts its cards use in the current style, skipping ones already cached. These go
+    only into the worker's audio cache, not the in-memory one, so they never evict the deck's own
+    clips.
   - **"Download all audio"** fetches the rest with 6 workers and a progress bar, and calls
     `navigator.storage.persist()`.
     - **Resumable:** cached clips are skipped.

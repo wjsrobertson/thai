@@ -13,7 +13,6 @@ const els = {
   deckPickerSearch: document.getElementById('deck-picker-search'),
   deckPickerTree: document.getElementById('deck-picker-tree'),
   srsToggle: document.getElementById('srs-toggle'),
-  resetBtn: document.getElementById('reset-progress'),
   card: document.getElementById('card'),
   thai: document.getElementById('card-thai'),
   translit: document.getElementById('card-translit'),
@@ -107,8 +106,9 @@ const els = {
   reviewMissedTitle: document.getElementById('review-missed-title'),
   reviewMissed: document.getElementById('review-missed'),
   reviewDone: document.getElementById('review-done'),
-  resetDeckHelp: document.getElementById('reset-deck-help'),
   resetAll: document.getElementById('reset-all'),
+  resetSettings: document.getElementById('reset-settings'),
+  resetReview: document.getElementById('reset-review'),
   setAudioSource: document.getElementById('setting-audio-source'),
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
@@ -155,7 +155,7 @@ const DEFAULT_SETTINGS = {
   reviewScope: 'all',             // which due items Today reviews: 'all' decks | 'current' deck
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
-  spellingStyle: 'school',        // card-back spelling and the spell-aloud buttons: 'school' (sounds) | 'letters' (names)
+  spellingStyle: 'letters',       // card-back spelling and the spell-aloud buttons: 'letters' (names) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
   readRepeats: 1,                 // times to repeat each word during read-aloud
@@ -248,6 +248,8 @@ const SETTINGS_MIGRATIONS = [
   ['pause-1500', (s) => (s.learnPauseMs === 1000 ? { learnPauseMs: 1500 } : null)],
   // 2026-10-06: Review became manual by default (words you add); both automatic sources move to it.
   ['review-manual', (s) => (['started', 'current'].includes(s.newSource) ? { newSource: 'manual' } : null)],
+  // 2026-10-06: the default spelling style became letter names (it was the school method).
+  ['spelling-letters', (s) => (s.spellingStyle === 'school' ? { spellingStyle: 'letters' } : null)],
 ];
 
 function migrateSettings() {
@@ -620,9 +622,11 @@ function renderCard() {
   updateStats();
   renderLearnPills();
   updateReviewToggle();
-  // Auto-play Thai audio on navigation, only while the card is on screen: picking a deck or
-  // changing a setting from the wordlist re-renders the hidden card too.
-  if (state.view === 'flashcards' && !state.reading.active) speak(c.thai);
+  // Auto-play Thai audio on navigation, only while the card is on screen (picking a deck or
+  // changing a setting from the wordlist re-renders the hidden card too), and only if the Thai is
+  // showing: English → Thai keeps quiet until the card is flipped (flipCard, handleLearnPick), or the
+  // sound would give the answer away. An answered Test card opens on its Thai back.
+  if (state.view === 'flashcards' && !state.reading.active && (state.direction === 'th-en' || state.showingBack)) speak(c.thai);
 }
 
 function formatRelative(ts) {
@@ -674,6 +678,8 @@ function flipCard() {
   // answered it, in which case they can freely flip to review.
   if (state.orderMode === 'test' && !state.learnAnswers.has(c.key)) return;
   setFlipped(!state.showingBack);
+  // English → Thai: the Thai is said when it's revealed (navigating there stays quiet).
+  if (state.showingBack && state.direction === 'en-th') speak(c.thai);
 }
 
 // Deck Test mode answers ('good' or 'again') update the same items as Today's review.
@@ -1115,13 +1121,6 @@ function renderSettings() {
   els.setLearnAuto.value = autoProgressMode(s);
   els.learnPauseRow.style.display = autoProgressMode(s) === 'off' ? 'none' : '';
 
-  // Reset help shows the current deck name.
-  const deck = state.decks.find((d) => d.id === state.currentDeckId);
-  if (deck) {
-    els.resetDeckHelp.textContent = `"Reset current topic" wipes only "${deck.name}". "Reset everything" wipes all ${state.decks.length} topics.`;
-  } else {
-    els.resetDeckHelp.textContent = 'Wipe study progress. Choose scope.';
-  }
 }
 
 function bindSettings() {
@@ -1203,7 +1202,7 @@ function bindSettings() {
     applyTextSize();
   });
   els.setSpelling.addEventListener('change', () => {
-    setSettings({ spellingStyle: els.setSpelling.value === 'letters' ? 'letters' : 'school' });
+    setSettings({ spellingStyle: els.setSpelling.value === 'school' ? 'school' : 'letters' });
     renderSpelling();
   });
   els.setThaiSpeed.addEventListener('change', () => {
@@ -1623,8 +1622,9 @@ function handleLearnPick(btn, isCorrect) {
   });
   els.card.classList.add('answered');
 
-  // Flip the card to reveal the back face.
+  // Flip the card to reveal the back face; in English → Thai that's the Thai, so say it now.
   setFlipped(true);
+  if (state.direction === 'en-th') speak(c.thai);
 
   const settings = getSettings();
   if (shouldAutoAdvance(autoProgressMode(settings), isCorrect)) {
@@ -2391,32 +2391,11 @@ function toggleReadAloud() {
   else startReadAloud();
 }
 
-async function resetDeckProgress() {
-  if (!state.currentDeckId) return;
-  const deck = state.decks.find((d) => d.id === state.currentDeckId);
-  if (!deck) return;
-  const ok = await confirmDialog({
-    title: `Reset ${deck.name}?`,
-    message: `This wipes your progress on its ${deck.cards.length} words, including where they appear in other topics.\nThis can't be undone.`,
-    confirmLabel: 'Reset',
-    danger: true,
-  });
-  if (!ok) return;
-  const store = loadStore();
-  for (const c of deck.cards) {
-    for (const dir of ['th-en', 'en-th']) delete store.items?.[itemKeyOf(cardKey(c), dir)];
-  }
-  saveStore(store);
-  selectDeck(state.currentDeckId);
-  renderToday();
-  toast(`Progress reset for ${deck.name}`);
-}
-
 async function resetAllProgress() {
   const ok = await confirmDialog({
     title: 'Reset all progress?',
     message: `This wipes your study history on all ${state.decks.length} topics. Your settings are kept.\nThis can't be undone.`,
-    confirmLabel: 'Reset everything',
+    confirmLabel: 'Reset all progress',
     danger: true,
   });
   if (!ok) return;
@@ -2429,6 +2408,54 @@ async function resetAllProgress() {
   if (state.currentDeckId) selectDeck(state.currentDeckId);
   renderToday();
   toast('All progress reset');
+}
+
+// Every word out of Review (the "Only words I add" list). Progress is kept, so re-adding carries on.
+async function resetReviewList() {
+  const n = Object.keys(reviewWords()).length;
+  if (!n) {
+    toast('Review is already empty');
+    return;
+  }
+  const ok = await confirmDialog({
+    title: 'Reset the Review list?',
+    message: `This takes all ${n} word${n === 1 ? '' : 's'} you've added out of Review. Their progress is kept, so adding them again carries on.`,
+    confirmLabel: 'Reset Review list',
+    danger: true,
+  });
+  if (!ok) return;
+  const store = loadStore();
+  store.reviewWords = {};
+  saveStore(store);
+  renderToday();
+  renderWordlist();
+  updateReviewToggle();
+  if (state.view === 'home') renderHome();
+  toast('Review list reset');
+}
+
+// Every setting back to its default (getSettings merges DEFAULT_SETTINGS over what's saved).
+// Progress and the Review list aren't settings, and nor is "Download all audio" being on: the
+// audio stays downloaded and kept up to date.
+async function resetSettings() {
+  const ok = await confirmDialog({
+    title: 'Reset all settings?',
+    message: 'Every setting goes back to its default. Your progress and Review list are kept.',
+    confirmLabel: 'Reset settings',
+    danger: true,
+  });
+  if (!ok) return;
+  const store = loadStore();
+  store.settings = store.settings?.offlineAudio ? { offlineAudio: true } : {};
+  saveStore(store);
+  applyTextSize();
+  renderSettings();
+  renderSpelling();
+  updateReviewToggle();
+  renderToday();
+  renderWordlist();
+  if (state.view === 'home') renderHome();
+  toast('Settings reset to defaults');
 }
 
 // ---------- TTS ----------
@@ -2467,7 +2494,8 @@ function cacheSample(url, blobUrl) {
   }
 }
 
-// Fetch every Thai clip in the deck, then every English one. A newer call cancels the old one.
+// Fetch every Thai clip in the deck, then every English one, then the parts its spellings are read
+// with (in the current spelling style). A newer call cancels the old one.
 async function preloadDeckAudio(deck) {
   if (preloadAbort) preloadAbort.abort();
   preloadAbort = null;
@@ -2481,13 +2509,28 @@ async function preloadDeckAudio(deck) {
       if (url && !sampleCache.has(url)) urls.add(url);
     }
   }
-  const queue = [...urls];
+  // Spelling parts only go into the service worker's audio cache (playable instantly and offline),
+  // not the in-memory one, so they never push out the deck's own clips. Already cached? Skip.
+  const spellUrls = new Set();
+  for (const c of deck.cards) {
+    for (const step of (spellingFor(c) || []).flat()) {
+      const url = !step.gap && !step.word && sampleUrl(step.say, 'sp');
+      if (url) spellUrls.add(url);
+    }
+  }
+  if (spellUrls.size && 'caches' in window) {
+    const have = await cachedAudioFiles(await caches.open(AUDIO_CACHE));
+    for (const url of spellUrls) if (have.has(url.split('/').pop())) spellUrls.delete(url);
+  }
+  const queue = [...urls].map((url) => ({ url, keep: true })).concat([...spellUrls].map((url) => ({ url, keep: false })));
   const worker = async () => {
     while (queue.length && !controller.signal.aborted) {
-      const url = queue.shift();
+      const { url, keep } = queue.shift();
       try {
         const res = await fetch(url, { signal: controller.signal });
-        if (res.ok) cacheSample(url, URL.createObjectURL(await res.blob()));
+        if (!res.ok) continue;
+        const blob = await res.blob(); // the service worker caches it on the way through
+        if (keep) cacheSample(url, URL.createObjectURL(blob));
       } catch {
         // Aborted or offline: playback just fetches that clip on demand.
       }
@@ -2540,7 +2583,7 @@ function stopAudio() {
 // can't be worked out. null for a lone letter or symbol.
 function spellingFor(card) {
   if (!card || !isSpellable(card.thai)) return null;
-  const school = getSettings().spellingStyle !== 'letters' && schoolSpelling(card.thai, card.translit);
+  const school = getSettings().spellingStyle === 'school' && schoolSpelling(card.thai, card.translit);
   return school || letterSpelling(card.thai);
 }
 
@@ -2688,8 +2731,9 @@ function bindEvents() {
     rebuildCurrentQueue();
   });
 
-  els.resetBtn.addEventListener('click', resetDeckProgress);
   els.resetAll.addEventListener('click', resetAllProgress);
+  els.resetSettings.addEventListener('click', resetSettings);
+  els.resetReview.addEventListener('click', resetReviewList);
 
   [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a flip

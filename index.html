@@ -262,10 +262,10 @@
           <label class="setting-row">
             <span class="setting-label">Spelling</span>
             <select id="setting-spelling">
-              <option value="school">School method (sounds)</option>
               <option value="letters">Letter names (dictation)</option>
+              <option value="school">School method (sounds)</option>
             </select>
-            <span class="setting-help">How the spelling on card backs, and the spell-aloud buttons on cards and in Wordlists, spell a word. School method: ข้าว = ขอ – อา – วอ – ขาว – ไม้โท – ข้าว. Letter names: ข ไข่ · ไม้โท · สระอา · ว แหวน. The few words the school method can't be worked out for use letter names.</span>
+            <span class="setting-help">How the spelling on card backs, and the spell-aloud buttons on cards and in Wordlists, spell a word. Letter names: ข้าว = ข ไข่ · ไม้โท · สระอา · ว แหวน. School method: ขอ – อา – วอ – ขาว – ไม้โท – ข้าว. The few words the school method can't be worked out for use letter names.</span>
           </label>
         </div>
         <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
@@ -484,14 +484,31 @@
 
       <details class="settings-cat" data-cat="reset">
         <summary>Reset</summary>
-        <div class="setting-group danger" data-search="reset progress wipe delete deck everything topic">
+        <div class="setting-group danger" data-search="reset progress wipe delete everything study history">
           <label class="setting-row">
             <span class="setting-label">Reset progress</span>
-            <span class="setting-help" id="reset-deck-help">Wipe study progress. Choose scope.</span>
+            <span class="setting-help">Wipes your study history on every topic. Your settings and Review list are kept.</span>
           </label>
           <div class="setting-actions">
-            <button type="button" id="reset-progress" class="ghost danger-btn">Reset current topic</button>
-            <button type="button" id="reset-all" class="ghost danger-btn">Reset everything</button>
+            <button type="button" id="reset-all" class="ghost danger-btn">Reset all progress</button>
+          </div>
+        </div>
+        <div class="setting-group danger" data-search="reset review list clear empty remove words added">
+          <label class="setting-row">
+            <span class="setting-label">Reset Review list</span>
+            <span class="setting-help">Takes every word you've added out of Review. Their progress is kept, so adding them again carries on where they left off.</span>
+          </label>
+          <div class="setting-actions">
+            <button type="button" id="reset-review" class="ghost danger-btn">Reset Review list</button>
+          </div>
+        </div>
+        <div class="setting-group danger" data-search="reset settings defaults default restore options">
+          <label class="setting-row">
+            <span class="setting-label">Reset settings</span>
+            <span class="setting-help">Puts every setting back to its default. Your progress and Review list are kept.</span>
+          </label>
+          <div class="setting-actions">
+            <button type="button" id="reset-settings" class="ghost danger-btn">Reset settings</button>
           </div>
         </div>
       </details>

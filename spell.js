@@ -63,6 +63,7 @@ export function letterSpelling(thai) {
     // Latin letters and punctuation are left out.
   }
   if (steps.length && steps[steps.length - 1].gap) steps.pop();
+  steps.sep = ' · '; // letter names have spaces in them (ส เสือ), so separate them with dots
   return steps.length ? [steps] : null;
 }
 
@@ -388,9 +389,13 @@ export function schoolSpelling(thai, translit) {
   return out;
 }
 
-// What a spelling shows: steps joined with " – ", syllables with " · ", words with " / ".
+// What a spelling shows. School method: steps joined with " – ", syllables with " · ", words with
+// " / ". Letter names: names joined with " · ", words with " / ".
 export function spellingText(groups) {
-  return groups.map((steps) => steps.map((s) => (s.gap ? '·' : s.show)).join(' – ').replace(/ – · – /g, ' · ')).join('  /  ');
+  return groups.map((steps) => {
+    if (steps.sep) return steps.map((s) => (s.gap ? '/' : s.show)).join(steps.sep).replace(/ · \/ · /g, '  /  ');
+    return steps.map((s) => (s.gap ? '·' : s.show)).join(' – ').replace(/ – · – /g, ' · ');
+  }).join('  /  ');
 }
 
 // The spoken parts, in order (a whole word is marked so callers can use its own recording).
