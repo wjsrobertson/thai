@@ -16,14 +16,20 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 }
 
 /* ---------- top bar ---------- */
-.topbar { padding: 10px 12px; gap: 6px; }
-.topbar h1 { font-size: 16px; white-space: nowrap; }
-.tab { padding: 6px 8px; } /* Flashcards | Wordlists | Review */
-@media (max-width: 380px) { /* iPhone SE/mini width: a little tighter so the gear keeps its margin */
-  .tab { padding: 6px 6px; }
-  .topbar h1 { letter-spacing: 0; }
+/* Learn Thai | Flashcards Wordlists Review | ⚙ is tight on a phone, and iOS's font is a little
+   wider than others, so keep ~30px spare (measured in Chromium) at 375px and up. */
+.topbar { padding: 10px 12px; gap: 4px; }
+.topbar h1 { font-size: 16px; white-space: nowrap; letter-spacing: 0; }
+.tabs { gap: 2px; }
+.tab { padding: 6px 7px; }
+@media (max-width: 380px) { .tab { padding: 6px 5px; } } /* iPhone SE/mini */
+@media (max-width: 340px) { /* the original 320px iPhone SE: everything a notch smaller */
+  .topbar { padding: 10px 8px; }
+  .topbar h1 { font-size: 14px; }
+  .tab { padding: 6px 4px; font-size: 12px; }
+  .tab-icon { padding: 6px 6px; }
 }
-.tab-icon { padding: 6px 9px; }
+.tab-icon { padding: 6px 8px; }
 
 .stage { padding: 12px 12px 24px; }
 

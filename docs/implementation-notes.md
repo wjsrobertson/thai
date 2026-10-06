@@ -396,9 +396,15 @@ The tabs are **Flashcards | Wordlists | Review** (see "Today review and scheduli
     load-error messages. No "deck" is left on screen. The code, the data (`decks.json`), element
     ids and setting values still say deck; Settings groups that mention it accept both words in
     search.
-- **Phone top bar:** the tabs have 8px side padding (6px at 380px wide or less, where the title
-  also drops its letter-spacing), so the bar fits down to 375px. At 320px it still overflows by
-  32px, as it did before the rename.
+- **Phone top bar:**
+  - **Spacing:** tabs 7px side padding, 5px at 380px or less; 4px gaps; no letter-spacing on the
+    title. At 340px or less, the title is 14px and the tabs 12px.
+  - **Spare width:** in Chromium it's ~30px at 390px, 27px at 375px and 8px at 320px. iOS's
+    system font is wider. With only 9px spare after the Flashcards rename, the bar was a few px
+    too wide on the user's iPhone, so every page could pan sideways.
+- **No sideways panning:** `html, body { overflow-x: clip }`, with a `hidden` fallback on html for
+  iOS before 16. It's a safety net, so anything a pixel too wide is clipped instead of pannable.
+  `clip` doesn't create a scroll container, so the sticky top bar still works (checked).
 
 **Flashcards** shows one card at a time. The corner buttons (position pill, 🔊, flip) exist on
 *both* faces, so they rotate with the card when it flips.

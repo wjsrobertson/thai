@@ -25,6 +25,11 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Thai", sans-serif;
   min-height: 100vh;
 }
+/* Never pan sideways into empty space: iOS Safari allows it if anything is even 1px too wide.
+   `clip`, not `hidden`, so no scroll container is made and the sticky top bar keeps working.
+   Browsers without `clip` (iOS before 16) fall back to `hidden` on html. */
+html { overflow-x: hidden; overflow-x: clip; }
+body { overflow-x: clip; }
 
 .topbar {
   display: flex;
