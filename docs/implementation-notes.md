@@ -467,6 +467,10 @@ The tabs are **Flashcards | Wordlists | Review** (see "Today review and scheduli
   - **Spare width:** in Chromium it's ~30px at 390px, 27px at 375px and 8px at 320px. iOS's
     system font is wider. With only 9px spare after the Flashcards rename, the bar was a few px
     too wide on the user's iPhone, so every page could pan sideways.
+- **No pull-down bounce:** `html, body { overscroll-behavior: none }` (iOS Safari 16+) stops the
+  rubber-band pull and pull-to-refresh. The page background also has a solid `var(--bg)` under its
+  gradient; without it, anything showing past the edge, such as a bounce on older iOS, was the
+  browser's default white.
 - **No sideways panning:** `html, body { overflow-x: clip }`, with a `hidden` fallback on html for
   iOS before 16. It's a safety net, so anything a pixel too wide is clipped instead of pannable.
   `clip` doesn't create a scroll container, so the sticky top bar still works (checked).
