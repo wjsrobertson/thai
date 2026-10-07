@@ -84,6 +84,8 @@ const els = {
   todayDue: document.getElementById('today-due'),
   todayNew: document.getElementById('today-new'),
   todayStart: document.getElementById('today-start'),
+  todayPractise: document.getElementById('today-practise'),
+  todayPractiseNote: document.getElementById('today-practise-note'),
   review: document.getElementById('review'),
   reviewTop: document.getElementById('review-top'),
   reviewLeft: document.getElementById('review-left'),
@@ -107,6 +109,8 @@ const els = {
   reviewMissedTitle: document.getElementById('review-missed-title'),
   reviewMissed: document.getElementById('review-missed'),
   reviewDone: document.getElementById('review-done'),
+  reviewPractise: document.getElementById('review-practise'),
+  reviewTitle: document.getElementById('review-title'),
   resetAll: document.getElementById('reset-all'),
   resetSettings: document.getElementById('reset-settings'),
   resetReview: document.getElementById('reset-review'),
@@ -2180,6 +2184,8 @@ function renderToday() {
   els.todayNew.textContent = plan.news.length;
   els.todayNewFrom.textContent = `you've added${where}`;
   els.todayStart.hidden = plan.queue.length === 0;
+  const practise = !plan.queue.length && planPractice().length > 0;
+  els.todayPractise.hidden = els.todayPractiseNote.hidden = !practise;
 }
 
 // The landing page: a card per view. Decks and Wordlist show the current deck, Review today's counts.
@@ -2195,13 +2201,40 @@ function renderHome() {
 }
 
 function startReview() {
-  const plan = planReview();
-  if (!plan.queue.length) return;
+  beginSession(planReview().queue, false);
+}
+
+// Practice: once more through every word Review covers that you've started, in random order, after
+// the session (or whenever nothing's due). The user asked to keep repeating (2026-10-07).
+// Grades don't touch the schedule (no gradeItem, no daily count): they'd only be same-day repeats,
+// which FSRS mostly ignores, and Again would push a word back for a slip in extra practice.
+// Again still brings the word back later in the round.
+function startPractice() {
+  beginSession(planPractice(), true);
+}
+
+function planPractice() {
+  const s = getSettings();
+  const items = loadStore().items || {};
+  const f = reviewFilter();
+  const scopeIds = reviewScopeDeckIds();
+  const queue = [];
+  for (const itemKey of Object.keys(items)) {
+    const [key, dir] = splitItemKey(itemKey);
+    if (!f.has(key)) continue;
+    const deckId = reviewDeckId(key, dir, s, scopeIds);
+    if (deckId) queue.push({ key, dir, deckId, kind: 'practice' });
+  }
+  return shuffled(queue);
+}
+
+function beginSession(queue, practice) {
+  if (!queue.length) return;
   state.review = {
-    queue: plan.queue, pos: 0, mode: null, revealed: false, answered: false, finished: false,
+    queue, pos: 0, mode: null, revealed: false, answered: false, finished: false, practice,
     graded: 0, ok: 0, seen: new Set(), newItems: new Set(), missed: new Map(),
   };
-  preloadDeckAudio({ cards: plan.queue.map((e) => state.cardIndex.get(e.key).card) });
+  preloadDeckAudio({ cards: queue.map((e) => state.cardIndex.get(e.key).card) });
   renderToday();
   presentEntry();
 }
@@ -2237,7 +2270,7 @@ function presentEntry() {
   els.reviewTranslit.textContent = card.translit;
   textWithArrows(els.reviewNote, card.note || '');
   els.reviewAnswer.hidden = true;
-  const badge = [e.again && 'Again', !it && 'New', !thaiFirst && 'English → Thai'].filter(Boolean).join(' · ');
+  const badge = [r.practice && 'Practice', e.again && 'Again', !it && 'New', !thaiFirst && 'English → Thai'].filter(Boolean).join(' · ');
   textWithArrows(els.reviewBadge, badge);
   els.reviewBadge.hidden = !badge;
   els.reviewDeck.textContent = state.decks.find((d) => d.id === e.deckId)?.name || '';
@@ -2278,7 +2311,7 @@ function recordGrade(g) {
   const r = state.review;
   const e = r.queue[r.pos];
   const itemKey = itemKeyOf(e.key, e.dir);
-  gradeItem(e.key, e.dir, g, { mode: 'recall', deckId: e.deckId });
+  if (!r.practice) gradeItem(e.key, e.dir, g, { mode: 'recall', deckId: e.deckId });
   r.graded += 1;
   if (g > 1) r.ok += 1;
   r.seen.add(itemKey);
@@ -2316,9 +2349,12 @@ function finishReview() {
   stopAudio();
   const reviewed = r.seen.size;
   const pct = r.graded ? Math.round((r.ok / r.graded) * 100) : 0;
+  els.reviewTitle.textContent = r.practice ? 'Practice complete' : 'Review complete';
   els.reviewScore.textContent = String(reviewed);
-  els.reviewSub.textContent = `${reviewed === 1 ? 'card' : 'cards'} reviewed · ${pct}% right · ` +
-    `${r.newItems.size} new · ${dueTomorrow()} due tomorrow`;
+  els.reviewSub.textContent = r.practice ? `${reviewed === 1 ? 'card' : 'cards'} practised · ${pct}% right`
+    : `${reviewed === 1 ? 'card' : 'cards'} reviewed · ${pct}% right · ${r.newItems.size} new · ${dueTomorrow()} due tomorrow`;
+  // Again from here when nothing's due (a Review session that hit the daily maximum leaves some).
+  els.reviewPractise.hidden = planReview().queue.length > 0 || !planPractice().length;
   fillMissedList(els.reviewMissed, els.reviewMissedTitle, [...r.missed.values()].map((e) => state.cardIndex.get(e.key).card));
   renderToday();
   els.reviewDone.focus({ preventScroll: true });
@@ -2332,6 +2368,9 @@ function handleReviewKey(e) {
     if (enter && !els.todayStart.hidden) {
       e.preventDefault();
       startReview();
+    } else if (enter && !els.todayPractise.hidden) {
+      e.preventDefault();
+      startPractice();
     }
     return;
   }
@@ -3011,6 +3050,8 @@ function bindEvents() {
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
 
   els.todayStart.addEventListener('click', startReview);
+  els.todayPractise.addEventListener('click', startPractice);
+  els.reviewPractise.addEventListener('click', startPractice);
   els.reviewShow.addEventListener('click', revealAnswer);
   els.reviewGrades.addEventListener('click', (e) => {
     const btn = e.target.closest('.grade');

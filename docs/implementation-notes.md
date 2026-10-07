@@ -74,8 +74,8 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-06 there are 6649 cards in 373 topics across 22 categories (see Topic list order
-  and Topic splits).
+- As of 2026-10-07 there are 6750 cards in 378 topics across 22 categories (see Topic list order,
+  Topic splits and Verb topics).
 
 **Writing cards.** Match the existing style:
 
@@ -335,6 +335,27 @@ Home & Everyday Things; and Southern Idioms.
   - Phuket Hokkien words (โก่ปี้, กิ้ดเหล้ง) are marked as such.
 - **Audio uses the Central voice**, so the tones are Central, not Southern. Each deck description
   says so, and the user accepted this. Transliterations follow the Thai spelling.
+
+**Verb topics, 2026-10-07** (scratchpad `decks/verbs.py`, backup `decks.backup20.json`).
+- **Why:** the user couldn't find need, have or want. Common Verbs had 23 words, and most everyday
+  verbs were only in the Spoken frequency topics, mixed in with other kinds of word.
+- **Five new topics** after Common Verbs. All six now form a **Verbs** group in Grammar, so "All
+  Verbs" covers the lot. The topics:
+  - Want, Need, Can & Must (18 words)
+  - Everyday Actions: Body & Day (20)
+  - Everyday Actions: Things & Errands (21)
+  - Thinking & Talking (21)
+  - Coming & Going (21)
+  Everyday Actions was one topic in the plan; it's two because of the 25-card limit.
+- **Reused cards:** words already in the app reuse their exact `thai` and `english`, so progress
+  and audio are shared. A few notes differ by topic, with usage patterns added here.
+- **21 new cards**, recorded with the usual voices:
+  - อยากได้, ไม่ต้อง, ห้าม
+  - ล้าง, ยืน, หัวเราะ
+  - ถือ, สั่ง, ชิม, ยืม, หัก
+  - เป็นห่วง, ตอบ, แปล, สะกด, เถียง
+  - ออกจาก, เลี้ยว, แวะ, ไปรับ
+  - ข้าม as "to cross", beside the preposition "across / over"
 
 **Topic list order, 2026-10-06** (scratchpad `decks/merge17.py`). The list had grown in the order
 things were added: 37 categories, beginner material scattered (Survival #28, Grammar #26), many
@@ -793,6 +814,25 @@ request; the setting and "New cards per day" (`newPerDay`) are gone.
     to remove a category or single words. The user removed it to make the page simpler, now that
     Review can be narrowed with Everything / By topic.
   - A Tomorrow / next 7 days forecast line was removed on 2026-10-05 as noise.
+- **Practise again** (2026-10-07). The user finished their 6 words and wanted to keep going.
+  - **Where:** the button shows on the Review screen when nothing's due, with "Nothing's due.
+    Practising doesn't change when words come back." It also shows next to Done on the end
+    screen, when nothing's left to review. Enter starts it from the Review screen.
+  - **What:** `planPractice()` takes every started item (`store.items`) for words Review covers,
+    in random order, in the directions Review would use (`reviewDeckId`).
+  - **No schedule changes:** a practice session (`state.review.practice`) skips `gradeItem()` and
+    the daily count.
+    - Same-day repeats barely move FSRS anyway. An Again would push a well-known word back over a
+      slip in extra practice.
+    - Again still brings the card back later in the round.
+  - **Labels:** cards carry a "Practice" badge, and the end screen says "Practice complete · N
+    cards practised · X% right".
+  - **The end screen's buttons** (Practise again, Done) sit under the card, not inside it, for
+    Review and Practice alike (the user's call, 2026-10-07). `#review-summary` is a wrapper
+    around the card (`.round-summary`) and the buttons (`.review-summary-actions`).
+  - **Tested in Chromium:** a 6-word review, then practice. The store's `items` and `daily` were
+    identical before and after the practice round, an Again requeued, and the buttons showed in
+    each place.
 - **By topic with none of its words in Review** (manual adding): instead of "0 due · 0 new", the
   same message box as Flashcards' (`#today-topic-empty`, sharing `.review-only-empty`), centred
   in the space under the topic button (`.today-topic-none` on the stage).

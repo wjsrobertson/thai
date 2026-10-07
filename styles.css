@@ -1396,6 +1396,15 @@ body { display: flex; flex-direction: column; }
 .today-from { font-size: calc(16px * var(--fs, 1)); }
 .today-num { font-size: calc(44px * var(--fs, 1)); font-weight: 700; color: var(--accent); vertical-align: -4px; }
 .today-start { font-size: 19px; padding: 14px 40px; }
+.today-practise-note { margin: 14px 0 0; font-size: calc(15px * var(--fs, 1)); color: var(--muted); }
+.round-practise { font-size: 17px; padding: 11px 24px; border-radius: 10px; }
+.review-summary[hidden] { display: none; }
+.review-summary-actions { margin-top: 16px; }
+/* With the buttons outside, the card ends at its last line: the gap above the buttons moves to the
+   top of the missed list instead. */
+.review-summary .round-sub,
+.review-summary .round-missed { margin-bottom: 0; }
+.review-summary .round-missed-title { margin-top: 22px; }
 
 .review { display: flex; flex-direction: column; gap: 14px; }
 .review[hidden] { display: none; }

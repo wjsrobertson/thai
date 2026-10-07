@@ -190,6 +190,8 @@
           <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
         </div>
         <button type="button" class="round-again today-start" id="today-start">Start review</button>
+        <button type="button" class="round-again today-start" id="today-practise" hidden>Practise again</button>
+        <p class="today-practise-note" id="today-practise-note" hidden>Nothing's due. Practising doesn't change when words come back.</p>
       </div>
 
       <div class="review" id="review" hidden>
@@ -215,14 +217,20 @@
         </div>
       </div>
 
-      <section class="round-summary" id="review-summary" hidden>
-        <h2 class="round-title">Review complete</h2>
-        <div class="round-score" id="review-score"></div>
-        <div class="round-sub" id="review-sub"></div>
-        <h3 class="round-missed-title" id="review-missed-title"></h3>
-        <ul class="round-missed" id="review-missed"></ul>
-        <button type="button" class="round-again" id="review-done">Done</button>
-      </section>
+      <div class="review-summary" id="review-summary" hidden>
+        <section class="round-summary">
+          <h2 class="round-title" id="review-title">Review complete</h2>
+          <div class="round-score" id="review-score"></div>
+          <div class="round-sub" id="review-sub"></div>
+          <h3 class="round-missed-title" id="review-missed-title"></h3>
+          <ul class="round-missed" id="review-missed"></ul>
+        </section>
+        <!-- Under the card, not in it (the user's call, 2026-10-07). -->
+        <div class="round-actions review-summary-actions">
+          <button type="button" class="ghost round-practise" id="review-practise" hidden>Practise again</button>
+          <button type="button" class="round-again" id="review-done">Done</button>
+        </div>
+      </div>
     </section>
 
     <div id="settings-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
