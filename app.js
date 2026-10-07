@@ -1470,7 +1470,7 @@ function bindSettings() {
     setSettings({ offlineAudio: false });
     setPreferences({ audioComplete: null });
     await offline.reading; // so a read under way can't bring the old names back
-    await caches.delete(AUDIO_CACHE);
+    await ClipStore.clear();
     offline.have = new Set();
     offline.used = null;
     rememberSavedCount();
@@ -2645,7 +2645,7 @@ async function fetchQueuedAudio(item) {
     // control (the very first visit), "Download all audio" saves them here.
     let saved = !!navigator.serviceWorker?.controller;
     if (!saved && item.bulk) {
-      await (await caches.open(AUDIO_CACHE)).put(url, res.clone());
+      await ClipStore.put(file, await res.clone().arrayBuffer());
       saved = true;
     }
     const blob = await res.blob();
@@ -3081,11 +3081,11 @@ function bindEvents() {
 }
 
 // ---------- install & offline ----------
-// sw.js caches the app files and each audio clip as it's fetched. Here: the Settings → App
-// section, "Download all audio", and keeping the audio cache in step with the manifest.
+// sw.js caches the app files, and saves each audio clip as it's fetched (audio-store.js,
+// IndexedDB). Here: the Settings → App section, "Download all audio", and keeping the saved clips
+// in step with the manifest.
 
 const PUBLIC_URL = 'https://wjsrobertson.github.io/thai/';
-const AUDIO_CACHE = 'learnthai-audio'; // shared with sw.js
 const AVG_CLIP_KB = 9.8;               // for the size estimate; 156 MB / 16k clips on 2026-10-07
 const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS reports as a Mac
@@ -3114,11 +3114,11 @@ function launchTimingText() {
     'Times count from when the page started loading. Any wait before that is the phone opening the app.';
 }
 
-// Offline audio. `have` is the audio cache's file names. Reading them (cache.keys()) takes
-// seconds on an iPhone with thousands of clips saved, so it's read only when needed (Settings →
-// App open, a sync after the clip list changed, "Download all audio") and then kept up to date as
-// clips are saved and deleted here; `reading` is that read while it's under way. done/total/failed
-// count a "Download all audio" run.
+// Offline audio. `have` is the saved clips' file names (ClipStore.keys()). They're read only when
+// needed (Settings → App open, a sync after the clip list changed, "Download all audio") and then
+// kept up to date as clips are saved and deleted here; `reading` is that read while it's under way.
+// (That mattered more when the clips were in Cache Storage, where reading the names took seconds on
+// an iPhone.) done/total/failed count a "Download all audio" run.
 const offline = { running: false, done: 0, total: 0, failed: 0, have: null, reading: null, used: null, error: false };
 
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -3160,19 +3160,15 @@ function allAudioFiles() {
   return [...new Set([...Object.values(sampleFiles.th), ...Object.values(sampleFiles.en), ...Object.values(sampleFiles.sp)])];
 }
 
-async function cachedAudioFiles(cache) {
-  return new Set((await cache.keys()).map((r) => r.url.split('/').pop()));
-}
-
-// Read the audio cache's file names afresh (one read at a time; callers share it), then redraw
+// Read the saved clips' file names afresh (one read at a time; callers share it), then redraw
 // Settings → Offline audio and remember the count for next time.
 function readSavedAudio() {
   offline.reading ??= (async () => {
     try {
-      offline.have = await cachedAudioFiles(await caches.open(AUDIO_CACHE));
+      offline.have = new Set(await ClipStore.keys());
       offline.error = false;
     } catch (e) {
-      console.warn('Reading the audio cache failed:', e);
+      console.warn('Reading the saved audio failed:', e);
       offline.error = true;
       offline.have ??= new Set();
     } finally {
@@ -3204,13 +3200,13 @@ const mb = (bytes) => Math.round(bytes / 1e6).toLocaleString();
 // clips saved" leads in every state. Until this visit's read finishes, X is the last count,
 // marked "checking".
 function renderOffline() {
-  if (!('caches' in window)) {
+  if (!('serviceWorker' in navigator)) {
     els.offlineHelp.textContent = `Offline audio needs HTTPS. Open ${PUBLIC_URL} instead.`;
     els.offlineProgress.hidden = true;
     els.offlineDownload.parentElement.hidden = true;
     return;
   }
-  // The count needs a read of the cache, which is slow on an iPhone: only while it's on screen.
+  // The count needs a read of the saved clips: only while it's on screen.
   if (!offline.have && !offline.reading && state.settingsOpen && els.offlineHelp.closest('details')?.open) readSavedAudio();
   const n = (x) => x.toLocaleString();
   const total = offline.running ? offline.total : allAudioFiles().length;
@@ -3251,7 +3247,7 @@ function renderOffline() {
 // Queue every clip that isn't saved yet, behind the page's (see the audio queue). Resumable: saved
 // clips are skipped, so a stopped or interrupted run picks up where it left off.
 async function downloadAllAudio() {
-  if (offline.running || !('caches' in window)) return;
+  if (offline.running || !('serviceWorker' in navigator)) return;
   const files = allAudioFiles();
   // Show it's started straight away: finding what's already saved can take a few seconds.
   Object.assign(offline, { running: true, done: null, total: files.length, failed: 0 });
@@ -3288,12 +3284,22 @@ function audioListSignature(files) {
   return `${files.length}:${(h >>> 0).toString(36)}`;
 }
 
-// A few seconds after launch: drop cached clips that no card uses any more (edited or removed
+// A few seconds after launch: drop saved clips that no card uses any more (edited or removed
 // cards), then, if the user chose to download everything, fetch clips for new cards. Both need a
-// read of the cache, slow on an iPhone with thousands of clips, so they're skipped when the clip
-// list hasn't changed since they last ran (prefs.audioPruned / audioComplete hold its signature).
+// read of the saved clips, so they're skipped when the clip list hasn't changed since they last ran
+// (prefs.audioPruned / audioComplete hold its signature).
 async function syncOfflineAudio() {
-  if (!('caches' in window)) return;
+  if (!('serviceWorker' in navigator)) return;
+  // Clips used to be kept in Cache Storage. sw.js deletes that cache when it updates, but the old
+  // service worker's last fetches can recreate it (seen in Chromium), so it's deleted here once.
+  if (!getPreferences().oldAudioCacheGone && 'caches' in window) {
+    try {
+      await caches.delete('learnthai-audio');
+      setPreferences({ oldAudioCacheGone: true });
+    } catch (e) {
+      console.warn('Deleting the old audio cache failed:', e);
+    }
+  }
   const files = allAudioFiles();
   if (!files.length) return; // the manifest didn't load: don't prune everything
   const sig = audioListSignature(files);
@@ -3304,12 +3310,8 @@ async function syncOfflineAudio() {
   const have = await savedAudio();
   const stale = [...have].filter((f) => !wanted.has(f));
   if (stale.length) {
-    const cache = await caches.open(AUDIO_CACHE);
-    for (let i = 0; i < stale.length; i += 50) {
-      await Promise.all(stale.slice(i, i + 50).map(async (f) => {
-        if (await cache.delete(`data/audio/${f}`, { ignoreSearch: true })) have.delete(f);
-      }));
-    }
+    await ClipStore.delete(stale); // one transaction
+    for (const f of stale) have.delete(f);
   }
   setPreferences({ audioPruned: sig });
   rememberSavedCount();

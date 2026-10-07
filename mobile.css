@@ -15,7 +15,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 }
 
 /* ---------- top bar ---------- */
-/* Learn Thai | Flashcards Wordlists Review | ⚙ is tight on a phone, and iOS's font is a little
+/* Learn Thai | Topics Flashcards Review | ⚙ is tight on a phone, and iOS's font is a little
    wider than others, so keep ~30px spare (measured in Chromium) at 375px and up. */
 .topbar { padding: 10px 12px; gap: 4px; }
 .topbar h1 { font-size: 16px; white-space: nowrap; letter-spacing: 0; }
@@ -41,7 +41,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .deck-picker-bar .segmented { flex: 1 1 auto; }
 /* Review's session header: the second row, as tall as Flashcards' controls, so the cards line up. */
 .deck-picker-bar .review-top { flex-basis: 100%; min-height: 37px; font-size: 13px; }
-.review-quit { padding: 8px 10px; font-size: 15px; } /* as Wordlists' Read all / Add all on the phone */
+.review-quit { padding: 8px 10px; font-size: 15px; } /* as the Topics page's Read all / Add all on the phone */
 .deck-picker-bar .seg-btn { flex: 1; padding: 8px 6px; font-size: 13px; white-space: nowrap; }
 /* "Add all to Review" and "Read all" share their row in two equal halves. */
 .wordlist-bar-right { flex: 1 1 100%; gap: 8px; }

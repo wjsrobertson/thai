@@ -1479,10 +1479,31 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
       Reload" bar (`#update-bar`).
     - Offline, or if a file fails, the current version stays.
   - **Anything else on the site** is still network-first with the 4 s fallback.
-  - **Audio** is cache-first in `learnthai-audio`. Clip names are content hashes, so a cached
-    clip never goes stale.
+  - **Audio** is served from the saved-clip store when it's there, else fetched and saved. Clip
+    names are content hashes, so a saved clip never goes stale.
   - **Byte ranges:** Safari's `<audio>` requests byte ranges and won't play a plain 200, so
-    `rangeResponse()` answers a `Range` header with a 206 sliced from the cached file.
+    `rangeResponse()` answers a `Range` header with a 206 sliced from the saved file.
+  - **The saved-clip store is IndexedDB, not Cache Storage** (2026-10-07). `audio-store.js`
+    defines `self.ClipStore` (`get`, `put`, `keys`, `delete`, `clear`) over database
+    `learnthai-clips`, store `clips`, file name → the MP3's bytes (ArrayBuffer). `sw.js` loads it
+    with `importScripts`, and the page with a classic `<script>` before `app.js`. It's in SHELL.
+    - **Why:** every iPhone launch took 14 s once all 16,036 clips were saved: Settings → App →
+      Launch time showed 14 s already at "from saved copy", before any of the app's code ran.
+      With the downloaded audio deleted it was 0.04 s. Safari seems to read through a site's
+      whole Cache Storage when the worker first opens it. IndexedDB looks a clip up by key.
+    - **Moving over:** nothing is copied, so the user downloads again. The worker deletes the
+      old `learnthai-audio` cache when it activates (shell cache bumped to v6). The old worker's
+      last fetches can recreate it (seen in Chromium), so `syncOfflineAudio()` also deletes it
+      once (`prefs.oldAudioCacheGone`).
+    - **Tested in Chromium:**
+      - Upgrading from the live version (served from a scratch copy, then replaced with the new
+        files) deletes the old cache, and the new worker saves clips into IndexedDB.
+      - With the server's audio taken away, a saved clip plays: a 200 of the right size, and a
+        206 for `Range: bytes=0-1`. An unsaved clip gives a 404.
+      - "Download all audio" saves all 16,036 clips (161 MB). Launch at CPU ×4 is unchanged
+        (ready at 0.3 s).
+      - The launch sync deletes a clip no card uses, and Delete empties the store.
+      - Headless Chromium never showed the slow launch, so the real check is the iPhone.
 - **Offline audio** (Settings → App):
   - Every clip that passes through the worker is cached, and `preloadDeckAudio()` fetches a whole
     deck, so opening a deck saves its audio.
@@ -1515,7 +1536,7 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
     - **Stop** clears `settings.offlineAudio` and drops the queued bulk items
       (`stopDownloadAll`). A run ends (`finishDownloadAll`) when the queue's last worker finds it
       empty.
-    - **Delete downloaded audio** clears the cache.
+    - **Delete downloaded audio** clears the store (`ClipStore.clear()`).
   - **The Settings text always leads with "X of Y clips saved"** (2026-10-07). The user saw a
     blank section, just the two buttons, after reopening the app.
     - **Cause:** `renderOffline()` re-read the cache's keys on every render. On an iPhone with
@@ -1538,7 +1559,7 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
       trimmed).
     - **Clips the worker saves during plain playback** count from the next visit's read.
 - **Keeping the cache in step** (`syncOfflineAudio()`, 3 s after launch):
-  - It deletes cached clips that the manifest no longer lists, by file name, in batches of 50.
+  - It deletes saved clips that the manifest no longer lists, in one transaction.
   - **Skipped when nothing changed** (2026-10-07). `audioListSignature()` is an FNV-1a hash of the
     manifest's file list. `prefs.audioPruned` holds the signature last pruned for, and
     `prefs.audioComplete` the one last fully downloaded for (cleared by Delete). A launch reads
@@ -1562,6 +1583,9 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
     `performance.mark` at the end of `init()`).
     - Times count from the start of navigation. If they're far below what the user sees, the rest
       is iOS starting the app's processes, before any of our code runs.
+  - **The real cause was the saved audio** (2026-10-07). Every launch took 10–14 s on the
+    iPhone, with "from saved copy" already at 14 s, and 0.04 s once the downloaded audio was
+    deleted. The clips moved from Cache Storage to IndexedDB (see the service worker section).
 - **Backup** (Settings → App, 2026-10-07): **Export** and **Load**.
   - **Export** writes the whole store (settings, prefs, items, daily, reviewWords,
     settingsMigrations) as `learnthai-backup-YYYY-MM-DD.json`:

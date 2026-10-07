@@ -6,18 +6,21 @@
 //   version in the background (refreshShell). If anything changed, the whole set is fetched and
 //   swapped in together, so a page never mixes files from two versions, and open pages are told
 //   (they show a "New version ready" bar).
-// - Audio clips (data/audio/*.mp3) are cache-first. Their names are content hashes, so a cached
-//   clip never goes stale. Each clip is cached the first time it's fetched, and Settings → App →
-//   "Download all audio" fetches the rest (app.js uses the same AUDIO_CACHE).
+// - Audio clips (data/audio/*.mp3) are served from the saved-clip store (audio-store.js,
+//   IndexedDB) when they're there, else fetched and saved. Their names are content hashes, so a
+//   saved clip never goes stale. Settings → App → "Download all audio" fetches the rest. They used
+//   to live in Cache Storage, which made iPhone launches crawl (see audio-store.js).
 // - Anything else on the site is network-first, falling back to the cache.
 
-const SHELL_CACHE = 'learnthai-shell-v5';  // bump if SHELL changes, so stale entries are dropped
-const AUDIO_CACHE = 'learnthai-audio';
+importScripts('audio-store.js'); // self.ClipStore
+
+const SHELL_CACHE = 'learnthai-shell-v6';  // bump if SHELL changes, so stale entries are dropped
+const OLD_AUDIO_CACHE = 'learnthai-audio'; // where clips were kept until 2026-10-07: deleted on activate
 const NETWORK_TIMEOUT_MS = 4000;
 // Paths relative to the service worker's scope ('' is the app's root URL).
 const SHELL = [
   '', 'index.html', 'app.js', 'spell.js', 'styles.css', 'mobile.css', 'app.webmanifest',
-  'data/decks.json', 'data/audio/manifest.json',
+  'data/decks.json', 'data/audio/manifest.json', 'audio-store.js',
   'fonts/NotoLoopedThai-Regular.woff2', 'fonts/NotoLoopedThai-Bold.woff2',
   'fonts/NotoSansThai-Regular.woff2', 'fonts/NotoSansThai-Bold.woff2',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png',
@@ -35,7 +38,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil((async () => {
     for (const key of await caches.keys()) {
-      if (key.startsWith('learnthai-shell-') && key !== SHELL_CACHE) await caches.delete(key);
+      if ((key.startsWith('learnthai-shell-') && key !== SHELL_CACHE) || key === OLD_AUDIO_CACHE) await caches.delete(key);
     }
     await self.clients.claim();
   })());
@@ -119,20 +122,23 @@ async function networkFirst(req) {
 }
 
 async function audio(req) {
-  const cache = await caches.open(AUDIO_CACHE);
-  let res = await cache.match(req.url);
-  if (!res) {
-    res = await fetch(req.url);  // the whole file, even if the player asked for a byte range
+  const file = new URL(req.url).pathname.split('/').pop();
+  let buf = await ClipStore.get(file).catch(() => null);
+  if (!buf) {
+    const res = await fetch(req.url);  // the whole file, even if the player asked for a byte range
     if (!res.ok) return res;
-    await cache.put(req.url, res.clone());
+    buf = await res.arrayBuffer();
+    await ClipStore.put(file, buf).catch(() => {}); // saved for next time, and offline
   }
   const range = req.headers.get('range');
-  return range ? rangeResponse(res, range) : res;
+  if (range) return rangeResponse(buf, range);
+  return new Response(buf, {
+    headers: { 'Content-Type': 'audio/mpeg', 'Content-Length': String(buf.byteLength), 'Accept-Ranges': 'bytes' },
+  });
 }
 
 // Safari's <audio> requests byte ranges and won't play a plain 200 in reply.
-async function rangeResponse(res, header) {
-  const buf = await res.arrayBuffer();
+function rangeResponse(buf, header) {
   const size = buf.byteLength;
   const m = /^bytes=(\d*)-(\d*)$/.exec(header.trim());
   let start = 0;
