@@ -166,6 +166,7 @@
     <div class="review-only-empty flashcards-only" id="review-only-empty" role="status" hidden>
       <p class="review-only-empty-title">None of this topic's words are in Review yet</p>
       <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
+      <p class="review-only-empty-small" id="review-only-empty-hint">Or switch to Everything with the button above to see all your words</p>
     </div>
     <section class="round-summary flashcards-only" id="round-summary" hidden>
       <h2 class="round-title">Round complete</h2>
@@ -244,36 +245,6 @@
           <input type="search" id="settings-search" placeholder="Search settings…" autocomplete="off" />
         </div>
         <div class="modal-body settings" id="settings-section">
-
-      <details class="settings-cat" data-cat="app">
-        <summary>App</summary>
-        <div class="setting-group" data-search="install app home screen iphone add pwa">
-          <label class="setting-row">
-            <span class="setting-label">Install</span>
-            <span class="setting-help" id="install-help"></span>
-          </label>
-          <div class="setting-actions" id="install-actions" hidden>
-            <button type="button" id="install-btn" class="ghost">Install app</button>
-          </div>
-        </div>
-        <div class="setting-group" data-search="launch startup start time slow speed loading">
-          <label class="setting-row">
-            <span class="setting-label">Launch time</span>
-            <span class="setting-help" id="launch-help"></span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
-          <label class="setting-row">
-            <span class="setting-label">Backup</span>
-            <span class="setting-help">Save your settings, progress and Review list to a file, or load them from one, e.g. to move to another device. Loading replaces what's on this device. Downloaded audio isn't included.</span>
-          </label>
-          <div class="setting-actions">
-            <button type="button" id="backup-export" class="ghost">Export</button>
-            <button type="button" id="backup-load" class="ghost">Load</button>
-            <input type="file" id="backup-file" accept=".json,application/json" hidden />
-          </div>
-        </div>
-      </details>
 
       <details class="settings-cat" data-cat="display">
         <summary>Display</summary>
@@ -524,6 +495,36 @@
             </label>
             <span class="setting-help">Saying words aloud helps you remember them.</span>
           </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="app">
+        <summary>App</summary>
+        <div class="setting-group" data-search="install app home screen iphone add pwa">
+          <label class="setting-row">
+            <span class="setting-label">Install</span>
+            <span class="setting-help" id="install-help"></span>
+          </label>
+          <div class="setting-actions" id="install-actions" hidden>
+            <button type="button" id="install-btn" class="ghost">Install app</button>
+          </div>
+        </div>
+        <div class="setting-group" data-search="launch startup start time slow speed loading">
+          <label class="setting-row">
+            <span class="setting-label">Launch time</span>
+            <span class="setting-help" id="launch-help"></span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
+          <label class="setting-row">
+            <span class="setting-label">Backup</span>
+            <span class="setting-help">Save your settings, progress and Review list to a file, or load them from one, e.g. to move to another device. Loading replaces what's on this device. Downloaded audio isn't included.</span>
+          </label>
+          <div class="setting-actions">
+            <button type="button" id="backup-export" class="ghost">Export</button>
+            <button type="button" id="backup-load" class="ghost">Load</button>
+            <input type="file" id="backup-file" accept=".json,application/json" hidden />
+          </div>
         </div>
       </details>
 

@@ -612,8 +612,8 @@ It's the only behaviour. The history, all on the same day:
 **Scopes: a topic, a group or a whole category** (2026-10-07; the user wanted to study and review
 a category alone, on every page).
 
-- **A scope id** is a topic's id, `group:<category>::<group>`, `cat:<category>`, or (Review only)
-  `all`.
+- **A scope id** is a topic's id, `group:<category>::<group>`, `cat:<category>`, or (Review and
+  Flashcards only) `all`.
   - `resolveScope(id)` gives `{ id, kind, name, label, description, decks, cards, deckOf }`.
     `cards` drops repeats (a word in two topics counts once). `deckOf` maps a card key to the first
     of the scope's decks with it, used for Wordlists' headings and Test answers' deck.
@@ -632,6 +632,29 @@ a category alone, on every page).
   are no headings while sorted by a column. The header reads "Basics — All 19 topics".
 - **Flashcards:** works as for a topic. Since it shows only Review words, "All of Food & Drink"
   means your Review words from it. The empty-topic message names the scope.
+- **Flashcards: Everything or By topic** (`prefs.flashcardsBy`: `topic` by default, or `all`;
+  2026-10-07, the user asked for Review's options on Flashcards too).
+  - **The dialog:** opened from Flashcards (`state.pickerFor = 'flashcards'`), it is titled "What
+    to study" and has the same switch as Review's. The help reads "Shared with the Topics page and
+    Review" or "Every word you've added to Review". The Topics page's dialog has no switch.
+  - **Separate switches, one topic:** Review and Flashcards each keep their own Everything / By
+    topic. By topic means the one shared topic.
+  - **Everything** means every word in Review, from all topics (`flashScope()` →
+    `resolveScope('all')`). The topic button and the Home card say "Everything".
+  - **Two card lists:** `state.listCards` is the topic's words, for the Topics page.
+    `state.cards` is Flashcards' list: the same array By topic, every card on Everything
+    (`loadCards`). The queue then keeps the Review words, and Test answers draw on all cards.
+  - **`state.flashScopeId`** is what Flashcards was built for: the topic's id or `all`.
+    `selectDeck` rebuilds Flashcards (`reloadFlashcards`) only if that changes. So picking a
+    topic on the Topics page leaves an Everything round where it was.
+  - **Empty message:** on Everything with nothing in Review, "No words in Review yet". By topic,
+    the message gains Review's "Or switch to Everything…" line (`#review-only-empty-hint`), hidden
+    when Review is empty.
+  - **Tested in Chromium:**
+    - All 7 Review words from two topics showed on Everything.
+    - Changing the Topics page's topic left the round on the same card.
+    - Test mode had 3 answer choices.
+    - The empty cases, the Home card and Review's dialog were all as above.
 - **Review: Everything or By topic** (`prefs.reviewBy`: `all` by default, or `topic`). It's set in
   Review's topic dialog, "What to review", which has an Everything / By topic switch above the
   topic list (`renderReviewBy`, `state.pickerFor = 'review'`).
@@ -967,8 +990,9 @@ Everything lives in localStorage under `learnthai:v1`:
   review).
 
 The settings modal (gear icon, top right) is searchable through each group's `data-search`
-keywords. Since 2026-10-07 its sections are App, Display, Audio, Wordlists, Flashcards (was "Deck
-mode"), Review (was "Daily review") and Reset, at the user's request.
+keywords. Since 2026-10-07 its sections are Display, Audio, Topics (was Wordlists), Flashcards
+(was "Deck mode"), Review (was "Daily review"), App and Reset, at the user's request. App moved
+from first to just above Reset later the same day.
 - **What moved:** Spelling went from Display to Audio. The Confirmations section's two settings
   joined Wordlists, beside the buttons they confirm: "Confirm “Add all to Review”" / "Ask before
   adding every word in the list", and the same for Remove.

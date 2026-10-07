@@ -60,6 +60,8 @@ const els = {
   reviewBy: document.getElementById('review-by'),
   reviewByButtons: document.querySelectorAll('[data-review-by]'),
   reviewByHelp: document.getElementById('review-by-help'),
+  reviewBySwitch: document.querySelector('#review-by .segmented'),
+  reviewOnlyEmptyHint: document.getElementById('review-only-empty-hint'),
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   todayDueFrom: document.getElementById('today-due-from'),
   todayNewFrom: document.getElementById('today-new-from'),
@@ -185,9 +187,11 @@ const DEFAULT_SETTINGS = {
 
 const state = {
   decks: [],
-  currentDeckId: null,       // what Wordlists and Flashcards show: a scope id (resolveScope)
-  pickerFor: 'study',        // the topic picker was opened from 'study' (Wordlists/Flashcards) or 'review'
-  cards: [],          // current deck's cards (with progress merged)
+  currentDeckId: null,       // the topic the Topics page shows (and Flashcards and Review By topic): a scope id (resolveScope)
+  pickerFor: 'study',        // the topic picker was opened from 'study' (the Topics page), 'flashcards' or 'review'
+  listCards: [],      // the topic's cards (with progress merged): the Topics page
+  cards: [],          // Flashcards' cards: the same list By topic, every card on Everything (loadCards)
+  flashScopeId: null, // the scope `cards` was built for: the topic's id, or 'all'
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
@@ -585,8 +589,8 @@ function reviewOnlyCards() {
 // Which words those are, as a string, to tell when that's changed.
 const reviewOnlySignature = () => reviewOnlyCards().map((c) => c.key).join('\n');
 
-// The Flashcards queue: indices into state.cards, which stays the whole topic (Wordlists and
-// Test-mode answer choices use it too).
+// The Flashcards queue: indices into state.cards, which stays the whole topic, or every card on
+// Everything (Test-mode answer choices come from it too).
 function buildFlashcardQueue() {
   const queue = buildQueue(state.cards, els.srsToggle.checked);
   const keep = reviewOnlyCards();
@@ -600,13 +604,15 @@ function buildFlashcardQueue() {
 // card also said "Showing only words in Review: 2 of 286"; the user found it redundant once this was
 // the only behaviour.)
 function renderReviewOnly() {
-  const empty = !!state.currentDeckId && state.queue.length === 0;
+  const empty = !!state.flashScopeId && state.queue.length === 0;
   els.reviewOnlyEmpty.hidden = !empty;
   els.stage.classList.toggle('review-only-none', empty);
   if (empty) {
-    const scope = currentScope();
-    const one = !scope || scope.kind === 'topic';
-    els.reviewOnlyEmptyTitle.textContent = one ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+    const scope = flashScope();
+    els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Review yet'
+      : !scope || scope.kind === 'topic' ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+    // "Switch to Everything" (as on Review), when that would show something.
+    els.reviewOnlyEmptyHint.hidden = scope?.kind === 'all' || !Object.keys(reviewWords()).length;
   }
 }
 
@@ -615,7 +621,7 @@ function renderReviewOnly() {
 // card's Review button went, that's Settings opened over it) the queue is rebuilt at once, around
 // the card on screen if it's still in.
 function syncReviewOnly() {
-  if (!state.currentDeckId || state.view !== 'flashcards' || reviewOnlySignature() === state.reviewOnlySig) {
+  if (!state.flashScopeId || state.view !== 'flashcards' || reviewOnlySignature() === state.reviewOnlySig) {
     renderReviewOnly();
     return;
   }
@@ -804,7 +810,7 @@ function flipCard() {
 // Deck Test mode answers ('good' or 'again') update the same items as Today's review.
 function saveDeckRating(c, rating) {
   const store = loadStore();
-  const deckId = currentScope()?.deckOf.get(c.key)?.id || state.currentDeckId; // the card's own topic
+  const deckId = flashScope()?.deckOf.get(c.key)?.id || state.currentDeckId; // the card's own topic
   const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId });
   c.dueAt = it.due;
   c.seen = it.reps;
@@ -991,8 +997,46 @@ function resolveScope(id) {
 const currentScope = () => resolveScope(state.currentDeckId);
 const groupScopeId = (cat, group) => `group:${cat}::${group}`;
 
+// What Flashcards shows: Everything (every word in Review), or "By topic" (prefs.flashcardsBy,
+// the default), the topic the Topics page shows. Set in Flashcards' topic dialog, like Review's
+// below; the two switches are separate, the topic is shared (the user's request, 2026-10-07).
+const flashcardsByAll = () => getPreferences().flashcardsBy === 'all';
+function flashScope() {
+  return flashcardsByAll() ? resolveScope('all') : currentScope();
+}
+
+function setFlashcardsBy(by) {
+  if (getPreferences().flashcardsBy === by || (by === 'topic' && !flashcardsByAll())) return;
+  setPreferences({ flashcardsBy: by });
+  reloadFlashcards();
+  renderDeckButton();
+  renderHome();
+  if (state.flashScopeId) preloadDeckAudio(flashScope());
+}
+
+// The topic's cards for the Topics page, and Flashcards': the same list By topic; on Everything
+// every card (its queue keeps the words in Review, and Test mode draws answer choices from all).
+// Both keep resolveScope's order, so a queue's indices stay valid across a reload.
+function loadCards() {
+  const topic = currentScope();
+  state.listCards = topic ? mergeProgressIntoCards(topic.cards) : [];
+  state.cards = flashcardsByAll() ? mergeProgressIntoCards(resolveScope('all').cards) : state.listCards;
+}
+
+// A new Flashcards round for its current scope.
+function reloadFlashcards() {
+  state.pendingLearnRating = null;
+  state.learnAnswers = new Map();
+  loadCards();
+  state.flashScopeId = flashScope()?.id || null;
+  state.queue = buildFlashcardQueue();
+  state.pos = 0;
+  renderReviewOnly();
+  renderCard();
+}
+
 // What Review covers: Everything, or "By topic" (prefs.reviewBy), the topic, group or category
-// Wordlists and Flashcards show. Both are set in Review's topic dialog.
+// the Topics page shows. Both are set in Review's topic dialog.
 const reviewByTopic = () => getPreferences().reviewBy === 'topic';
 function reviewScope() {
   return (reviewByTopic() && currentScope()) || resolveScope('all');
@@ -1014,9 +1058,9 @@ function leaveReviewSession() {
   state.review = null;
 }
 
-// The topic button: on Review, what Review covers; elsewhere, what Wordlists and Flashcards show.
+// The topic button: what the page shows (Review and Flashcards can be on Everything).
 function renderDeckButton() {
-  const scope = state.view === 'today' ? reviewScope() : currentScope();
+  const scope = state.view === 'today' ? reviewScope() : state.view === 'flashcards' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
   els.deckButtonIcon.textContent = !scope || scope.kind === 'topic' ? '📖' : '📚';
 }
@@ -1025,17 +1069,13 @@ function selectDeck(deckId) {
   const deck = resolveScope(deckId);
   if (!deck || deck.kind === 'all') return;
   if (state.reading.active) stopReadAloud();
-  state.pendingLearnRating = null;
-  state.learnAnswers = new Map();
   state.currentDeckId = deckId;
-  state.cards = mergeProgressIntoCards(deck.cards);
-  state.queue = buildFlashcardQueue();
-  state.pos = 0;
   setPreferences({ currentDeckId: deckId });
+  // Flashcards on Everything carries on; otherwise it starts the new topic.
+  if ((flashcardsByAll() ? 'all' : deckId) !== state.flashScopeId) reloadFlashcards();
+  else state.listCards = mergeProgressIntoCards(deck.cards);
   renderDeckButton();
-  renderReviewOnly();
   preloadDeckAudio(deck);
-  renderCard();
   renderWordlist();
   if (state.view === 'today') renderToday();
 }
@@ -1092,34 +1132,49 @@ function pickerModel(q) {
   return [...cats.values()];
 }
 
-// The picker always picks Wordlists and Flashcards' scope. Opened from Review ('review'), it also
-// has Everything / By topic at the top (renderReviewBy), and picking a topic means By topic.
+// The picker always picks the shared topic. Opened from Review or Flashcards, it also has
+// Everything / By topic at the top (renderReviewBy), and picking a topic means By topic there.
 function pickerSelectedId() {
   return state.currentDeckId;
 }
 
+// Whether the page the picker was opened from is By topic (the Topics page always is).
+function pickerByTopic() {
+  if (state.pickerFor === 'review') return reviewByTopic();
+  if (state.pickerFor === 'flashcards') return !flashcardsByAll();
+  return true;
+}
+
 function pickScope(id) {
+  if (pickerByTopic() && id === state.currentDeckId) { // the same choice again: carry on
+    closeDeckPicker();
+    return;
+  }
   if (state.pickerFor === 'review') {
-    if (reviewByTopic() && id === state.currentDeckId) { // the same choice again: carry on
-      closeDeckPicker();
-      return;
-    }
     leaveReviewSession();
     setPreferences({ reviewBy: 'topic' });
+  } else if (state.pickerFor === 'flashcards') {
+    setPreferences({ flashcardsBy: 'topic' });
   }
-  selectDeck(id); // redraws Review too
+  selectDeck(id); // redraws Review too, and rebuilds Flashcards if it was on Everything
   renderDeckButton();
+  renderHome();
   closeDeckPicker();
 }
 
-// Review's dialog: Everything hides the topic list (there's nothing to pick); By topic shows it.
+// Review's and Flashcards' dialog: Everything hides the topic list (there's nothing to pick); By
+// topic shows it. The Topics page's dialog is just the list.
 function renderReviewBy() {
   const review = state.pickerFor === 'review';
-  const topic = reviewByTopic();
-  els.reviewBy.hidden = !review;
+  const has = review || state.pickerFor === 'flashcards';
+  const topic = pickerByTopic();
+  els.reviewBy.hidden = !has;
   els.reviewByButtons.forEach((b) => b.setAttribute('aria-checked', String((b.dataset.reviewBy === 'topic') === topic)));
-  els.reviewByHelp.textContent = topic ? 'Shared with the Topics page and Flashcards' : 'Review words from every topic';
-  const list = !review || topic;
+  els.reviewBySwitch.setAttribute('aria-label', review ? 'What to review' : 'What to study');
+  els.reviewByHelp.textContent = review
+    ? (topic ? 'Shared with the Topics page and Flashcards' : 'Review words from every topic')
+    : (topic ? 'Shared with the Topics page and Review' : "Every word you've added to Review");
+  const list = !has || topic;
   els.deckPickerSearchRow.hidden = !list;
   els.deckPickerTree.hidden = !list;
   els.deckPicker.classList.toggle('review-all', !list); // just the switch: the dialog shrinks to fit
@@ -1254,8 +1309,8 @@ function openDeckPicker() {
   els.deckButton.setAttribute('aria-expanded', 'true');
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
-  state.pickerFor = state.view === 'today' ? 'review' : 'study';
-  els.deckPickerTitle.textContent = state.pickerFor === 'review' ? 'What to review' : 'Choose a topic';
+  state.pickerFor = { today: 'review', flashcards: 'flashcards' }[state.view] || 'study';
+  els.deckPickerTitle.textContent = { review: 'What to review', flashcards: 'What to study' }[state.pickerFor] || 'Choose a topic';
   renderReviewBy();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -1319,15 +1374,12 @@ function setView(view) {
   if (view !== 'today' && leaving === 'today') stopAudio();
   if (view === 'today') renderToday();
   if (view === 'home') renderHome();
-  // Back to Decks after reviewing: refresh the cards' progress (the queue order stays).
-  if (view === 'flashcards' && leaving === 'today') {
-    const deck = currentScope();
-    if (deck) state.cards = mergeProgressIntoCards(deck.cards);
-  }
+  // Back to Flashcards after reviewing: refresh the cards' progress (the queue order stays).
+  if (view === 'flashcards' && leaving === 'today') loadCards();
   renderDeckButton(); // Review's button shows what Review covers
   if (view === 'flashcards') fitCardText(); // laid out only now if the card was hidden
   // Words added to or taken out of Review elsewhere (Wordlists, Review) apply on coming back.
-  if (view === 'flashcards' && leaving !== 'flashcards' && state.currentDeckId && reviewOnlySignature() !== state.reviewOnlySig) {
+  if (view === 'flashcards' && leaving !== 'flashcards' && state.flashScopeId && reviewOnlySignature() !== state.reviewOnlySig) {
     rebuildCurrentQueue();
     renderReviewOnly();
   }
@@ -1576,7 +1628,7 @@ function filterSettings(q) {
 }
 
 function rebuildCurrentQueue() {
-  if (!state.currentDeckId) return;
+  if (!state.flashScopeId) return;
   // A rebuilt queue is a new round: clear Test answers so cards don't come back pre-answered.
   // An answer still waiting for Next is saved to the SRS first.
   if (state.pendingLearnRating) commitPendingRatingWithoutAdvance();
@@ -1609,15 +1661,14 @@ function setDirection(direction) {
   });
   setPreferences({ direction });
   // Each direction has its own progress, so re-read it; a new round starts.
-  const deck = currentScope();
-  if (deck) state.cards = mergeProgressIntoCards(deck.cards);
+  loadCards();
   rebuildCurrentQueue();
 }
 
 // ---------- wordlist ----------
 
 function visibleWordlistRows() {
-  let rows = state.cards;
+  let rows = state.listCards;
   if (state.sort.key) {
     const k = state.sort.key;
     const dir = state.sort.dir === 'asc' ? 1 : -1;
@@ -1761,7 +1812,7 @@ function renderWordlist() {
     els.wordtableBody.appendChild(frag);
   }
 
-  const allIn = state.cards.every((c) => c.key in words);
+  const allIn = state.listCards.every((c) => c.key in words);
   // With the whole deck in Review, the button reads "✓ All in Review" and removes them all.
   els.wordlistAddAll.classList.toggle('all-in', allIn);
   if (allIn) {
@@ -1806,7 +1857,7 @@ function makeRng(seed) {
 // On odd `seen` counts, flip the side so each card is shown both ways.
 function buildLearnTrial(card, deckCards, seenOverride) {
   const seen = seenOverride != null ? seenOverride : (card.seen || 0);
-  const seed = hashStr(`${state.currentDeckId}::${card.key}::${seen}::${state.direction}`);
+  const seed = hashStr(`${state.flashScopeId}::${card.key}::${seen}::${state.direction}`);
   const rng = makeRng(seed);
 
   // Side = which language appears on the answer pills.
@@ -2193,7 +2244,9 @@ function renderHome() {
   if (!state.cardIndex.size) return; // decks not loaded yet
   const plan = planReview();
   const deck = currentScope();
-  els.homeDeckStat.textContent = els.homeWordlistStat.textContent = !deck ? '' : deck.kind === 'topic' ? `Topic: ${deck.name}` : deck.label;
+  const label = (s) => (!s ? '' : s.kind === 'topic' ? `Topic: ${s.name}` : s.label);
+  els.homeWordlistStat.textContent = label(deck);
+  els.homeDeckStat.textContent = label(flashScope()); // "Everything" when Flashcards is
   const empty = Object.keys(reviewWords()).length === 0;
   const scope = reviewScope();
   els.homeReviewStat.textContent = empty ? 'Nothing added yet'
@@ -2474,7 +2527,10 @@ async function resetAllProgress() {
   delete store.reviewExcluded;      // from automatic adding, gone since 2026-10-07
   delete store.reviewExcludedCards;
   saveStore(store);
-  if (state.currentDeckId) selectDeck(state.currentDeckId);
+  if (state.currentDeckId) {
+    reloadFlashcards();
+    renderWordlist();
+  }
   renderToday();
   toast('All progress reset');
 }
@@ -2927,7 +2983,8 @@ function bindEvents() {
   // Deck picker
   els.deckButton.addEventListener('click', openDeckPicker);
   els.reviewByButtons.forEach((b) => b.addEventListener('click', () => {
-    setReviewBy(b.dataset.reviewBy);
+    if (state.pickerFor === 'review') setReviewBy(b.dataset.reviewBy);
+    else setFlashcardsBy(b.dataset.reviewBy);
     if (b.dataset.reviewBy === 'all') closeDeckPicker(); // nothing more to pick
     else renderReviewBy();
   }));
@@ -3015,10 +3072,10 @@ function bindEvents() {
   els.wordlistAddAll.addEventListener('click', async () => {
     const words = reviewWords();
     const deck = currentScope();
-    const keys = state.cards.map((c) => c.key).filter((key) => !(key in words));
+    const keys = state.listCards.map((c) => c.key).filter((key) => !(key in words));
     if (!keys.length) {
       // All in Review: remove them all (their progress is kept).
-      const n = state.cards.length;
+      const n = state.listCards.length;
       const ok = await confirmDialog({
         title: 'Remove all from Review?',
         message: `Remove all ${n} words in ${deck.name} from Review? Your progress on them is kept.`,
@@ -3026,7 +3083,7 @@ function bindEvents() {
         setting: 'confirmRemoveAll',
       });
       if (ok) {
-        setInReview(state.cards.map((c) => c.key), false);
+        setInReview(state.listCards.map((c) => c.key), false);
         toast(`Removed ${n} words from Review`);
       }
       return;
@@ -3034,7 +3091,7 @@ function bindEvents() {
     const n = keys.length;
     const ok = await confirmDialog({
       title: 'Add all to Review?',
-      message: n === state.cards.length
+      message: n === state.listCards.length
         ? `Add all ${n} words in ${deck.name} to Review?`
         : `Add the ${n} words in ${deck.name} that aren't in Review yet?`,
       confirmLabel: `Add ${n}`,
