@@ -8,18 +8,23 @@ four phases; implementation details go in `implementation-notes.md` as each phas
 
 - **Today** is the landing tab.
 - **New cards** get multiple choice for their first one or two goes, then switch to recall and
-  self-grading.
+  self-grading. *Superseded 2026-10-07:* Review is recall only, new cards too; recognition
+  (multiple choice) is left to Flashcards' Test mode.
 - **Existing Leitner progress** is converted into rough FSRS starting points (it could have been
   dropped, since progress never needs preserving).
-- **15 new cards a day** is the default.
+- **15 new cards a day** is the default. *Superseded 2026-10-07:* there's no daily limit; the
+  words you add all show up.
 - **No personal notes field:** the user didn't want one.
 - **2026-10-06: shorter intervals for a beginner.** Three changes to plain FSRS: Hard caps the next
   gap at 1.2× the last one (at least +1 day), a correct multiple-choice answer counts as Hard, and
   answers repeated on the same day don't lengthen the gap. See "Changes to plain FSRS" in
   `implementation-notes.md`.
+- **2026-10-07: Review is only the words you add.** Automatic adding and "New cards per day" were
+  removed.
 - **2026-10-06: Review is manual by default.** It only holds words you add: from a deck Test
   round's score screen (a dialog, nothing pre-ticked), Wordlists (a button on each row), or a
-  Flashcards card. There's
+  Flashcards card. (Since 2026-10-07, only Wordlists: Flashcards shows only Review words.)
+  There's
   no daily limit on added words. It started empty. Automatic adding stays available as a setting.
 
 ## Why (research summary)
@@ -54,15 +59,18 @@ four phases; implementation details go in `implementation-notes.md` as each phas
 - **A review card has three steps:**
   1. **Recall:** "Say it aloud, then tap Show".
   2. **Reveal:** translit, meaning, note and audio.
-  3. **Grade:** Again / Hard / Good / Easy, each showing its next interval.
+  3. **Grade:** Again / Hard / Good / Easy, each showing its next interval. *Since 2026-10-07:*
+     Again / Hard / Easy, with Easy scheduling as FSRS Good. The buttons no longer show
+     intervals; the Again wait and the Hard/Easy first waits are settings.
 - **en>th fronts** play no audio, so the answer isn't given away; the audio plays on reveal.
-- **New cards** start with multiple choice for their first one or two goes.
+- **New cards** go straight to recall (since 2026-10-07; at first they started with multiple
+  choice).
 
 ## 3. A session
 
 1. **Due reviews first,** weakest first, mixed across all decks.
-2. **New cards** are mixed in, up to the daily limit (15), drawn across decks with at most 5 from
-   any one deck a day.
+2. **New cards** are mixed in: every word you've added that hasn't started (since 2026-10-07; at
+   first, up to a daily limit of 15, drawn across decks with at most 5 from any one deck a day).
 3. **Missed items come back** 5–8 cards later until right once, then FSRS schedules them.
 4. **End screen:** reviewed, accuracy, new words learned, due tomorrow.
 

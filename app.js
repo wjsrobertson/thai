@@ -9,10 +9,16 @@ const els = {
   tabs: document.querySelectorAll('.tab'),
   deckButton: document.getElementById('deck-button'),
   deckButtonLabel: document.getElementById('deck-button-label'),
+  deckButtonIcon: document.querySelector('#deck-button .deck-button-icon'),
+  deckPickerTitle: document.getElementById('deck-picker-title'),
   deckPicker: document.getElementById('deck-picker'),
   deckPickerSearch: document.getElementById('deck-picker-search'),
   deckPickerTree: document.getElementById('deck-picker-tree'),
   srsToggle: document.getElementById('srs-toggle'),
+  reviewOnlyEmpty: document.getElementById('review-only-empty'),
+  todayTopicEmpty: document.getElementById('today-topic-empty'),
+  todayTopicEmptyTitle: document.getElementById('today-topic-empty-title'),
+  reviewOnlyEmptyTitle: document.querySelector('#review-only-empty .review-only-empty-title'),
   card: document.getElementById('card'),
   thai: document.getElementById('card-thai'),
   translit: document.getElementById('card-translit'),
@@ -37,29 +43,28 @@ const els = {
   directionButtons: document.querySelectorAll('.seg-btn[data-direction]'),
   wordlistSection: document.getElementById('wordlist-section'),
   wordlistDeckName: document.getElementById('wordlist-deck-name'),
-  wordlistFilter: document.getElementById('wordlist-filter'),
   wordtable: document.getElementById('wordtable'),
   wordtableHead: document.getElementById('wordtable-head'),
   wordtableBody: document.getElementById('wordtable-body'),
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
-  setNewPerDay: document.getElementById('setting-new-per-day'),
   setMaxReviews: document.getElementById('setting-max-reviews'),
+  setWaitAgain: document.getElementById('setting-wait-again'),
+  setWaitHard: document.getElementById('setting-wait-hard'),
+  setWaitEasy: document.getElementById('setting-wait-easy'),
   setRetention: document.getElementById('setting-retention'),
   setBothDirections: document.getElementById('setting-both-directions'),
   setSayAloud: document.getElementById('setting-say-aloud'),
-  setNewSource: document.getElementById('setting-new-source'),
-  setReviewScope: document.getElementById('setting-review-scope'),
+  reviewBy: document.getElementById('review-by'),
+  reviewByButtons: document.querySelectorAll('[data-review-by]'),
+  reviewByHelp: document.getElementById('review-by-help'),
+  deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   todayDueFrom: document.getElementById('today-due-from'),
-  todayBreakdown: document.getElementById('today-breakdown'),
-  todayBreakdownBody: document.getElementById('today-breakdown-body'),
   todayNewFrom: document.getElementById('today-new-from'),
   todayCounts: document.getElementById('today-counts'),
   todayEmpty: document.getElementById('today-empty'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
-  reviewToggles: document.querySelectorAll('.review-toggle'),
-  roundAdd: document.getElementById('round-add'),
   confirmModal: document.getElementById('confirm-modal'),
   confirmTitle: document.getElementById('confirm-title'),
   confirmMessage: document.getElementById('confirm-message'),
@@ -68,10 +73,6 @@ const els = {
   confirmOk: document.getElementById('confirm-ok'),
   confirmCancel: document.getElementById('confirm-cancel'),
   confirmSettings: document.querySelectorAll('[data-confirm-setting]'),
-  addModal: document.getElementById('add-modal'),
-  addList: document.getElementById('add-list'),
-  addConfirm: document.getElementById('add-confirm'),
-  addPicks: document.querySelectorAll('[data-pick]'),
   updateBar: document.getElementById('update-bar'),
   toast: document.getElementById('toast'),
   updateReload: document.getElementById('update-reload'),
@@ -85,20 +86,21 @@ const els = {
   todayNew: document.getElementById('today-new'),
   todayStart: document.getElementById('today-start'),
   review: document.getElementById('review'),
+  reviewTop: document.getElementById('review-top'),
   reviewLeft: document.getElementById('review-left'),
   reviewDeck: document.getElementById('review-deck'),
   reviewQuit: document.getElementById('review-quit'),
   reviewBadge: document.getElementById('review-badge'),
   reviewPrompt: document.getElementById('review-prompt'),
   reviewSpeak: document.getElementById('review-speak'),
+  reviewScript: document.getElementById('review-script'),
+  setReviewScript: document.getElementById('setting-review-script'),
   reviewHint: document.getElementById('review-hint'),
   reviewAnswer: document.getElementById('review-answer'),
   reviewMain: document.getElementById('review-main'),
   reviewTranslit: document.getElementById('review-translit'),
   reviewNote: document.getElementById('review-note'),
-  reviewPills: document.getElementById('review-pills'),
   reviewShow: document.getElementById('review-show'),
-  reviewContinue: document.getElementById('review-continue'),
   reviewGrades: document.getElementById('review-grades'),
   reviewSummary: document.getElementById('review-summary'),
   reviewScore: document.getElementById('review-score'),
@@ -114,6 +116,7 @@ const els = {
   setThaiSpeed: document.getElementById('setting-thai-speed'),
   setSpelling: document.getElementById('setting-spelling'),
   setTheme: document.getElementById('setting-theme'),
+  setThaiFont: document.getElementById('setting-thai-font'),
   themeColorMeta: document.querySelector('meta[name="theme-color"]'),
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
@@ -121,6 +124,11 @@ const els = {
   installActions: document.getElementById('install-actions'),
   installBtn: document.getElementById('install-btn'),
   offlineHelp: document.getElementById('offline-help'),
+  launchHelp: document.getElementById('launch-help'),
+  wordlistAbout: document.getElementById('wordlist-about'),
+  backupExport: document.getElementById('backup-export'),
+  backupLoad: document.getElementById('backup-load'),
+  backupFile: document.getElementById('backup-file'),
   offlineProgress: document.getElementById('offline-progress'),
   offlineDownload: document.getElementById('offline-download'),
   offlineDelete: document.getElementById('offline-delete'),
@@ -146,18 +154,20 @@ const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
 const DEFAULT_SETTINGS = {
-  newPerDay: 15,                  // new items introduced per study day (Today, and first answers in deck Test mode)
   maxReviews: 200,                // due reviews per study day
+  waitAgainMin: 10,               // Again: back after this many minutes (scheduleItem)
+  waitHardDays: 1,                // Hard: a new word's first wait; later waits grow from it
+  waitEasyDays: 3,                // Easy (FSRS Good): a new word's first wait; later waits grow from it
   retention: 0.9,                 // FSRS desired retention
   bothDirections: true,           // also schedule English → Thai items (unlocked per word; see gradeItem)
   sayAloud: true,                 // recall prompt says "Say it aloud…"
-  confirmAddAll: true,            // Wordlist "Add all to Review" asks first (Settings → Confirmations)
+  reviewScript: true,             // Review: show the Thai on Thai → English cards before Show (off: audio only)
+  confirmAddAll: true,            // Topics page "Add all to Review" asks first (Settings → Topics)
   confirmRemoveAll: true,         // Wordlist "✓ All in Review" (remove all) asks first
-  newSource: 'manual',            // what Review covers: 'manual' (words you add) | automatic from 'started' decks | the 'current' deck
-  reviewScope: 'all',             // which due items Today reviews: 'all' decks | 'current' deck
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
-  theme: 'dark',                  // Settings → Display → Theme: dark | dim | light | sepia | night | system
+  theme: 'dark',                  // Settings → Display → Theme: dark | light | night
+  thaiFont: 'looped',             // Settings → Display → Thai font: 'looped' (Noto Looped Thai) | 'loopless' (Noto Sans Thai)
   spellingStyle: 'letters',       // card-back spelling and the spell-aloud buttons: 'letters' (names) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
@@ -166,20 +176,20 @@ const DEFAULT_SETTINGS = {
   readSpeakEnglish: true,         // whether to speak English after Thai
   learnPauseMs: 1500,             // pause after answering before auto-advancing (Test mode)
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
-  wordlistFirst: 'thai',          // Wordlists' first column: 'thai' | 'english' (Settings → Wordlists)
+  wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → Topics)
   learnAutoProgress: 'correct',   // 'off' (wait for Next) | 'always' | 'correct' (only on a right answer); older saves hold true/false
 };
 
 const state = {
   decks: [],
-  currentDeckId: null,
+  currentDeckId: null,       // what Wordlists and Flashcards show: a scope id (resolveScope)
+  pickerFor: 'study',        // the topic picker was opened from 'study' (Wordlists/Flashcards) or 'review'
   cards: [],          // current deck's cards (with progress merged)
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
-  view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (Wordlists) | 'today' (the Review tab)
+  view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists) | 'today' (the Review tab)
   sort: { key: null, dir: 'asc' },
-  filter: '',
   orderMode: 'practice', // 'practice' | 'test' — card sequencing in flashcards
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back)
   pickerOpen: false,
@@ -194,9 +204,6 @@ const state = {
   learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen } for this session
   cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
   review: null,             // Today's review session while it runs (see startReview)
-  breakdownOpen: null,      // the Review breakdown category showing its words (renderTodayBreakdown)
-  lastRound: [],            // the last deck Test round's answers, [{ key, isCorrect }], for "Add to Review…"
-  addOpen: false,           // the "Add to Review" dialog is open
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
 };
 
@@ -253,6 +260,12 @@ const SETTINGS_MIGRATIONS = [
   ['review-manual', (s) => (['started', 'current'].includes(s.newSource) ? { newSource: 'manual' } : null)],
   // 2026-10-06: the default spelling style became letter names (it was the school method).
   ['spelling-letters', (s) => (s.spellingStyle === 'school' ? { spellingStyle: 'letters' } : null)],
+  // 2026-10-07: "Due reviews from: Current topic only" became Review → "By topic" (prefs.reviewBy),
+  // which follows Wordlists and Flashcards' topic, group or category, and narrows new words too.
+  ['review-by-topic', (s, store) => {
+    if (s.reviewScope === 'current') store.prefs = { ...(store.prefs || {}), reviewBy: 'topic' };
+    return null;
+  }],
 ];
 
 function migrateSettings() {
@@ -260,7 +273,7 @@ function migrateSettings() {
   const done = new Set(store.settingsMigrations || []);
   for (const [id, step] of SETTINGS_MIGRATIONS) {
     if (done.has(id)) continue;
-    const patch = store.settings && step(store.settings);
+    const patch = store.settings && step(store.settings, store); // a step may also set store.prefs
     if (patch) store.settings = { ...store.settings, ...patch };
     done.add(id);
   }
@@ -293,7 +306,6 @@ const FSRS_W = [0.40255, 1.18385, 3.173, 15.69105, 7.1949, 0.5345, 1.4604, 0.004
   1.01925, 1.9395, 0.11, 0.29605, 2.2698, 0.2315, 2.9898, 0.51655, 0.6621];
 const FSRS_DECAY = -0.5;
 const FSRS_FACTOR = 19 / 81;             // with DECAY, makes retrievability 90% after S days
-const AGAIN_DELAY = 10 * MINUTE;         // a missed item is due again shortly (and requeued in-session)
 const DAY_ROLLOVER_HOURS = 4;            // a study day runs 4 am to 4 am, so late-night reviews count for that day
 
 const itemKeyOf = (key, dir) => `${key}##${dir}`;
@@ -331,7 +343,10 @@ function scheduleItem(prev, grade, now, { mc = false } = {}) {
   const retention = getSettings().retention;
   const g = mc && grade > 2 ? 2 : grade;
   if (it.s == null) {
-    it.s = FSRS_W[g - 1];
+    // A new item: Hard and Easy (FSRS Good) start from Settings → Review's first waits, as the
+    // stability whose interval is that many days; FSRS grows it from there. Others: FSRS's own.
+    const first = { 2: getSettings().waitHardDays, 3: getSettings().waitEasyDays }[g];
+    it.s = first ? first / fsrsInterval(1, retention) : FSRS_W[g - 1];
     it.d = fsrsInitD(g);
   } else {
     const days = Math.max(0, (now - it.last) / DAY);
@@ -363,7 +378,7 @@ function scheduleItem(prev, grade, now, { mc = false } = {}) {
   it.s = Math.max(0.01, Math.round(it.s * 1000) / 1000);
   it.d = Math.round(it.d * 1000) / 1000;
   const interval = Math.max(1, Math.round(fsrsInterval(it.s, retention)));
-  it.due = g === 1 ? now + AGAIN_DELAY : now + interval * DAY;
+  it.due = g === 1 ? now + getSettings().waitAgainMin * MINUTE : now + interval * DAY; // Again: Settings → Review
   it.last = now;
   it.reps = (it.reps || 0) + 1;
   return it;
@@ -523,12 +538,17 @@ function buildQueue(cards, srsOn) {
   }
   // Test mode. Settings → "Test card order" picks random or deck order (as Learn mode and the
   // wordlist show them). With Smart order on, it orders cards within each tier: due first, then
-  // study-ahead.
+  // study-ahead. Random order puts new words (never answered in this direction, e.g. just added to
+  // Review) first, still shuffled among themselves (the user's request, 2026-10-07).
   const settings = getSettings();
   const deckOrder = settings.testOrder === 'deck';
+  const newFirst = (queue) => {
+    const isNew = (i) => cards[i].dueAt === 0;
+    return [...queue.filter(isNew), ...queue.filter((i) => !isNew(i))];
+  };
   if (!srsOn) {
     const all = cards.map((_, i) => i);
-    return deckOrder ? all : shuffled(all);
+    return deckOrder ? all : newFirst(shuffled(all));
   }
   const now = Date.now();
 
@@ -546,7 +566,71 @@ function buildQueue(cards, srsOn) {
   const ahead = deckOrder ? notDueIndices : boxWeightedQueue(notDueIndices, cards);
 
   // After due cards, the rest, so you can keep studying ahead of schedule.
-  return [...due, ...ahead];
+  return deckOrder ? [...due, ...ahead] : newFirst([...due, ...ahead]);
+}
+
+// ---------- "Review words only": Flashcards shows the topic's words that are in Review ----------
+// The only behaviour since 2026-10-07 (it was a setting, on by default). A note under the card says
+// so; with none in Review there's no card, just a message to add some from Wordlists.
+
+// The topic's words in Review (maybe none): what Flashcards goes through.
+function reviewOnlyCards() {
+  const words = reviewWords();
+  return state.cards.filter((c) => c.key in words);
+}
+
+// Which words those are, as a string, to tell when that's changed.
+const reviewOnlySignature = () => reviewOnlyCards().map((c) => c.key).join('\n');
+
+// The Flashcards queue: indices into state.cards, which stays the whole topic (Wordlists and
+// Test-mode answer choices use it too).
+function buildFlashcardQueue() {
+  const queue = buildQueue(state.cards, els.srsToggle.checked);
+  const keep = reviewOnlyCards();
+  state.reviewOnlySig = keep.map((c) => c.key).join('\n');
+  const keys = new Set(keep.map((c) => c.key));
+  return queue.filter((i) => keys.has(state.cards[i].key));
+}
+
+// With nothing in Review, the message in place of the card (the stage's .review-only-none hides
+// it). Called from renderCard, so it follows every queue change. (Until 2026-10-07 a note under the
+// card also said "Showing only words in Review: 2 of 286"; the user found it redundant once this was
+// the only behaviour.)
+function renderReviewOnly() {
+  const empty = !!state.currentDeckId && state.queue.length === 0;
+  els.reviewOnlyEmpty.hidden = !empty;
+  els.stage.classList.toggle('review-only-none', empty);
+  if (empty) {
+    const scope = currentScope();
+    const one = !scope || scope.kind === 'topic';
+    els.reviewOnlyEmptyTitle.textContent = one ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+  }
+}
+
+// After words go into or out of Review, or a setting changes. Away from Flashcards there's nothing
+// to do: coming back rebuilds the queue if the set changed (setView). On Flashcards (since the
+// card's Review button went, that's Settings opened over it) the queue is rebuilt at once, around
+// the card on screen if it's still in.
+function syncReviewOnly() {
+  if (!state.currentDeckId || state.view !== 'flashcards' || reviewOnlySignature() === state.reviewOnlySig) {
+    renderReviewOnly();
+    return;
+  }
+  const c = currentCard();
+  const queue = buildFlashcardQueue();
+  let at = c ? queue.indexOf(state.cards.indexOf(c)) : -1;
+  if (at > 0 && state.orderMode === 'test') {
+    queue.unshift(...queue.splice(at, 1)); // a shuffled round: start it with this card
+    at = 0;
+  }
+  state.queue = queue;
+  state.pos = Math.max(at, 0);
+  if (at >= 0) {
+    updateStats(); // same card: just the "n / total"
+    renderReviewOnly();
+  } else {
+    renderCard();
+  }
 }
 
 function boxWeightedQueue(indices, cards) {
@@ -576,8 +660,34 @@ function currentCard() {
   return state.cards[idx];
 }
 
+// The card's front text on a fixed-size card: a long Thai phrase on a small screen (or a large Text
+// size) can overflow it, so shrink it a step at a time, down to 70%, until it fits. Ordinary words
+// keep the full size. Runs after renderCard, on coming to Flashcards, on resize and on a Text size
+// change. (The back scrolls, and Review's card grows, so they don't need it.)
+function fitCardText() {
+  const el = els.thai;
+  el.style.fontSize = '';
+  const face = el.closest('.face');
+  if (!face?.offsetParent || !el.textContent) return;
+  const cs = getComputedStyle(face);
+  const room = face.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+  const base = parseFloat(getComputedStyle(el).fontSize);
+  for (let k = 0.94; k > 0.69 && (el.scrollWidth > el.clientWidth + 1 || el.offsetHeight > room + 1); k -= 0.06) {
+    el.style.fontSize = `${base * k}px`;
+  }
+}
+let fitTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(fitTimer);
+  fitTimer = setTimeout(fitCardText, 150);
+});
+// The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
+// the fallback: fit again once it's in.
+document.fonts?.addEventListener?.('loadingdone', () => fitCardText());
+
 function renderCard() {
   hideRoundSummary(); // the next round was set up when the summary opened
+  renderReviewOnly();
   // Showing the back? Jump to the front before the new card's text goes in. Flipping back with
   // the animation would show the new card's answer for the first half of the turn.
   if (state.showingBack) setFlipped(false, { instant: true });
@@ -624,11 +734,11 @@ function renderCard() {
   setFlipped(false);
   updateStats();
   renderLearnPills();
-  updateReviewToggle();
   // Auto-play Thai audio on navigation, only while the card is on screen (picking a deck or
   // changing a setting from the wordlist re-renders the hidden card too), and only if the Thai is
   // showing: English → Thai keeps quiet until the card is flipped (flipCard, handleLearnPick), or the
   // sound would give the answer away. An answered Test card opens on its Thai back.
+  fitCardText();
   if (state.view === 'flashcards' && !state.reading.active) {
     if (state.direction === 'th-en' || state.showingBack) speak(c.thai);
     else stopAudio(); // nothing to say yet, but don't carry on with the last card's word or spelling
@@ -691,13 +801,8 @@ function flipCard() {
 // Deck Test mode answers ('good' or 'again') update the same items as Today's review.
 function saveDeckRating(c, rating) {
   const store = loadStore();
-  // Testing a removed deck, or a removed word, brings it back to Review.
-  if (store.reviewExcluded?.includes(state.currentDeckId) || store.reviewExcludedCards?.includes(c.key)) {
-    store.reviewExcluded = (store.reviewExcluded || []).filter((id) => id !== state.currentDeckId);
-    store.reviewExcludedCards = (store.reviewExcludedCards || []).filter((key) => key !== c.key);
-    saveStore(store);
-  }
-  const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId: state.currentDeckId });
+  const deckId = currentScope()?.deckOf.get(c.key)?.id || state.currentDeckId; // the card's own topic
+  const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId });
   c.dueAt = it.due;
   c.seen = it.reps;
   c.box = boxForStability(it.s);
@@ -723,7 +828,7 @@ function advance() {
       return;
     }
     // Rebuild queue at end of pass so newly-due cards come up sooner.
-    state.queue = buildQueue(state.cards, els.srsToggle.checked);
+    state.queue = buildFlashcardQueue();
     state.pos = 0;
   }
   renderCard();
@@ -742,13 +847,10 @@ function showRoundSummary() {
     .map(([key]) => state.cards.find((c) => c.key === key))
     .filter(Boolean);
 
-  state.lastRound = answers.map(([key, a]) => ({ key, isCorrect: a.isCorrect }));
-  els.roundAdd.hidden = getSettings().newSource !== 'manual';
-  els.roundAdd.textContent = 'Add to Review…';
   state.learnAnswers = new Map();
   state.pendingLearnRating = null;
   // Rebuild at the end of a pass so newly-due cards come up sooner.
-  state.queue = buildQueue(state.cards, els.srsToggle.checked);
+  state.queue = buildFlashcardQueue();
   state.pos = 0;
 
   const pct = Math.round((correct / total) * 100);
@@ -835,18 +937,100 @@ function goNext() {
   renderCard();
 }
 
+// ---------- scopes: a topic, a group of topics, or a whole category ----------
+// Wordlists and Flashcards show a scope (state.currentDeckId, prefs.currentDeckId); Review covers
+// its own or the same one (reviewScope()). A scope id is a topic's id, `group:<category>::<group>`,
+// `cat:<category>`, or (Review only) 'all'. resolveScope() gives { id, kind, name, label,
+// description, decks, cards, deckOf }: cards are the decks' cards with repeats dropped (a word in
+// two topics counts once), and deckOf maps a card key to the first of the scope's decks with it.
+const scopeCache = new Map();
+function resolveScope(id) {
+  if (!id) return null;
+  if (scopeCache.has(id)) return scopeCache.get(id);
+  const catOf = (d) => d.category || 'Uncategorized';
+  let kind = 'topic';
+  let name = '';
+  let decks = [];
+  if (id === 'all') {
+    [kind, name, decks] = ['all', 'Everything', state.decks];
+  } else if (id.startsWith('cat:')) {
+    [kind, name] = ['category', id.slice(4)];
+    decks = state.decks.filter((d) => catOf(d) === name);
+  } else if (id.startsWith('group:')) {
+    const [cat, group] = id.slice(6).split('::');
+    [kind, name] = ['group', group];
+    decks = state.decks.filter((d) => catOf(d) === cat && d.group === group);
+  } else {
+    const d = state.decks.find((x) => x.id === id);
+    if (d) [name, decks] = [d.name, [d]];
+  }
+  if (!decks.length) return null;
+  const deckOf = new Map();
+  const cards = [];
+  for (const d of decks) {
+    for (const c of d.cards) {
+      const key = cardKey(c);
+      if (deckOf.has(key)) continue;
+      deckOf.set(key, d);
+      cards.push(c);
+    }
+  }
+  const n = decks.length;
+  const many = kind === 'group' || kind === 'category';
+  const scope = {
+    id, kind, name, decks, cards, deckOf,
+    description: many ? `All ${n} topics` : kind === 'all' ? 'Every topic' : decks[0].description || '',
+    label: many ? `${name} · all ${n} topics` : name,
+  };
+  scopeCache.set(id, scope);
+  return scope;
+}
+const currentScope = () => resolveScope(state.currentDeckId);
+const groupScopeId = (cat, group) => `group:${cat}::${group}`;
+
+// What Review covers: Everything, or "By topic" (prefs.reviewBy), the topic, group or category
+// Wordlists and Flashcards show. Both are set in Review's topic dialog.
+const reviewByTopic = () => getPreferences().reviewBy === 'topic';
+function reviewScope() {
+  return (reviewByTopic() && currentScope()) || resolveScope('all');
+}
+
+function setReviewBy(by) {
+  if (getPreferences().reviewBy === by || (by === 'all' && !reviewByTopic())) return;
+  leaveReviewSession();
+  setPreferences({ reviewBy: by });
+  renderDeckButton();
+  renderToday();
+}
+
+// Changing what Review covers mid-session ends the session (answers are saved as you go), so the
+// start screen's counts match the new choice. The topic button stays on screen throughout.
+function leaveReviewSession() {
+  if (!state.review) return;
+  stopAudio();
+  state.review = null;
+}
+
+// The topic button: on Review, what Review covers; elsewhere, what Wordlists and Flashcards show.
+function renderDeckButton() {
+  const scope = state.view === 'today' ? reviewScope() : currentScope();
+  els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
+  els.deckButtonIcon.textContent = !scope || scope.kind === 'topic' ? '📖' : '📚';
+}
+
 function selectDeck(deckId) {
-  const deck = state.decks.find((d) => d.id === deckId);
-  if (!deck) return;
+  const deck = resolveScope(deckId);
+  if (!deck || deck.kind === 'all') return;
   if (state.reading.active) stopReadAloud();
   state.pendingLearnRating = null;
   state.learnAnswers = new Map();
   state.currentDeckId = deckId;
   state.cards = mergeProgressIntoCards(deck.cards);
-  state.queue = buildQueue(state.cards, els.srsToggle.checked);
+  state.queue = buildFlashcardQueue();
   state.pos = 0;
   setPreferences({ currentDeckId: deckId });
-  els.deckButtonLabel.textContent = deck.name;
+  renderDeckButton();
+  renderReviewOnly();
   preloadDeckAudio(deck);
   renderCard();
   renderWordlist();
@@ -905,6 +1089,55 @@ function pickerModel(q) {
   return [...cats.values()];
 }
 
+// The picker always picks Wordlists and Flashcards' scope. Opened from Review ('review'), it also
+// has Everything / By topic at the top (renderReviewBy), and picking a topic means By topic.
+function pickerSelectedId() {
+  return state.currentDeckId;
+}
+
+function pickScope(id) {
+  if (state.pickerFor === 'review') {
+    if (reviewByTopic() && id === state.currentDeckId) { // the same choice again: carry on
+      closeDeckPicker();
+      return;
+    }
+    leaveReviewSession();
+    setPreferences({ reviewBy: 'topic' });
+  }
+  selectDeck(id); // redraws Review too
+  renderDeckButton();
+  closeDeckPicker();
+}
+
+// Review's dialog: Everything hides the topic list (there's nothing to pick); By topic shows it.
+function renderReviewBy() {
+  const review = state.pickerFor === 'review';
+  const topic = reviewByTopic();
+  els.reviewBy.hidden = !review;
+  els.reviewByButtons.forEach((b) => b.setAttribute('aria-checked', String((b.dataset.reviewBy === 'topic') === topic)));
+  els.reviewByHelp.textContent = topic ? 'Shared with the Topics page and Flashcards' : 'Review words from every topic';
+  const list = !review || topic;
+  els.deckPickerSearchRow.hidden = !list;
+  els.deckPickerTree.hidden = !list;
+  els.deckPicker.classList.toggle('review-all', !list); // just the switch: the dialog shrinks to fit
+}
+
+// A category or group heading: the collapsible header and, on its right, "All N" to pick all of it.
+function pickerHead(prefix, name, countText, container, q, openSet, key, scopeId) {
+  const row = document.createElement('div');
+  row.className = `${prefix}-head`;
+  const all = document.createElement('button');
+  all.type = 'button';
+  all.className = 'scope-all' + (scopeId === pickerSelectedId() ? ' current' : '');
+  const words = resolveScope(scopeId)?.cards.length || 0;
+  all.textContent = `All ${words}`;
+  all.title = `All of ${name}: ${words} words`;
+  all.setAttribute('aria-label', all.title);
+  all.addEventListener('click', () => pickScope(scopeId));
+  row.append(pickerHeader(prefix, name, countText, container, q, openSet, key), all);
+  return row;
+}
+
 // Collapsible header for a category ('cat') or group ('sub'); toggling records the choice in openSet.
 // It's an accordion: opening one closes its open siblings (other categories, or other groups in
 // the same category).
@@ -940,7 +1173,7 @@ function pickerDeckRow(d) {
   const pct = cards === 0 ? 0 : Math.round((known / cards) * 100);
   const row = document.createElement('button');
   row.type = 'button';
-  row.className = 'deck-row' + (d.id === state.currentDeckId ? ' current' : '');
+  row.className = 'deck-row' + (d.id === pickerSelectedId() ? ' current' : '');
   row.innerHTML = `
     <span class="deck-row-main">
       <span class="deck-row-name"></span>
@@ -951,14 +1184,11 @@ function pickerDeckRow(d) {
   `;
   row.querySelector('.deck-row-name').textContent = d.name;
   textWithArrows(row.querySelector('.deck-row-desc'), d.description || '');
-  row.addEventListener('click', () => {
-    selectDeck(d.id);
-    closeDeckPicker();
-  });
+  row.addEventListener('click', () => pickScope(d.id));
   return row;
 }
 
-function pickerGroup(g, q) {
+function pickerGroup(g, q, cat) {
   const wrap = document.createElement('div');
   wrap.className = 'sub-group' + (g.open ? '' : ' collapsed');
   let known = 0;
@@ -969,7 +1199,7 @@ function pickerGroup(g, q) {
     cards += p.total;
   }
   const count = `${g.decks.length} topic${g.decks.length === 1 ? '' : 's'} · ${known}/${cards}`;
-  wrap.appendChild(pickerHeader('sub', g.name, count, wrap, q, state.expandedGroups, g.key));
+  wrap.appendChild(pickerHead('sub', g.name, count, wrap, q, state.expandedGroups, g.key, groupScopeId(cat, g.name)));
   const list = document.createElement('div');
   list.className = 'sub-decks';
   for (const d of g.decks) list.appendChild(pickerDeckRow(d));
@@ -986,11 +1216,11 @@ function renderDeckPicker() {
     const group = document.createElement('div');
     group.className = 'cat-group' + (c.open ? '' : ' collapsed');
     const count = `${c.deckCount} topic${c.deckCount === 1 ? '' : 's'}`;
-    group.appendChild(pickerHeader('cat', c.name, count, group, q, state.expandedCategories, c.name));
+    group.appendChild(pickerHead('cat', c.name, count, group, q, state.expandedCategories, c.name, `cat:${c.name}`));
     const list = document.createElement('div');
     list.className = 'cat-decks';
     for (const item of c.items) {
-      list.appendChild(item.deck ? pickerDeckRow(item.deck) : pickerGroup(item.group, q));
+      list.appendChild(item.deck ? pickerDeckRow(item.deck) : pickerGroup(item.group, q, c.name));
     }
     group.appendChild(list);
     els.deckPickerTree.appendChild(group);
@@ -1021,16 +1251,20 @@ function openDeckPicker() {
   els.deckButton.setAttribute('aria-expanded', 'true');
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
-  // Every open starts from the current deck: its category and group open, the rest closed.
-  const current = state.decks.find((d) => d.id === state.currentDeckId);
+  state.pickerFor = state.view === 'today' ? 'review' : 'study';
+  els.deckPickerTitle.textContent = state.pickerFor === 'review' ? 'What to review' : 'Choose a topic';
+  renderReviewBy();
+  // Every open starts from the current choice: its category and group open, the rest closed.
+  const current = resolveScope(pickerSelectedId());
   state.expandedCategories.clear();
   state.expandedGroups.clear();
   if (current) {
-    state.expandedCategories.add(current.category || 'Uncategorized');
-    if (current.group) state.expandedGroups.add(`${current.category || 'Uncategorized'}::${current.group}`);
+    const d = current.decks[0];
+    state.expandedCategories.add(d.category || 'Uncategorized');
+    if (d.group && current.kind !== 'category') state.expandedGroups.add(`${d.category || 'Uncategorized'}::${d.group}`);
   }
   renderDeckPicker();
-  els.deckPickerTree.querySelector('.deck-row.current')?.scrollIntoView({ block: 'center' });
+  els.deckPickerTree.querySelector('.deck-row.current, .scope-all.current')?.scrollIntoView({ block: 'center' });
   // Focus search after the modal becomes visible.
   if (!TOUCH_SCREEN) setTimeout(() => els.deckPickerSearch.focus(), 0);
 }
@@ -1084,8 +1318,15 @@ function setView(view) {
   if (view === 'home') renderHome();
   // Back to Decks after reviewing: refresh the cards' progress (the queue order stays).
   if (view === 'flashcards' && leaving === 'today') {
-    const deck = state.decks.find((d) => d.id === state.currentDeckId);
+    const deck = currentScope();
     if (deck) state.cards = mergeProgressIntoCards(deck.cards);
+  }
+  renderDeckButton(); // Review's button shows what Review covers
+  if (view === 'flashcards') fitCardText(); // laid out only now if the card was hidden
+  // Words added to or taken out of Review elsewhere (Wordlists, Review) apply on coming back.
+  if (view === 'flashcards' && leaving !== 'flashcards' && state.currentDeckId && reviewOnlySignature() !== state.reviewOnlySig) {
+    rebuildCurrentQueue();
+    renderReviewOnly();
   }
   setPreferences({ view });
 }
@@ -1098,43 +1339,52 @@ const TEXT_SCALES = { '-2': 0.8, '-1': 0.9, 0: 1, 1: 1.15, 2: 1.3 };
 
 function applyTextSize() {
   document.documentElement.style.setProperty('--fs', TEXT_SCALES[getSettings().textSize] ?? 1);
+  if (els.thai) fitCardText();
 }
 
 // The colour theme: data-theme on <html> picks a palette in styles.css (dark is the default, with
-// no attribute). "system" follows the device's light/dark setting, live. The status-bar colour
-// (meta theme-color) follows the page. index.html applies the saved theme before first paint.
-const THEMES = ['dark', 'dim', 'light', 'sepia', 'night', 'system'];
-const lightQuery = window.matchMedia?.('(prefers-color-scheme: light)');
+// no attribute). The status-bar colour (meta theme-color) follows the page. index.html applies the
+// saved theme before first paint. Anything else saved (Dim, Sepia and "Match device" were removed)
+// shows as Dark.
+const THEMES = ['dark', 'light', 'night'];
 function applyTheme() {
   let theme = getSettings().theme;
   if (!THEMES.includes(theme)) theme = 'dark';
-  if (theme === 'system') theme = lightQuery?.matches ? 'light' : 'dark';
   if (theme === 'dark') delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = theme;
   els.themeColorMeta?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 }
-lightQuery?.addEventListener?.('change', () => { if (getSettings().theme === 'system') applyTheme(); });
+
+// The Thai font: data-thai-font on <html> switches --thai-font in styles.css (looped is the default,
+// with no attribute). index.html applies the saved one before first paint.
+function applyThaiFont() {
+  if (getSettings().thaiFont === 'loopless') document.documentElement.dataset.thaiFont = 'loopless';
+  else delete document.documentElement.dataset.thaiFont;
+}
 
 function renderSettings() {
   const s = getSettings();
-  els.setNewPerDay.value = s.newPerDay;
   els.setMaxReviews.value = s.maxReviews;
+  els.setWaitAgain.value = s.waitAgainMin;
+  els.setWaitHard.value = s.waitHardDays;
+  els.setWaitEasy.value = s.waitEasyDays;
   els.setRetention.value = String(s.retention);
   els.setBothDirections.checked = s.bothDirections;
   els.setSayAloud.checked = s.sayAloud;
+  els.setReviewScript.checked = s.reviewScript !== false;
   for (const box of els.confirmSettings) box.checked = s[box.dataset.confirmSetting] !== false;
-  els.setNewSource.value = s.newSource;
-  els.setReviewScope.value = s.reviewScope;
 
   els.setAudioSource.value = s.audioSource;
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
   els.setThaiSpeed.value = String(s.thaiSpeed);
   els.setSpelling.value = s.spellingStyle;
   els.setTheme.value = THEMES.includes(s.theme) ? s.theme : 'dark';
+  els.setThaiFont.value = s.thaiFont === 'loopless' ? 'loopless' : 'looped';
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
   renderInstall();
   renderOffline();
+  els.launchHelp.textContent = launchTimingText();
   els.setReadRepeats.value = s.readRepeats;
   els.setReadPause.value = s.readPauseSec;
   els.setReadEnglish.checked = s.readSpeakEnglish;
@@ -1146,11 +1396,14 @@ function renderSettings() {
 }
 
 function bindSettings() {
-  els.setNewPerDay.addEventListener('change', () => {
-    const n = parseInt(els.setNewPerDay.value, 10);
-    if (n >= 0 && n <= 100) setSettings({ newPerDay: n });
-    renderToday();
-  });
+  // The Again / Hard / Easy waits: whole numbers in range, or the box goes back to the saved value.
+  for (const [input, key, lo, hi] of [[els.setWaitAgain, 'waitAgainMin', 1, 1440], [els.setWaitHard, 'waitHardDays', 1, 60], [els.setWaitEasy, 'waitEasyDays', 1, 60]]) {
+    input.addEventListener('change', () => {
+      const n = parseInt(input.value, 10);
+      if (n >= lo && n <= hi) setSettings({ [key]: n });
+      input.value = getSettings()[key];
+    });
+  }
   els.setMaxReviews.addEventListener('change', () => {
     const n = parseInt(els.setMaxReviews.value, 10);
     if (n >= 10 && n <= 1000) setSettings({ maxReviews: n });
@@ -1167,23 +1420,16 @@ function bindSettings() {
   els.setSayAloud.addEventListener('change', () => {
     setSettings({ sayAloud: els.setSayAloud.checked });
   });
+  els.setReviewScript.addEventListener('change', () => {
+    setSettings({ reviewScript: els.setReviewScript.checked });
+  });
   els.confirmSettings.forEach((box) => box.addEventListener('change', () => {
     setSettings({ [box.dataset.confirmSetting]: box.checked });
   }));
-  els.setNewSource.addEventListener('change', () => {
-    setSettings({ newSource: els.setNewSource.value });
-    renderToday();
-    renderWordlist();     // the + buttons only show with manual adding
-    updateReviewToggle();
-  });
-  els.setReviewScope.addEventListener('change', () => {
-    setSettings({ reviewScope: els.setReviewScope.value });
-    renderToday();
-  });
 
   els.setAudioSource.addEventListener('change', () => {
     setSettings({ audioSource: els.setAudioSource.value });
-    const deck = state.decks.find((d) => d.id === state.currentDeckId);
+    const deck = currentScope();
     if (deck) preloadDeckAudio(deck); // starts (samples) or cancels (browser) preloading
     renderSettings();
   });
@@ -1193,10 +1439,21 @@ function bindSettings() {
     installPrompt = null;
     renderInstall();
   });
+  // Opening Settings → App reads the saved clips for the count (renderOffline).
+  els.offlineHelp.closest('details').addEventListener('toggle', (e) => {
+    if (e.target.open) renderOffline();
+  });
+  els.backupExport.addEventListener('click', exportBackup);
+  els.backupLoad.addEventListener('click', () => els.backupFile.click());
+  els.backupFile.addEventListener('change', () => {
+    const file = els.backupFile.files?.[0];
+    els.backupFile.value = ''; // so picking the same file again still fires
+    if (file) loadBackup(file);
+  });
   els.offlineDownload.addEventListener('click', () => {
     if (offline.running) {
       setSettings({ offlineAudio: false }); // an explicit Stop also stops auto-download on load
-      offline.abort.abort();
+      stopDownloadAll();
       return;
     }
     setSettings({ offlineAudio: true });
@@ -1211,7 +1468,12 @@ function bindSettings() {
     });
     if (!ok) return;
     setSettings({ offlineAudio: false });
+    setPreferences({ audioComplete: null });
+    await offline.reading; // so a read under way can't bring the old names back
     await caches.delete(AUDIO_CACHE);
+    offline.have = new Set();
+    offline.used = null;
+    rememberSavedCount();
     renderOffline();
     toast('Downloaded audio deleted');
   });
@@ -1222,6 +1484,10 @@ function bindSettings() {
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
     applyTextSize();
+  });
+  els.setThaiFont.addEventListener('change', () => {
+    setSettings({ thaiFont: els.setThaiFont.value });
+    applyThaiFont();
   });
   els.setTheme.addEventListener('change', () => {
     setSettings({ theme: els.setTheme.value });
@@ -1312,7 +1578,7 @@ function rebuildCurrentQueue() {
   // An answer still waiting for Next is saved to the SRS first.
   if (state.pendingLearnRating) commitPendingRatingWithoutAdvance();
   state.learnAnswers = new Map();
-  state.queue = buildQueue(state.cards, els.srsToggle.checked);
+  state.queue = buildFlashcardQueue();
   state.pos = 0;
   renderCard();
 }
@@ -1340,7 +1606,7 @@ function setDirection(direction) {
   });
   setPreferences({ direction });
   // Each direction has its own progress, so re-read it; a new round starts.
-  const deck = state.decks.find((d) => d.id === state.currentDeckId);
+  const deck = currentScope();
   if (deck) state.cards = mergeProgressIntoCards(deck.cards);
   rebuildCurrentQueue();
 }
@@ -1348,16 +1614,7 @@ function setDirection(direction) {
 // ---------- wordlist ----------
 
 function visibleWordlistRows() {
-  const q = state.filter.trim().toLowerCase();
   let rows = state.cards;
-  if (q) {
-    rows = rows.filter(
-      (c) =>
-        c.thai.toLowerCase().includes(q) ||
-        c.translit.toLowerCase().includes(q) ||
-        c.english.toLowerCase().includes(q),
-    );
-  }
   if (state.sort.key) {
     const k = state.sort.key;
     const dir = state.sort.dir === 'asc' ? 1 : -1;
@@ -1373,11 +1630,21 @@ function visibleWordlistRows() {
 
 function renderWordlist() {
   if (!state.currentDeckId) return;
-  const deck = state.decks.find((d) => d.id === state.currentDeckId);
+  const deck = currentScope();
   if (!deck) return;
+  // Several topics, in list order: a heading row before each topic's words.
+  const topicHeadings = deck.decks.length > 1 && !state.sort.key;
+  let lastTopic = null;
 
   textWithArrows(els.wordlistDeckName, `${deck.name} — ${deck.description}`);
-  const manual = getSettings().newSource === 'manual';
+  // A topic's optional `about` (decks.json), e.g. the consonant classes' memory scenes: a second
+  // paragraph under the heading.
+  const about = deck.kind === 'topic' ? deck.decks[0].about || '' : '';
+  els.wordlistAbout.hidden = !about;
+  // Keep each bracketed pair, e.g. "(ฮ นกฮูก)", on one line: a line can otherwise break at the space,
+  // or inside a Thai word (นก|ฮูก).
+  els.wordlistAbout.replaceChildren(...about.split(/(\([^()]*\))/).map((part) => (
+    part.startsWith('(') ? Object.assign(document.createElement('span'), { className: 'nowrap', textContent: part }) : part)));
   const words = reviewWords();
 
   const rows = visibleWordlistRows();
@@ -1427,12 +1694,21 @@ function renderWordlist() {
   } else {
     const frag = document.createDocumentFragment();
     for (const c of rows) {
+      const topic = topicHeadings && deck.deckOf.get(c.key);
+      if (topic && topic !== lastTopic) {
+        lastTopic = topic;
+        const th = document.createElement('tr');
+        th.className = 'wl-topic';
+        th.innerHTML = '<td colspan="4"></td>';
+        th.firstChild.textContent = topic.name;
+        frag.appendChild(th);
+      }
       const tr = document.createElement('tr');
       tr.dataset.key = c.key;
       if (state.reading.active && state.reading.currentKey === c.key) {
         tr.classList.add('now-playing');
       }
-      const added = manual && c.key in words;
+      const added = c.key in words;
       for (const key of cols) {
         const td = document.createElement('td');
         td.className = COL_META[key].cls;
@@ -1447,20 +1723,18 @@ function renderWordlist() {
       }
       const audioTd = document.createElement('td');
       audioTd.className = 'col-audio';
-      if (manual) {
-        // Add to / remove from Review, left of the speaker: the Review icon, or ✓ once added.
-        const rv = document.createElement('button');
-        rv.type = 'button';
-        rv.className = 'row-review' + (added ? ' added' : '');
-        rv.replaceChildren(added ? '✓' : reviewIcon());
-        rv.title = added ? `Remove ${c.thai} from Review` : `Add ${c.thai} to Review`;
-        rv.setAttribute('aria-label', rv.title);
-        rv.addEventListener('click', () => {
-          setInReview([c.key], !added);
-          toast(added ? `Removed ${c.thai} from Review` : `✓ Added ${c.thai} to Review`, { tone: added ? '' : 'good' });
-        });
-        audioTd.append(rv);
-      }
+      // Add to / remove from Review, left of the speaker: the Review icon, or ✓ once added.
+      const rv = document.createElement('button');
+      rv.type = 'button';
+      rv.className = 'row-review' + (added ? ' added' : '');
+      rv.replaceChildren(added ? '✓' : reviewIcon());
+      rv.title = added ? `Remove ${c.thai} from Review` : `Add ${c.thai} to Review`;
+      rv.setAttribute('aria-label', rv.title);
+      rv.addEventListener('click', () => {
+        setInReview([c.key], !added);
+        toast(added ? `Removed ${c.thai} from Review` : `✓ Added ${c.thai} to Review`, { tone: added ? '' : 'good' });
+      });
+      audioTd.append(rv);
       if (isSpellable(c.thai)) {
         const sp = document.createElement('button');
         sp.type = 'button';
@@ -1485,7 +1759,6 @@ function renderWordlist() {
   }
 
   const allIn = state.cards.every((c) => c.key in words);
-  els.wordlistAddAll.hidden = !manual;
   // With the whole deck in Review, the button reads "✓ All in Review" and removes them all.
   els.wordlistAddAll.classList.toggle('all-in', allIn);
   if (allIn) {
@@ -1663,26 +1936,17 @@ function handleLearnPick(btn, isCorrect) {
 }
 
 // ---------- Today: daily review ----------
-// One session across all decks: due items first (weakest first), with new cards mixed in. New
-// items start with multiple choice; after that it's recall and self-grading. New and missed items
-// come back a few cards later in the same session (successive relearning).
+// One session across all decks: due items first (weakest first), with new cards mixed in. Every
+// item is recall and self-grading, new ones too (multiple choice is Flashcards' Test mode). Missed
+// items come back a few cards later in the same session (successive relearning).
 // See docs/review-design.md.
 
-const NEW_PER_DECK = 5;        // new cards per deck per day, to mix categories (relaxed if the budget would go unfilled)
 const REQUEUE_GAP = [5, 8];    // a missed or just-introduced item comes back this many cards later
 
-// Decks new cards come from: the current deck, plus (by default) every deck with a word you've
-// started, minus decks removed from Review ("Current deck only" ignores removals: it's explicit).
-function newCardDecks(items, source, excluded) {
-  const current = state.decks.find((d) => d.id === state.currentDeckId);
-  if (source === 'current') return current ? [current] : [];
-  const started = new Set();
-  for (const itemKey of Object.keys(items)) {
-    const entry = state.cardIndex.get(splitItemKey(itemKey)[0]);
-    if (entry) entry.deckIds.forEach((id) => started.add(id));
-  }
-  const others = state.decks.filter((d) => started.has(d.id) && d.id !== current?.id && !excluded.has(d.id));
-  return current && !excluded.has(current.id) ? [current, ...others] : others;
+// The decks Review is narrowed to, or null for Everything.
+function reviewScopeDeckIds() {
+  const scope = reviewScope();
+  return scope.kind === 'all' ? null : new Set(scope.decks.map((d) => d.id));
 }
 
 // Today's plan: due and new entries, and the session queue mixing them. An entry is
@@ -1694,62 +1958,36 @@ function planReview(now = Date.now()) {
   const end = endOfStudyDay(now);
 
   const f = reviewFilter();
+  const scopeIds = reviewScopeDeckIds();
   const due = [];
   for (const [itemKey, it] of Object.entries(items)) {
     if (it.due > end) continue;
     const [key, dir] = splitItemKey(itemKey);
     if (!f.has(key)) continue;
-    const deckId = reviewDeckId(key, dir, s, f.excluded);
+    const deckId = reviewDeckId(key, dir, s, scopeIds);
     if (deckId) due.push({ key, dir, deckId, kind: 'due', r: fsrsR(Math.max(0, (now - it.last) / DAY), it.s) });
   }
   due.sort((a, b) => a.r - b.r);
   due.splice(Math.max(0, s.maxReviews - (log.rv || 0)));
 
-  // Words you add all show up straight away; automatic adding has a daily allowance.
-  let budget = f.manual ? Infinity : Math.max(0, s.newPerDay - (log.n || 0));
+  // Words you add all show up straight away: no daily allowance.
   const news = [];
-  // English → Thai for words whose meaning is known: up to half the budget, oldest unlock first.
+  // English → Thai for words whose meaning is known, oldest unlock first.
   if (s.bothDirections) {
     const unlocked = Object.entries(items)
       .filter(([k, it]) => it.u && k.endsWith('##th-en'))
       .map(([k, it]) => ({ key: splitItemKey(k)[0], last: it.last }))
       .filter((u) => !items[itemKeyOf(u.key, 'en-th')] && state.cardIndex.has(u.key) && f.has(u.key))
-      .sort((a, b) => a.last - b.last)
-      .slice(0, Math.ceil(budget / 2));
-    for (const u of unlocked) news.push({ key: u.key, dir: 'en-th', deckId: state.cardIndex.get(u.key).deckIds[0], kind: 'new' });
-    budget -= unlocked.length;
+      .map((u) => ({ ...u, deckId: reviewDeckId(u.key, 'en-th', s, scopeIds) }))
+      .filter((u) => u.deckId)
+      .sort((a, b) => a.last - b.last);
+    for (const u of unlocked) news.push({ key: u.key, dir: 'en-th', deckId: u.deckId, kind: 'new' });
   }
-  if (f.manual) {
-    // Words you've added that haven't started yet, in the order you added them.
-    for (const key of Object.keys(f.words).sort((a, b) => f.words[a] - f.words[b])) {
-      if (items[itemKeyOf(key, 'th-en')]) continue;
-      const deckId = reviewDeckId(key, 'th-en', s, f.excluded);
-      if (deckId) news.push({ key, dir: 'th-en', deckId, kind: 'new' });
-    }
-  }
-  // Automatic: new words in deck order, round-robin across decks: NEW_PER_DECK each first, then
-  // whatever fills the budget.
-  const taken = new Set();
-  const decks = f.manual ? [] : newCardDecks(items, s.newSource, f.excluded).map((d) => ({ deck: d, i: 0, n: log.nd?.[d.id] || 0 }));
-  for (const cap of [NEW_PER_DECK, Infinity]) {
-    let added = true;
-    while (budget > 0 && added) {
-      added = false;
-      for (const d of decks) {
-        if (budget <= 0) break;
-        if (d.n >= cap) continue;
-        while (d.i < d.deck.cards.length) {
-          const key = cardKey(d.deck.cards[d.i++]);
-          if (items[itemKeyOf(key, 'th-en')] || taken.has(key) || !f.has(key)) continue;
-          taken.add(key);
-          news.push({ key, dir: 'th-en', deckId: d.deck.id, kind: 'new' });
-          d.n += 1;
-          budget -= 1;
-          added = true;
-          break;
-        }
-      }
-    }
+  // Words you've added that haven't started yet, in the order you added them.
+  for (const key of Object.keys(f.words).sort((a, b) => f.words[a] - f.words[b])) {
+    if (items[itemKeyOf(key, 'th-en')]) continue;
+    const deckId = reviewDeckId(key, 'th-en', s, scopeIds);
+    if (deckId) news.push({ key, dir: 'th-en', deckId, kind: 'new' });
   }
 
   // Spread the new cards evenly through the reviews.
@@ -1764,32 +2002,20 @@ function planReview(now = Date.now()) {
   return { due, news, queue };
 }
 
-// The deck a due item is reviewed under, or null if Today skips it: its card was edited or
-// removed, its direction is off, or "Due reviews from: Current deck only" excludes its decks.
-// With all decks, it's the first of the card's decks that hasn't been removed from Review.
-function reviewDeckId(key, dir, s, excluded) {
+// The deck an item is reviewed under, or null if Review skips it: its card was edited or removed,
+// its direction is off, or none of its decks is in what Review covers (scopeIds, null for
+// Everything). It's the first of the card's decks in scope that hasn't been removed from Review.
+function reviewDeckId(key, dir, s, scopeIds = null) {
   const entry = state.cardIndex.get(key);
   if (!entry || (dir === 'en-th' && !s.bothDirections)) return null;
-  if (s.reviewScope === 'current') return entry.deckIds.includes(state.currentDeckId) ? state.currentDeckId : null;
-  return entry.deckIds.find((id) => !excluded.has(id)) || null;
+  return entry.deckIds.find((id) => !scopeIds || scopeIds.has(id)) || null;
 }
 
-// Decks removed from Review with the breakdown's ✕. A deck comes back when you answer one of its
-// cards in deck Test mode (saveDeckRating).
-function excludedDecks() {
-  return new Set(loadStore().reviewExcluded || []);
-}
-
-// What Review covers. "Only words I add" (manual): the words in store.reviewWords ({ cardKey:
-// addedAt }). Automatic: every word with progress, minus removed decks and words.
+// What Review holds: the words you've added, store.reviewWords ({ cardKey: addedAt }). Since
+// 2026-10-07 that's the only way (automatic adding, from started or current topics, is gone).
 function reviewFilter() {
-  const store = loadStore();
-  if (getSettings().newSource === 'manual') {
-    const words = store.reviewWords || {};
-    return { manual: true, words, has: (key) => key in words, excluded: new Set() };
-  }
-  const removed = new Set(store.reviewExcludedCards || []);
-  return { manual: false, words: null, has: (key) => !removed.has(key), excluded: new Set(store.reviewExcluded || []) };
+  const words = reviewWords();
+  return { words, has: (key) => key in words };
 }
 
 function reviewWords() {
@@ -1810,21 +2036,7 @@ function setInReview(keys, on) {
   renderToday();
   if (state.view === 'home') renderHome();
   if (state.view === 'wordlist') renderWordlist();
-  updateReviewToggle();
-}
-
-// The 🔁 icon / ✓ on a Flashcards card, in Learn and Test mode (manual adding only).
-function updateReviewToggle() {
-  const c = currentCard();
-  const show = !!c && getSettings().newSource === 'manual';
-  const added = show && c.key in reviewWords();
-  for (const btn of els.reviewToggles) {
-    btn.hidden = !show;
-    btn.replaceChildren(added ? '✓' : reviewIcon());
-    btn.classList.toggle('added', added);
-    btn.title = added ? 'In Review: tap to remove it' : 'Add to Review';
-    btn.setAttribute('aria-label', btn.title);
-  }
+  syncReviewOnly();
 }
 
 // Sets el's text, drawing each → as the SVG arrow (.arrow-icon), since the → glyph sits low in
@@ -1888,7 +2100,7 @@ function toast(message, { ms = 2000, tone = '' } = {}) {
 // A confirm dialog. Resolves true for the confirm button, false for Cancel, the backdrop or
 // Escape. `message` can hold \n line breaks. `danger` (for what can't be undone) makes the
 // confirm button red and starts focus on Cancel, so Enter doesn't confirm. With `setting` (a boolean setting, true = ask; listed under Settings →
-// Confirmations), it offers "Don't ask again", which turns the setting off when confirming; while
+// Wordlists, beside the buttons they confirm), it offers "Don't ask again", which turns the setting off when confirming; while
 // it's off, it resolves true straight away without showing anything.
 function confirmDialog({ title, message, confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false }) {
   if (setting && getSettings()[setting] === false) return Promise.resolve(true);
@@ -1923,84 +2135,6 @@ function closeConfirm(ok) {
   c.resolve(ok);
 }
 
-// "Add to Review…" after a deck Test round: the round's words, none ticked; All / Missed only / None.
-function openAddModal() {
-  const words = reviewWords();
-  els.addList.replaceChildren(...state.lastRound.map(({ key, isCorrect }) => {
-    const c = state.cards.find((card) => card.key === key);
-    const row = document.createElement('label');
-    row.className = 'add-row';
-    const box = document.createElement('input');
-    box.type = 'checkbox';
-    box.dataset.key = key;
-    box.dataset.missed = String(!isCorrect);
-    box.checked = box.disabled = key in words;
-    const span = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
-    const detail = span('bw-detail', '');
-    detail.append(span('bw-translit', c?.translit || ''), ' ', span('bw-english', c?.english || ''));
-    const tag = key in words ? 'in Review' : isCorrect ? '' : 'missed';
-    row.append(box, span('bw-thai', c?.thai || key), detail, span('bw-kind' + (tag === 'missed' ? ' missed' : ''), tag));
-    return row;
-  }));
-  updateAddConfirm();
-  state.addOpen = true;
-  els.addModal.hidden = false;
-  setModalOpen(true);
-}
-
-function closeAddModal() {
-  state.addOpen = false;
-  els.addModal.hidden = true;
-  setModalOpen(false);
-}
-
-function addChoices() {
-  return [...els.addList.querySelectorAll('input:not(:disabled)')];
-}
-
-function updateAddConfirm() {
-  const n = addChoices().filter((b) => b.checked).length;
-  els.addConfirm.textContent = n ? `Add ${n} to Review` : 'Add to Review';
-  els.addConfirm.disabled = n === 0;
-}
-
-// A word removed from Review (the ✕ in a breakdown category's word list): its progress is
-// deleted and it isn't offered as a new card. Answering it in deck Test mode brings it back
-// (saveDeckRating).
-function removeWordFromReview(key) {
-  if (getSettings().newSource === 'manual') {
-    setInReview([key], false);
-    return;
-  }
-  const store = loadStore();
-  for (const dir of ['th-en', 'en-th']) delete store.items?.[itemKeyOf(key, dir)];
-  store.reviewExcludedCards = [...new Set([...(store.reviewExcludedCards || []), key])];
-  saveStore(store);
-  renderToday();
-}
-
-function removeCategoryFromReview(cat) {
-  const ids = new Set(state.decks.filter((d) => (d.category || 'Uncategorized') === cat).map((d) => d.id));
-  if (getSettings().newSource === 'manual') {
-    // Take out the added words listed under this category (progress is kept).
-    const s = { ...getSettings(), bothDirections: true };
-    setInReview(Object.keys(reviewWords()).filter((key) => ids.has(reviewDeckId(key, 'th-en', s, new Set()))), false);
-    return;
-  }
-  const store = loadStore();
-  const excluded = new Set(store.reviewExcluded || []);
-  // Delete the items reviewed under this category (worked out before excluding it), so words it
-  // shares with a category you keep stay with that one.
-  const s = { ...getSettings(), bothDirections: true, reviewScope: 'all' };
-  for (const itemKey of Object.keys(store.items || {})) {
-    const [key, dir] = splitItemKey(itemKey);
-    if (ids.has(reviewDeckId(key, dir, s, excluded))) delete store.items[itemKey];
-  }
-  ids.forEach((id) => excluded.add(id));
-  store.reviewExcluded = [...excluded];
-  saveStore(store);
-  renderToday();
-}
 
 // For the end-of-session screen.
 function dueTomorrow(now = Date.now()) {
@@ -2008,10 +2142,11 @@ function dueTomorrow(now = Date.now()) {
   const end = endOfStudyDay(now);
   let n = 0;
   const f = reviewFilter();
+  const scopeIds = reviewScopeDeckIds();
   for (const [itemKey, it] of Object.entries(loadStore().items || {})) {
     if (it.due <= end || it.due > end + DAY) continue;
     const [key, dir] = splitItemKey(itemKey);
-    if (f.has(key) && reviewDeckId(key, dir, s, f.excluded)) n += 1;
+    if (f.has(key) && reviewDeckId(key, dir, s, scopeIds)) n += 1;
   }
   return n;
 }
@@ -2019,112 +2154,44 @@ function dueTomorrow(now = Date.now()) {
 function renderToday() {
   if (!state.cardIndex.size) return; // decks not loaded yet
   const r = state.review;
-  // With either "Current deck only" option, show the deck button (same place as on Decks) so the deck can be changed here.
-  const s = getSettings();
-  els.stage.classList.toggle('today-deck', !r && (s.newSource === 'current' || s.reviewScope === 'current'));
+  // By topic with none of its words added: the same message as Flashcards', instead of 0 / 0.
+  const scope = reviewScope();
+  const words = reviewWords();
+  const topicEmpty = !r && scope.kind !== 'all' && ![...scope.deckOf.keys()].some((key) => key in words);
+  els.todayTopicEmpty.hidden = !topicEmpty;
+  els.stage.classList.toggle('today-topic-none', topicEmpty);
+  if (topicEmpty) {
+    els.todayTopicEmptyTitle.textContent = scope.kind === 'topic' ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+  }
   els.todayHome.hidden = !!r;
-  els.todayBreakdown.hidden = true; // shown below when there's something to break down
   els.review.hidden = !r || r.finished;
+  els.reviewTop.hidden = !r || r.finished;
+  els.stage.classList.toggle('review-session', !!r && !r.finished); // the bar's three-column layout
   els.reviewSummary.hidden = !r?.finished;
   if (r) return;
   const plan = planReview();
-  const deckName = state.decks.find((d) => d.id === state.currentDeckId)?.name || 'this topic';
+  const where = scope.kind === 'all' ? '' : ` in ${scope.name}`;
   els.todayDue.textContent = plan.due.length;
-  els.todayDueFrom.textContent = s.reviewScope === 'current' ? `in ${deckName}` : 'across all topics';
+  els.todayDueFrom.textContent = scope.kind === 'all' ? 'across all topics' : `in ${scope.name}`;
   els.todayNew.textContent = plan.news.length;
-  els.todayNewFrom.textContent = s.newSource === 'manual' ? "you've added"
-    : s.newSource === 'current' ? `from ${deckName}` : 'mixed from your topics';
-  // "Only words I add" with nothing added yet: say how to add words instead of 0 / 0.
-  const empty = s.newSource === 'manual' && Object.keys(reviewWords()).length === 0;
+  els.todayNewFrom.textContent = `you've added${where}`;
+  // Nothing added yet: say how to add words instead of 0 / 0.
+  const empty = Object.keys(words).length === 0;
   els.todayEmpty.hidden = !empty;
   els.todayCounts.hidden = empty;
   els.todayStart.hidden = empty || plan.queue.length === 0;
-  renderTodayBreakdown(plan);
 }
 
 // The landing page: a card per view. Decks and Wordlist show the current deck, Review today's counts.
 function renderHome() {
   if (!state.cardIndex.size) return; // decks not loaded yet
   const plan = planReview();
-  const deck = state.decks.find((d) => d.id === state.currentDeckId);
-  els.homeDeckStat.textContent = els.homeWordlistStat.textContent = deck ? `Topic: ${deck.name}` : '';
-  const empty = getSettings().newSource === 'manual' && Object.keys(reviewWords()).length === 0;
-  els.homeReviewStat.textContent = empty ? 'Nothing added yet' : `${plan.due.length} due · ${plan.news.length} new`;
-}
-
-// Under the card: the session's due and new counts per category, biggest first.
-// Tapping a category row shows its words (one category at a time), each with its own ✕.
-function renderTodayBreakdown(plan) {
-  const byCat = new Map();
-  const categoryOf = (deckId) => state.decks.find((d) => d.id === deckId)?.category || 'Uncategorized';
-  for (const [list, field] of [[plan.due, 'due'], [plan.news, 'new']]) {
-    for (const e of list) {
-      const cat = categoryOf(e.deckId);
-      if (!byCat.has(cat)) byCat.set(cat, { due: 0, new: 0, words: new Map() });
-      const c = byCat.get(cat);
-      c[field] += 1;
-      // A word can be both due and new (one direction each): list it once.
-      if (!c.words.has(e.key)) c.words.set(e.key, { card: state.cardIndex.get(e.key).card, kinds: new Set() });
-      c.words.get(e.key).kinds.add(e.dir === 'en-th' ? `${field} EN→TH` : field);
-    }
-  }
-  const rows = [...byCat].sort((a, b) => (b[1].due + b[1].new) - (a[1].due + a[1].new) || a[0].localeCompare(b[0]));
-  if (!byCat.has(state.breakdownOpen)) state.breakdownOpen = null;
-  els.todayBreakdownBody.replaceChildren(...rows.flatMap(([cat, n]) => {
-    const open = state.breakdownOpen === cat;
-    const tr = document.createElement('tr');
-    tr.className = 'bd-row' + (open ? ' open' : '');
-    tr.setAttribute('aria-expanded', String(open));
-    for (const text of [cat, n.due || '–', n.new || '–']) {
-      const td = document.createElement('td');
-      td.textContent = text;
-      tr.appendChild(td);
-    }
-    tr.firstChild.classList.add('bd-cat');
-    tr.addEventListener('click', () => {
-      state.breakdownOpen = open ? null : cat;
-      renderToday();
-    });
-    const td = document.createElement('td');
-    td.appendChild(removeButton(`Remove ${cat} from Review`, () => removeCategoryFromReview(cat)));
-    tr.appendChild(td);
-    if (!open) return [tr];
-
-    const wordsRow = document.createElement('tr');
-    wordsRow.className = 'bd-words';
-    const cell = document.createElement('td');
-    cell.colSpan = 4;
-    const list = document.createElement('ul');
-    // One line per word: Thai, then translit and meaning (cut short if long), then due/new and ✕.
-    const span = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
-    list.replaceChildren(...[...n.words].map(([key, w]) => {
-      const li = document.createElement('li');
-      const detail = span('bw-detail', '');
-      detail.append(span('bw-translit', w.card.translit), ' ', span('bw-english', w.card.english));
-      detail.title = `${w.card.translit} · ${w.card.english}`;
-      li.append(span('bw-thai', w.card.thai), detail, textWithArrows(span('bw-kind', ''), [...w.kinds].join(' · '), { caps: true }),
-        removeButton(`Remove ${w.card.thai} from Review`, () => removeWordFromReview(key)));
-      return li;
-    }));
-    cell.appendChild(list);
-    wordsRow.appendChild(cell);
-    return [tr, wordsRow];
-  }));
-  els.todayBreakdown.hidden = rows.length === 0;
-}
-
-function removeButton(label, onClick) {
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'bd-remove';
-  btn.textContent = '✕';
-  btn.title = label;
-  btn.setAttribute('aria-label', label);
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation(); // don't also toggle the row
-    onClick();
-  });
-  return btn;
+  const deck = currentScope();
+  els.homeDeckStat.textContent = els.homeWordlistStat.textContent = !deck ? '' : deck.kind === 'topic' ? `Topic: ${deck.name}` : deck.label;
+  const empty = Object.keys(reviewWords()).length === 0;
+  const scope = reviewScope();
+  els.homeReviewStat.textContent = empty ? 'Nothing added yet'
+    : `${plan.due.length} due · ${plan.news.length} new${scope.kind === 'all' ? '' : ` · ${scope.name}`}`;
 }
 
 function startReview() {
@@ -2145,11 +2212,6 @@ function endReview() {
   renderToday();
 }
 
-// New items start with multiple choice; a second multiple-choice go only if the first was wrong.
-function reviewMode(it) {
-  return !it || (!it.rc && (it.mc || 0) < 2 && !it.mcOk) ? 'mc' : 'recall';
-}
-
 function presentEntry() {
   const r = state.review;
   const e = r.queue[r.pos];
@@ -2160,12 +2222,16 @@ function presentEntry() {
   const { card } = state.cardIndex.get(e.key);
   const it = getItem(itemKeyOf(e.key, e.dir));
   const thaiFirst = e.dir === 'th-en';
-  r.mode = reviewMode(it);
   r.revealed = false;
   r.answered = false;
 
   els.reviewPrompt.textContent = thaiFirst ? card.thai : card.english;
   els.reviewPrompt.className = 'review-prompt thai' + (thaiFirst ? '' : ' front-en');
+  // Settings → Review → Show Thai script off: Thai → English starts audio only, with an eye
+  // button to show the script early. Show (revealAnswer) shows it too.
+  const audioOnly = thaiFirst && !getSettings().reviewScript;
+  els.reviewPrompt.hidden = audioOnly;
+  els.reviewScript.hidden = !audioOnly;
   els.reviewMain.textContent = thaiFirst ? card.english : card.thai;
   els.reviewMain.className = 'review-main english' + (thaiFirst ? '' : ' back-th');
   els.reviewTranslit.textContent = card.translit;
@@ -2177,59 +2243,19 @@ function presentEntry() {
   els.reviewDeck.textContent = state.decks.find((d) => d.id === e.deckId)?.name || '';
   els.reviewLeft.textContent = `${r.queue.length - r.pos} left`;
   els.reviewGrades.hidden = true;
-  els.reviewContinue.hidden = true;
-  if (r.mode === 'mc') {
-    els.reviewHint.textContent = 'Pick the answer';
-    els.reviewShow.hidden = true;
-    renderReviewPills(e, card);
-  } else {
-    els.reviewHint.textContent = getSettings().sayAloud ? 'Say it aloud, then tap Show' : 'Recall it, then tap Show';
-    els.reviewPills.replaceChildren();
-    els.reviewPills.hidden = true;
-    els.reviewShow.hidden = false;
-  }
+  // Every item is recall, new ones too (the user's call, 2026-10-07): recognition is Flashcards' job.
+  els.reviewHint.textContent = getSettings().sayAloud ? 'Say it aloud, then tap Show' : 'Recall it, then tap Show';
+  els.reviewHint.hidden = false;
+  els.reviewShow.hidden = false;
   // English → Thai: no audio until the answer is shown, or it would give the answer away.
   els.reviewSpeak.hidden = !thaiFirst;
   if (thaiFirst) speak(card.thai);
 }
 
-function renderReviewPills(e, card) {
-  const deck = state.decks.find((d) => d.id === e.deckId);
-  const field = e.dir === 'th-en' ? 'english' : 'thai';
-  const others = shuffled((deck?.cards || []).filter((c) => c[field] !== card[field])).slice(0, 2);
-  els.reviewPills.innerHTML = '';
-  els.reviewPills.classList.remove('locked');
-  for (const c of shuffled([card, ...others])) {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'learn-pill' + (field === 'thai' ? ' thai-pill' : '');
-    btn.textContent = c[field];
-    btn.addEventListener('click', () => pickReviewPill(btn, c === card));
-    els.reviewPills.appendChild(btn);
-  }
-  els.reviewPills.hidden = false;
-}
-
-function pickReviewPill(btn, isCorrect) {
-  const r = state.review;
-  if (!r || r.answered) return;
-  r.answered = true;
-  els.reviewPills.classList.add('locked');
-  const { card } = state.cardIndex.get(r.queue[r.pos].key);
-  const answer = r.queue[r.pos].dir === 'th-en' ? card.english : card.thai;
-  for (const p of els.reviewPills.querySelectorAll('.learn-pill')) {
-    if (p.textContent === answer) p.classList.add('correct');
-    else p.classList.add(p === btn ? 'wrong' : 'dimmed');
-  }
-  recordGrade(isCorrect ? 3 : 1);
-  revealAnswer();
-  const s = getSettings();
-  if (shouldAutoAdvance(autoProgressMode(s), isCorrect)) {
-    const at = r.pos;
-    setTimeout(() => { if (state.review === r && r.pos === at) nextEntry(); }, s.learnPauseMs ?? 1500);
-  } else {
-    els.reviewContinue.hidden = false;
-  }
+// The Thai on an audio-only card (Show Thai script off): the eye button, or Show.
+function showReviewScript() {
+  els.reviewPrompt.hidden = false;
+  els.reviewScript.hidden = true;
 }
 
 function revealAnswer() {
@@ -2237,35 +2263,22 @@ function revealAnswer() {
   if (!r || r.revealed) return;
   const e = r.queue[r.pos];
   r.revealed = true;
+  showReviewScript();
+  els.reviewHint.hidden = true; // "…then tap Show": done
   els.reviewAnswer.hidden = false;
   els.reviewShow.hidden = true;
   els.reviewSpeak.hidden = false;
   if (e.dir === 'en-th') speak(state.cardIndex.get(e.key).card.thai);
-  if (r.mode !== 'recall') return;
-  // Label each grade with when the card would come back.
-  const it = getItem(itemKeyOf(e.key, e.dir));
-  const now = Date.now();
-  for (const btn of els.reviewGrades.querySelectorAll('.grade')) {
-    btn.querySelector('span').textContent = formatInterval(scheduleItem(it, Number(btn.dataset.grade), now).due - now);
-  }
   els.reviewGrades.hidden = false;
 }
 
-function formatInterval(ms) {
-  if (ms < HOUR) return `${Math.max(1, Math.round(ms / MINUTE))}m`;
-  if (ms < DAY) return `${Math.round(ms / HOUR)}h`;
-  const days = Math.round(ms / DAY);
-  if (days < 30) return `${days}d`;
-  return days < 365 ? `${Math.round(days / 30)}mo` : `${(days / 365).toFixed(1)}y`;
-}
-
-// Save the grade, keep session stats, and requeue: multiple choice always earns a recall go
-// later in the session, and a miss comes back until it's right.
+// Save the grade, keep session stats, and requeue: a miss comes back later in the session until
+// it's right.
 function recordGrade(g) {
   const r = state.review;
   const e = r.queue[r.pos];
   const itemKey = itemKeyOf(e.key, e.dir);
-  gradeItem(e.key, e.dir, g, { mode: r.mode, deckId: e.deckId });
+  gradeItem(e.key, e.dir, g, { mode: 'recall', deckId: e.deckId });
   r.graded += 1;
   if (g > 1) r.ok += 1;
   r.seen.add(itemKey);
@@ -2277,7 +2290,7 @@ function recordGrade(g) {
     day.rv = (day.rv || 0) + 1;
     saveStore(store);
   }
-  if (r.mode === 'mc' || g === 1) {
+  if (g === 1) {
     const [lo, hi] = REQUEUE_GAP;
     const at = Math.min(r.queue.length, r.pos + 1 + lo + Math.floor(Math.random() * (hi - lo + 1)));
     r.queue.splice(at, 0, { ...e, again: g === 1, requeued: true });
@@ -2286,7 +2299,7 @@ function recordGrade(g) {
 
 function gradeCurrent(g) {
   const r = state.review;
-  if (!r || !r.revealed || r.mode !== 'recall' || r.answered) return;
+  if (!r || !r.revealed || r.answered) return;
   r.answered = true;
   recordGrade(g);
   nextEntry();
@@ -2329,25 +2342,16 @@ function handleReviewKey(e) {
     }
     return;
   }
-  if (r.mode === 'mc') {
-    if (!r.answered && ['1', '2', '3'].includes(e.key)) {
-      els.reviewPills.querySelectorAll('.learn-pill')[Number(e.key) - 1]?.click();
-    } else if (r.answered && (enter || e.key === 'ArrowRight')) {
-      e.preventDefault();
-      nextEntry();
-    }
-    return;
-  }
   if (!r.revealed) {
     if (enter) {
       e.preventDefault();
       revealAnswer();
     }
-  } else if (['1', '2', '3', '4'].includes(e.key)) {
+  } else if (['1', '2', '3'].includes(e.key)) { // Again, Hard, Easy
     gradeCurrent(Number(e.key));
   } else if (enter) {
     e.preventDefault();
-    gradeCurrent(3); // Good
+    gradeCurrent(3); // Easy (FSRS Good)
   }
 }
 
@@ -2428,8 +2432,8 @@ async function resetAllProgress() {
   const store = loadStore();
   store.items = {};
   store.daily = {};
-  store.reviewExcluded = [];
-  store.reviewExcludedCards = [];
+  delete store.reviewExcluded;      // from automatic adding, gone since 2026-10-07
+  delete store.reviewExcludedCards;
   saveStore(store);
   if (state.currentDeckId) selectDeck(state.currentDeckId);
   renderToday();
@@ -2455,7 +2459,7 @@ async function resetReviewList() {
   saveStore(store);
   renderToday();
   renderWordlist();
-  updateReviewToggle();
+  syncReviewOnly();
   if (state.view === 'home') renderHome();
   toast('Review list reset');
 }
@@ -2476,9 +2480,10 @@ async function resetSettings() {
   saveStore(store);
   applyTextSize();
   applyTheme();
+  applyThaiFont();
   renderSettings();
   renderSpelling();
-  updateReviewToggle();
+  syncReviewOnly();
   renderToday();
   renderWordlist();
   if (state.view === 'home') renderHome();
@@ -2498,9 +2503,7 @@ let finishSample = null;    // settles the in-flight playSample() promise
 // URLs, so playback never waits on the network. LRU-capped so browsing decks doesn't grow
 // memory without bound (a 50-card deck is ~100 clips, ~1.2 MB).
 const SAMPLE_CACHE_MAX = 600;
-const PRELOAD_JOBS = 4;
 const sampleCache = new Map();  // clip URL -> blob URL; Map order doubles as LRU order
-let preloadAbort = null;
 
 // Blob URL for a cached clip (marking it recently used), else the network URL.
 function cachedSampleUrl(url) {
@@ -2521,49 +2524,131 @@ function cacheSample(url, blobUrl) {
   }
 }
 
-// Fetch every Thai clip in the deck, then every English one, then the parts its spellings are read
-// with (in the current spelling style). A newer call cancels the old one.
-async function preloadDeckAudio(deck) {
-  if (preloadAbort) preloadAbort.abort();
-  preloadAbort = null;
-  if (getSettings().audioSource !== 'samples') return;
-  const controller = new AbortController();
-  preloadAbort = controller;
-  const urls = new Set();
-  for (const [lang, field] of [['th', 'thai'], ['en', 'english']]) {
-    for (const c of deck.cards) {
-      const url = sampleUrl(c[field], lang);
-      if (url && !sampleCache.has(url)) urls.add(url);
-    }
+// The clips for what's on screen (a topic, or a Review session) go to the front of the audio
+// queue: its Thai words, the parts their spellings are read with (in the current style), then the
+// English. The Thai and English are kept in memory too, for instant playback. A newer call
+// replaces the last one's clips that haven't been fetched yet.
+function preloadDeckAudio(deck) {
+  if (getSettings().audioSource !== 'samples') {
+    queuePageAudio([]);
+    return;
   }
-  // Spelling parts only go into the service worker's audio cache (playable instantly and offline),
-  // not the in-memory one, so they never push out the deck's own clips. Already cached? Skip.
-  const spellUrls = new Set();
+  const entries = [];
+  const add = (url, keep) => url && entries.push({ url, keep });
+  for (const c of deck.cards) add(sampleUrl(c.thai, 'th'), true);
   for (const c of deck.cards) {
-    for (const step of (spellingFor(c) || []).flat()) {
-      const url = !step.gap && !step.word && sampleUrl(step.say, 'sp');
-      if (url) spellUrls.add(url);
-    }
+    for (const step of (spellingFor(c) || []).flat()) if (!step.gap && !step.word) add(sampleUrl(step.say, 'sp'), false);
   }
-  if (spellUrls.size && 'caches' in window) {
-    const have = await cachedAudioFiles(await caches.open(AUDIO_CACHE));
-    for (const url of spellUrls) if (have.has(url.split('/').pop())) spellUrls.delete(url);
+  for (const c of deck.cards) add(sampleUrl(c.english, 'en'), true);
+  queuePageAudio(entries);
+}
+
+// ---------- the audio queue ----------
+// One queue fetches clips ahead of playback, AUDIO_JOBS at a time: the page's clips at the front
+// (preloadDeckAudio), "Download all audio" behind them. A clip that's already loaded isn't queued.
+// Items: { file, url, keep, page, bulk }. keep = hold it in memory (sampleCache) too; page = for
+// what's on screen; bulk = for "Download all audio". `items` holds the ones not taken yet, by file;
+// `order` is the fetch order (an item no longer in `items` is skipped).
+const AUDIO_JOBS = 6;
+const audioQueue = { order: [], items: new Map(), workers: 0 };
+
+function queuePageAudio(entries) {
+  // The last page's clips not fetched yet are dropped, unless "Download all audio" wants them.
+  for (const item of audioQueue.items.values()) {
+    if (!item.page) continue;
+    item.page = false;
+    item.keep = false;
+    if (!item.bulk) audioQueue.items.delete(item.file);
   }
-  const queue = [...urls].map((url) => ({ url, keep: true })).concat([...spellUrls].map((url) => ({ url, keep: false })));
-  const worker = async () => {
-    while (queue.length && !controller.signal.aborted) {
-      const { url, keep } = queue.shift();
-      try {
-        const res = await fetch(url, { signal: controller.signal });
-        if (!res.ok) continue;
-        const blob = await res.blob(); // the service worker caches it on the way through
-        if (keep) cacheSample(url, URL.createObjectURL(blob));
-      } catch {
-        // Aborted or offline: playback just fetches that clip on demand.
-      }
+  const front = [];
+  for (const { url, keep } of entries) {
+    const file = url.split('/').pop();
+    if (keep ? sampleCache.has(url) : offline.have?.has(file)) continue; // already loaded
+    let item = audioQueue.items.get(file);
+    if (item?.page) continue; // listed twice
+    if (!item) {
+      item = { file, url, keep: false, page: false, bulk: false };
+      audioQueue.items.set(file, item);
     }
-  };
-  await Promise.all(Array.from({ length: PRELOAD_JOBS }, worker));
+    item.page = true;
+    item.keep = keep;
+    front.push(item);
+  }
+  const first = new Set(front);
+  audioQueue.order = front.concat(audioQueue.order.filter((i) => !first.has(i) && audioQueue.items.get(i.file) === i));
+  pumpAudio();
+}
+
+function queueBulkAudio(files) {
+  for (const file of files) {
+    const item = audioQueue.items.get(file);
+    if (item) {
+      item.bulk = true;
+      continue;
+    }
+    const added = { file, url: `data/audio/${file}`, keep: false, page: false, bulk: true };
+    audioQueue.items.set(file, added);
+    audioQueue.order.push(added);
+  }
+  pumpAudio();
+}
+
+function dropBulkAudio() {
+  for (const item of audioQueue.items.values()) {
+    if (!item.bulk) continue;
+    item.bulk = false;
+    if (!item.page) audioQueue.items.delete(item.file);
+  }
+}
+
+// Start workers, once the app has finished opening. When the last one finds the queue empty, a
+// "Download all audio" run is over.
+function pumpAudio() {
+  launched.then(() => {
+    while (audioQueue.workers < AUDIO_JOBS && audioQueue.order.length) {
+      audioQueue.workers += 1;
+      audioWorker().finally(() => {
+        audioQueue.workers -= 1;
+        if (!audioQueue.workers && offline.running && offline.done != null) finishDownloadAll();
+      });
+    }
+  });
+}
+
+async function audioWorker() {
+  while (audioQueue.order.length) {
+    const item = audioQueue.order.shift();
+    if (audioQueue.items.get(item.file) !== item) continue; // dropped, or fetched already
+    audioQueue.items.delete(item.file);
+    await fetchQueuedAudio(item);
+  }
+}
+
+let offlineRenderedAt = 0;
+async function fetchQueuedAudio(item) {
+  const { file, url } = item;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    // With the service worker in control it saves each clip on the way through. Before it takes
+    // control (the very first visit), "Download all audio" saves them here.
+    let saved = !!navigator.serviceWorker?.controller;
+    if (!saved && item.bulk) {
+      await (await caches.open(AUDIO_CACHE)).put(url, res.clone());
+      saved = true;
+    }
+    const blob = await res.blob();
+    if (saved) offline.have?.add(file);
+    if (item.keep) cacheSample(url, URL.createObjectURL(blob));
+    if (item.bulk) offline.done += 1;
+  } catch {
+    // Offline, say: playback fetches the clip when it's needed.
+    if (item.bulk) offline.failed += 1;
+  }
+  if (item.bulk && offline.running && performance.now() - offlineRenderedAt > 300) {
+    offlineRenderedAt = performance.now();
+    renderOffline();
+  }
 }
 
 function pickVoices() {
@@ -2663,6 +2748,7 @@ async function speakSpelling(card, buttons = []) {
   const run = spellRun;
   spelling = { key, run, buttons };
   markSpelling(buttons, true);
+  const parts = fetchSpellingParts(groups);
   try {
     let wait = 0; // the pause before the next spoken part
     for (const steps of groups) {
@@ -2672,8 +2758,10 @@ async function speakSpelling(card, buttons = []) {
           continue;
         }
         if (wait) await pause(wait);
+        const part = step.word ? null : await parts.get(sampleUrl(step.say, 'sp'));
         if (run !== spellRun) return;
-        await (step.word ? speakAndWait(card.thai, 'th') : speakAndWait(step.say, 'sp'));
+        if (step.word) await speakAndWait(card.thai, 'th');
+        else if (!part || !(await playSample(part, speedFor('sp')))) await speakAndWait(step.say, 'sp');
         wait = SPELL_STEP_PAUSE;
       }
       wait = SPELL_SYLLABLE_PAUSE; // groups are syllables (school method) or words
@@ -2683,7 +2771,25 @@ async function speakSpelling(card, buttons = []) {
       markSpelling(buttons, false);
       spelling = null;
     }
+    // The player has stopped or moved on by now, so the parts can go.
+    for (const blobUrl of parts.values()) blobUrl.then((u) => u && URL.revokeObjectURL(u));
   }
+}
+
+// Fetch every part of a spelling at once, in parallel, into memory: each then plays the moment
+// the one before ends, rather than waiting its turn for the service worker (or the network).
+// url -> Promise of a blob URL, or null if it couldn't be fetched (speakAndWait then tries).
+function fetchSpellingParts(groups) {
+  const parts = new Map();
+  for (const step of groups.flat()) {
+    const url = !step.gap && !step.word && sampleUrl(step.say, 'sp');
+    if (!url || parts.has(url)) continue;
+    parts.set(url, fetch(url)
+      .then((res) => (res.ok ? res.blob() : null))
+      .then((blob) => blob && URL.createObjectURL(blob))
+      .catch(() => null));
+  }
+  return parts;
 }
 
 function speak(text, lang = 'th') {
@@ -2766,15 +2872,15 @@ function bindEvents() {
     t.addEventListener('click', () => setView(t.dataset.view));
   });
 
-  els.wordlistFilter.addEventListener('input', (e) => {
-    state.filter = e.target.value;
-    renderWordlist();
-  });
-
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
 
   // Deck picker
   els.deckButton.addEventListener('click', openDeckPicker);
+  els.reviewByButtons.forEach((b) => b.addEventListener('click', () => {
+    setReviewBy(b.dataset.reviewBy);
+    if (b.dataset.reviewBy === 'all') closeDeckPicker(); // nothing more to pick
+    else renderReviewBy();
+  }));
   els.deckPicker.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeDeckPicker();
   });
@@ -2812,7 +2918,6 @@ function bindEvents() {
   els.card.addEventListener('click', (e) => {
     // Don't flip if clicking the speak or flip button (flip-btn calls flipCard itself).
     if (e.target.closest('.speak-btn')) return;
-    if (e.target.closest('.review-toggle')) return;
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     flipCard();
@@ -2859,7 +2964,7 @@ function bindEvents() {
   // Adding to Review by hand
   els.wordlistAddAll.addEventListener('click', async () => {
     const words = reviewWords();
-    const deck = state.decks.find((d) => d.id === state.currentDeckId);
+    const deck = currentScope();
     const keys = state.cards.map((c) => c.key).filter((key) => !(key in words));
     if (!keys.length) {
       // All in Review: remove them all (their progress is kept).
@@ -2893,41 +2998,14 @@ function bindEvents() {
   els.confirmOk.addEventListener('click', () => closeConfirm(true));
   els.confirmCancel.addEventListener('click', () => closeConfirm(false));
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
-  els.reviewToggles.forEach((btn) => btn.addEventListener('click', (e) => {
-    e.stopPropagation(); // not a flip
-    const c = currentCard();
-    if (!c) return;
-    const add = !(c.key in reviewWords());
-    setInReview([c.key], add);
-    // No word in the message: it could give away the side of the card you haven't seen.
-    toast(add ? '✓ Added to Review' : 'Removed from Review', { tone: add ? 'good' : '' });
-  }));
-  els.roundAdd.addEventListener('click', openAddModal);
-  els.addModal.addEventListener('click', (e) => {
-    if (e.target.dataset.close !== undefined) closeAddModal();
-  });
-  els.addPicks.forEach((btn) => btn.addEventListener('click', () => {
-    for (const box of addChoices()) {
-      box.checked = btn.dataset.pick === 'all' || (btn.dataset.pick === 'missed' && box.dataset.missed === 'true');
-    }
-    updateAddConfirm();
-  }));
-  els.addList.addEventListener('change', updateAddConfirm);
-  els.addConfirm.addEventListener('click', () => {
-    const keys = addChoices().filter((b) => b.checked).map((b) => b.dataset.key);
-    if (!keys.length) return;
-    setInReview(keys, true);
-    closeAddModal();
-    els.roundAdd.textContent = `✓ Added ${keys.length} to Review`;
-  });
 
   els.todayStart.addEventListener('click', startReview);
   els.reviewShow.addEventListener('click', revealAnswer);
-  els.reviewContinue.addEventListener('click', () => { if (state.review?.answered) nextEntry(); });
   els.reviewGrades.addEventListener('click', (e) => {
     const btn = e.target.closest('.grade');
     if (btn) gradeCurrent(Number(btn.dataset.grade));
   });
+  els.reviewScript.addEventListener('click', showReviewScript);
   els.reviewSpeak.addEventListener('click', () => {
     const entry = state.review?.queue[state.review.pos];
     if (entry) speak(state.cardIndex.get(entry.key).card.thai);
@@ -2947,13 +3025,6 @@ function bindEvents() {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeDeckPicker();
-      }
-      return;
-    }
-    if (state.addOpen) {
-      if (e.key === 'Escape') {
-        e.preventDefault();
-        closeAddModal();
       }
       return;
     }
@@ -3004,12 +3075,40 @@ function bindEvents() {
 
 const PUBLIC_URL = 'https://wjsrobertson.github.io/thai/';
 const AUDIO_CACHE = 'learnthai-audio'; // shared with sw.js
-const OFFLINE_JOBS = 6;
-const AVG_CLIP_KB = 13;                // for the size estimate; ~106 MB / 8.3k clips on 2026-10-04
+const AVG_CLIP_KB = 9.8;               // for the size estimate; 156 MB / 16k clips on 2026-10-07
 const IS_IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
   (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); // iPadOS reports as a Mac
 let installPrompt = null; // Chrome/Android's deferred install prompt; Safari has none
-const offline = { running: false, abort: null, done: 0, total: 0, failed: 0 };
+
+// Resolves a second after the page's load event: work that can wait (the audio queue) stays out
+// of the way while the app opens.
+const launched = new Promise((resolve) => {
+  const go = () => setTimeout(resolve, 1000);
+  if (document.readyState === 'complete') go();
+  else window.addEventListener('load', go, { once: true });
+});
+
+// Settings → App → Launch time, for this launch: when the page arrived (from the service
+// worker's saved copy or the network), when the first frame was drawn and when the home screen
+// was filled in. All from when the browser started loading the page, so time the phone spent
+// starting the app before that isn't included.
+function launchTimingText() {
+  const nav = performance.getEntriesByType?.('navigation')?.[0];
+  const ready = performance.getEntriesByName?.('app-ready')?.[0]?.startTime;
+  if (!nav || ready == null) return 'Not measured in this browser.';
+  const s = (ms) => `${(ms / 1000).toFixed(2)} s`;
+  const from = navigator.serviceWorker?.controller ? 'the saved copy' : 'the network';
+  const drawn = window.firstFrameAt != null ? `, drawn at ${s(window.firstFrameAt)}` : '';
+  return `This launch: page loaded from ${from} at ${s(nav.responseEnd)}${drawn}, ready at ${s(ready)}. ` +
+    'Times count from when the page started loading. Any wait before that is the phone opening the app.';
+}
+
+// Offline audio. `have` is the audio cache's file names. Reading them (cache.keys()) takes
+// seconds on an iPhone with thousands of clips saved, so it's read only when needed (Settings →
+// App open, a sync after the clip list changed, "Download all audio") and then kept up to date as
+// clips are saved and deleted here; `reading` is that read while it's under way. done/total/failed
+// count a "Download all audio" run.
+const offline = { running: false, done: 0, total: 0, failed: 0, have: null, reading: null, used: null, error: false };
 
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
@@ -3054,89 +3153,219 @@ async function cachedAudioFiles(cache) {
   return new Set((await cache.keys()).map((r) => r.url.split('/').pop()));
 }
 
+// Read the audio cache's file names afresh (one read at a time; callers share it), then redraw
+// Settings → Offline audio and remember the count for next time.
+function readSavedAudio() {
+  offline.reading ??= (async () => {
+    try {
+      offline.have = await cachedAudioFiles(await caches.open(AUDIO_CACHE));
+      offline.error = false;
+    } catch (e) {
+      console.warn('Reading the audio cache failed:', e);
+      offline.error = true;
+      offline.have ??= new Set();
+    } finally {
+      offline.reading = null;
+    }
+    rememberSavedCount();
+    renderOffline();
+    return offline.have;
+  })();
+  return offline.reading;
+}
+
+// The saved file names: as last read and kept up to date, or the read under way.
+const savedAudio = () => offline.reading || (offline.have ? Promise.resolve(offline.have) : readSavedAudio());
+
+const savedCount = () => allAudioFiles().filter((f) => offline.have.has(f)).length;
+
+// The count is kept in prefs too, so after a restart Settings shows it straight away (marked
+// "checking") instead of waiting for the read.
+function rememberSavedCount() {
+  if (!offline.have || offline.reading || !allAudioFiles().length) return;
+  const n = savedCount();
+  if (getPreferences().offlineSaved !== n) setPreferences({ offlineSaved: n });
+}
+
 const mb = (bytes) => Math.round(bytes / 1e6).toLocaleString();
 
-async function renderOffline() {
+// Settings → App → Offline audio. Draws at once from what's known, so it's never blank: "X of Y
+// clips saved" leads in every state. Until this visit's read finishes, X is the last count,
+// marked "checking".
+function renderOffline() {
   if (!('caches' in window)) {
     els.offlineHelp.textContent = `Offline audio needs HTTPS. Open ${PUBLIC_URL} instead.`;
     els.offlineProgress.hidden = true;
     els.offlineDownload.parentElement.hidden = true;
     return;
   }
-  let { done, total } = offline;
-  if (!offline.running) {
-    const files = allAudioFiles();
-    const have = await cachedAudioFiles(await caches.open(AUDIO_CACHE));
-    done = files.filter((f) => have.has(f)).length;
-    total = files.length;
-  }
-  const used = (await navigator.storage?.estimate?.())?.usage;
+  // The count needs a read of the cache, which is slow on an iPhone: only while it's on screen.
+  if (!offline.have && !offline.reading && state.settingsOpen && els.offlineHelp.closest('details')?.open) readSavedAudio();
   const n = (x) => x.toLocaleString();
-  const complete = total > 0 && done === total;
-  els.offlineProgress.hidden = !offline.running;
-  els.offlineProgress.value = total ? done / total : 0;
-  els.offlineDownload.hidden = complete && !offline.running;
-  els.offlineDownload.textContent = offline.running ? 'Stop' : done ? 'Download the rest' : 'Download all audio';
-  els.offlineDelete.hidden = offline.running || done === 0;
-  els.offlineHelp.textContent =
-    offline.running ? `Downloading… ${n(done)} of ${n(total)} clips. Keep the app open until it finishes.` :
-    complete ? `All ${n(total)} clips are saved for offline use${used ? ` (${mb(used)} MB)` : ''}. Clips for new cards download automatically.` :
-    `${n(done)} of ${n(total)} clips saved${used ? ` (${mb(used)} MB used)` : ''}. Everything is about ` +
-      `${mb(total * AVG_CLIP_KB * 1000)} MB, best on Wi-Fi. Each topic's audio is saved anyway when you open it.` +
-      (offline.failed ? ` ${n(offline.failed)} failed: check your connection and try again.` : '');
-}
-
-// Fetch every clip that isn't cached yet. Resumable: cached clips are skipped, so a stopped or
-// interrupted run picks up where it left off.
-async function downloadAllAudio() {
-  if (offline.running || !('caches' in window)) return;
-  const cache = await caches.open(AUDIO_CACHE);
-  const files = allAudioFiles();
-  const have = await cachedAudioFiles(cache);
-  const todo = files.filter((f) => !have.has(f));
-  const abort = new AbortController();
-  Object.assign(offline, { running: true, abort, done: files.length - todo.length, total: files.length, failed: 0 });
-  renderOffline();
-  // With the service worker in control it caches each clip on the way through; before it
-  // takes control (the very first visit), store them here.
-  const direct = !navigator.serviceWorker?.controller;
-  let next = 0;
-  let lastRender = 0;
-  async function worker() {
-    while (next < todo.length && !abort.signal.aborted) {
-      const url = `data/audio/${todo[next++]}`;
-      try {
-        const res = await fetch(url, { signal: abort.signal });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        if (direct) await cache.put(url, res);
-        else await res.arrayBuffer();
-        offline.done += 1;
-      } catch {
-        if (abort.signal.aborted) break;
-        offline.failed += 1;
-      }
-      if (performance.now() - lastRender > 300) {
-        lastRender = performance.now();
+  const total = offline.running ? offline.total : allAudioFiles().length;
+  const known = offline.running ? offline.done != null : offline.have && !offline.reading;
+  const done = offline.running ? offline.done : known ? savedCount() : getPreferences().offlineSaved ?? null;
+  const complete = total > 0 && done === total; // the buttons trust the remembered count too
+  // The browser's storage figure is only asked for between downloads, and lags behind a delete.
+  const used = done && !offline.running ? offline.used : null;
+  if (!offline.running) {
+    // The storage figure fills in when the browser answers.
+    navigator.storage?.estimate?.().then((e) => {
+      if (e?.usage && e.usage !== offline.used) {
+        offline.used = e.usage;
         renderOffline();
       }
-    }
+    }).catch(() => {});
   }
-  await Promise.all(Array.from({ length: OFFLINE_JOBS }, worker));
+
+  let text;
+  if (!total) text = 'Loading…';
+  else if (done == null) text = offline.running ? `Checking which of the ${n(total)} clips are already saved…` : `Checking which of the ${n(total)} clips are saved…`;
+  else {
+    text = `${n(done)} of ${n(total)} clips saved${used ? ` (${mb(used)} MB)` : ''}${known ? '.' : ', checking…'}`;
+    if (offline.running) text += ' Downloading: keep the app open until it finishes.';
+    else if (known && complete) text += ` Everything is saved for offline use.${getSettings().offlineAudio ? ' Clips for new cards download automatically.' : ''}`;
+    else if (known) text += ` Everything is about ${mb(total * AVG_CLIP_KB * 1000)} MB, best on Wi-Fi. Each topic's audio is saved anyway when you open it.`;
+    if (offline.failed && !offline.running) text += ` ${n(offline.failed)} failed: check your connection and try again.`;
+  }
+  if (offline.error && !offline.running) text += " Couldn't read the saved audio.";
+  els.offlineHelp.textContent = text;
+  els.offlineProgress.hidden = !offline.running;
+  els.offlineProgress.value = total && done ? done / total : 0;
+  els.offlineDownload.hidden = complete && !offline.running;
+  els.offlineDownload.textContent = offline.running ? 'Stop' : done ? 'Download the rest' : 'Download all audio';
+  els.offlineDelete.hidden = offline.running || !done;
+}
+
+// Queue every clip that isn't saved yet, behind the page's (see the audio queue). Resumable: saved
+// clips are skipped, so a stopped or interrupted run picks up where it left off.
+async function downloadAllAudio() {
+  if (offline.running || !('caches' in window)) return;
+  const files = allAudioFiles();
+  // Show it's started straight away: finding what's already saved can take a few seconds.
+  Object.assign(offline, { running: true, done: null, total: files.length, failed: 0 });
+  renderOffline();
+  const have = await savedAudio();
+  if (!offline.running) return; // stopped while checking
+  const todo = files.filter((f) => !have.has(f));
+  offline.done = files.length - todo.length;
+  renderOffline();
+  if (todo.length) queueBulkAudio(todo);
+  else finishDownloadAll();
+}
+
+function stopDownloadAll() {
+  dropBulkAudio();
   offline.running = false;
+  rememberSavedCount();
   renderOffline();
 }
 
-// On load: drop cached clips that no card uses any more (edited or removed cards), then, if the
-// user chose to download everything, fetch clips for new cards.
+function finishDownloadAll() {
+  offline.running = false;
+  // Everything saved: later launches can skip checking, until the clip list changes.
+  const files = allAudioFiles();
+  if (offline.done === files.length) setPreferences({ audioComplete: audioListSignature(files) });
+  rememberSavedCount();
+  renderOffline();
+}
+
+// A fingerprint of the manifest's clip list (FNV-1a), so a launch can tell nothing has changed.
+function audioListSignature(files) {
+  let h = 0x811c9dc5;
+  for (const f of files) for (let i = 0; i < f.length; i++) h = Math.imul(h ^ f.charCodeAt(i), 16777619);
+  return `${files.length}:${(h >>> 0).toString(36)}`;
+}
+
+// A few seconds after launch: drop cached clips that no card uses any more (edited or removed
+// cards), then, if the user chose to download everything, fetch clips for new cards. Both need a
+// read of the cache, slow on an iPhone with thousands of clips, so they're skipped when the clip
+// list hasn't changed since they last ran (prefs.audioPruned / audioComplete hold its signature).
 async function syncOfflineAudio() {
   if (!('caches' in window)) return;
-  const wanted = new Set(allAudioFiles());
-  if (!wanted.size) return; // the manifest didn't load: don't prune everything
-  const cache = await caches.open(AUDIO_CACHE);
-  for (const req of await cache.keys()) {
-    if (!wanted.has(req.url.split('/').pop())) await cache.delete(req);
+  const files = allAudioFiles();
+  if (!files.length) return; // the manifest didn't load: don't prune everything
+  const sig = audioListSignature(files);
+  const prefs = getPreferences();
+  const download = getSettings().offlineAudio && prefs.audioComplete !== sig;
+  if (prefs.audioPruned === sig && !download) return;
+  const wanted = new Set(files);
+  const have = await savedAudio();
+  const stale = [...have].filter((f) => !wanted.has(f));
+  if (stale.length) {
+    const cache = await caches.open(AUDIO_CACHE);
+    for (let i = 0; i < stale.length; i += 50) {
+      await Promise.all(stale.slice(i, i + 50).map(async (f) => {
+        if (await cache.delete(`data/audio/${f}`, { ignoreSearch: true })) have.delete(f);
+      }));
+    }
   }
-  if (getSettings().offlineAudio) downloadAllAudio();
+  setPreferences({ audioPruned: sig });
+  rememberSavedCount();
+  renderOffline();
+  if (download) downloadAllAudio();
+}
+
+// ---------- backup (Settings → App → Backup) ----------
+// The whole store (settings, progress, Review list, page choices) as a JSON file, and loading one
+// back. Loading replaces the store, then reloads the app so everything starts from it.
+const BACKUP_FORMAT = 'learnthai-backup';
+
+function backupSummary(store) {
+  const words = Object.keys(store.reviewWords || {}).length;
+  const studied = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0])).size;
+  return `${words} word${words === 1 ? '' : 's'} in Review, progress on ${studied}`;
+}
+
+async function exportBackup() {
+  const now = new Date();
+  const backup = { format: BACKUP_FORMAT, version: 1, exported: now.toISOString(), data: loadStore() };
+  const name = `learnthai-backup-${now.toISOString().slice(0, 10)}.json`;
+  const file = new File([JSON.stringify(backup, null, 1)], name, { type: 'application/json' });
+  // iPhone: the share sheet ("Save to Files"); a download link can just open the file there.
+  if (IS_IOS && navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: 'Learn Thai backup' });
+    } catch (e) {
+      if (e.name !== 'AbortError') toast("Couldn't share the backup");
+    }
+    return;
+  }
+  const url = URL.createObjectURL(file);
+  const a = Object.assign(document.createElement('a'), { href: url, download: name });
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  toast(`Saved ${name}`);
+}
+
+async function loadBackup(file) {
+  let backup;
+  try {
+    backup = JSON.parse(await file.text());
+  } catch {
+    toast("That file isn't a Learn Thai backup");
+    return;
+  }
+  const data = backup?.data;
+  const plain = (x) => x == null || (typeof x === 'object' && !Array.isArray(x));
+  if (backup?.format !== BACKUP_FORMAT || !data || typeof data !== 'object' ||
+      !['settings', 'prefs', 'items', 'daily', 'reviewWords'].every((k) => plain(data[k]))) {
+    toast("That file isn't a Learn Thai backup");
+    return;
+  }
+  const when = backup.exported ? new Date(backup.exported).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'an unknown date';
+  const ok = await confirmDialog({
+    title: 'Load this backup?',
+    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and Review list on this device (${backupSummary(loadStore())}).`,
+    confirmLabel: 'Load backup',
+    danger: true,
+  });
+  if (!ok) return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  try { sessionStorage.setItem('learnthai:toast', 'Backup loaded'); } catch { /* no toast then */ }
+  location.reload();
 }
 
 // ---------- boot ----------
@@ -3144,6 +3373,7 @@ async function syncOfflineAudio() {
 async function init() {
   applyTextSize(); // before anything renders, so the text never jumps size
   applyTheme();
+  applyThaiFont();
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));
@@ -3189,7 +3419,7 @@ async function init() {
   // A topic that was split or regrouped lists its old ids in `formerIds` (decks.json), so a saved
   // current topic still resolves.
   const start =
-    state.decks.find((d) => d.id === prefs.currentDeckId)?.id ||
+    resolveScope(prefs.currentDeckId)?.id ||
     state.decks.find((d) => d.formerIds?.includes(prefs.currentDeckId))?.id ||
     state.decks[0]?.id;
   if (start) {
@@ -3197,9 +3427,19 @@ async function init() {
   }
   renderToday(); // again, now the current deck (a source of new cards) is known
   renderHome();
+  performance.mark('app-ready');
 
   registerServiceWorker();
-  syncOfflineAudio();
+  // A message carried over a reload (loading a backup reloads the app).
+  try {
+    const msg = sessionStorage.getItem('learnthai:toast');
+    if (msg) {
+      sessionStorage.removeItem('learnthai:toast');
+      toast(msg, { tone: 'good' });
+    }
+  } catch { /* storage blocked */ }
+  // Audio housekeeping waits until the app has opened (the topic's preload waits for `launched`).
+  setTimeout(syncOfflineAudio, 3000);
 }
 
 init();

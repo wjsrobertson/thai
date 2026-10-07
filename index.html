@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Learn Thai — Flashcards</title>
+  <title>Learn Thai</title>
   <link rel="manifest" href="app.webmanifest" />
   <meta name="theme-color" content="#0f1115" />
   <script>
@@ -11,10 +11,13 @@
     // app.js applyTheme() keeps it up to date (Settings → Display → Theme).
     (function () {
       try {
-        var theme = ((JSON.parse(localStorage.getItem('learnthai:v1')) || {}).settings || {}).theme || 'dark';
-        if (theme === 'system') theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
-        if (theme !== 'dark') document.documentElement.dataset.theme = theme;
-      } catch (e) { /* no saved settings: the default dark theme */ }
+        var settings = (JSON.parse(localStorage.getItem('learnthai:v1')) || {}).settings || {};
+        if (settings.theme === 'light' || settings.theme === 'night') document.documentElement.dataset.theme = settings.theme;
+        // And the Thai font (Settings → Display → Thai font; app.js applyThaiFont()).
+        if (settings.thaiFont === 'loopless') document.documentElement.dataset.thaiFont = 'loopless';
+      } catch (e) { /* no saved settings: the default dark theme and looped font */ }
+      // The first frame, for Settings → App → Launch time.
+      requestAnimationFrame(function () { window.firstFrameAt = performance.now(); });
     })();
   </script>
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -22,6 +25,7 @@
   <meta name="apple-mobile-web-app-title" content="Learn Thai" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
   <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+  <link rel="preload" href="fonts/NotoLoopedThai-Regular.woff2" as="font" type="font/woff2" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="mobile.css" media="(max-width: 600px)" />
 </head>
@@ -29,8 +33,8 @@
   <header class="topbar">
     <h1><button type="button" class="home-link" id="home-link" title="Home">Learn Thai</button></h1>
     <nav class="tabs" role="tablist">
+      <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Topics</button>
       <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Flashcards</button>
-      <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Wordlists</button>
       <button type="button" class="tab" role="tab" data-view="today" aria-selected="false">Review</button>
     </nav>
     <div class="controls">
@@ -44,6 +48,13 @@
       <div class="modal-head">
         <h2 id="deck-picker-title">Choose a topic</h2>
         <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="review-by" id="review-by" hidden>
+        <div class="segmented" role="radiogroup" aria-label="What to review">
+          <button type="button" role="radio" class="seg-btn" data-review-by="all" aria-checked="true">Everything</button>
+          <button type="button" role="radio" class="seg-btn" data-review-by="topic" aria-checked="false">By topic</button>
+        </div>
+        <p class="review-by-help" id="review-by-help"></p>
       </div>
       <div class="modal-search">
         <input type="search" id="deck-picker-search" placeholder="Search topics…" autocomplete="off" />
@@ -64,7 +75,7 @@
           <input type="checkbox" id="confirm-dont-ask" />
           <span>Don't ask again</span>
         </label>
-        <span class="setting-help">You can turn this back on in Settings<svg class="arrow-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Confirmations.</span>
+        <span class="setting-help">You can turn this back on in Settings<svg class="arrow-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Topics.</span>
       </div>
       <div class="confirm-actions">
         <button type="button" class="ghost" id="confirm-cancel">Cancel</button>
@@ -73,40 +84,22 @@
     </div>
   </div>
 
-  <div id="add-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel" role="document">
-      <div class="modal-head">
-        <h2 id="add-modal-title">Add to Review</h2>
-        <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
-      </div>
-      <div class="add-quick">
-        <button type="button" class="ghost" data-pick="all">All</button>
-        <button type="button" class="ghost" data-pick="missed">Missed only</button>
-        <button type="button" class="ghost" data-pick="none">None</button>
-      </div>
-      <div class="modal-body" id="add-list"></div>
-      <div class="add-foot">
-        <button type="button" class="round-again" id="add-confirm">Add to Review</button>
-      </div>
-    </div>
-  </div>
-
   <main class="stage" data-view="home">
     <section class="home home-only" id="home-section">
+      <button type="button" class="home-card" data-go="wordlist">
+        <span class="home-card-title">📋 Topics</span>
+        <span class="home-card-desc">Browse words by topic</span>
+        <span class="home-card-note">Words you add with the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button appear in Flashcards and Review</span>
+        <span class="home-card-stat" id="home-wordlist-stat"></span>
+      </button>
       <button type="button" class="home-card" data-go="flashcards">
         <span class="home-card-title">📖 Flashcards</span>
-        <span class="home-card-desc">Flip cards to learn a topic, then test yourself</span>
+        <span class="home-card-desc">Flip cards to learn, then test your recognition</span>
         <span class="home-card-stat" id="home-deck-stat"></span>
-      </button>
-      <button type="button" class="home-card" data-go="wordlist">
-        <span class="home-card-title">📋 Wordlists</span>
-        <span class="home-card-desc">Every word in a topic, with audio</span>
-        <span class="home-card-stat" id="home-wordlist-stat"></span>
       </button>
       <button type="button" class="home-card" data-go="today">
         <span class="home-card-title">🔁 Review</span>
-        <span class="home-card-desc">Practise the words you've added</span>
+        <span class="home-card-desc">Practise recalling the words you've added</span>
         <span class="home-card-stat" id="home-review-stat"></span>
       </button>
     </section>
@@ -125,9 +118,14 @@
         <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Learn</button>
         <button type="button" role="radio" class="seg-btn" data-order="test" aria-checked="false">Test</button>
       </div>
+      <!-- Review's session header: in the topic bar, level with Flashcards' controls (renderToday). -->
+      <div class="review-top today-only" id="review-top" hidden>
+        <span class="review-deck" id="review-deck"></span>
+        <span class="review-top-end"><span class="review-left" id="review-left"></span><button type="button" class="ghost review-quit" id="review-quit"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>End review</button></span>
+      </div>
       <div class="wordlist-only wordlist-bar-right">
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Review</button>
-        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through all visible words">🔊 Read all</button>
+        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list">🔊 Read all</button>
       </div>
     </div>
     <section class="card-wrap">
@@ -139,7 +137,6 @@
               <div class="pos-badge stat-pos">—</div>
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
-              <button type="button" class="review-toggle" aria-label="Add to Review" title="Add to Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></button>
               <button type="button" class="spell-btn" id="card-spell-front" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
             <div class="thai" id="card-thai"></div>
@@ -149,7 +146,6 @@
               <div class="pos-badge stat-pos">—</div>
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
-              <button type="button" class="review-toggle" aria-label="Add to Review" title="Add to Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></button>
               <button type="button" class="spell-btn" id="card-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
             <div class="face-body">
@@ -167,6 +163,10 @@
 
     </section>
 
+    <div class="review-only-empty flashcards-only" id="review-only-empty" role="status" hidden>
+      <p class="review-only-empty-title">None of this topic's words are in Review yet</p>
+      <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
+    </div>
     <section class="round-summary flashcards-only" id="round-summary" hidden>
       <h2 class="round-title">Round complete</h2>
       <div class="round-score" id="round-score"></div>
@@ -174,11 +174,15 @@
       <h3 class="round-missed-title" id="round-missed-title"></h3>
       <ul class="round-missed" id="round-missed"></ul>
       <div class="round-actions">
-        <button type="button" class="ghost round-add" id="round-add">Add to Review…</button>
         <button type="button" class="round-again" id="round-again">Start again</button>
       </div>
     </section>
 
+    <div class="review-only-empty today-only" id="today-topic-empty" role="status" hidden>
+      <p class="review-only-empty-title" id="today-topic-empty-title">None of this topic's words are in Review yet</p>
+      <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
+      <p class="review-only-empty-small">Or switch to Everything with the button above to review all your words</p>
+    </div>
     <section class="today today-only" id="today-section">
       <div class="today-home" id="today-home">
         <div class="today-counts" id="today-counts">
@@ -186,23 +190,15 @@
           <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
         </div>
         <button type="button" class="round-again today-start" id="today-start">Start review</button>
-        <p class="today-empty" id="today-empty" hidden>Review is empty. Add words from Flashcards or Wordlists.</p>
+        <p class="today-empty" id="today-empty" hidden>Review is empty. Add words from the Topics page.</p>
       </div>
-      <table class="today-breakdown" id="today-breakdown" hidden>
-        <thead><tr><th>Category</th><th>Due</th><th>New</th><th><span class="visually-hidden">Remove</span></th></tr></thead>
-        <tbody id="today-breakdown-body"></tbody>
-      </table>
 
       <div class="review" id="review" hidden>
-        <div class="review-top">
-          <span class="review-left" id="review-left"></span>
-          <span class="review-deck" id="review-deck"></span>
-          <button type="button" class="review-quit" id="review-quit" aria-label="Stop reviewing" title="Stop">✕</button>
-        </div>
         <div class="review-card">
           <div class="review-badge" id="review-badge" hidden></div>
           <div class="review-prompt" id="review-prompt"></div>
-          <button type="button" class="review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+          <button type="button" class="review-script" id="review-script" title="Show the Thai script" hidden><svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" /><circle cx="12" cy="12" r="3" /></svg><span>Show Thai</span></button>
+          <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
           <div class="review-hint" id="review-hint"></div>
           <div class="review-answer" id="review-answer" hidden>
             <div class="review-main" id="review-main"></div>
@@ -210,14 +206,13 @@
             <div class="note" id="review-note"></div>
           </div>
         </div>
-        <div class="learn-pills" id="review-pills" hidden></div>
         <button type="button" class="round-again review-show" id="review-show">Show</button>
-        <button type="button" class="round-again review-continue" id="review-continue" hidden>Continue</button>
         <div class="review-grades" id="review-grades" hidden>
-          <button type="button" class="grade grade-again" data-grade="1">Again<span></span></button>
-          <button type="button" class="grade grade-hard" data-grade="2">Hard<span></span></button>
-          <button type="button" class="grade grade-good" data-grade="3">Good<span></span></button>
-          <button type="button" class="grade grade-easy" data-grade="4">Easy<span></span></button>
+          <button type="button" class="grade grade-again" data-grade="1">Again</button>
+          <button type="button" class="grade grade-hard" data-grade="2">Hard</button>
+          <!-- Three grades since 2026-10-07: "Easy" schedules as FSRS Good (3), the normal remembered
+               answer; FSRS Easy (4) would push a new word out to about 16 days. -->
+          <button type="button" class="grade grade-easy" data-grade="3">Easy</button>
         </div>
       </div>
 
@@ -254,10 +249,16 @@
             <button type="button" id="install-btn" class="ghost">Install app</button>
           </div>
         </div>
+        <div class="setting-group" data-search="launch startup start time slow speed loading">
+          <label class="setting-row">
+            <span class="setting-label">Launch time</span>
+            <span class="setting-help" id="launch-help"></span>
+          </label>
+        </div>
         <div class="setting-group" data-search="offline download audio save storage cache wifi">
           <label class="setting-row">
             <span class="setting-label">Offline audio</span>
-            <span class="setting-help" id="offline-help"></span>
+            <span class="setting-help" id="offline-help">Checking saved audio…</span>
           </label>
           <progress id="offline-progress" max="1" value="0" hidden></progress>
           <div class="setting-actions" id="offline-actions">
@@ -265,32 +266,40 @@
             <button type="button" id="offline-delete" class="ghost danger-btn">Delete downloaded audio</button>
           </div>
         </div>
+        <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
+          <label class="setting-row">
+            <span class="setting-label">Backup</span>
+            <span class="setting-help">Save your settings, progress and Review list to a file, or load them from one, e.g. to move to another device. Loading replaces what's on this device. Downloaded audio isn't included.</span>
+          </label>
+          <div class="setting-actions">
+            <button type="button" id="backup-export" class="ghost">Export</button>
+            <button type="button" id="backup-load" class="ghost">Load</button>
+            <input type="file" id="backup-file" accept=".json,application/json" hidden />
+          </div>
+        </div>
       </details>
 
       <details class="settings-cat" data-cat="display">
         <summary>Display</summary>
-        <div class="setting-group" data-search="theme colour color dark light dim sepia night mode appearance eyes contrast">
+        <div class="setting-group" data-search="theme colour color dark light night mode appearance eyes contrast">
           <label class="setting-row">
             <span class="setting-label">Theme</span>
             <select id="setting-theme">
               <option value="dark">Dark (high contrast)</option>
-              <option value="dim">Dim (softer dark)</option>
               <option value="light">Light (best in daylight)</option>
-              <option value="sepia">Sepia (warm paper)</option>
               <option value="night">Night (warm, for bedtime)</option>
-              <option value="system">Match device (Light or Dark)</option>
             </select>
-            <span class="setting-help">Dark text on a light page reads most accurately in daylight. Dim and Sepia are gentler over long sessions. Night is warm and dim with little blue light, kinder to sleep when you study in bed.</span>
+            <span class="setting-help">Dark text on a light page reads most accurately in daylight. Night is warm and dim with little blue light, kinder to sleep when you study in bed.</span>
           </label>
         </div>
-        <div class="setting-group" data-search="spelling spell school method letter names dictation sound out สะกด">
+        <div class="setting-group" data-search="thai font typeface looped loopless loops curly modern traditional script letters style">
           <label class="setting-row">
-            <span class="setting-label">Spelling</span>
-            <select id="setting-spelling">
-              <option value="letters">Letter names (dictation)</option>
-              <option value="school">School method (sounds)</option>
+            <span class="setting-label">Thai font</span>
+            <select id="setting-thai-font">
+              <option value="looped">Looped (traditional)</option>
+              <option value="loopless">Loopless (modern)</option>
             </select>
-            <span class="setting-help">How the spelling on card backs, and the spell-aloud buttons on cards and in Wordlists, spell a word. Letter names: ข้าว = ข ไข่ · ไม้โท · สระอา · ว แหวน. School method: ขอ – อา – วอ – ขาว – ไม้โท – ข้าว. The few words the school method can't be worked out for use letter names.</span>
+            <span class="setting-help">Looped is the classic style of books, newspapers and most signs. Loopless is the modern style of many ads, logos and phone screens. Worth reading both.</span>
           </label>
         </div>
         <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
@@ -303,133 +312,7 @@
               <option value="1">Larger</option>
               <option value="2">Largest</option>
             </select>
-            <span class="setting-help">Cards, wordlists, topic picker and settings. Buttons and the top bar stay the same size.</span>
-          </label>
-        </div>
-      </details>
-
-      <details class="settings-cat" data-cat="review">
-        <summary>Daily review</summary>
-        <div class="setting-group" data-search="new cards per day limit daily">
-          <label class="setting-row">
-            <span class="setting-label">New cards per day</span>
-            <input type="number" min="0" max="100" id="setting-new-per-day" />
-            <span class="setting-help">Automatic adding only (see "Adding to Review"). Words you add yourself all show up straight away.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="due reviews from scope decks all current deck topic">
-          <label class="setting-row">
-            <span class="setting-label">Due reviews from</span>
-            <select id="setting-review-scope">
-              <option value="all">All topics (Recommended)</option>
-              <option value="current">Current topic only</option>
-            </select>
-            <span class="setting-help">With "Current topic only", words due in other topics wait until you switch back, and the longer they're overdue the more you'll have forgotten.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="adding to review manual automatic add words new cards from source decks started current deck topic">
-          <label class="setting-row">
-            <span class="setting-label">Adding to Review</span>
-            <select id="setting-new-source">
-              <option value="manual">Only words I add (Recommended)</option>
-              <option value="started">Automatically, from topics I've started</option>
-              <option value="current">Automatically, from the current topic</option>
-            </select>
-            <span class="setting-help">Add words from Flashcards or Wordlists. Automatic adding brings in up to "New cards per day" new words a day, mixing the current topic with every topic you've studied a word from.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="maximum reviews per day limit daily">
-          <label class="setting-row">
-            <span class="setting-label">Maximum reviews per day</span>
-            <input type="number" min="10" max="1000" step="10" id="setting-max-reviews" />
-          </label>
-        </div>
-        <div class="setting-group" data-search="desired retention fsrs scheduling intervals remember percent">
-          <label class="setting-row">
-            <span class="setting-label">Desired retention</span>
-            <select id="setting-retention">
-              <option value="0.8">80% (fewer reviews)</option>
-              <option value="0.85">85%</option>
-              <option value="0.9">90% (Recommended)</option>
-              <option value="0.95">95% (many more reviews)</option>
-            </select>
-            <span class="setting-help">How likely you should be to remember a card when it comes up. Higher means shorter gaps and more reviews.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="both directions english to thai production reverse">
-          <label class="setting-row">
-            <span class="setting-label">Both directions</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-both-directions" />
-              <span>Also practise English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai</span>
-            </label>
-            <span class="setting-help">A word's English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai card unlocks once you've recalled its meaning after a gap of a day or more.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="say aloud speak prompt pronounce">
-          <label class="setting-row">
-            <span class="setting-label">Say it aloud</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-say-aloud" />
-              <span>Prompt me to say the answer before showing it</span>
-            </label>
-            <span class="setting-help">Saying words aloud helps you remember them.</span>
-          </label>
-        </div>
-      </details>
-
-      <details class="settings-cat" data-cat="deck-mode">
-        <summary>Flashcards</summary>
-        <div class="setting-group" data-search="flashcards smart order spaced repetition shuffle random due">
-          <label class="setting-row">
-            <span class="setting-label">Smart order</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="srs-toggle" checked />
-              <span>Due cards first in Test mode</span>
-            </label>
-            <span class="setting-help">Off = every card once per round, ignoring due dates.</span>
-          </label>
-        </div>
-
-        <div class="setting-group" data-search="flashcards test mode card order random shuffle deck order sequence list topic">
-          <label class="setting-row">
-            <span class="setting-label">Test card order</span>
-            <select id="setting-test-order">
-              <option value="random">Random</option>
-              <option value="deck">List order</option>
-            </select>
-            <span class="setting-help">List order is the order Learn mode and Wordlists show. With Smart order on, due cards still come first.</span>
-          </label>
-        </div>
-
-        <div class="setting-group" data-search="flashcards learn test mode auto progress advance next button manual correct right wrong answer multiple choice">
-          <label class="setting-row">
-            <span class="setting-label">Auto-progress after multiple choice</span>
-            <select id="setting-learn-auto">
-              <option value="off">Off — press Next (›) to move on</option>
-              <option value="correct">Only after a correct answer</option>
-              <option value="always">After every answer</option>
-            </select>
-            <span class="setting-help">Flashcards Test mode, and multiple-choice cards on the Review tab. "Only after a correct answer" waits on a wrong one so you can study the card.</span>
-          </label>
-          <label class="setting-row" id="learn-pause-row">
-            <span class="setting-label">Pause before moving on</span>
-            <input type="number" min="0" max="5000" step="100" id="setting-learn-pause" />
-            <span class="setting-help">Milliseconds to pause after you tap an answer, before auto-advancing.</span>
-          </label>
-        </div>
-      </details>
-
-      <details class="settings-cat" data-cat="wordlists">
-        <summary>Wordlists</summary>
-        <div class="setting-group" data-search="wordlists show first column thai english order table">
-          <label class="setting-row">
-            <span class="setting-label">Show first</span>
-            <select id="setting-wordlist-first">
-              <option value="thai">Thai</option>
-              <option value="english">English</option>
-            </select>
-            <span class="setting-help">Which column comes first in Wordlists. Transliteration always follows the Thai.</span>
+            <span class="setting-help">Cards, the Topics page's word list, the topic picker and settings. Buttons and the top bar stay the same size.</span>
           </label>
         </div>
       </details>
@@ -460,7 +343,7 @@
             <span class="setting-help">Slows Thai audio without lowering the pitch. English always plays at normal speed.</span>
           </label>
         </div>
-        <div class="setting-group" data-search="read aloud repeats wordlist playback">
+        <div class="setting-group" data-search="read aloud repeats wordlist topics playback">
           <label class="setting-row">
             <span class="setting-label">Read-aloud repeats</span>
             <input type="number" min="1" max="10" id="setting-read-repeats" />
@@ -483,26 +366,156 @@
             </label>
           </label>
         </div>
+        <div class="setting-group" data-search="audio spelling spell school method letter names dictation sound out สะกด">
+          <label class="setting-row">
+            <span class="setting-label">Spelling</span>
+            <select id="setting-spelling">
+              <option value="letters">Letter names (dictation)</option>
+              <option value="school">School method (sounds)</option>
+            </select>
+            <span class="setting-help">How the spelling on card backs, and the spell-aloud buttons on cards and on the Topics page, spell a word. Letter names: ข้าว = ข ไข่ · ไม้โท · สระอา · ว แหวน. School method: ขอ – อา – วอ – ขาว – ไม้โท – ข้าว. The few words the school method can't be worked out for use letter names.</span>
+          </label>
+        </div>
       </details>
 
-      <details class="settings-cat" data-cat="confirm">
-        <summary>Confirmations</summary>
-        <div class="setting-group" data-search="confirm confirmation ask before add all whole deck review don't ask again topic">
+      <details class="settings-cat" data-cat="wordlists">
+        <summary>Topics</summary>
+        <div class="setting-group" data-search="topics wordlists show first column thai english order table">
           <label class="setting-row">
-            <span class="setting-label">Add all to Review</span>
+            <span class="setting-label">Show first</span>
+            <select id="setting-wordlist-first">
+              <option value="thai">Thai</option>
+              <option value="english">English</option>
+            </select>
+            <span class="setting-help">Which column comes first on the Topics page. Transliteration always follows the Thai.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="topics wordlists confirm confirmation ask before add all whole deck review don't ask again topic">
+          <label class="setting-row">
+            <span class="setting-label">Confirm “Add all to Review”</span>
             <label class="checkbox-inline">
               <input type="checkbox" data-confirm-setting="confirmAddAll" />
-              <span>Ask before adding a whole topic</span>
+              <span>Ask before adding every word in the list</span>
             </label>
           </label>
         </div>
-        <div class="setting-group" data-search="confirm confirmation ask before remove all whole deck review don't ask again topic">
+        <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
           <label class="setting-row">
-            <span class="setting-label">Remove all from Review</span>
+            <span class="setting-label">Confirm “Remove all from Review”</span>
             <label class="checkbox-inline">
               <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
-              <span>Ask before removing a whole topic</span>
+              <span>Ask before taking every word in the list out of Review</span>
             </label>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="deck-mode">
+        <summary>Flashcards</summary>
+        <div class="setting-group" data-search="flashcards smart order spaced repetition shuffle random due">
+          <label class="setting-row">
+            <span class="setting-label">Smart order</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="srs-toggle" checked />
+              <span>Due cards first in Test mode</span>
+            </label>
+            <span class="setting-help">Off = every card once per round, ignoring due dates.</span>
+          </label>
+        </div>
+
+        <div class="setting-group" data-search="flashcards test mode card order random shuffle deck order sequence list topic">
+          <label class="setting-row">
+            <span class="setting-label">Test card order</span>
+            <select id="setting-test-order">
+              <option value="random">Random</option>
+              <option value="deck">List order</option>
+            </select>
+            <span class="setting-help">Random starts with words you haven't studied yet, then the rest, each in random order. List order is the order Learn mode and the Topics page show. With Smart order on, due cards come before the others.</span>
+          </label>
+        </div>
+
+        <div class="setting-group" data-search="flashcards learn test mode auto progress advance next button manual correct right wrong answer multiple choice">
+          <label class="setting-row">
+            <span class="setting-label">Auto-progress after multiple choice</span>
+            <select id="setting-learn-auto">
+              <option value="off">Off — press Next (›) to move on</option>
+              <option value="correct">Only after a correct answer</option>
+              <option value="always">After every answer</option>
+            </select>
+            <span class="setting-help">Flashcards Test mode. "Only after a correct answer" waits on a wrong one so you can study the card.</span>
+          </label>
+          <label class="setting-row" id="learn-pause-row">
+            <span class="setting-label">Pause before moving on</span>
+            <input type="number" min="0" max="5000" step="100" id="setting-learn-pause" />
+            <span class="setting-help">Milliseconds to pause after you tap an answer, before auto-advancing.</span>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="review">
+        <summary>Review</summary>
+        <div class="setting-group" data-search="wait waits again hard easy delay interval minutes days gap schedule first new word come back">
+          <label class="setting-row">
+            <span class="setting-label">Again: wait (minutes)</span>
+            <input type="number" min="1" max="1440" step="1" id="setting-wait-again" />
+            <span class="setting-help">How soon a word you missed comes back. It also returns later in the same session.</span>
+          </label>
+          <label class="setting-row">
+            <span class="setting-label">Hard: first wait (days)</span>
+            <input type="number" min="1" max="60" step="1" id="setting-wait-hard" />
+          </label>
+          <label class="setting-row">
+            <span class="setting-label">Easy: first wait (days)</span>
+            <input type="number" min="1" max="60" step="1" id="setting-wait-easy" />
+            <span class="setting-help">The first waits are for a new word. Each later right answer makes the wait longer, so words you know come back less and less often (Hard grows it only a little).</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="maximum reviews per day limit daily">
+          <label class="setting-row">
+            <span class="setting-label">Maximum reviews per day</span>
+            <input type="number" min="10" max="1000" step="10" id="setting-max-reviews" />
+          </label>
+        </div>
+        <div class="setting-group" data-search="desired retention fsrs scheduling intervals remember percent">
+          <label class="setting-row">
+            <span class="setting-label">Desired retention</span>
+            <select id="setting-retention">
+              <option value="0.8">80% (fewer reviews)</option>
+              <option value="0.85">85%</option>
+              <option value="0.9">90% (Recommended)</option>
+              <option value="0.95">95% (many more reviews)</option>
+            </select>
+            <span class="setting-help">How likely you should be to remember a card when it comes up. Higher means shorter gaps and more reviews.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="both directions english to thai production reverse">
+          <label class="setting-row">
+            <span class="setting-label">Both directions</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-both-directions" />
+              <span>Also practise English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai</span>
+            </label>
+            <span class="setting-help">A word's English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai card unlocks once you've recalled its meaning after a gap of a day or more.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="show thai script text letters review audio only listen hide sound">
+          <label class="setting-row">
+            <span class="setting-label">Show Thai script</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-review-script" />
+              <span>Show the Thai on Review cards before you tap Show</span>
+            </label>
+            <span class="setting-help">Off: Thai<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>English cards are audio only until you tap Show, so you recall from the sound alone. The eye on the card shows the script early.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="say aloud speak prompt pronounce">
+          <label class="setting-row">
+            <span class="setting-label">Say it aloud</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-say-aloud" />
+              <span>Prompt me to say the answer before showing it</span>
+            </label>
+            <span class="setting-help">Saying words aloud helps you remember them.</span>
           </label>
         </div>
       </details>
@@ -548,10 +561,8 @@
     </div>
 
     <section class="wordlist" id="wordlist-section" hidden>
-      <div class="wordlist-toolbar">
-        <input type="search" id="wordlist-filter" placeholder="Filter (Thai, transliteration, or English)…" autocomplete="off" />
-      </div>
       <div class="wordlist-deck-name" id="wordlist-deck-name"></div>
+      <p class="wordlist-about" id="wordlist-about" hidden></p>
       <table class="wordtable" id="wordtable">
         <thead id="wordtable-head"></thead>
         <tbody id="wordtable-body"></tbody>

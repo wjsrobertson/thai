@@ -45,9 +45,11 @@ const isConsonant = (ch) => ch in CONSONANTS;
 const SILENT = /^(?:[ก-ฮ]{1,2}|ษฎร|ริย)[ิุ]?์/;
 const consonantSound = (ch) => `${ch}อ`; // ก → กอ, the name used when sounding out
 
-// A spelling is shown for words and phrases, not for a lone letter or symbol (Thai Script cards).
+// Every card has a spelling (the user's call, 2026-10-07): a word's letters, a lone letter's name
+// (ก → ก ไก่), a mark's (◌่ → ไม้เอก), a number's digits (555 → ห้า ห้า ห้า). Only text with
+// nothing to name (Latin letters, punctuation) has none.
 export function isSpellable(thai) {
-  return !/◌/.test(thai) && [...thai].filter(isConsonant).length >= 2;
+  return letterSpelling(thai) !== null;
 }
 
 // ---------------------------------------------------------------- letter names (dictation)
@@ -57,8 +59,8 @@ export function letterSpelling(thai) {
   for (const ch of thai) {
     if (isConsonant(ch)) steps.push({ show: `${ch} ${CONSONANTS[ch][3]}`, say: `${ch}อ ${CONSONANTS[ch][3]}` });
     else if (ch in SYMBOL_NAMES) steps.push({ show: SYMBOL_NAMES[ch], say: SYMBOL_SAY[ch] || SYMBOL_NAMES[ch] });
-    else if (/[๐-๙]/.test(ch)) steps.push({ show: ch, say: DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50] });
-    else if (/[0-9]/.test(ch)) steps.push({ show: ch, say: DIGIT_NAMES[Number(ch)] });
+    else if (/[๐-๙]/.test(ch)) steps.push({ show: `${ch} ${DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50]}`, say: DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50] });
+    else if (/[0-9]/.test(ch)) steps.push({ show: `${ch} ${DIGIT_NAMES[Number(ch)]}`, say: DIGIT_NAMES[Number(ch)] });
     else if (/\s/.test(ch)) { if (steps.length && !steps[steps.length - 1].gap) steps.push({ gap: true }); }
     // Latin letters and punctuation are left out.
   }

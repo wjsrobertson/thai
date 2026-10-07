@@ -440,11 +440,16 @@ Script: scratchpad `decks/merge15.py`.
 
 ## Views
 
-The app opens on a **Home** page: three cards (Flashcards, Wordlists, Review), each with a short
+The app opens on a **Home** page: three cards (Wordlists, Flashcards, Review; the top tabs match. Wordlists moved first on 2026-10-07), each with a short
 description. Flashcards and Wordlists show the current deck ("Topic: Time of Day"), and Review shows today's due/new counts
 (`renderHome`).
 Tapping "Learn Thai" (top left) returns there. No tab is selected on Home. It was added on
 2026-10-05 at the user's request; before that, the app opened on Review.
+The descriptions (2026-10-07) start with a verb and name what each page trains: Wordlists "Browse
+words by topic", Flashcards "Flip cards to learn, then test your recognition", and Review
+"Practise recalling the words you've added".
+The Wordlists card also says "Words you add with the 🔁 button appear in Flashcards and Review"
+(`.home-card-note`, the Review icon drawn inline; added 2026-10-07).
 
 The tabs are **Flashcards | Wordlists | Review** (see "Today review and scheduling" below).
 - **Internal ids:** Review's view id and code still say `today` (`renderToday`, `#today-section`,
@@ -506,15 +511,138 @@ The controls row holds:
 - The **mode** toggle, Learn / Test. Internally these are `practice` / `test`; legacy pref values
   are migrated in `init()`. Learn has no scoring and flips freely.
 
-**Wordlists** shows the topic as a sortable, filterable table, and each row has a 🔊 button. Which
+**Wordlists was renamed Topics** (2026-10-07, at the user's request). The change covers:
+- the tab, the Home card and the Settings section;
+- every line of help or message text that named the page, e.g. "Add some on the Topics page using
+  the 🔁 button", "Shared with the Topics page and Flashcards", and the confirm dialog's "Settings →
+  Topics";
+- the page title, now just "Learn Thai" (it was "Learn Thai — Flashcards", although the app opens
+  on Home);
+- the install description in `app.webmanifest`.
+
+Code names (`data-view="wordlist"`, `wordlist-*` classes, `wordlistFirst`) are unchanged, and
+"wordlists" stays in settings search keywords. Older notes below still say Wordlists.
+
+**Wordlists** shows the topic as a sortable table, and each row has a 🔊 button. The filter box
+above it was removed on 2026-10-07 at the user's request. Which
 column comes first, Thai or English, is the Settings → Wordlists "Show first" setting
 (`settings.wordlistFirst`). It moved off the page on 2026-10-06; an English choice saved in the
-old `prefs.primaryCol` carries over once. "Read all" walks the visible (filtered and
-sorted) rows, highlighting and scrolling to the current one. A view or deck change cancels it.
+old `prefs.primaryCol` carries over once. "Read all" walks the rows in their sorted order,
+highlighting and scrolling to the current one. A view or deck change cancels it.
+
+**A topic's `about`** (optional, in decks.json; added 2026-10-07) is a second paragraph under
+Wordlists' heading (`#wordlist-about`), for single topics only. The topic picker doesn't show it.
+- **The four consonant-class topics** have memory scenes, at the user's request: Mid (theirs),
+  High, Low Paired and Low Sonorants.
+- **Each scene happens at its class's height:** high up a mountain, mid on the ground, and both
+  lows down by the river.
+- **Each names every letter of its class once,** with the app's own keyword, e.g. "a hermit (ษ
+  ฤๅษี)". The scratchpad script `decks/mnemonics.py` checked that against `spell.js` before
+  writing.
+- **Each bracketed pair stays on one line** (a `.nowrap` span). Otherwise a line could break at
+  its space, or inside a Thai word: นกฮูก split as นก | ฮูก.
 
 Keyboard: Space flips, `P` plays, ←/→ navigate.
 
+**Flashcards → "Review words only"** (2026-10-07; the user wants Review to be more central).
+It's the only behaviour. The history, all on the same day:
+- It was a checkbox on the Flashcards page.
+- Then a setting, Settings → Flashcards → Review words only (`settings.reviewOnly`, on by
+  default).
+- Then the user removed the setting.
+
+- **What it does:** Flashcards goes through just the current topic's words that are in Review.
+  Wordlists and Test-mode answer choices still use the whole topic: `state.cards` stays the
+  topic, and `buildFlashcardQueue()` builds the usual queue, then keeps only the indices of words
+  in Review.
+- **No note under the card** (removed 2026-10-07). There used to be one reading "Showing only
+  words in Review: 3 of 24"; the user found it redundant once this was the only behaviour.
+  - The page-filling layout it needed stays, for the empty-topic message below: body is a
+    column, the stage grows, and the Flashcards stage is a column.
+  - `.round-summary` still needs `width: 100%` in that column: with `margin: 0 auto`, a flex item
+    shrinks to its content instead of filling its 640 px maximum.
+- **None of the topic in Review** (changed 2026-10-07): no card. A message takes its place,
+  centred in the space under the controls (`#review-only-empty`; the stage gets
+  `.review-only-none`, which hides `.card-wrap`): "None of this topic's words are in Review yet /
+  Add some on the Wordlists page using the 🔁 button and they'll show up here" (the Review icon
+  drawn inline, `.inline-icon`; Review's message has the same line). The box is centred, with the
+  title centred and the rest left-aligned (the user's call). The text under the title is narrower,
+  at 70% of the box (about 80% of the title's width, as asked). Its third line, "Or turn off Review
+  words only in Settings → Flashcards…", went with the setting.
+  - **Showing nothing, not the whole topic, was the user's call.** At first, the whole topic
+    showed in this case.
+  - **No sound plays** and the keys do nothing: the queue is empty.
+  - **Class-name clash:** the stage's class must not be `review-only-empty`. That's the message's
+    class, and the stage briefly picked up its panel styling and 460 px max-width.
+- **Always on.** There's no automatic adding any more (removed 2026-10-07), so Review is always
+  the words you add.
+- **Adding and removing words** (`syncReviewOnly()`, from `setInReview`, Reset Review list,
+  Reset settings, and a change of adding mode):
+  - **On Flashcards:** since the card's Review button went, this only happens via Settings opened
+    over it. If the set changed, the queue is rebuilt at once, around the card on screen if it's
+    still in; in a Test round that card moves to the front. If it is still in, the card isn't
+    redrawn (`updateStats()` only), so it doesn't flip back or replay.
+  - `renderReviewOnly()` runs from `renderCard()`, so the note and the message follow every
+    queue change.
+  - **Elsewhere** (Wordlists, Review): coming back to Flashcards rebuilds the queue if the set
+    changed (`setView` compares `reviewOnlySignature()` with the one the queue was built with).
+    The first test of this showed 1 / 1 after adding 3 words from Wordlists.
+
+**Scopes: a topic, a group or a whole category** (2026-10-07; the user wanted to study and review
+a category alone, on every page).
+
+- **A scope id** is a topic's id, `group:<category>::<group>`, `cat:<category>`, or (Review only)
+  `all`.
+  - `resolveScope(id)` gives `{ id, kind, name, label, description, decks, cards, deckOf }`.
+    `cards` drops repeats (a word in two topics counts once). `deckOf` maps a card key to the first
+    of the scope's decks with it, used for Wordlists' headings and Test answers' deck.
+  - Results are cached (`scopeCache`): the decks never change while the app runs.
+- **Wordlists and Flashcards share one scope:** `state.currentDeckId` / `prefs.currentDeckId`
+  holds a scope id; the name is kept from when it was always a topic. `currentScope()` resolves it.
+- **The topic button** shows the scope as "📚 Basics · all 19 topics" (📖 for a single topic).
+  On Review it shows what Review covers (`renderDeckButton`).
+- **Picking in the topic picker:** each category and group heading has an "All N" pill on its
+  right (`pickerHead` → `.scope-all`; N is the word count). Tapping the heading's name still opens
+  or closes it.
+  - The user chose this over a separate "All Basics" first row, which felt untidy, and over making
+    the name pick and only the ▸ expand, since those targets are small on a phone.
+  - Counts in headings don't wrap (`white-space: nowrap`); a long name wraps instead.
+- **Wordlists for several topics:** a heading row per topic (`tr.wl-topic`), in list order. There
+  are no headings while sorted by a column. The header reads "Basics — All 19 topics".
+- **Flashcards:** works as for a topic. Since it shows only Review words, "All of Food & Drink"
+  means your Review words from it. The empty-topic message names the scope.
+- **Review: Everything or By topic** (`prefs.reviewBy`: `all` by default, or `topic`). It's set in
+  Review's topic dialog, "What to review", which has an Everything / By topic switch above the
+  topic list (`renderReviewBy`, `state.pickerFor = 'review'`).
+  - **By topic** is the topic, group or category Wordlists and Flashcards show; there is only one
+    shared scope. Picking in Review's dialog changes it for all three pages.
+  - **Everything** hides the search and the list (hidden, not disabled: a greyed-out list of 22
+    categories is noise). The dialog then shrinks to fit (`#deck-picker.review-all`): a short
+    sheet from the top on a phone.
+  - **Taps apply at once.** Everything closes the dialog. By topic shows the list with the shared
+    topic highlighted; picking closes it, and closing without picking keeps By topic.
+  - **History:** the first version (same day) had Review's own separate choice, with a Settings →
+    "What Review covers" option to follow Wordlists/Flashcards instead. The user then chose this
+    simpler model, and the setting was removed.
+  - **Migration:** an old "Due reviews from: Current topic only" (`settings.reviewScope:
+    'current'`) starts on By topic (the `review-by-topic` migration). Migration steps get the
+    store as a second argument so they can set prefs.
+  - `planReview` and `dueTomorrow` filter to the scope's decks (`reviewScopeDeckIds()`). The Home
+    card adds the scope's name after the counts, e.g. "3 due · 2 new · Food & Drink". Putting the
+    scope first, on its own line, was tried and reverted at the user's request.
+- **Tested in Chromium:**
+  - Scopes: All of Basics gave 340 words in 19 topics, and a group worked the same way.
+  - Review: a Food & Drink session held exactly its words, and Everything / By topic behaved as
+    above.
+  - The choices survived a reload, and the migration from `reviewScope: 'current'` worked.
+
 ## Test mode
+
+**Random order puts new words first** (2026-10-07, the user's request: newly added Review words
+should come up first). In random order, `buildQueue` moves cards never answered in this direction
+(`dueAt === 0`) to the front. They stay shuffled among themselves, and the rest follow in their
+usual order (due first with Smart order, then box-weighted). List order and Learn mode are
+unchanged.
 
 1. The front shows the question; three answer pills sit below the card.
 2. Two distractors come from the same deck, chosen deterministically (`buildLearnTrial`): an
@@ -566,11 +694,11 @@ is learned once.
 - **Unlock rule:** `u` is set when th-en is graded Hard or better at least about a day after its
   previous review (`gradeItem`).
 
-**FSRS.** Uses FSRS-5 with the default `FSRS_W` parameters (`scheduleItem`; pure, so the grade
-buttons can preview it).
+**FSRS.** Uses FSRS-5 with the default `FSRS_W` parameters (`scheduleItem`, which is pure; the
+grade buttons used to preview each interval with it, until 2026-10-07).
 - **Two update rules:** a review on the same study day (`dayKey`, 4 am rollover) as the last one
   uses the same-day stability rule; later reviews use the forgetting curve.
-- **Again:** due in 10 minutes and requeued in-session.
+- **Again:** due in `settings.waitAgainMin` minutes (default 10), and requeued in-session.
 - **Otherwise:** due in `round(interval(S, retention))` days, at least 1.
 - **Desired retention** is a setting (default 0.9). 95% roughly halves every interval.
 
@@ -594,6 +722,18 @@ success, so even a new word rated Hard every time went 3 → 5 → 7 → 10 → 
   | Hard | 3 → 5 → 7 → 10 → 13 days | 1 → 2 → 3 → 4 → 5 days |
   | Good | 3 → 11 → 35 → 101 days | 1 → 3 → 9 → 25 → 64 days |
 
+- **The waits are settings** (Settings → Review, 2026-10-07): Again (minutes), and Hard and Easy
+  first waits (days). The defaults are 10 min, 1 day and 3 days.
+  - **The user's choice:** the first waits, then growth, rather than fixed waits every time,
+    which would bring known words back forever.
+  - **How it works:** a new item rated Hard or Easy (FSRS Good) starts at the stability whose
+    interval is that many days (`days / fsrsInterval(1, retention)`), so the first wait is exact
+    at any retention. FSRS grows it from there, and Hard keeps its 1.2× cap. A correct
+    multiple-choice answer (Flashcards Test) counts as Hard, so it uses the Hard first wait.
+  - **A word missed first,** then got right the same day, keeps FSRS's own small stability, so
+    it's back the next day.
+  - **Checked:** with 5 / 2 / 4, new words got 5 min, 2 days and 4 days, and a known word (last
+    gap 6 days) rated Easy got 21 days.
 - **Carried-over Leitner progress** still holds the generous converted S, so an old box-3 word
   shows Hard 8d. The user was advised to use Settings → Reset (now "Reset all progress"), since old progress
   doesn't need keeping.
@@ -606,18 +746,20 @@ instead.
   emoji, beside 📖 and 📋.
 - **Built with `lineIcon(cls, viewBox, d, label)`,** which the → arrows use too.
 
-**What Review covers** (Settings → Daily review → "Adding to Review", `settings.newSource`; since
-2026-10-06):
-- **"Only words I add" (`manual`, the default)** covers only the words in `store.reviewWords`
-  (`{ cardKey: addedAt }`).
+**What Review holds: only the words you add** (`store.reviewWords`, `{ cardKey: addedAt }`).
+This was the "Only words I add" choice of Settings → Review → "Adding to Review"
+(`settings.newSource`, 2026-10-06). Since 2026-10-07 it's the only behaviour, at the user's
+request; the setting and "New cards per day" (`newPerDay`) are gone.
+- **The words:**
   - **Review starts empty,** with a note on how to add words; the Home card says "Nothing added
     yet". The `review-manual` settings migration moved both automatic values to manual, and the
     user chose to start from an empty set.
   - **Ways to add:**
-    - **"Add to Review…" on a deck Test round's score screen** opens a dialog of that round's
-      words (`state.lastRound`).
-      - Nothing is ticked at first; All / Missed only / None pick quickly.
-      - Words already in Review are shown ticked and greyed out.
+    - **Removed: "Add to Review…" on a deck Test round's score screen.** It opened a dialog of
+      that round's words, none ticked, with All / Missed only / None. On 2026-10-07 it was first
+      hidden while Review words only was on. When that became the only behaviour it could never
+      show, since every word in a round is already in Review, so it was deleted along with
+      `#add-modal`.
     - **Wordlists: a Review button on each row, left of the speaker** (`.row-review`): the Review
       icon, or a green ✓ once added. Tapping it toggles and shows a toast naming the word.
       - It's a plain icon with no border, so it reads as less important than the speaker.
@@ -625,72 +767,110 @@ instead.
         2026-10-06 it was replaced by press-and-hold (click with a mouse) opening a strip under
         the row. That was removed the same day, at the user's request, in favour of this button.
       - "Add all to Review" is in the toolbar.
-    - **🔁 in the top-right of a Flashcards card,** in Learn and Test mode (`updateReviewToggle`;
-      Test mode since 2026-10-06). It becomes ✓ once added,
-      and tapping it again takes the word out.
+    - **Not on Flashcards cards** (removed 2026-10-07, at the user's request: Review is changed
+      in Wordlists, not while studying). There used to be a 🔁 / ✓ button in a card's top-right.
+      Since then, on Flashcards the Review set only changes through Settings (Reset).
   - **There's no daily limit:** every added word that hasn't started yet shows up as new straight
     away, in the order added.
   - **Words already answered** in deck Test mode keep that progress: a miss is due within about
     10 minutes, a correct answer the next day (multiple choice counts as Hard; see "Changes to
     plain FSRS").
-  - **The ✕ in the breakdown** takes words out of the set (`setInReview(keys, false)`) and keeps
-    their progress, so re-adding carries on.
-- **Automatic (`started` / `current`)** is the earlier behaviour: every word with progress, new cards
-  drawn from started decks or the current deck within "New cards per day", and ✕ deleting
-  progress (`reviewExcluded` / `reviewExcludedCards`).
-- **`reviewFilter()`** is the single test both modes go through, used by `planReview` and
-  `dueTomorrow`.
+  - **Taking words out** is done in Wordlists (`setInReview(keys, false)`). It keeps their
+    progress, so re-adding carries on. The Review page's ✕ buttons went with its category table
+    (2026-10-07).
+- **Automatic adding** (`started` / `current`, the earlier behaviour) was removed on 2026-10-07.
+  It covered every word with progress, with new words drawn from started topics or the current one
+  within "New cards per day".
+  - Removed with it: `newCardDecks`, `NEW_PER_DECK`'s round-robin, and the per-topic and per-word
+    exclusions (`reviewExcluded` / `reviewExcludedCards`). Reset all progress deletes any saved
+    exclusions.
+- **`reviewFilter()`** (the words, and `has(key)`) is used by `planReview` and `dueTomorrow`.
 
 **Today** (`planReview` → `startReview`):
-- **The Review screen** shows only the due and new counts and Start. Under the card, a table
-  breaks the session down by category, biggest first (`renderTodayBreakdown`; a due item counts
-  under the deck it's reviewed in).
-  - **Each row's ✕** (`removeCategoryFromReview`, no confirm: the user didn't want one) does two
-    things:
-    - It deletes the items reviewed under that category, so they aren't due today or later.
-      Words shared with a kept category stay with that one.
-    - It adds the category's decks to `store.reviewExcluded`. New cards don't come from those
-      decks, and due items skip them when choosing their deck.
-  - **Why:** for decks the user was only trying out.
-  - **Single words:** tapping a category row expands its words for today, one category at a time
-    (`state.breakdownOpen`). Each word shows its Thai, translit, English and whether it's due or
-    new, plus a ✕.
-    - `removeWordFromReview` deletes the word's items (both directions) and adds its `cardKey` to
-      `store.reviewExcludedCards`, which `planReview` skips for due and new.
-    - Answering the word in deck Test mode brings it back.
-  - **Bringing a deck back:** answering one of its cards in deck Test mode removes it from the
-    list (`saveDeckRating`). "Current deck only" ignores removals, and Reset all progress clears
-    them. A Tomorrow / next 7 days
-  forecast line was removed on 2026-10-05 as noise.
+- **The Review screen** shows the topic button (what Review covers), the due and new counts, and
+  Start.
+  - Until 2026-10-07 a table under the card broke the session down by category, with ✕ buttons
+    to remove a category or single words. The user removed it to make the page simpler, now that
+    Review can be narrowed with Everything / By topic.
+  - A Tomorrow / next 7 days forecast line was removed on 2026-10-05 as noise.
+- **By topic with none of its words in Review** (manual adding): instead of "0 due · 0 new", the
+  same message box as Flashcards' (`#today-topic-empty`, sharing `.review-only-empty`), centred
+  in the space under the topic button (`.today-topic-none` on the stage).
+  - The third line differs: "Or switch to Everything with the button above to review all your
+    words". It's the only way out there.
+  - For a group or category, the heading names it.
 - **Due items** are everything due by the end of the study day (days roll over at 4 am), weakest
   (lowest retrievability) first, capped by `maxReviews` minus today's `rv`.
-  - They come from all decks.
-  - Settings → "Due reviews from: Current deck only" (`reviewScope`) limits them, and "due tomorrow",
-    to items whose card is in the current deck (`reviewDeckId`).
-  - The heading says which: "55 due across all decks / in Time of Day", "14 new mixed from your
-    decks / from Time of Day". The user was confused when "New cards from: Current deck only"
-    still showed due words from other decks.
-- **New items** come from the `newPerDay` budget minus today's `n`:
-  - English → Thai items for unlocked words take up to half the budget, oldest unlock first.
-  - Then new words in deck order, round-robin across the current deck plus every "started" deck
-    (any deck with a word that has an item). That's at most `NEW_PER_DECK` (5) per deck per day
-    first, then relaxed to fill the budget.
-  - Settings → Daily review → "New cards from" can limit this to the current deck. Today then
-    shows the deck button (the `today-deck` class on `.stage`), in the same place as on Flashcards.
-    The same happens with "Due reviews from: Current deck only". It's hidden during a session.
+  - **They come from what Review covers** (see "Scopes" below): Everything by default, or a
+    topic, group or category. `reviewDeckId(…, scopeIds)` skips items with no deck in scope;
+    "due tomorrow" uses the same filter.
+  - **The heading says which,** e.g. "55 due across all topics / in Food & Drink". The user was
+    confused, back when "New cards from: Current deck only" existed, that due words from other
+    decks still showed.
+  - The old "Due reviews from: Current deck only" (`reviewScope`) is gone. The `review-by-topic`
+    migration starts anyone who had it on Review → By topic.
+- **New items have no daily limit:**
+  - First, English → Thai items for unlocked words, oldest unlock first.
+  - Then the words you've added that haven't started, in the order added.
+  - Both are kept to what Review covers.
+  - **Review always shows the topic button,** in the same place as on Flashcards, to pick what
+    Review covers. Since 2026-10-07 that includes during a session, at the user's request.
+    - Changing the choice mid-session ends the session (`leaveReviewSession`; answers are saved
+      as you go) and shows the start screen for the new choice.
+    - Re-picking the same choice carries on.
 - **New items** are spread evenly through the reviews.
 
 **A card in the session:**
-- **Mode:** a new item is multiple choice, with a second MC go only if the first was wrong; after
-  that it's recall (`reviewMode`).
-- **Recall:** the front says "Say it aloud, then tap Show" (setting). Show reveals the answer, and
-  four grade buttons show each grade's next interval.
+- **Same size as the Flashcards card** (2026-10-07, at the user's request), with contents centred.
+  It grows if a revealed answer needs more room.
+  - **Desktop:** 16:9 and up to 900px; `.today` is now 900px, and the start screen keeps 720px.
+  - **Phone:** the Flashcards height, `clamp(240px, 42vh…, 380px)`, and the face's padding.
+  - **Corner pieces:** 🔊 is a `.speak` button (72px desktop, 48px phone, top right), and the
+    New/Again badge matches the "1 / 24" badge.
+  - **Measured equal:** 366×354 on the phone and 900×506 on desktop.
+- **The session header** ("12 left · topic · End review", `#review-top`) lives in the topic bar, hidden
+  outside a session. That puts it level with Flashcards' direction and Learn/Test controls, at the
+  user's request. "End review" was a bare ✕ until 2026-10-07; the user found it unclear.
+  - **Desktop:** it shares the topic button's row.
+  - **Phone:** it's the second row, 37px tall like the controls.
+  - **Result:** both cards start at the same height (165px on the phone, 160px on desktop; it was
+    43px lower on desktop).
+  - **Order** (user's request): the card's topic in the middle, then "12 left" and End review on
+    the right. `.review-top` is a `1fr auto 1fr` grid, so the topic stays centred while it fits.
+    - **Desktop:** during a session (`.review-session` on the stage) the whole bar is that grid,
+      with the header's box `display: contents`. The topic sits at the screen's centre (measured
+      640 of 1280).
+    - **Phone:** the row is 366px and "12 left · End review" takes about 150px, so only a very
+      short topic can be exactly centred. A longer one sits as close to the middle as it can (10px
+      from "12 left"), then shortens with "…".
+  - **Sizes match the other pages** (measured): the topic and "12 left" are the size of
+    Flashcards' Thai → English (16px desktop, 13px phone). The topic is in the main text colour
+    (`--ink`), so it stands out; "12 left" stays muted. End review is a `.ghost` button with a
+    line "exit" icon, the same size, padding and border as Wordlists' Read all and Add all to
+    Review (15px; 32px tall on desktop, 35px on the phone).
+- **Mode: every item is recall,** new ones too (2026-10-07, the user's call: recognition is what
+  Flashcards is for). Until then, a new item started with multiple choice, with a second go if
+  the first was wrong, then switched to recall (`reviewMode`, `renderReviewPills`,
+  `pickReviewPill`, the Continue button). All of that was removed.
+- **Recall:** the front says "Say it aloud, then tap Show" (setting). The hint hides once the
+  answer is showing (2026-10-07). Show reveals the answer and the grade buttons. The buttons
+  showed each grade's next interval until 2026-10-07, when the user found it unnecessary and the
+  waits became settings.
+- **Three grades** (since 2026-10-07, at the user's request): **Again** (FSRS 1), **Hard** (2) and
+  **Easy**, which schedules as FSRS **Good** (3).
+  - It isn't FSRS Easy (4) because that would put a brand-new word about 16 days out (Good: 3
+    days), and the user had already found long gaps too long.
+  - FSRS Easy is no longer offered on Review.
+- **Show Thai script** (Settings → Review, `settings.reviewScript`, on by default; added 2026-10-07).
+  Off: Thai → English cards are audio only. The Thai plays, and an eye button, "Show Thai"
+  (`#review-script`), sits where the script would be. The eye or Show (`showReviewScript`)
+  reveals it. English → Thai is unaffected.
 - **Audio:** th-en plays the Thai on the front. en-th plays nothing until the answer is shown,
   which fixed the old English-first giveaway.
-- **Requeue:** an MC answer always earns a recall go 5–8 cards later, and Again requeues until
-  it's right once (`recordGrade`).
+- **Requeue:** Again brings the item back 5–8 cards later, until it's right once
+  (`recordGrade`).
 - **End screen:** cards reviewed, % right, new count, due tomorrow, and the missed list.
-- **Keys:** Enter/Space show the answer or continue, 1–4 grade, and 1–3 pick an MC answer.
+- **Keys:** Enter/Space show the answer (then Easy, i.e. FSRS Good), and 1–3 grade (Again, Hard, Easy).
 
 **Daily counters** live in `store.daily[dayKey]` (`g` gradings, `ok`, `n` new, `nd` new per deck,
 `rv` due reviews), and only the last 60 days are kept.
@@ -742,15 +922,22 @@ Everything lives in localStorage under `learnthai:v1`:
   review).
 
 The settings modal (gear icon, top right) is searchable through each group's `data-search`
-keywords. Its sections are App, Display, Daily review, Flashcards (was "Deck mode"), Wordlists,
-Audio, Confirmations and Reset. Search doesn't look at section names, so each Flashcards group has
+keywords. Since 2026-10-07 its sections are App, Display, Audio, Wordlists, Flashcards (was "Deck
+mode"), Review (was "Daily review") and Reset, at the user's request.
+- **What moved:** Spelling went from Display to Audio. The Confirmations section's two settings
+  joined Wordlists, beside the buttons they confirm: "Confirm “Add all to Review”" / "Ask before
+  adding every word in the list", and the same for Remove.
+
+Search doesn't look at section names, so each Flashcards group has
 "flashcards" in its `data-search`.
 - **Accordion** (since 2026-10-05): the sections start closed, and opening one closes the others.
 - **Searching** opens every section with a match, and clearing the search closes those again
   (`data-search-opened`).
 
 **Theme** (Display, added 2026-10-06): `theme` is one of `dark` (the default, the original
-look), `dim`, `light`, `sepia`, `night`, or `system`.
+look), `light` or `night`. Dim, Sepia and Match device (`system`) were added at first and removed
+on 2026-10-07 at the user's request. A saved removed value shows as Dark, both in `applyTheme()`
+and in the inline script.
 
 - **Palettes:** each theme is a set of CSS variables in `styles.css`. Dark is plain `:root`; the
   others are `:root[data-theme="…"]`. Every colour in the styles comes from a variable, including
@@ -761,7 +948,6 @@ look), `dim`, `light`, `sepia`, `night`, or `system`.
   dark. It also sets `<meta name="theme-color">` (the iPhone status bar) to the theme's `--bg`. An
   inline script in `index.html`'s `<head>` applies the saved theme before first paint, so a light
   theme never flashes dark on load.
-- **`system`** picks Light or Dark from `prefers-color-scheme` and follows changes live.
 - **Contrast:** text is at least 5:1 against its panel in every theme (checked: ink 10–16:1;
   muted, accent and the rating colours 5–10:1).
 - **Rationale given to the user:**
@@ -810,7 +996,8 @@ centred card on every screen size (mobile.css turns the other modals into full-s
   changes nothing. While the setting is `false`, the call resolves `true` straight away.
 - **To add one:**
   1. Add the setting (default `true`) to `DEFAULT_SETTINGS`.
-  2. Add a checkbox with `data-confirm-setting="<name>"` to Settings → Confirmations.
+  2. Add a checkbox with `data-confirm-setting="<name>"` to Settings, in the section of the page
+     that asks (the Wordlists ones are in Wordlists).
      `renderSettings` and its listener handle every such checkbox, so no `els` entry is needed.
   3. Call `confirmDialog({ …, setting: '<name>' })`.
 - **Uses:**
@@ -853,8 +1040,8 @@ character, which some fonts draw noticeably low.
 - **Centring:** `vertical-align: middle` centres it on lowercase letters; `.caps` centres it on
   capitals, for the "EN→TH" tag in Review's word breakdown. Measured within 0.3px of centre
   everywhere.
-- **Screen readers** read it as "to" (`role="img" aria-label="to"`). The Settings → Confirmations
-  one is `aria-hidden`.
+- **Screen readers** read it as "to" (`role="img" aria-label="to"`). The one in the confirm
+  dialog's "Settings → Wordlists" pointer is `aria-hidden`.
 - **The one exception** is the "Next (→)" tooltip, since a `title` can't hold markup.
 
 ---
@@ -863,14 +1050,23 @@ character, which some fonts draw noticeably low.
 
 Every word and phrase card shows its spelling on the card back. A spell-aloud button (ก with sound
 waves, `spellIcon()`) reads it aloud.
-- **On the card:** bottom centre, between 🔊 and ⟳.
+- **On the card:** bottom left (since 2026-10-07, at the user's request; it was bottom centre).
+  🔊 moved to the top right, ⟳ stays bottom right, and the "1 / 24" badge is top left.
   - It's always on the back.
   - It's on the front only in Thai → English mode, where the front shows the Thai (added
     2026-10-06 at the user's request). In English → Thai mode the front is English, and spelling
     the Thai there would give the answer away.
 - **In Wordlists:** on each row, between the Review button and the speaker.
-- **No spelling for single letters:** Thai Script's letter and symbol cards get none (`isSpellable`).
-- **Two styles** (Settings → Display → Spelling, `settings.spellingStyle`):
+- **Every card has a spelling** (2026-10-07, the user's call: "every word / letter has the icon").
+  `isSpellable` is now simply "`letterSpelling` names something", which is true of all 5,787
+  cards.
+  - **Lone letters, marks and numbers:** a lone letter spells as its name (ก → ก ไก่), a mark on ◌
+    as the mark's name (◌่ → ไม้เอก), and digits as names (555 → 5 ห้า · 5 ห้า · 5 ห้า; digits now
+    show their name, like letters).
+  - **The old rule was a bug:** it needed two or more consonants, meant to skip lone letters. That
+    also skipped 235 one-consonant words, including ค่ะ, ไม่, ได้, ดี, ไป, แม่, น้ำ and นะ.
+  - The school method covers 98.1% of cards; the rest use letter names.
+- **Two styles** (Settings → Audio → Spelling since 2026-10-07, was Display; `settings.spellingStyle`):
   - **School method (`school`):** สะกดคำ. Each syllable is built up: consonant sound +
     vowel name (+ final sound) → syllable, then the tone mark's name and the toned syllable.
     Words of several syllables end with the whole word; a phrase spells word by word and ends with
@@ -904,6 +1100,15 @@ waves, `spellIcon()`) reads it aloud.
     `SPELL_SYLLABLE_PAUSE` (450 ms) between syllables and words. That's all the gap there is,
     because the part recordings are trimmed (below). Before, every part was a 1.87 s clip with
     about 0.4 s of speech, so there was 1.4 s or more of silence after each letter.
+  - **Parts are fetched up front** (`fetchSpellingParts`, 2026-10-07). Pressing the button fetches
+    all of the word's parts at once, in parallel, as blob URLs, and each plays as the one before
+    ends. Before, each part was loaded only when its turn came, by the `<audio>` element through
+    the service worker, so every letter waited on a request.
+    - **Test:** 400 ms of network latency, nothing saved, สวัสดี (6 parts). Old: 8.0–8.3 s, with
+      1.4–1.5 s between letters. New: 6.1–6.3 s, with about 1.0 s between letters; with no
+      latency it takes 5.6 s.
+    - A part that fails to fetch falls back to `speakAndWait`. The blob URLs are revoked when the
+      spelling ends.
   - **Stopping:** while a spelling plays, its buttons get `.playing` (accent colour, pulsing
     waves, `aria-pressed`). Pressing a spell button for the word being spelled stops it. Any
     other audio stops it too, and so does moving to another card, even in English → Thai, where
@@ -911,7 +1116,8 @@ waves, `spellIcon()`) reads it aloud.
 - **Recordings are per part, never per word** (the user's call):
   - `node tools/spelling.mjs --write` lists every distinct spoken step across all cards and both
     styles (letter names like กอ ไก่, sounds, vowel and tone-mark names, syllables, the words of
-    phrases): 4060 parts.
+    phrases): 4060 parts, then 4113 once every card had a spelling. The 53 added were mostly
+    one-consonant syllables, plus the letter names ฃ ขวด, ฅ คน and ฌ เฌอ.
   - `tools/gen_audio.py` records them under `sp`, so a part never clashes with a card's text. For
     example, the vowel step อา isn't the Thai Script card อา, whose recording says สระอา.
   - Recordings are named by what's said, so a part that's also a card word reuses that file.
@@ -1129,6 +1335,39 @@ list (hermitdave/FrequencyWords).
 
 ---
 
+## Thai font (2026-10-07), `fonts/`
+
+The user found Thai "stylised" in Firefox on Linux. The font list ended with "Noto Sans Thai", the
+modern **loopless** style, and Linux browsers picked it. iPhones use Thonburi, which is looped.
+Now a looped face is embedded, as a file in the app rather than from a CDN (the user's wish), so
+it's the same everywhere and works offline.
+
+- **Two fonts, Settings → Display → Thai font** (`settings.thaiFont`): **Looped** (Noto Looped
+  Thai, the default) or **Loopless** (Noto Sans Thai, the modern style, added at the user's
+  request).
+  - Each comes in Regular and Bold, under the SIL Open Font License 1.1 (`fonts/OFL.txt`, which
+    holds both copyright lines and the licence text; Noto has no reserved name).
+  - `data-thai-font="loopless"` on `<html>` switches `--thai-font`, which leads body's
+    `font-family`. It's set by `applyThaiFont()`, and before first paint by the inline script in
+    `index.html`, which also sets the theme. Reset settings goes back to Looped.
+  - Only the looped Regular is preloaded.
+  - Taken from the system's fonts-noto package and cut down with fontTools (`fontTools.subset
+    --unicodes=U+0E00-0E7F,U+25CC --layout-features='*' --no-hinting --flavor=woff2`).
+  - The result is about 10 KB per weight for looped and 8 KB for loopless, against 65–70 KB for
+    the full fonts.
+- **`@font-face` "Learn Thai Looped" and "Learn Thai Loopless"** in `styles.css`: Regular
+  covers weights 100–500 and Bold 600–900. The `unicode-range` covers the Thai block and ◌, so only Thai characters use it and
+  everything else stays in the system font.
+  - It comes first in body's `font-family`, and "Noto Sans Thai" was removed.
+  - `button, input, select, textarea { font-family: inherit }`, because buttons don't inherit by
+    default and Thai shows up in them (Test answers, search boxes).
+- **Loading:** `<link rel="preload" … crossorigin>` for the looped Regular. All four files are in
+  `sw.js`'s SHELL, with the cache bumped to v5.
+- **Checked in Chromium** with `CSS.getPlatformFontsForNode`: card Thai renders in Noto Looped
+  Thai Bold (the embedded file), Test answers and Wordlists in Regular, and English text in the
+  system font. Switching to Loopless gave Noto Sans Thai (the embedded file), applied before first
+  paint after a reload. All four files were in the offline cache.
+
 ## Phone layout (2026-10-03), `mobile.css`
 
 `mobile.css` is loaded with `media="(max-width: 600px)"` after `styles.css`, so desktop is
@@ -1188,6 +1427,24 @@ protocol, using a tiny stdlib WebSocket client because Node 18 has no WebSocket.
 
 ---
 
+- **Card Thai is about 15% larger** (2026-10-07, at the user's request), on Flashcards and Review:
+
+  | Text | Desktop | Phone |
+  |---|---|---|
+  | `.thai` (card front, Review prompt) | `clamp(46px, 8vw, 92px)` | `clamp(36px, 36px + (100vw − 320px) × 0.18, 64px)` |
+  | English → Thai answer (`.english.back-th`) | up to 69px | about 40px |
+  | Test answer buttons (`.thai-pill`) | 32px | 27px |
+
+  - **The phone size rises with screen width:** 36px at 320 (unchanged, since long phrases only
+    just fit there), 49px at 390, 56px at 430.
+  - **`fitCardText()`** shrinks the front's text a step at a time (to 70% at most) while it
+    overflows the fixed-size card: a long phrase on a small screen, or a large Text size.
+    - It runs after `renderCard`, on coming to Flashcards, on resize and Text size changes, and
+      when fonts finish loading (`document.fonts` `loadingdone`). The embedded Thai font can
+      arrive after the first fit, and it's larger than the fallback.
+    - **Checked** against all 5,787 Thai strings: everything fits at full size at 390px and on
+      desktop. On a 375×667 iPhone SE, การเปลี่ยนแปลงสภาพภูมิอากาศ shrinks to 43px.
+
 ## Offline & install (2026-10-04)
 
 The app installs to the home screen and works offline. It needs HTTPS (or `localhost`), so it
@@ -1229,19 +1486,93 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
 - **Offline audio** (Settings → App):
   - Every clip that passes through the worker is cached, and `preloadDeckAudio()` fetches a whole
     deck, so opening a deck saves its audio.
-  - **Spelling parts too** (since 2026-10-06): after the deck's Thai and English clips, it fetches
-    the spelling parts its cards use in the current style, skipping ones already cached. These go
-    only into the worker's audio cache, not the in-memory one, so they never evict the deck's own
-    clips.
-  - **"Download all audio"** fetches the rest with 6 workers and a progress bar, and calls
+  - **Spelling parts too** (since 2026-10-06): the parts a topic's cards use in the current
+    style. These go only into the worker's audio cache, not the in-memory one, so they never evict
+    the topic's own clips. The order is now Thai, parts, English (see the audio queue below).
+  - **One audio queue** (2026-10-07, the user's request: the page's clips should come first).
+    `audioQueue` fetches clips with `AUDIO_JOBS` (6) workers. It starts only once `launched` has
+    resolved.
+    - **Front:** what's on screen. `preloadDeckAudio()` queues a topic, or a Review session's
+      cards: Thai words, then their spelling parts in the current style, then English, via
+      `queuePageAudio()`. Thai and English are also kept in memory (`keep` → `sampleCache`).
+    - **Skipped when already loaded:** in memory for `keep` items; in `offline.have` (when known)
+      for the rest.
+    - **A new page replaces the last page's unfetched items,** unless "Download all" also wants
+      them.
+    - **Back:** "Download all audio" queues every unsaved clip (`queueBulkAudio()`, `bulk` items).
+      So opening a topic mid-download jumps its clips ahead.
+    - **Checked in Chromium:** switching topic during Download all gave the next fetches as the
+      topic's 21 Thai, 6 letters and 20 English, then the bulk resumed.
+  - **"Download all audio"** goes through that queue, with a progress bar, and calls
     `navigator.storage.persist()`.
     - **Resumable:** cached clips are skipped.
-    - **Stop** clears `settings.offlineAudio`.
+    - **Stop** clears `settings.offlineAudio` and drops the queued bulk items
+      (`stopDownloadAll`). A run ends (`finishDownloadAll`) when the queue's last worker finds it
+      empty.
     - **Delete downloaded audio** clears the cache.
-- **Keeping the cache in step** (`syncOfflineAudio()` on every load):
-  - It deletes cached clips that the manifest no longer lists.
+  - **The Settings text always leads with "X of Y clips saved"** (2026-10-07). The user saw a
+    blank section, just the two buttons, after reopening the app.
+    - **Cause:** `renderOffline()` re-read the cache's keys on every render. On an iPhone with
+      thousands of clips that takes seconds, and the startup prune and topic preloads read them
+      too. Until a read finished, the HTML's blank starting state showed.
+    - **Now `offline.have`** (the cached file names) is read once per visit: `readSavedAudio()`,
+      shared by every caller while under way. Downloads, the topic preload and deletes keep it up
+      to date.
+    - **`renderOffline()` is synchronous.** Until this visit's read finishes it shows the last
+      count, kept in `prefs.offlineSaved`, as "…, checking…". The HTML starts as "Checking saved
+      audio…".
+    - **The read happens only when Settings → App is open** (its `toggle` event), or when a sync
+      or download needs it. It never happens at launch.
+    - **"Download all audio"** switches to Stop and "Checking which of the N clips are already
+      saved…" at once.
+    - **The MB figure** (`navigator.storage.estimate()`) fills in when it arrives. It's hidden
+      while downloading, since it isn't refreshed then, and when nothing is saved, since it lags
+      behind a delete.
+    - **Size estimate:** `AVG_CLIP_KB` is 9.8 (156 MB for 16k clips after the spelling parts were
+      trimmed).
+    - **Clips the worker saves during plain playback** count from the next visit's read.
+- **Keeping the cache in step** (`syncOfflineAudio()`, 3 s after launch):
+  - It deletes cached clips that the manifest no longer lists, by file name, in batches of 50.
+  - **Skipped when nothing changed** (2026-10-07). `audioListSignature()` is an FNV-1a hash of the
+    manifest's file list. `prefs.audioPruned` holds the signature last pruned for, and
+    `prefs.audioComplete` the one last fully downloaded for (cleared by Delete). A launch reads
+    the cache only if the list changed, or if a "Download all" is unfinished.
   - If `offlineAudio` is set, it downloads any missing clips, so new cards' audio arrives
     automatically.
+- **Launch** (2026-10-07; the user saw about 4 s of blank screen on iPhone):
+  - **Not reproducible in Chromium.** First paint was about 0.1 s even at CPU ×4. The static
+    HTML already shows the home screen, and nothing in `<head>` blocks.
+  - **Launch work moved off the critical path,** because the iPhone's storage is slow with
+    thousands of cached clips:
+    - The cache key reads moved out of launch: the startup sync is deferred and usually skipped
+      (see above), and the topic preload no longer checks the saved list first.
+    - The audio queue (topic preloads, Download all) waits for `launched`, which resolves 1 s
+      after the load event.
+  - **Result at CPU ×4:** no long tasks (was up to 454 ms), with the home screen ready at about
+    0.22 s.
+  - **Settings → App → Launch time** reports this launch, from the Navigation Timing entry: when
+    the page arrived from the worker's saved copy or the network, the first frame
+    (`window.firstFrameAt`, from a `requestAnimationFrame` in `<head>`), and `app-ready` (a
+    `performance.mark` at the end of `init()`).
+    - Times count from the start of navigation. If they're far below what the user sees, the rest
+      is iOS starting the app's processes, before any of our code runs.
+- **Backup** (Settings → App, 2026-10-07): **Export** and **Load**.
+  - **Export** writes the whole store (settings, prefs, items, daily, reviewWords,
+    settingsMigrations) as `learnthai-backup-YYYY-MM-DD.json`:
+    `{ format: 'learnthai-backup', version: 1, exported, data }`.
+    - On iPhone it uses the share sheet (`navigator.share({ files })`, "Save to Files"), since a
+      download link in a Home Screen app may just preview the file. Elsewhere it's an `<a
+      download>`.
+  - **Load** (a hidden file input) checks the format and that the main parts are objects, then
+    asks before replacing.
+    - The `danger` confirm shows the backup's date and "N words in Review, progress on M", for the
+      backup and for this device.
+    - It replaces the store (no merging: predictable when moving devices) and reloads the app. A
+      `sessionStorage` note shows "Backup loaded" after the reload.
+    - A wrong or unreadable file gets "That file isn't a Learn Thai backup".
+  - **Not included:** downloaded audio (the cache), since it can be downloaded again.
+  - **Tested in Chromium:** export, wipe, load, cancel, a wrong file and a corrupt file. The
+    iPhone share-sheet path hasn't been tried.
 - **Storage on iOS:** since iOS 17, a site's quota is a share of free disk, so 107 MB is fine.
   Safari's 7-day storage wipe doesn't apply to Home Screen apps.
 - **Checked in headless Chromium** against a private server on :8766, which was then killed,

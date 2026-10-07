@@ -33,7 +33,7 @@ for (const c of cards.values()) {
   }
 }
 const pct = (n) => `${((100 * n) / cards.size).toFixed(1)}%`;
-console.log(`${cards.size} Thai words and phrases worth spelling; school method spells ${school} (${pct(school)}), letter names the rest`);
+console.log(`${cards.size} cards with a spelling; school method spells ${school} (${pct(school)}), letter names the rest`);
 console.log(`${parts.size} distinct spoken parts`);
 if (process.argv.includes('--samples')) {
   const extra = process.argv.includes('--random') ? [...cards.keys()].sort(() => Math.random() - 0.5).slice(0, 25) : [];

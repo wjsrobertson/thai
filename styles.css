@@ -27,17 +27,6 @@
   --shadow: 0 10px 30px rgba(0,0,0,.35);
   --fs: 1; /* text scale from Settings → Display → Text size; set by applyTextSize() in app.js */
 }
-/* Dim: a softer dark grey with off-white text: less glare and less "halation" (bright text
-   blooming on black) over long sessions. */
-:root[data-theme="dim"] {
-  --bg: #1d2027; --bg-glow: #252a33; --panel: #252931; --panel-2: #2d323b;
-  --ink: #d6dbe3; --muted: #99a3b1; --accent: #e3b456; --on-accent: #1b1b1b;
-  --accent-soft: rgba(227, 180, 86, .1); --accent-glow: rgba(227, 180, 86, .4);
-  --good: #72cf92; --hard: #e3b84f; --again: #e88a84; --easy: #82b2e6;
-  --danger-line: rgba(232, 138, 132, .35); --danger-soft: rgba(232, 138, 132, .1);
-  --border: #353b46; --border-strong: #4a5262; --hover: rgba(255, 255, 255, .03);
-  --topbar: rgba(29, 32, 39, .78); --backdrop: rgba(0, 0, 0, .5); --shadow: 0 8px 24px rgba(0,0,0,.28);
-}
 /* Light: dark text on an off-white page, which reads most accurately in daylight. */
 :root[data-theme="light"] {
   color-scheme: light;
@@ -48,17 +37,6 @@
   --danger-line: rgba(192, 57, 43, .35); --danger-soft: rgba(192, 57, 43, .07);
   --border: #dedad1; --border-strong: #bdb7aa; --hover: rgba(0, 0, 0, .025);
   --topbar: rgba(245, 244, 240, .85); --backdrop: rgba(20, 20, 20, .35); --shadow: 0 8px 24px rgba(40, 35, 20, .1);
-}
-/* Sepia: warm cream and brown, like an e-reader. */
-:root[data-theme="sepia"] {
-  color-scheme: light;
-  --bg: #f2e9d6; --bg-glow: #faf4e6; --panel: #f9f3e5; --panel-2: #ebe0c8;
-  --ink: #3a2f23; --muted: #74644f; --accent: #94530f; --on-accent: #fffaf0;
-  --accent-soft: rgba(148, 83, 15, .09); --accent-glow: rgba(148, 83, 15, .35);
-  --good: #3d7536; --hard: #8a5a00; --again: #ac3a2c; --easy: #2f5d86;
-  --danger-line: rgba(172, 58, 44, .35); --danger-soft: rgba(172, 58, 44, .07);
-  --border: #dacdb0; --border-strong: #bfae8c; --hover: rgba(80, 60, 30, .04);
-  --topbar: rgba(242, 233, 214, .88); --backdrop: rgba(40, 30, 20, .35); --shadow: 0 8px 24px rgba(80, 60, 30, .14);
 }
 /* Night: very dark and warm, amber text and little blue, for studying in bed. */
 :root[data-theme="night"] {
@@ -73,6 +51,42 @@
 
 * { box-sizing: border-box; }
 
+/* Thai in an embedded face, the same on every device and offline (not from a CDN): Noto Looped
+   Thai (traditional, the default) or Noto Sans Thai (loopless, modern), picked in Settings →
+   Display → Thai font (data-thai-font on <html>). SIL OFL 1.1, fonts/OFL.txt; cut down to the
+   Thai block and ◌. unicode-range limits them to Thai characters; everything else stays in the
+   system font. Before, Linux browsers picked the loopless face, which the user found stylised. */
+@font-face {
+  font-family: "Learn Thai Looped";
+  src: url("fonts/NotoLoopedThai-Regular.woff2") format("woff2");
+  font-weight: 100 500;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F, U+25CC;
+}
+@font-face {
+  font-family: "Learn Thai Looped";
+  src: url("fonts/NotoLoopedThai-Bold.woff2") format("woff2");
+  font-weight: 600 900;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F, U+25CC;
+}
+@font-face {
+  font-family: "Learn Thai Loopless";
+  src: url("fonts/NotoSansThai-Regular.woff2") format("woff2");
+  font-weight: 100 500;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F, U+25CC;
+}
+@font-face {
+  font-family: "Learn Thai Loopless";
+  src: url("fonts/NotoSansThai-Bold.woff2") format("woff2");
+  font-weight: 600 900;
+  font-display: swap;
+  unicode-range: U+0E00-0E7F, U+25CC;
+}
+:root { --thai-font: "Learn Thai Looped"; }
+:root[data-thai-font="loopless"] { --thai-font: "Learn Thai Loopless"; }
+
 html, body {
   margin: 0;
   padding: 0;
@@ -80,9 +94,13 @@ html, body {
      bounce) is the browser's default white. */
   background: radial-gradient(1200px 800px at 50% -10%, var(--bg-glow) 0%, var(--bg) 60%) fixed var(--bg);
   color: var(--ink);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans Thai", sans-serif;
+  font-family: var(--thai-font), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   min-height: 100vh;
 }
+/* Buttons and inputs don't inherit the page font by default, and Thai shows up in some (Test
+   mode's answers, the search boxes). */
+button, input, select, textarea { font-family: inherit; }
+
 /* Never pan sideways into empty space: iOS Safari allows it if anything is even 1px too wide.
    `clip`, not `hidden`, so no scroll container is made and the sticky top bar keeps working.
    Browsers without `clip` (iOS before 16) fall back to `hidden` on html. */
@@ -297,6 +315,31 @@ html.modal-open body {
 .cat-group {
   margin: 4px 0;
 }
+/* A category or group heading: the collapsible header, then "All N" to pick all of it. */
+.cat-head, .sub-head { display: flex; align-items: center; gap: 6px; }
+.cat-head .cat-header, .sub-head .sub-header { flex: 1; min-width: 0; }
+.cat-count, .sub-count { white-space: nowrap; } /* a long name wraps instead */
+.scope-all {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: calc(13px * var(--fs, 1));
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.scope-all:hover { color: var(--accent); border-color: var(--accent); }
+.scope-all.current { color: var(--accent); border-color: var(--accent); background: var(--panel-2); }
+/* Review's dialog: Everything / By topic above the topic list (renderReviewBy). */
+.review-by { padding: 12px 16px 4px; }
+.review-by[hidden], #deck-picker .modal-search[hidden], #deck-picker-tree[hidden] { display: none; }
+.review-by .segmented { display: flex; }
+.review-by .seg-btn { flex: 1; }
+.review-by-help { margin: 8px 2px 4px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
+#deck-picker.review-all .modal-panel { height: auto; align-self: center; padding-bottom: 8px; }
 .cat-header {
   display: flex;
   align-items: center;
@@ -705,15 +748,14 @@ button {
   transform: rotate(180deg);
 }
 
-/* กข on the card back, between 🔊 and ⟳: reads the spelling aloud (speakSpelling). */
+/* ก with sound waves, bottom left of the card: reads the spelling aloud (speakSpelling). */
 .spell-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   position: absolute;
   bottom: 18px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 18px; /* bottom left (was bottom centre until 2026-10-07) */
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -783,6 +825,41 @@ button {
   gap: 12px;
   margin-bottom: 20px;
 }
+/* Flashcards with none of the topic's words in Review: a message in place of the card, centred in
+   the space under the controls. The page fills the screen (body is a column, the stage grows) and
+   on Flashcards the stage is a column too, so the message's auto margins can centre it. */
+body { display: flex; flex-direction: column; }
+.stage { flex: 1 0 auto; width: 100%; }
+.stage[data-view="flashcards"] { display: flex; flex-direction: column; }
+.stage.review-only-none .card-wrap { display: none; }
+/* Bottom padding to match the controls bar's margin above, so the message sits in the middle. */
+.stage.review-only-none[data-view="flashcards"]:not(.round-over) { padding-bottom: 20px; }
+/* The same message on Review (By topic, none of its words in Review), in place of the counts. */
+.stage.today-topic-none[data-view="today"] { display: flex; flex-direction: column; padding-bottom: 20px; }
+.stage.today-topic-none[data-view="today"] .today { display: none; }
+.review-only-empty {
+  margin: auto;
+  max-width: 460px;
+  padding: 24px 28px;
+  text-align: center;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-size: calc(15px * var(--fs, 1));
+  line-height: 1.5;
+}
+.review-only-empty[hidden] { display: none; }
+.review-only-empty p { margin: 0 0 8px; }
+.review-only-empty p:last-child { margin-bottom: 0; }
+.review-only-empty-title { color: var(--hard); font-weight: 600; font-size: calc(17px * var(--fs, 1)); }
+/* The text under the title: about 80% of the title's width (70% of the box), centred, reading from
+   the left. */
+.review-only-empty p:not(.review-only-empty-title) { text-align: left; width: 70%; margin-left: auto; margin-right: auto; }
+/* The Review icon drawn in the text ("using the 🔁 button"), as it looks in Wordlists. */
+.review-only-empty .inline-icon { white-space: nowrap; color: var(--ink); }
+.review-only-empty .inline-icon .review-icon { margin: 0 1px; vertical-align: -0.18em; }
+.review-only-empty-small { margin-top: 14px !important; } /* an alternative, set apart (same size as the line above) */
 .stage[data-view="wordlist"] .pos-badge {
   display: none;
 }
@@ -880,8 +957,8 @@ button {
 .card.flipped .back  { transform: rotateY(360deg); }
 .card.no-anim .face { transition: none; } /* setFlipped(…, { instant: true }) */
 
-.thai {
-  font-size: calc(clamp(40px, 7vw, 80px) * var(--fs, 1));
+.thai { /* the card's Thai, on Flashcards and Review; about 15% larger since 2026-10-07 */
+  font-size: calc(clamp(46px, 8vw, 92px) * var(--fs, 1));
   font-weight: 600;
   line-height: 1.15;
   letter-spacing: .5px;
@@ -903,7 +980,7 @@ button {
   color: var(--ink);
 }
 .english.back-th {
-  font-size: calc(clamp(32px, 5vw, 60px) * var(--fs, 1));
+  font-size: calc(clamp(37px, 5.75vw, 69px) * var(--fs, 1));
   font-weight: 600;
   letter-spacing: .5px;
 }
@@ -943,10 +1020,11 @@ button {
 }
 .spelling[hidden] { display: none; }
 
+/* The card's sound button, top right (moved from bottom left on 2026-10-07). */
 .speak {
   position: absolute;
-  bottom: 18px;
-  left: 18px;
+  top: 18px;
+  right: 18px;
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -994,7 +1072,7 @@ button {
   justify-content: center;
 }
 .learn-pill:hover { border-color: var(--border-strong); background: var(--panel-2); }
-.learn-pill.thai-pill { font-size: calc(28px * var(--fs, 1)); }
+.learn-pill.thai-pill { font-size: calc(32px * var(--fs, 1)); }
 .learn-pill.correct {
   background: var(--good);
   color: var(--bg);
@@ -1057,7 +1135,6 @@ button {
 .stage[data-view="home"] .wordlist-only,
 .stage[data-view="home"] .today-only,
 .stage:not([data-view="home"]) .home-only,
-.stage[data-view="today"]:not(.today-deck) .deck-picker-bar,
 .stage[data-view="today"] .card-wrap,
 .stage[data-view="today"] .flashcards-only,
 .stage[data-view="today"] .wordlist-only,
@@ -1082,28 +1159,15 @@ button {
   color: var(--ink);
   margin-bottom: 12px;
 }
-
-.wordlist-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+/* A topic's `about` paragraph (e.g. the consonant classes' memory scenes). */
+.wordlist-about {
+  margin: -4px 0 16px;
+  color: var(--muted);
+  font-size: calc(16px * var(--fs, 1));
+  line-height: 1.5;
 }
-
-#wordlist-filter {
-  flex: 1;
-  background: var(--panel);
-  color: var(--ink);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 14px;
-  font-size: calc(14px * var(--fs, 1));
-}
-#wordlist-filter::placeholder { color: var(--muted); }
-#wordlist-filter:focus {
-  outline: none;
-  border-color: var(--accent);
-}
+.wordlist-about[hidden] { display: none; }
+.wordlist-about .nowrap { white-space: nowrap; }
 
 .read-aloud {
   white-space: nowrap;
@@ -1157,6 +1221,16 @@ button {
 }
 .wordtable tbody tr:last-child td { border-bottom: 0; }
 .wordtable tbody tr:hover { background: var(--hover); }
+/* Wordlists showing a group or category: a heading row for each topic. */
+.wordtable tbody tr.wl-topic:hover { background: none; }
+.wordtable tr.wl-topic td {
+  padding: 16px 14px 6px;
+  color: var(--accent);
+  font-size: calc(13px * var(--fs, 1));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
 
 .wordtable .col-thai {
   font-size: calc(26px * var(--fs, 1));
@@ -1208,6 +1282,7 @@ button {
 /* ---------- end-of-round score (Test mode) ---------- */
 .stage.round-over .card-wrap { display: none; }
 .round-summary {
+  width: 100%; /* in the Flashcards column, auto margins would otherwise shrink it to its content */
   max-width: 640px;
   margin: 0 auto;
   padding: 28px 24px;
@@ -1291,8 +1366,11 @@ button {
 .round-again:hover { filter: brightness(1.08); }
 
 /* ---------- Today: daily review ---------- */
-.today { max-width: 720px; margin: 0 auto; }
+/* Review: a session's card is as wide as Flashcards' (900px); the start screen stays narrower. */
+.today { max-width: 900px; margin: 0 auto; }
 .today-home {
+  max-width: 720px;
+  margin: 0 auto;
   padding: 32px 24px;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -1317,145 +1395,83 @@ button {
 .today-from { font-size: calc(16px * var(--fs, 1)); }
 .today-num { font-size: calc(44px * var(--fs, 1)); font-weight: 700; color: var(--accent); vertical-align: -4px; }
 .today-start { font-size: 19px; padding: 14px 40px; }
-.today-breakdown {
-  width: 100%;
-  max-width: 460px;
-  margin: 18px auto 0;
-  border-collapse: collapse;
-  font-size: calc(15px * var(--fs, 1));
-  color: var(--muted);
-}
-.today-breakdown[hidden] { display: none; }
-.today-breakdown th {
-  font-size: calc(12px * var(--fs, 1));
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  text-align: left;
-  padding: 0 6px 6px;
-  border-bottom: 1px solid var(--border);
-}
-.today-breakdown td { padding: 7px 6px; border-bottom: 1px solid var(--border); }
-.today-breakdown td:first-child { color: var(--ink); }
-.today-breakdown th:not(:first-child),
-.today-breakdown td:not(:first-child) { text-align: right; width: 4em; font-variant-numeric: tabular-nums; }
-.today-breakdown th:last-child,
-.today-breakdown td:last-child { width: 2.6em; padding-right: 0; }
-.bd-row { cursor: pointer; }
-.bd-row:hover td { background: var(--panel-2); }
-.bd-cat::before {
-  content: "▸";
-  display: inline-block;
-  width: 1.1em;
-  color: var(--muted);
-  font-size: .8em;
-}
-.bd-row.open .bd-cat::before { content: "▾"; }
-.bd-row.open td { border-bottom-color: transparent; }
-.today-breakdown .bd-words td { padding: 0 0 10px; text-align: left; width: auto; }
-.bd-words ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-}
-.bd-words li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 5px 6px 5px 12px;
-  border-bottom: 1px solid var(--border);
-}
-.bd-words li:last-child { border-bottom: 0; }
-.bw-thai { flex: none; font-size: calc(17px * var(--fs, 1)); color: var(--ink); }
-.bw-detail {
-  flex: 1;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: calc(14px * var(--fs, 1));
-}
-.bw-translit { color: var(--accent); font-style: italic; }
-.bw-english { color: var(--ink); }
-.bw-kind { flex: none; font-size: calc(12px * var(--fs, 1)); color: var(--muted); }
-.bd-words .bd-remove { flex: none; width: 24px; height: 24px; font-size: 11px; }
-.bd-remove { grid-column: 2; grid-row: 1 / span 4; }
-.bw-thai { font-size: calc(20px * var(--fs, 1)); color: var(--ink); }
-.bw-translit { font-size: calc(14px * var(--fs, 1)); color: var(--accent); font-style: italic; }
-.bw-english { font-size: calc(14px * var(--fs, 1)); color: var(--ink); }
-.bw-kind { font-size: calc(12px * var(--fs, 1)); color: var(--muted); }
-.bd-remove {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  width: 28px;
-  height: 28px;
-  font-size: 13px;
-  line-height: 1;
-}
-.bd-remove:hover { color: var(--again); border-color: var(--again); }
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
 
 .review { display: flex; flex-direction: column; gap: 14px; }
 .review[hidden] { display: none; }
-.review-top { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-.review-deck { flex: 1; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.review-quit {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 4px 10px;
-  font-size: 16px;
+/* The topic and "12 left": the size of Flashcards' Thai → English (16px; 13px on the phone). */
+.review-top { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 16px; }
+/* In the topic bar during a session: beside the topic button on desktop, like Flashcards' controls. */
+.review-top[hidden] { display: none; }
+.deck-picker-bar .review-top { flex: 1 1 auto; min-width: 0; }
+/* The card's topic in the middle; "12 left" and End review on the right. The side columns are equal
+   (1fr), so the topic is centred while it fits; a long one shifts left beside the right group, then
+   shortens with "…" (overflow: hidden lets its column shrink). */
+.review-top { display: grid; grid-template-columns: 1fr auto 1fr; }
+.review-deck { grid-column: 2; min-width: 0; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--ink); } /* the main text; "12 left" stays muted */
+.review-top-end { grid-column: 3; justify-self: end; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+/* Desktop, in a session: the whole bar is the three columns (topic button | topic | 12 left, End
+   review), so the topic sits in the middle of the screen. (Phone: the header is the bar's second
+   row, styled in mobile.css.) */
+@media (min-width: 601px) {
+  .stage.review-session[data-view="today"] .deck-picker-bar { display: grid; grid-template-columns: 1fr auto 1fr; }
+  .stage.review-session[data-view="today"] .deck-picker-bar .deck-button { justify-self: start; }
+  .stage.review-session[data-view="today"] .review-top { display: contents; }
 }
+/* Ends the session (endReview): a .ghost button with an exit icon, as Wordlists' Read all and Add
+   all to Review (a bare ✕ wasn't clear). */
+.review-quit { flex: none; white-space: nowrap; }
+/* The same size as the Flashcards card (.card: 16:9, 900px at most), its contents centred. It
+   grows if a revealed answer needs more room. */
 .review-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 6px;
-  min-height: 260px;
-  padding: 44px 24px 28px;
+  aspect-ratio: 16 / 9;
+  padding: 32px;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   text-align: center;
 }
+/* New / Again / English → Thai, styled as the Flashcards card's "1 / 24" (.pos-badge). */
 .review-badge {
   position: absolute;
-  top: 12px;
-  left: 14px;
-  padding: 2px 10px;
+  top: 18px;
+  left: 18px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
   border-radius: 999px;
   background: var(--panel-2);
   border: 1px solid var(--border);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 16px;
+  z-index: 3;
 }
-.review-speak {
-  position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+.review-badge[hidden] { display: none; }
+/* Review's sound button is the Flashcards card's (.speak): the same size, in the top-right corner. */
+.review-speak[hidden] { display: none; }
+/* Show Thai script off: in place of the Thai, an eye button that shows it (showReviewScript). */
+.review-prompt[hidden], .review-script[hidden] { display: none; }
+.review-script {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 10px;
+  padding: 10px 18px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
   background: var(--panel-2);
   color: var(--muted);
-  border: 1px solid var(--border);
-  font-size: 20px;
+  font-size: calc(15px * var(--fs, 1));
 }
-.review-speak[hidden] { display: none; }
+.review-script:hover { color: var(--accent); border-color: var(--accent); }
+.eye-icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .review-speak:hover { color: var(--accent); border-color: var(--accent); }
 .review-prompt { margin: 8px 0 4px; overflow-wrap: anywhere; }
 .review-hint { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
@@ -1468,9 +1484,9 @@ button {
 .review-answer[hidden] { display: none; }
 .review-main { margin-bottom: 6px; overflow-wrap: anywhere; }
 .review-answer .note { max-width: none; }
-.review-show, .review-continue { align-self: center; min-width: 200px; }
-.review-show[hidden], .review-continue[hidden] { display: none; }
-.review-grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.review-show { align-self: center; min-width: 200px; }
+.review-show[hidden] { display: none; }
+.review-grades { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .review-grades[hidden] { display: none; }
 .grade {
   display: flex;
@@ -1486,7 +1502,6 @@ button {
   font-weight: 600;
   touch-action: manipulation;
 }
-.grade span { font-size: 12px; font-weight: 400; color: var(--muted); }
 .grade-again { border-color: var(--again); }
 .grade-hard { border-color: var(--hard); }
 .grade-good { border-color: var(--good); }
@@ -1519,6 +1534,10 @@ button {
 .home-card-desc { font-size: calc(16px * var(--fs, 1)); color: var(--muted); line-height: 1.4; }
 .home-card-stat { margin-top: auto; font-size: calc(15px * var(--fs, 1)); color: var(--accent); }
 .home-card-stat:empty { display: none; }
+/* Wordlists' card: how words get into Flashcards and Review, with the Review icon drawn inline. */
+.home-card-note { font-size: calc(16px * var(--fs, 1)); color: var(--muted); line-height: 1.4; } /* as .home-card-desc */
+.home-card-note .inline-icon { white-space: nowrap; color: var(--ink); }
+.home-card-note .review-icon { margin: 0 1px; vertical-align: -0.18em; }
 
 /* "A new version is ready" (sw.js found an update) */
 .update-bar {
@@ -1553,27 +1572,6 @@ button {
 .today-counts[hidden] { display: none; }
 .today-empty { margin: 0; font-size: calc(17px * var(--fs, 1)); color: var(--muted); line-height: 1.5; }
 .today-empty[hidden] { display: none; }
-
-.review-toggle {
-  position: absolute;
-  top: 18px;
-  right: 18px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: var(--panel-2);
-  color: var(--muted);
-  border: 1px solid var(--border);
-  font-size: 22px;
-  line-height: 1;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.review-toggle[hidden] { display: none; }
-.review-toggle:hover { color: var(--accent); border-color: var(--accent); }
-.review-toggle.added { color: var(--good); border-color: var(--good); }
 
 /* Wordlists: the Review button sits left of the speaker. A plain icon with no border, so it reads
    as less important than the speaker; the speakers stay lined up on the right. */
@@ -1614,24 +1612,6 @@ button {
 }
 
 .round-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; align-items: center; }
-.round-add { padding: 12px 18px; font-size: 16px; }
-.round-add[hidden] { display: none; }
-
-#add-modal .modal-panel { max-width: 560px; }
-.add-quick { display: flex; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--border); }
-.add-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-}
-.add-row input { width: 20px; height: 20px; flex: none; accent-color: var(--accent); }
-.add-row:has(input:disabled) { opacity: .6; cursor: default; }
-.bw-kind.missed { color: var(--again); }
-.add-foot { padding: 12px 16px; border-top: 1px solid var(--border); text-align: center; }
-.add-foot .round-again:disabled { opacity: .45; cursor: default; }
 
 /* ---------- confirm dialog (confirmDialog) ---------- */
 /* A small centred card on every screen size (mobile.css turns other modals into full-screen sheets). */
@@ -1677,7 +1657,6 @@ button {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
-.review-toggle .review-icon { width: 20px; height: 20px; margin: 0; display: block; }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .confirm-actions button { padding: 10px 20px; font-size: 16px; }
 .confirm-actions .round-again.danger { background: var(--again); color: var(--on-accent); } /* can't be undone */

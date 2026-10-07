@@ -645,6 +645,7 @@
       "group": "Consonants",
       "name": "Mid Class",
       "description": "The 9 mid-class consonants. A letter's class decides its syllable's tone. The back gives the letter's name (the letter + a word starting with it), which the audio says.",
+      "about": "Remember them: on the ground, a dancing child (ด เด็ก) wearing a headdress (ฎ ชฎา) pokes a fish (ป ปลา) in a basin (อ อ่าง) with an ox goad (ฏ ปฏัก), feeds a leaf (บ ใบไม้) to a turtle (ต เต่า), and puts a chicken (ก ไก่) on a plate (จ จาน).",
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "จ", "translit": "jɔɔ jaan", "english": "j — plate", "note": "Mid class. Final: -t. Unaspirated, a soft j.", "say": "จอ จาน" },
@@ -663,6 +664,7 @@
       "group": "Consonants",
       "name": "High Class",
       "description": "The 11 high-class consonants, all aspirated or hissing sounds. An unmarked live syllable with one is rising.",
+      "about": "Remember them: up on a mountain-top pavilion (ศ ศาลา), a hermit (ษ ฤๅษี) sits on a stone pedestal (ฐ ฐาน), clashing tiny cymbals (ฉ ฉิ่ง). A tiger (ส เสือ) sneaks up and noses into his sack (ถ ถุง) for eggs (ข ไข่) and a bottle (ฃ ขวด), but a bee (ผ ผึ้ง) buzzes out of a wooden chest (ห หีบ), so the hermit slams the lid (ฝ ฝา) shut on it.",
       "cards": [
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
         { "thai": "ฃ", "translit": "khɔ̌ɔ khùat", "english": "kh — bottle (obsolete)", "note": "High class. No longer used (ข replaced it), but still recited in the alphabet.", "say": "ขอ ขวด" },
@@ -683,6 +685,7 @@
       "group": "Consonants",
       "name": "Low Class — Paired",
       "description": "14 low-class consonants that share a sound with a high-class letter (ค and ข, ท and ถ, พ and ผ…). Having both lets Thai spell every tone.",
+      "about": "Remember them: down on the riverbank, a soldier (ท ทหาร) waves a flag (ธ ธง) as a Chinese junk (ภ สำเภา) docks. Queen Montho (ฑ มณโฑ) steps off carrying an offering tray (พ พาน), where an owl (ฮ นกฮูก) bares its teeth (ฟ ฟัน). An old man (ฒ ผู้เฒ่า) rings a bell (ฆ ระฆัง) and a crowd of people (ฅ คน) cheers, while an elephant (ช ช้าง) and a buffalo (ค ควาย), chained (ซ โซ่) to a tree (ฌ เฌอ), stamp along.",
       "cards": [
         { "thai": "ค", "translit": "khɔɔ khwaai", "english": "kh — buffalo", "note": "Low class. Final: -k. The everyday low-class kh: คน khon (person).", "say": "คอ ควาย" },
         { "thai": "ฅ", "translit": "khɔɔ khon", "english": "kh — person (obsolete)", "note": "Low class. No longer used (ค replaced it), but still recited in the alphabet.", "say": "คอ คน" },
@@ -706,6 +709,7 @@
       "group": "Consonants",
       "name": "Low Class — Sonorants",
       "description": "The 10 low-class consonants with no high-class twin. A silent ห in front makes them high class.",
+      "about": "Remember them: out on the river, a giant (ย ยักษ์) rows a boat (ร เรือ) with a woman (ญ หญิง) and a novice monk (ณ เณร) aboard. A monkey (ล ลิง) snatches the woman's ring (ว แหวน) and leaps onto a horse (ม ม้า) on the bank, while a snake (ง งู) chases a mouse (น หนู) up the string of a star-shaped kite (ฬ จุฬา).",
       "cards": [
         { "thai": "ง", "translit": "ngɔɔ nguu", "english": "ng — snake", "note": "Low class. Final: -ng. Also starts syllables, which English never does: งู nguu.", "say": "งอ งู" },
         { "thai": "ญ", "translit": "yɔɔ yǐng", "english": "y — woman", "note": "Low class. Final: -n. หญิง yǐng (woman), บุญ bun (merit).", "say": "ยอ หญิง" },
