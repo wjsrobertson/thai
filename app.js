@@ -2528,18 +2528,29 @@ function cacheSample(url, blobUrl) {
 // queue: its Thai words, the parts their spellings are read with (in the current style), then the
 // English. The Thai and English are kept in memory too, for instant playback. A newer call
 // replaces the last one's clips that haven't been fetched yet.
+// At most PRELOAD_MAX words: a group or category can hold hundreds, and fetching all of them at
+// launch kept a phone busy for seconds (2026-10-07: 1,216 clips for a 593-word category). Then
+// it's the words likely to play soon: those in Review (what Flashcards shows), then the top of the
+// Topics page. Anything else is fetched when it's played.
+const PRELOAD_MAX = 80;
 function preloadDeckAudio(deck) {
   if (getSettings().audioSource !== 'samples') {
     queuePageAudio([]);
     return;
   }
+  let cards = deck.cards;
+  if (cards.length > PRELOAD_MAX) {
+    const words = reviewWords();
+    const inReview = cards.filter((c) => cardKey(c) in words);
+    cards = [...new Set([...inReview, ...cards])].slice(0, PRELOAD_MAX);
+  }
   const entries = [];
   const add = (url, keep) => url && entries.push({ url, keep });
-  for (const c of deck.cards) add(sampleUrl(c.thai, 'th'), true);
-  for (const c of deck.cards) {
+  for (const c of cards) add(sampleUrl(c.thai, 'th'), true);
+  for (const c of cards) {
     for (const step of (spellingFor(c) || []).flat()) if (!step.gap && !step.word) add(sampleUrl(step.say, 'sp'), false);
   }
-  for (const c of deck.cards) add(sampleUrl(c.english, 'en'), true);
+  for (const c of cards) add(sampleUrl(c.english, 'en'), true);
   queuePageAudio(entries);
 }
 

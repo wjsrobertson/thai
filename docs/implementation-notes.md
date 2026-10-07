@@ -1503,6 +1503,12 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
       So opening a topic mid-download jumps its clips ahead.
     - **Checked in Chromium:** switching topic during Download all gave the next fetches as the
       topic's 21 Thai, 6 letters and 20 English, then the bulk resumed.
+    - **Capped at `PRELOAD_MAX` (80) words** (2026-10-07). The user reported a 10s load on the
+      phone, and a whole-category scope preloaded every word: 1,216 clip fetches at launch for a
+      593-word category, busy for about 4s even on a desktop.
+      - **Big scopes** now take their Review words (what Flashcards shows) first, then the top of
+        the Topics page; the rest play on demand.
+      - **Result:** 203 fetches, done by 1.5s at CPU ×4. A single topic is unaffected.
   - **"Download all audio"** goes through that queue, with a progress bar, and calls
     `navigator.storage.persist()`.
     - **Resumable:** cached clips are skipped.
