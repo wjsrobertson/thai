@@ -643,7 +643,10 @@ a category alone, on every page).
     `resolveScope('all')`). The topic button and the Home card say "Everything".
   - **Two card lists:** `state.listCards` is the topic's words, for the Topics page.
     `state.cards` is Flashcards' list: the same array By topic, every card on Everything
-    (`loadCards`). The queue then keeps the Review words, and Test answers draw on all cards.
+    (`loadCards`). The queue then keeps the Review words.
+  - **Test's wrong answers** on Everything come from your Review words (`distractorPool()`;
+    the user's call). All 6,000-odd cards made them easy to rule out. With fewer than 3 words in
+    Review, they come from all cards. By topic, they still come from the topic's words.
   - **`state.flashScopeId`** is what Flashcards was built for: the topic's id or `all`.
     `selectDeck` rebuilds Flashcards (`reloadFlashcards`) only if that changes. So picking a
     topic on the Topics page leaves an Everything round where it was.

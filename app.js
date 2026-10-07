@@ -1855,6 +1855,15 @@ function makeRng(seed) {
 //  - the order of the three pills
 // Result is stable per (card.key, deck.id, seen-count).
 // On odd `seen` counts, flip the side so each card is shown both ways.
+// Where Test's wrong answers come from: the topic's words, or on Everything your Review words. All
+// 6,000-odd cards made them easy to rule out (the user's call, 2026-10-07). With fewer than 3
+// words in Review, all cards.
+function distractorPool() {
+  if (!flashcardsByAll()) return state.cards;
+  const pool = reviewOnlyCards();
+  return pool.length >= 3 ? pool : state.cards;
+}
+
 function buildLearnTrial(card, deckCards, seenOverride) {
   const seen = seenOverride != null ? seenOverride : (card.seen || 0);
   const seed = hashStr(`${state.flashScopeId}::${card.key}::${seen}::${state.direction}`);
@@ -1901,7 +1910,7 @@ function renderLearnPills() {
 
   // If we've already answered this card in this session, reproduce that exact trial.
   const prior = state.learnAnswers.get(c.key);
-  const trial = buildLearnTrial(c, state.cards, prior?.seedSeen);
+  const trial = buildLearnTrial(c, distractorPool(), prior?.seedSeen);
 
   // renderCard already set the front face based on state.direction.
   for (const opt of trial.options) {
@@ -1957,7 +1966,7 @@ function handleLearnPick(btn, isCorrect) {
       if (p !== btn) p.classList.add('dimmed');
     }
     // Mark the correct pill green.
-    const trial = buildLearnTrial(c, state.cards);
+    const trial = buildLearnTrial(c, distractorPool());
     const correctText = trial.side === 'th' ? c.thai : c.english;
     for (const p of els.learnPills.querySelectorAll('.learn-pill')) {
       if (p.textContent === correctText) {
