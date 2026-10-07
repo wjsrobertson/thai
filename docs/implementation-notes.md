@@ -799,6 +799,11 @@ request; the setting and "New cards per day" (`newPerDay`) are gone.
   - The third line differs: "Or switch to Everything with the button above to review all your
     words". It's the only way out there.
   - For a group or category, the heading names it.
+  - **Nothing in Review at all** (2026-10-07): the same box, titled "No words in Review yet" on
+    Everything. It replaced a plain "Review is empty. Add words from the Topics page." line, which
+    the user pointed out didn't match the other messages or mention the 🔁 button.
+    - **The "switch to Everything" line is hidden** whenever Review is empty, since Everything
+      would be empty too (`#today-topic-empty-hint`).
 - **Due items** are everything due by the end of the study day (days roll over at 4 am), weakest
   (lowest retrievability) first, capped by `maxReviews` minus today's `rv`.
   - **They come from what Review covers** (see "Scopes" below): Everything by default, or a
@@ -1504,7 +1509,9 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
         (ready at 0.3 s).
       - The launch sync deletes a clip no card uses, and Delete empties the store.
       - Headless Chromium never showed the slow launch, so the real check is the iPhone.
-- **Offline audio** (Settings → App):
+- **Offline audio** (Settings → Audio, the last setting; it was under App until 2026-10-07, when
+  the user asked to move it). The count is read when the section holding it opens, found with
+  `closest('details')`, so moving it needed no code change.
   - Every clip that passes through the worker is cached, and `preloadDeckAudio()` fetches a whole
     deck, so opening a deck saves its audio.
   - **Spelling parts too** (since 2026-10-06): the parts a topic's cards use in the current
@@ -1548,7 +1555,7 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
     - **`renderOffline()` is synchronous.** Until this visit's read finishes it shows the last
       count, kept in `prefs.offlineSaved`, as "…, checking…". The HTML starts as "Checking saved
       audio…".
-    - **The read happens only when Settings → App is open** (its `toggle` event), or when a sync
+    - **The read happens only when its Settings section is open** (its `toggle` event), or when a sync
       or download needs it. It never happens at launch.
     - **"Download all audio"** switches to Stop and "Checking which of the N clips are already
       saved…" at once.

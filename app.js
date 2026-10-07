@@ -18,6 +18,7 @@ const els = {
   reviewOnlyEmpty: document.getElementById('review-only-empty'),
   todayTopicEmpty: document.getElementById('today-topic-empty'),
   todayTopicEmptyTitle: document.getElementById('today-topic-empty-title'),
+  todayTopicEmptyHint: document.getElementById('today-topic-empty-hint'),
   reviewOnlyEmptyTitle: document.querySelector('#review-only-empty .review-only-empty-title'),
   card: document.getElementById('card'),
   thai: document.getElementById('card-thai'),
@@ -62,8 +63,6 @@ const els = {
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   todayDueFrom: document.getElementById('today-due-from'),
   todayNewFrom: document.getElementById('today-new-from'),
-  todayCounts: document.getElementById('today-counts'),
-  todayEmpty: document.getElementById('today-empty'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
   confirmTitle: document.getElementById('confirm-title'),
@@ -1439,7 +1438,7 @@ function bindSettings() {
     installPrompt = null;
     renderInstall();
   });
-  // Opening Settings → App reads the saved clips for the count (renderOffline).
+  // Opening Settings → Audio reads the saved clips for the count (renderOffline).
   els.offlineHelp.closest('details').addEventListener('toggle', (e) => {
     if (e.target.open) renderOffline();
   });
@@ -2154,14 +2153,19 @@ function dueTomorrow(now = Date.now()) {
 function renderToday() {
   if (!state.cardIndex.size) return; // decks not loaded yet
   const r = state.review;
-  // By topic with none of its words added: the same message as Flashcards', instead of 0 / 0.
+  // Nothing added (on Everything), or none of the topic's words (By topic): the same message as
+  // Flashcards', instead of 0 / 0. "Switch to Everything" only when that would show something.
   const scope = reviewScope();
   const words = reviewWords();
-  const topicEmpty = !r && scope.kind !== 'all' && ![...scope.deckOf.keys()].some((key) => key in words);
+  const none = Object.keys(words).length === 0;
+  const all = scope.kind === 'all';
+  const topicEmpty = !r && (none || (!all && ![...scope.deckOf.keys()].some((key) => key in words)));
   els.todayTopicEmpty.hidden = !topicEmpty;
   els.stage.classList.toggle('today-topic-none', topicEmpty);
   if (topicEmpty) {
-    els.todayTopicEmptyTitle.textContent = scope.kind === 'topic' ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+    els.todayTopicEmptyTitle.textContent = all ? 'No words in Review yet'
+      : scope.kind === 'topic' ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+    els.todayTopicEmptyHint.hidden = none;
   }
   els.todayHome.hidden = !!r;
   els.review.hidden = !r || r.finished;
@@ -2175,11 +2179,7 @@ function renderToday() {
   els.todayDueFrom.textContent = scope.kind === 'all' ? 'across all topics' : `in ${scope.name}`;
   els.todayNew.textContent = plan.news.length;
   els.todayNewFrom.textContent = `you've added${where}`;
-  // Nothing added yet: say how to add words instead of 0 / 0.
-  const empty = Object.keys(words).length === 0;
-  els.todayEmpty.hidden = !empty;
-  els.todayCounts.hidden = empty;
-  els.todayStart.hidden = empty || plan.queue.length === 0;
+  els.todayStart.hidden = plan.queue.length === 0;
 }
 
 // The landing page: a card per view. Decks and Wordlist show the current deck, Review today's counts.
@@ -3082,8 +3082,8 @@ function bindEvents() {
 
 // ---------- install & offline ----------
 // sw.js caches the app files, and saves each audio clip as it's fetched (audio-store.js,
-// IndexedDB). Here: the Settings → App section, "Download all audio", and keeping the saved clips
-// in step with the manifest.
+// IndexedDB). Here: Settings → App (install, launch time), Settings → Audio → Offline audio
+// ("Download all audio"), and keeping the saved clips in step with the manifest.
 
 const PUBLIC_URL = 'https://wjsrobertson.github.io/thai/';
 const AVG_CLIP_KB = 9.8;               // for the size estimate; 156 MB / 16k clips on 2026-10-07
@@ -3115,7 +3115,7 @@ function launchTimingText() {
 }
 
 // Offline audio. `have` is the saved clips' file names (ClipStore.keys()). They're read only when
-// needed (Settings → App open, a sync after the clip list changed, "Download all audio") and then
+// needed (Settings → Audio open, a sync after the clip list changed, "Download all audio") and then
 // kept up to date as clips are saved and deleted here; `reading` is that read while it's under way.
 // (That mattered more when the clips were in Cache Storage, where reading the names took seconds on
 // an iPhone.) done/total/failed count a "Download all audio" run.
@@ -3196,7 +3196,7 @@ function rememberSavedCount() {
 
 const mb = (bytes) => Math.round(bytes / 1e6).toLocaleString();
 
-// Settings → App → Offline audio. Draws at once from what's known, so it's never blank: "X of Y
+// Settings → Audio → Offline audio. Draws at once from what's known, so it's never blank: "X of Y
 // clips saved" leads in every state. Until this visit's read finishes, X is the last count,
 // marked "checking".
 function renderOffline() {

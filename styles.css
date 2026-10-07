@@ -851,7 +851,8 @@ body { display: flex; flex-direction: column; }
 }
 .review-only-empty[hidden] { display: none; }
 .review-only-empty p { margin: 0 0 8px; }
-.review-only-empty p:last-child { margin-bottom: 0; }
+.review-only-empty p:last-child,
+.review-only-empty p:has(+ p[hidden]:last-child) { margin-bottom: 0; } /* Review's hint can be hidden */
 .review-only-empty-title { color: var(--hard); font-weight: 600; font-size: calc(17px * var(--fs, 1)); }
 /* The text under the title: about 80% of the title's width (70% of the box), centred, reading from
    the left. */
@@ -1570,8 +1571,6 @@ body { display: flex; flex-direction: column; }
 
 /* ---------- adding words to Review by hand ---------- */
 .today-counts[hidden] { display: none; }
-.today-empty { margin: 0; font-size: calc(17px * var(--fs, 1)); color: var(--muted); line-height: 1.5; }
-.today-empty[hidden] { display: none; }
 
 /* Wordlists: the Review button sits left of the speaker. A plain icon with no border, so it reads
    as less important than the speaker; the speakers stay lined up on the right. */

@@ -181,7 +181,7 @@
     <div class="review-only-empty today-only" id="today-topic-empty" role="status" hidden>
       <p class="review-only-empty-title" id="today-topic-empty-title">None of this topic's words are in Review yet</p>
       <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
-      <p class="review-only-empty-small">Or switch to Everything with the button above to review all your words</p>
+      <p class="review-only-empty-small" id="today-topic-empty-hint">Or switch to Everything with the button above to review all your words</p>
     </div>
     <section class="today today-only" id="today-section">
       <div class="today-home" id="today-home">
@@ -190,7 +190,6 @@
           <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
         </div>
         <button type="button" class="round-again today-start" id="today-start">Start review</button>
-        <p class="today-empty" id="today-empty" hidden>Review is empty. Add words from the Topics page.</p>
       </div>
 
       <div class="review" id="review" hidden>
@@ -254,17 +253,6 @@
             <span class="setting-label">Launch time</span>
             <span class="setting-help" id="launch-help"></span>
           </label>
-        </div>
-        <div class="setting-group" data-search="offline download audio save storage cache wifi">
-          <label class="setting-row">
-            <span class="setting-label">Offline audio</span>
-            <span class="setting-help" id="offline-help">Checking saved audio…</span>
-          </label>
-          <progress id="offline-progress" max="1" value="0" hidden></progress>
-          <div class="setting-actions" id="offline-actions">
-            <button type="button" id="offline-download" class="ghost">Download all audio</button>
-            <button type="button" id="offline-delete" class="ghost danger-btn">Delete downloaded audio</button>
-          </div>
         </div>
         <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
           <label class="setting-row">
@@ -375,6 +363,17 @@
             </select>
             <span class="setting-help">How the spelling on card backs, and the spell-aloud buttons on cards and on the Topics page, spell a word. Letter names: ข้าว = ข ไข่ · ไม้โท · สระอา · ว แหวน. School method: ขอ – อา – วอ – ขาว – ไม้โท – ข้าว. The few words the school method can't be worked out for use letter names.</span>
           </label>
+        </div>
+        <div class="setting-group" data-search="offline download audio save storage cache wifi">
+          <label class="setting-row">
+            <span class="setting-label">Offline audio</span>
+            <span class="setting-help" id="offline-help">Checking saved audio…</span>
+          </label>
+          <progress id="offline-progress" max="1" value="0" hidden></progress>
+          <div class="setting-actions" id="offline-actions">
+            <button type="button" id="offline-download" class="ghost">Download all audio</button>
+            <button type="button" id="offline-delete" class="ghost danger-btn">Delete downloaded audio</button>
+          </div>
         </div>
       </details>
 
