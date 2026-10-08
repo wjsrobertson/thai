@@ -15,17 +15,18 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 }
 
 /* ---------- top bar ---------- */
-/* Learn Thai | Topics Flashcards Review | ⚙ is tight on a phone, and iOS's font is a little
-   wider than others, so keep ~30px spare (measured in Chromium) at 375px and up. */
+/* Learn Thai | Topics Flashcards | ⚙ on a phone. iOS's font is a little wider than others, so keep
+   ~30px spare (measured in Chromium) at 375px and up. The tabs went from 13px to 15px on
+   2026-10-08 (the user's request), with room since Review stopped being a third tab. */
 .topbar { padding: 10px 12px; gap: 4px; }
 .topbar h1 { font-size: 16px; white-space: nowrap; letter-spacing: 0; }
 .tabs { gap: 2px; }
-.tab { padding: 6px 7px; }
-@media (max-width: 380px) { .tab { padding: 6px 5px; } } /* iPhone SE/mini */
+.tab { padding: 6px 10px; font-size: 15px; }
+@media (max-width: 380px) { .tab { padding: 6px 8px; } } /* iPhone SE/mini */
 @media (max-width: 340px) { /* the original 320px iPhone SE: everything a notch smaller */
   .topbar { padding: 10px 8px; }
   .topbar h1 { font-size: 14px; }
-  .tab { padding: 6px 4px; font-size: 12px; }
+  .tab { padding: 6px 6px; font-size: 14px; }
   .tab-icon { padding: 6px 6px; }
 }
 .tab-icon { padding: 6px 8px; }
@@ -147,7 +148,6 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .wordtable .col-translit { min-width: 0; }
 .wordtable .col-thai { font-size: calc(24px * var(--fs, 1)); }
 .wordtable .col-translit { font-size: calc(16px * var(--fs, 1)); }
-.wordtable .row-speak { padding: 8px 12px; font-size: 14px; }
 .wordtable tbody tr.now-playing { box-shadow: inset 3px 0 0 var(--accent); }
 .wordtable tbody tr.now-playing td:first-child { border-left: 0; padding-left: 0; }
 .wordtable thead tr { background: var(--panel-2); border-bottom: 1px solid var(--border); }

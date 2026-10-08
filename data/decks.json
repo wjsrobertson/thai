@@ -1290,7 +1290,7 @@
       "group": "Tone Pairs",
       "name": "Tone Pairs: Five Tones & Common Words",
       "description": "Words that differ only in tone, starting with a full set of five: คา ข่า ค่า ค้า ขา.",
-      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "For a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "คา", "translit": "khaa", "english": "stuck (in something)", "note": "Mid tone. Compare ข่า (low) galangal, ค่า (falling) value, ค้า (high) to trade, ขา (rising) leg.", "partners": ["ข่า::galangal", "ค่า::value", "ค้า::to trade", "ขา::leg"] },
         { "thai": "ข่า", "translit": "khàa", "english": "galangal", "note": "Low tone. Compare คา (mid) stuck, ค่า (falling) value, ค้า (high) to trade, ขา (rising) leg.", "partners": ["คา::stuck (in something)", "ค่า::value", "ค้า::to trade", "ขา::leg"] },
@@ -1318,7 +1318,7 @@
       "group": "Tone Pairs",
       "name": "Tone Pairs: Body, Family & Animals",
       "description": "Tigers, shirts and mats; aunts and forests; necks and joints; knees and hills.",
-      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "For a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "เสือ", "translit": "sʉ̌a", "english": "tiger", "note": "Rising tone. Compare เสื้อ (falling) shirt, เสื่อ (low) mat.", "partners": ["เสื้อ::shirt / top", "เสื่อ::mat (to sit on)"] },
         { "thai": "เสื้อ", "translit": "sʉ̂a", "english": "shirt / top", "note": "Falling tone. Compare เสือ (rising) tiger, เสื่อ (low) mat.", "partners": ["เสือ::tiger", "เสื่อ::mat (to sit on)"] },
@@ -1346,7 +1346,7 @@
       "group": "Tone Pairs",
       "name": "Tone Pairs: Everyday Words",
       "description": "Easy to mix up in daily life: five and looking for, beautiful and unlucky, buying and honest, slow and tea.",
-      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "For a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "หา", "translit": "hǎa", "english": "to look for", "note": "Rising tone. Compare ห้า (falling) five, ฮา (mid) hilarious.", "partners": ["ห้า::5 — five", "ฮา::hilarious"] },
         { "thai": "ห้า", "translit": "hâa", "english": "5 — five", "note": "Falling tone. Compare หา (rising) to look for, ฮา (mid) hilarious.", "partners": ["หา::to look for", "ฮา::hilarious"] },
@@ -1373,7 +1373,7 @@
       "group": "Tone Pairs",
       "name": "Tone Pairs: Numbers, Directions & Particles",
       "description": "Colour and four, nine and old, left and late, and the female ค่ะ and คะ.",
-      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "For a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "สี", "translit": "sǐi", "english": "colour", "note": "Rising tone. Compare สี่ (low) four, ซี้ (high) best mate.", "partners": ["สี่::4 — four", "ซี้::best mate / close friend"] },
         { "thai": "สี่", "translit": "sìi", "english": "4 — four", "note": "Low tone. Compare สี (rising) colour, ซี้ (high) best mate.", "partners": ["สี::colour", "ซี้::best mate / close friend"] },
@@ -1401,7 +1401,7 @@
       "group": "Tone Pairs",
       "name": "Tone Pairs: Body, Home & Nature",
       "description": "Tails and malls, shoulders and chasing, teeth and dreams, doctors and pots, wind and falling over.",
-      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "For a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "หาง", "translit": "hǎang", "english": "tail", "note": "Rising tone. Compare ห่าง (low) far apart, ห้าง (falling) mall.", "partners": ["ห่าง::far apart / distant", "ห้าง::mall / shopping centre"] },
         { "thai": "ห่าง", "translit": "hàang", "english": "far apart / distant", "note": "Low tone. Compare หาง (rising) tail, ห้าง (falling) mall.", "partners": ["หาง::tail", "ห้าง::mall / shopping centre"] },
@@ -1429,7 +1429,7 @@
       "group": "Tone Pairs",
       "name": "Tone Pairs: Buying, Selling & More",
       "description": "Selling and camps, broken and the rich boss, wrapping and dorms, turtles and stoves, little and a bit.",
-      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "For a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "ขาย", "translit": "khǎai", "english": "to sell", "note": "Rising tone. Compare คาย (mid) to spit out, ค่าย (falling) camp.", "partners": ["คาย::to spit out", "ค่าย::camp"] },
         { "thai": "คาย", "translit": "khaai", "english": "to spit out", "note": "Mid tone. Compare ขาย (rising) to sell, ค่าย (falling) camp.", "partners": ["ขาย::to sell", "ค่าย::camp"] },
@@ -1454,7 +1454,7 @@
       "group": "Sound Pairs",
       "name": "Sound Pairs: g and kh, j and ch",
       "description": "ก (g) and จ (j) have no puff of air; ข/ค (kh) and ช/ฉ (ch) have one.",
-      "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "ไก่", "translit": "gài", "english": "chicken", "note": "g, no puff. Compare ไข่ (kh) egg.", "partners": ["ไข่::egg"] },
         { "thai": "ไข่", "translit": "khài", "english": "egg", "note": "kh, a puff of air. Compare ไก่ (g) chicken.", "partners": ["ไก่::chicken"] },
@@ -1478,7 +1478,7 @@
       "group": "Sound Pairs",
       "name": "Sound Pairs: p and ph, t and th",
       "description": "ป (p) and ต (t) have no puff of air; พ/ผ (ph) and ท/ถ (th) have one. Duck or spicy, close or wrong depend on it.",
-      "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "ปา", "translit": "paa", "english": "to throw", "note": "p, no puff. Compare พา (ph) to take someone along.", "partners": ["พา::to take (someone) / lead"] },
         { "thai": "พา", "translit": "phaa", "english": "to take (someone) / lead", "note": "ph, a puff of air. Compare ปา (p) to throw.", "partners": ["ปา::to throw"] },
@@ -1504,7 +1504,7 @@
       "group": "Sound Pairs",
       "name": "Sound Pairs: b and p, d and t",
       "description": "Real b and d against ป and ต, which English ears hear as b and d.",
-      "about": "ป and ต have no puff of air, so to English ears they sound like b and d. But บ and ด are true b and d, so crazy and aunt, good and hit are different words. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a pure listening test, use Recall with Show Thai script turned off in Settings.",
+      "about": "ป and ต have no puff of air, so to English ears they sound like b and d. But บ and ด are true b and d, so crazy and aunt, good and hit are different words. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a listening drill, switch Flashcards to Listen → English.",
       "cards": [
         { "thai": "บ้า", "translit": "bâa", "english": "crazy / mad", "note": "b. Compare ป้า (p) aunt. Calling your aunt crazy is the classic slip.", "partners": ["ป้า::aunt (older than your parent)"] },
         { "thai": "ป้า", "translit": "pâa", "english": "aunt (older than your parent)", "note": "p. Compare บ้า (b) crazy.", "partners": ["บ้า::crazy / mad"] },

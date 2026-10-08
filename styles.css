@@ -150,8 +150,8 @@ html, body { overscroll-behavior: none; }
   color: var(--muted);
   border: 0;
   border-radius: 7px;
-  padding: 6px 14px;
-  font-size: 13px;
+  padding: 7px 16px;
+  font-size: 16px; /* 13px until 2026-10-08 (the user's request) */
 }
 .tab[aria-selected="true"] {
   background: var(--panel-2);
@@ -207,6 +207,7 @@ html, body { overscroll-behavior: none; }
   padding: 10px 18px;
   font-size: 15px;
   max-width: 480px;
+  min-width: 0; /* a long topic name ends in "…" (its label) rather than pushing the button wide */
 }
 .deck-button:hover {
   border-color: var(--accent);
@@ -525,7 +526,8 @@ html.modal-open body {
 .word-hit-english, .word-hit-topic { grid-column: 1 / -1; }
 .word-hit-english { font-size: calc(15px * var(--fs, 1)); }
 .word-hit-topic { color: var(--muted); font-size: calc(13px * var(--fs, 1)); margin-top: 2px; }
-.word-hit .row-review {
+.word-hit .row-review,
+.word-hit .row-speak {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -543,16 +545,7 @@ html.modal-open body {
 .word-hit .row-review .review-icon { width: 18px; height: 18px; margin: 0; }
 .word-hit .row-review:hover { color: var(--accent); background: var(--panel); }
 .word-hit .row-review.added { color: var(--good); }
-.word-hit .row-speak {
-  flex: none;
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 14px;
-}
-.word-hit .row-speak:hover { color: var(--accent); border-color: var(--accent); }
+.word-hit .row-speak:hover { color: var(--accent); background: var(--panel); }
 .word-hits-more { margin: 8px 12px 12px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
 /* The word a search result opened (showWordInTopic). */
 .wordtable tbody tr.search-hit { background: var(--accent-soft); transition: background .6s; }
@@ -899,6 +892,15 @@ button {
   gap: 12px;
   margin-bottom: 20px;
 }
+/* Three directions since Listen (2026-10-08): the switches keep their labels on one line, and the
+   topic button gives way (its name ends in "…"); below 1000px the row wraps instead. The phone's
+   layout is mobile.css's. */
+@media (min-width: 601px) {
+  .deck-picker-bar .deck-button { flex: 0 1 auto; }
+  .deck-picker-bar .segmented { flex: none; }
+  .deck-picker-bar .seg-btn { white-space: nowrap; }
+}
+@media (max-width: 1000px) { .deck-picker-bar { flex-wrap: wrap; } }
 /* Flashcards with none of the topic's words in Review: a message in place of the card, centred in
    the space under the controls. The page fills the screen (body is a column, the stage grows) and
    on Flashcards the stage is a column too, so the message's auto margins can centre it. */
@@ -1350,19 +1352,6 @@ body { display: flex; flex-direction: column; }
 .wordtable .col-box.high { color: var(--good); }
 .wordtable .col-box.mid  { color: var(--hard); }
 
-.wordtable .row-speak {
-  background: transparent;
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 10px;
-  font-size: 14px;
-}
-.wordtable .row-speak:hover {
-  color: var(--accent);
-  border-color: var(--accent);
-}
-
 .wordtable .empty {
   text-align: center;
   color: var(--muted);
@@ -1393,23 +1382,36 @@ body { display: flex; flex-direction: column; }
    over. Its sound and spelling buttons are the Flashcards card's (.speak, .spell-btn). */
 .review-card { cursor: pointer; }
 .review-speak[hidden] { display: none; }
-/* Show Thai script off: in place of the Thai, an eye button that shows it (showReviewScript). */
-.review-prompt[hidden], .review-script[hidden] { display: none; }
-.review-script {
+.review-speak:hover { color: var(--accent); border-color: var(--accent); }
+/* Listen → English (listenButton): the front is the word's waveform, which lights up as it plays
+   and plays it again on a tap. The corner 🔊 and spell-aloud buttons stay, as on Thai → English. */
+.listen-wave {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin: 18px 0 10px;
-  padding: 10px 18px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--panel-2);
-  color: var(--muted);
-  font-size: calc(15px * var(--fs, 1));
+  justify-content: center;
+  gap: 4px;
+  height: 112px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  cursor: pointer;
 }
-.review-script:hover { color: var(--accent); border-color: var(--accent); }
-.eye-icon { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.review-speak:hover { color: var(--accent); border-color: var(--accent); }
+.listen-wave i {
+  display: block;
+  width: 5px;
+  height: calc(6px + var(--h, .2) * 96px);
+  border-radius: 3px;
+  background: var(--muted);
+  opacity: .7;
+  transition: height .3s ease, background-color .08s, opacity .08s;
+}
+.listen-wave:hover i { opacity: .9; }
+.listen-wave i.on { background: var(--accent); opacity: 1; }
+@media (max-width: 600px) {
+  .listen-wave { gap: 3px; height: 96px; }
+  .listen-wave i { width: 4px; height: calc(5px + var(--h, .2) * 82px); }
+}
 .review-prompt { margin: 8px 0 4px; overflow-wrap: anywhere; }
 /* The ⟳ in the card's corner, yellow until the card's been turned (it replaced the Show button on
    2026-10-08); then grey, as on Learn. */
@@ -1528,12 +1530,14 @@ body { display: flex; flex-direction: column; }
 
 /* ---------- adding words to Review by hand ---------- */
 
-/* Wordlists: the Review button sits left of the speaker. A plain icon with no border, so it reads
-   as less important than the speaker; the speakers stay lined up on the right. */
+/* Topics rows: add to Flashcards, spell aloud and play, as plain icons in round buttons that only
+   show on hover. The speaker had a rounded outline too until 2026-10-08 (the user's request: the
+   small icons match; the card's big speaker keeps its circle). The speakers stay lined up on the
+   right. */
 .wordtable td.col-audio { text-align: right; white-space: nowrap; }
-.wordtable .row-speak { vertical-align: middle; }
 .wordtable .row-review,
-.wordtable .row-spell {
+.wordtable .row-spell,
+.wordtable .row-speak {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1555,6 +1559,9 @@ body { display: flex; flex-direction: column; }
 /* กข: read the spelling aloud (between the Review button and the speaker). */
 .wordtable .row-spell { width: auto; min-width: 34px; padding: 0 6px; font-size: 17px; }
 .wordtable .row-spell:hover { color: var(--accent); background: var(--panel-2); }
+.wordtable .row-speak { margin-right: 0; }
+.wordtable .row-speak:hover { color: var(--accent); background: var(--panel-2); }
+.wordtable .row-speak .speaker-icon, .word-hit .row-speak .speaker-icon { width: 20px; height: 20px; }
 .wordlist-add-all[hidden] { display: none; }
 .wordlist-add-all.all-in { display: inline-grid; justify-items: center; color: var(--good); border-color: var(--good); }
 .wordlist-add-all.all-in > span { grid-area: 1 / 1; }
@@ -1599,6 +1606,28 @@ body { display: flex; flex-direction: column; }
   stroke-linejoin: round;
 }
 .arrow-icon.caps { vertical-align: -0.09em; }
+/* The play-sound icon (speakerIcon, and inline in index.html): a line icon in the text colour,
+   sized by the button's font-size as the 🔊 emoji it replaced was. */
+.speaker-icon {
+  flex: none;
+  width: 1.1em;
+  height: 1.1em;
+  vertical-align: middle;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.read-aloud .speaker-icon { margin-right: 0.4em; vertical-align: -0.2em; }
+/* A word being said (markSpeakers): its speaker buttons light up and the two waves pulse, inner then
+   outer, like the spell button's. */
+.speak.playing { color: var(--accent); border-color: var(--accent); }
+.row-speak.playing { color: var(--accent); }
+.playing .speaker-icon .wave { animation: speakerWave .9s ease-in-out infinite; }
+.playing .speaker-icon .wave2 { animation-delay: .2s; }
+@keyframes speakerWave { 50% { opacity: .15; } }
+@media (prefers-reduced-motion: reduce) { .playing .speaker-icon .wave { animation: none; } }
 /* The "add to Review" icon (reviewIcon): Home's 🔁 as a line icon in the text colour. */
 .review-icon {
   width: 1.05em;

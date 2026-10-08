@@ -1157,6 +1157,109 @@ Thai → English only.
 - **Checked in Chromium:** 20px on a 390px phone and 32px on desktop, the same as the English.
   Nothing overflowed, even on a card with a long note.
 
+## Speaker icon (2026-10-08)
+
+The 🔊 emoji came in each device's own colours (blue on some), while every other icon is a line in
+the text colour. The user asked for it to match. It's now `speakerIcon()` (via `lineIcon`, class
+`.speaker-icon`), and the same SVG is inline in index.html. It appears on:
+- the card corners (Flashcards and Recall, front and back);
+- the Topics list rows and search results;
+- Read all, including after Stop;
+- the Listen direction's phone label.
+
+It's sized in `em` from the button's font size, as the emoji was.
+
+**It animates while its word plays** (also at the user's request). The two sound waves are separate
+paths (`.wave1`, `.wave2`) that pulse in turn, and the button takes the accent colour, like the
+spell button's waves.
+- **How it tracks the word:** `speakAndWait` records the Thai being said in `speakingText`, with a
+  sequence number so only the latest call clears it. `markSpeakers()` lights every speaker for that
+  word:
+  - the Flashcards card's corners when it's the current card's word;
+  - Recall's when it's the Recall card's;
+  - Topics rows and search results by their `data-say`.
+  
+  So it lights for a tap, a card appearing, a turn to the script, and Read all as it reaches each
+  row (not during the English).
+- **Re-rendered rows** start lit if their word is still playing.
+- **It stops when the voice stops,** not at the end of the file (the user saw it stay lit about a
+  second after สวัสดีครับ). Every card clip ends in about a second of silence (edge-tts padding;
+  the files are about 1.9 s, the voice about 0.7–0.9 s).
+  - `waveformOf` gives each clip a `tail`: the last sample above 1% of its peak, plus
+    `TAIL_MARGIN` (0.12 s). Every clip that plays is decoded for this, once, then cached in
+    `waveInfo`.
+  - From the tail, `tickPlayback` sets `speechOver`. The speakers rest (`sayingNow`) and the
+    waveform goes dark.
+  - The audio still runs to its end, so Read all's pacing is unchanged. A press on the speaker in
+    that silent second plays the word again.
+  - Measured on Greetings, from press to dark: 0.9–1.0 s, against about 1.9 s before. The first
+    word after loading takes about 0.3 s longer to start.
+- **Reduced motion** turns the pulse off.
+
+**Pressing a lit speaker stops it** (the user's request, matching the spell button). `speakerPress`
+backs the card corners, Recall, Topics rows and search results. If the button's word is playing
+(it's lit), the press stops the audio. During Read all it stops the reading (`stopReadAloud`).
+Otherwise it plays the word. The Listen waveform still replays on a tap.
+
+**The small speaker lost its outline** (the user's request). On Topics rows and search results it
+had a rounded border, while the add-to-Flashcards and spell icons beside it don't. Now all three
+are plain icons in the same 34 px round button. On hover each turns the accent colour and gets a
+faint round background. The card's big corner speaker keeps its circle.
+
+## Listen → English, a third direction (2026-10-08)
+
+The user asked for a listening option done cleanly. Listening is a third direction next to Thai →
+English and English → Thai: `state.direction = 'listen'`, saved in prefs like the others. On the
+phone the row reads TH→EN | EN→TH | 🔊→EN. It works the same in all three modes:
+
+- **The card:** the front is the word's **waveform** (`listenButton`, `.listen-wave`; the user
+  asked for it in place of a big 🔊).
+  - **Drawing it:** `waveformOf(url)` fetches the clip, from the in-memory blob if there is one,
+    and decodes it with an `OfflineAudioContext`. That needs no user gesture, so it works before
+    the first tap on iOS. It trims the silence edge-tts pads every clip with (a threshold of 4%
+    of the peak). The result is 30 bars of RMS loudness, scaled ^0.7, plus where the speech starts
+    and ends in seconds. Each clip is cached in `waveforms`.
+  - **Before it's ready:** until the clip is decoded, or if a word has no recording, the bars
+    show a soft generic arch (`WAVE_PLACEHOLDER`). Heights ease into the real shape.
+  - **Playback:** `playSample` records `playingUrl`. While the clip plays, `tickWaves` (an rAF
+    loop started by the audio's `playing` event) lights the bars up to where the voice has got
+    to, using `currentTime` against the trimmed start and end. The bars stay lit through the
+    clip's trailing silence and go dark when it ends.
+  - **Taps:** a tap on the waveform plays the word again and never flips the card. The word also
+    plays by itself when the card appears, like Thai → English.
+  - **The shape is a hint:** it shows the word's length and syllable rhythm (three humps for
+    ไม่เผ็ดเลย), but not its tone.
+  - **The back** is Thai → English's: the Thai, transliteration, English, note and spelling.
+  - The front keeps Thai → English's corner buttons: 🔊 top right and spell-it-aloud bottom
+    left. At first the corner 🔊 was hidden as a second play button; the user asked for both.
+- **Recognition** offers English answers, as Thai → English does. On Tone Pairs and Sound Pairs
+  the partners are the wrong answers, which makes a real ear test. It never offers a word that
+  sounds the same (`audible()` in `buildLearnTrial`: the same transliteration, ignoring spaces
+  and hyphens). So ย่า isn't asked against หญ้า, or ไม่ against ไหม้. A test of all 146 pair
+  cards found 0.
+- **Recall** shows the waveform on the front too. The old setting's "Show Thai" eye button
+  (`#review-script`, `showReviewScript`) was there at first, then removed at the user's request:
+  Browse and Recognition have no such peek, and spell-it-aloud is the hint. A card turned back to
+  its front still shows the waveform, as on Browse.
+- **Turning a card to its Thai script says the word** (the user's request, `thaiScriptSide`). That
+  means Thai → English's front, and English → Thai's and Listen → English's back. It applies on
+  Flashcards (⟳ or a tap, `flipCard`) and on Recall (the reveal, `revealAnswer`, then
+  `turnReviewCard`). Before this only English → Thai's reveal spoke. A test of every direction ×
+  Browse/Recall found one play per turn to the script and none otherwise.
+  - **Bug found on the way:** `els.flipButtons` was `.flip-btn` everywhere, which included
+    Recall's ⟳ (`.flip-btn.review-flip`). So every Recall turn also flipped the hidden Flashcards
+    card, and in English → Thai it said the word twice. It's now `#card .flip-btn`.
+- **Progress:** Listening has its own items (`key##listen`). Reading a word and catching it by
+  ear are different skills, so Recall brings back the ones you miss by ear.
+- **What went:** Settings → Recall → Show Thai script (`reviewScript`) and its settings group.
+  The pair topics' tip now says "switch Flashcards to Listen → English".
+- **Layout:**
+  - On desktop the switches keep their labels on one line (they wrapped to two with three
+    directions). The topic button gives way, its name ending in "…", and below 1000 px the row
+    wraps.
+  - Fixed at the same time: on the phone a long topic name pushed the topic button past the
+    screen edge. `.deck-button { min-width: 0 }` makes it end in "…".
+
 ## Test mode
 
 **Recognition (Test mode's new name) is a continuous stream (2026-10-08, the user's request).**
@@ -1444,10 +1547,8 @@ request; the setting and "New cards per day" (`newPerDay`) are gone.
   - It isn't FSRS Easy (4) because that would put a brand-new word about 16 days out (Good: 3
     days), and the user had already found long gaps too long.
   - FSRS Easy is no longer offered on Review.
-- **Show Thai script** (Settings → Review, `settings.reviewScript`, on by default; added 2026-10-07).
-  Off: Thai → English cards are audio only. The Thai plays, and an eye button, "Show Thai"
-  (`#review-script`), sits where the script would be. The eye or Show (`showReviewScript`)
-  reveals it. English → Thai is unaffected.
+- **Show Thai script** (Settings → Review, `settings.reviewScript`; added 2026-10-07, removed
+  2026-10-08). Off made Thai → English cards audio only. Listen → English (below) replaced it.
 - **Audio:** th-en plays the Thai on the front. en-th plays nothing until the answer is shown,
   which fixed the old English-first giveaway.
 - **Requeue:** Again brings the item back 5–8 cards later, until it's right once
@@ -1995,6 +2096,12 @@ it's the same everywhere and works offline.
 
 `mobile.css` is loaded with `media="(max-width: 600px)"` after `styles.css`, so desktop is
 untouched. It fixes what made the app cramped on iPhone:
+
+- **Top tabs larger** (2026-10-08, the user's request). Topics | Flashcards were 13px everywhere
+  (12px at ≤340px). They're now 16px on desktop, 15px on phones and 14px at ≤340px, with a little
+  more padding. There's room since Review stopped being a third tab. The top bar's spare width,
+  measured in Chromium, is 49px at 320, 55 at 360, 70 at 375 and 77 at 390. That's still above
+  the ~30px kept for iOS's wider font from 375px up.
 
 - **Sideways overflow:** the controls bar didn't wrap, so the page was 502px wide on a 390px
   screen. Now the deck button gets its own row and the two toggles share the next.

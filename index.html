@@ -115,6 +115,7 @@
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
         <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true"><span class="dir-long">Thai</span><span class="dir-short">TH</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
         <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false"><span class="dir-long">English</span><span class="dir-short">EN</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">Thai</span><span class="dir-short">TH</span></button>
+        <button type="button" role="radio" class="seg-btn" data-direction="listen" aria-checked="false" title="Hear the Thai, without the script"><span class="dir-long">Listen</span><span class="dir-short" aria-label="Listen"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
       </div>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card order">
         <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Browse</button> <!-- "Learn" until 2026-10-08 (a placeholder name) -->
@@ -123,7 +124,7 @@
       </div>
       <div class="wordlist-only wordlist-bar-right">
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Flashcards</button>
-        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list">🔊 Read all</button>
+        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
       </div>
     </div>
     <section class="card-wrap">
@@ -133,7 +134,7 @@
           <div class="face front">
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
-              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="spell-btn" id="card-spell-front" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
@@ -142,7 +143,7 @@
           <div class="face back">
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
-              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="spell-btn" id="card-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
@@ -176,17 +177,16 @@
         <div class="card review-card" id="review-card" role="button" tabindex="0" aria-label="Recall card. Tap or press Enter to turn it over.">
           <div class="face front">
             <div class="face-overlay">
-              <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
               <!-- In place of Show (2026-10-08): yellow until the card's been turned, then Learn's grey ⟳. -->
               <button type="button" class="flip-btn review-flip reveal" id="review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
               <button type="button" class="spell-btn review-spell" id="review-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
             <div class="review-prompt thai" id="review-prompt"></div>
-            <button type="button" class="review-script" id="review-script" title="Show the Thai script" hidden><svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" /><circle cx="12" cy="12" r="3" /></svg><span>Show Thai</span></button>
           </div>
           <div class="face back">
             <div class="face-overlay">
-              <button type="button" class="speak review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="speak review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
               <button type="button" class="flip-btn review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
               <button type="button" class="spell-btn review-spell" id="review-spell-back" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
@@ -394,17 +394,6 @@
           </label>
         </div>
 
-        <div class="setting-group" data-search="flashcards recall review show thai script text letters audio only listen hide sound">
-          <p class="setting-subhead">Recall</p>
-          <label class="setting-row">
-            <span class="setting-label">Show Thai script</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-review-script" />
-              <span>Show the Thai on Recall cards before you turn them over</span>
-            </label>
-            <span class="setting-help">Off: Thai<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>English cards are audio only until you turn them over, so you recall from the sound alone. The eye on the card shows the script early.</span>
-          </label>
-        </div>
 
         <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits again very hard easy delay interval minutes days gap first new word come back">
           <p class="setting-subhead">Scheduling (Recognition and Recall)</p>

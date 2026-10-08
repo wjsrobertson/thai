@@ -26,7 +26,7 @@ const els = {
   cardSpell: document.getElementById('card-spell'),
   cardSpellFront: document.getElementById('card-spell-front'), // Thai → English only: the front is Thai
   speakButtons: document.querySelectorAll('.speak-btn'),
-  flipButtons: document.querySelectorAll('.flip-btn'),
+  flipButtons: document.querySelectorAll('#card .flip-btn'), // not Recall's, which share the look (.review-flip)
   posBadges: document.querySelectorAll('.stat-pos'),
   learnPills: document.getElementById('learn-pills'),
   prevBtn: document.getElementById('prev-btn'),
@@ -73,8 +73,6 @@ const els = {
   reviewSpelling: document.getElementById('review-spelling'),
   reviewPrompt: document.getElementById('review-prompt'),
   reviewSpeak: document.getElementById('review-speak'),
-  reviewScript: document.getElementById('review-script'),
-  setReviewScript: document.getElementById('setting-review-script'),
   reviewFlip: document.getElementById('review-flip'),
   reviewMain: document.getElementById('review-main'),
   reviewTranslit: document.getElementById('review-translit'),
@@ -125,7 +123,6 @@ const DEFAULT_SETTINGS = {
   waitHardDays: 1,                // Hard: a new word's first wait; later waits grow from it
   waitEasyDays: 3,                // Easy (FSRS Good): a new word's first wait; later waits grow from it
   retention: 0.9,                 // FSRS desired retention
-  reviewScript: true,             // Review: show the Thai on Thai → English cards before Show (off: audio only)
   confirmAddAll: true,            // Topics page "Add all to Flashcards" asks first (Settings → Topics)
   confirmRemoveAll: true,         // Topics page "✓ All in Flashcards" (remove all) asks first
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
@@ -157,7 +154,7 @@ const state = {
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
   sort: { key: null, dir: 'asc' },
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
-  direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back)
+  direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
   pickerOpen: false,
   pickerFilter: '',
   settingsOpen: false,
@@ -642,10 +639,14 @@ function renderCard() {
   // Direction decides which language sits where.
   // Thai → English's back also repeats the Thai, styled as the English (the user's request,
   // 2026-10-08). English → Thai's back already leads with it.
-  els.backThai.textContent = state.direction === 'th-en' ? c.thai : '';
-  els.backThai.hidden = state.direction !== 'th-en';
-  if (state.direction === 'th-en') {
-    els.thai.textContent = c.thai;
+  // Listen → English (2026-10-08) is Thai → English with the front's Thai replaced by its sound: a
+  // big 🔊 that plays it again (listenButton).
+  const thaiSide = state.direction !== 'en-th';
+  els.backThai.textContent = thaiSide ? c.thai : '';
+  els.backThai.hidden = !thaiSide;
+  if (thaiSide) {
+    if (state.direction === 'listen') els.thai.replaceChildren(listenButton(c.thai));
+    else els.thai.textContent = c.thai;
     els.thai.classList.remove('front-en');
     els.translit.textContent = c.translit;
     els.english.textContent = c.english;
@@ -668,7 +669,7 @@ function renderCard() {
   // sound would give the answer away. An answered Test card opens on its Thai back.
   fitCardText();
   if (state.view === 'flashcards' && state.orderMode !== 'review' && !state.reading.active) { // Review mode hides this card
-    if (state.direction === 'th-en' || state.showingBack) speak(c.thai);
+    if (state.direction !== 'en-th' || state.showingBack) speak(c.thai);
     else stopAudio(); // nothing to say yet, but don't carry on with the last card's word or spelling
   }
 }
@@ -714,8 +715,15 @@ function flipCard() {
   // answered it, in which case they can freely flip to review.
   if (state.orderMode === 'test' && !state.learnAnswers.has(c.key)) return;
   setFlipped(!state.showingBack);
-  // English → Thai: the Thai is said when it's revealed (navigating there stays quiet).
-  if (state.showingBack && state.direction === 'en-th') speak(c.thai);
+  // Turning to the side with the Thai script says it: English → Thai's back, as since it began, and
+  // since 2026-10-08 (the user's request) Thai → English's front and Listen → English's back too.
+  if (thaiScriptSide(state.direction, state.showingBack)) speak(c.thai);
+}
+
+// Whether a card's side shows the Thai script as its question or answer: Thai → English's front,
+// English → Thai's and Listen → English's back.
+function thaiScriptSide(dir, back) {
+  return back !== (dir === 'th-en');
 }
 
 // Recognition answers ('good' or 'again') update the same items as Recall: right counts as Hard,
@@ -1261,10 +1269,11 @@ function wordHitRow(h, added) {
   });
   const sp = document.createElement('button');
   sp.type = 'button';
-  sp.className = 'row-speak';
+  sp.className = 'row-speak' + (sayingNow(h.card.thai) ? ' playing' : '');
+  sp.dataset.say = h.card.thai;
   sp.setAttribute('aria-label', `Play ${h.card.thai}`);
-  sp.textContent = '🔊';
-  sp.addEventListener('click', () => speak(h.card.thai));
+  sp.append(speakerIcon());
+  sp.addEventListener('click', () => speakerPress(sp, h.card.thai));
   row.append(main, rv, sp);
   return row;
 }
@@ -1424,7 +1433,6 @@ function renderSettings() {
   els.setWaitHard.value = s.waitHardDays;
   els.setWaitEasy.value = s.waitEasyDays;
   els.setRetention.value = String(s.retention);
-  els.setReviewScript.checked = s.reviewScript !== false;
   for (const box of els.confirmSettings) box.checked = s[box.dataset.confirmSetting] !== false;
 
   els.setAudioSource.value = s.audioSource;
@@ -1459,9 +1467,6 @@ function bindSettings() {
   els.setRetention.addEventListener('change', () => {
     const r = parseFloat(els.setRetention.value);
     if (r >= 0.7 && r <= 0.97) setSettings({ retention: r });
-  });
-  els.setReviewScript.addEventListener('change', () => {
-    setSettings({ reviewScript: els.setReviewScript.checked });
   });
   els.confirmSettings.forEach((box) => box.addEventListener('change', () => {
     setSettings({ [box.dataset.confirmSetting]: box.checked });
@@ -1678,7 +1683,7 @@ function discardModes() {
 }
 
 function setDirection(direction) {
-  if (!['en-th', 'th-en'].includes(direction)) return;
+  if (!['en-th', 'th-en', 'listen'].includes(direction)) return;
   state.direction = direction;
   els.directionButtons.forEach((b) => {
     b.setAttribute('aria-checked', b.dataset.direction === direction ? 'true' : 'false');
@@ -1844,10 +1849,11 @@ function renderWordlist() {
       }
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'row-speak';
+      btn.className = 'row-speak' + (sayingNow(c.thai) ? ' playing' : '');
+      btn.dataset.say = c.thai;
       btn.setAttribute('aria-label', 'Play audio');
-      btn.textContent = '🔊';
-      btn.addEventListener('click', () => speak(c.thai));
+      btn.append(speakerIcon());
+      btn.addEventListener('click', () => speakerPress(btn, c.thai));
       audioTd.appendChild(btn);
       tr.appendChild(audioTd);
       frag.appendChild(tr);
@@ -1950,11 +1956,15 @@ function buildLearnTrial(card, deckCards, seenOverride) {
     }
     return pool.slice(-count);
   };
+  // Listening: never a word that sounds the same (ย่า and หญ้า, ไม่ and ไหม้), which no ear could tell
+  // apart. The same transliteration means the same sound.
+  const sound = (c) => (c.translit || '').toLowerCase().replace(/[\s-]/g, '');
+  const audible = (c) => state.direction !== 'listen' || sound(c) !== sound(card);
   const partners = partnersOf(card).map((key) => state.cardIndex.get(key)?.card).filter(Boolean)
-    .map((c) => ({ ...c, key: cardKey(c) }));
+    .map((c) => ({ ...c, key: cardKey(c) })).filter(audible);
   const distractors = partners.length ? pick(partners, Math.min(2, partners.length)) : [];
   if (distractors.length < 2) {
-    const others = deckCards.filter((d) => d.key !== card.key && !distractors.some((x) => x.key === d.key));
+    const others = deckCards.filter((d) => d.key !== card.key && audible(d) && !distractors.some((x) => x.key === d.key));
     distractors.push(...pick(others, 2 - distractors.length));
   }
 
@@ -2252,6 +2262,25 @@ function spellIcon() {
 }
 
 // The "add to Review" icon: Home's 🔁 as a line icon, so it matches the muted controls around it.
+// The play-sound icon: a speaker in the text colour, like the app's other line icons (the 🔊 emoji
+// it replaced, 2026-10-08, came in each device's own colours: blue on some). Its two sound waves
+// are separate paths, so they can pulse while the word plays (markSpeakers). index.html has the
+// same SVG inline.
+const SPEAKER_PATHS = ['M11 5 6 9H3v6h3l5 4z', 'M15.5 8.5a5 5 0 0 1 0 7', 'M18.5 5.5a9.5 9.5 0 0 1 0 13'];
+
+function speakerIcon() {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'speaker-icon');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  SPEAKER_PATHS.forEach((d, i) => {
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('d', d);
+    if (i) path.setAttribute('class', `wave wave${i}`);
+    svg.append(path);
+  });
+  return svg;
+}
 const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4');
 
 // A toast: a short message at the bottom of the screen that fades out after `ms`. A new one
@@ -2341,20 +2370,20 @@ function presentEntry() {
   const r = state.review;
   const e = r.current;
   const { card } = state.cardIndex.get(e.key);
-  const thaiFirst = e.dir === 'th-en';
+  const thaiFirst = e.dir !== 'en-th'; // Thai → English, or Listen → English
+  const listen = e.dir === 'listen';
   r.revealed = false;
   r.answered = false;
   // Back to the front before the new card's text goes in, without the turn (it would show the new
   // answer for half of it).
   setReviewFlipped(false, { instant: true });
 
-  els.reviewPrompt.textContent = thaiFirst ? card.thai : card.english;
+  // Listen → English: the sound only, the word's waveform, as on Flashcards' card. (Until
+  // 2026-10-08 Settings → Recall → Show Thai script made Thai → English audio only, with an eye
+  // button to show the script; Listen replaced both.)
+  if (listen) els.reviewPrompt.replaceChildren(listenButton(card.thai));
+  else els.reviewPrompt.textContent = thaiFirst ? card.thai : card.english;
   els.reviewPrompt.className = 'review-prompt thai' + (thaiFirst ? '' : ' front-en');
-  // Settings → Review → Show Thai script off: Thai → English starts audio only, with an eye
-  // button to show the script early. Show (revealAnswer) shows it too.
-  const audioOnly = thaiFirst && !getSettings().reviewScript;
-  els.reviewPrompt.hidden = audioOnly;
-  els.reviewScript.hidden = !audioOnly;
   // The back, as Flashcards' (renderCard): Thai → English repeats the Thai at the English's size,
   // then the transliteration, the answer, the note and the spelling.
   els.reviewBackThai.textContent = thaiFirst ? card.thai : '';
@@ -2392,10 +2421,116 @@ function setReviewFlipped(flipped, { instant = false } = {}) {
   }
 }
 
-// The Thai on an audio-only card (Show Thai script off): the eye button, or Show.
-function showReviewScript() {
-  els.reviewPrompt.hidden = false;
-  els.reviewScript.hidden = true;
+// Listen → English's front: the word's waveform, drawn from its recording (the user's idea,
+// 2026-10-08; a big 🔊 before). It lights up as the word plays, and a tap plays it again (it plays
+// by itself as the card appears). It's a button, so a tap on it never turns the card. Until the
+// clip is decoded, or for a word with no recording, it shows a soft generic shape.
+const WAVE_BARS = 30;
+const WAVE_PLACEHOLDER = Array.from({ length: WAVE_BARS }, (_, i) => 0.18 + 0.22 * Math.sin((Math.PI * (i + 0.5)) / WAVE_BARS));
+
+function listenButton(thai) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'listen-btn listen-wave';
+  b.title = 'Play it again';
+  b.setAttribute('aria-label', b.title);
+  for (const h of WAVE_PLACEHOLDER) {
+    const bar = document.createElement('i');
+    bar.style.setProperty('--h', h.toFixed(3));
+    b.append(bar);
+  }
+  const url = sampleUrl(thai, 'th');
+  if (url) {
+    b.dataset.url = url;
+    waveformOf(url).then((wave) => {
+      if (!wave) return;
+      b.wave = wave;
+      wave.peaks.forEach((h, i) => b.children[i].style.setProperty('--h', h.toFixed(3)));
+    });
+  }
+  b.addEventListener('click', (e) => {
+    e.stopPropagation();
+    speak(thai);
+  });
+  return b;
+}
+
+// A clip's shape: WAVE_BARS loudness levels (0–1) across the speech, with the silence edge-tts pads
+// every clip with trimmed off, and where the speech starts and ends (seconds), so the bars light up
+// in step. `tail` is when the voice has really stopped (a gentler threshold, so a soft ending counts,
+// plus a little): the clip's last second or so is silence, and from `tail` it no longer looks like
+// it's playing (tickPlayback). Cached per clip (waveInfo once decoded); null if it can't be fetched
+// or decoded.
+const waveforms = new Map();
+const waveInfo = new Map();
+const TAIL_MARGIN = 0.12;
+
+function waveformOf(url) {
+  if (!waveforms.has(url)) {
+    waveforms.set(url, (async () => {
+      const res = await fetch(sampleCache.get(url) || url);
+      if (!res.ok) return null;
+      const buf = await res.arrayBuffer();
+      const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+      const audio = await new Promise((resolve, reject) => new Ctx(1, 1, 44100).decodeAudioData(buf, resolve, reject));
+      const data = audio.getChannelData(0);
+      let max = 0;
+      for (let i = 0; i < data.length; i++) max = Math.max(max, Math.abs(data[i]));
+      if (!max) return null;
+      const quiet = max * 0.04;
+      let a = 0;
+      let z = data.length - 1;
+      while (a < z && Math.abs(data[a]) < quiet) a++;
+      while (z > a && Math.abs(data[z]) < quiet) z--;
+      let y = data.length - 1;
+      while (y > z && Math.abs(data[y]) < max * 0.01) y--;
+      const levels = [];
+      const step = (z - a + 1) / WAVE_BARS;
+      for (let k = 0; k < WAVE_BARS; k++) {
+        let sum = 0;
+        let n = 0;
+        for (let i = Math.floor(a + k * step); i < Math.floor(a + (k + 1) * step); i++, n++) sum += data[i] * data[i];
+        levels.push(Math.sqrt(sum / Math.max(1, n)));
+      }
+      const top = Math.max(...levels) || 1;
+      return {
+        peaks: levels.map((v) => 0.08 + 0.92 * (v / top) ** 0.7),
+        start: a / audio.sampleRate,
+        end: (z + 1) / audio.sampleRate,
+        tail: (y + 1) / audio.sampleRate + TAIL_MARGIN,
+      };
+    })().catch(() => null).then((wave) => {
+      waveInfo.set(url, wave);
+      return wave;
+    }));
+  }
+  return waveforms.get(url);
+}
+
+// While a clip plays, any waveform of it on screen lights up to where the voice has got to. Once
+// the voice has stopped (its `tail`), the rest of the clip is silence, so the speakers and waveform
+// go back to rest as if it had ended (2026-10-08: the user saw them stay lit about a second after
+// สวัสดีครับ). The audio itself still runs to the end, so Read all's pacing is unchanged.
+let playingUrl = null;
+let speechOver = false;
+
+function tickPlayback() {
+  const playing = !!playingUrl && !sampleAudio.paused;
+  const t = sampleAudio.currentTime;
+  const over = playing && t >= (waveInfo.get(playingUrl)?.tail ?? Infinity);
+  if (over && speakingText !== null && !speechOver) {
+    speechOver = true;
+    markSpeakers();
+  }
+  for (const w of document.querySelectorAll('.listen-wave')) {
+    let lit = 0;
+    if (playing && !over && w.dataset.url === playingUrl) {
+      const { start = 0, end = sampleAudio.duration || 1 } = w.wave || {};
+      lit = Math.round(clamp((t - start) / Math.max(0.05, end - start), 0, 1) * WAVE_BARS);
+    }
+    [...w.children].forEach((bar, i) => bar.classList.toggle('on', i < lit));
+  }
+  if (playing && !over) requestAnimationFrame(tickPlayback);
 }
 
 function revealAnswer() {
@@ -2404,12 +2539,19 @@ function revealAnswer() {
   const e = r.current;
   r.revealed = true;
   setReviewFlipped(true);
-  showReviewScript(); // for when the card's turned back to its front
   els.reviewFlip.classList.remove('reveal');
   els.reviewSpeak.hidden = false;
   els.reviewSpell.hidden = !spellingFor(state.cardIndex.get(e.key).card);
-  if (e.dir === 'en-th') speak(state.cardIndex.get(e.key).card.thai);
+  if (thaiScriptSide(e.dir, true)) speak(state.cardIndex.get(e.key).card.thai);
   els.reviewGrades.hidden = false;
+}
+
+// After the answer's been shown, ⟳ or a tap turns the card either way, saying the Thai when it
+// turns to the script (thaiScriptSide), as Flashcards' card does.
+function turnReviewCard() {
+  const r = state.review;
+  setReviewFlipped(!r.flipped);
+  if (thaiScriptSide(r.current.dir, r.flipped)) speak(state.cardIndex.get(r.current.key).card.thai);
 }
 
 // Save the grade, and set when the card comes back in this visit: Again and Hard a few cards later
@@ -2505,7 +2647,7 @@ function stopReadAloud() {
   const btn = document.getElementById('read-aloud');
   if (btn) {
     btn.classList.remove('playing');
-    btn.innerHTML = '🔊 Read all';
+    btn.replaceChildren(speakerIcon(), 'Read all');
   }
   renderWordlist();
 }
@@ -2593,6 +2735,8 @@ let englishVoice = null;
 let sampleFiles = { th: {}, en: {}, sp: {} };  // lang -> text -> MP3 in data/audio/ (see loadAudioManifest)
 let sayText = new Map();  // card thai -> what to say instead, from the optional `say` field (e.g. ก -> กอ ไก่)
 const sampleAudio = new Audio();
+// Waveforms on screen light up as it plays, and speakers rest once the voice stops (tickPlayback).
+sampleAudio.addEventListener('playing', () => requestAnimationFrame(tickPlayback));
 let finishSample = null;    // settles the in-flight playSample() promise
 
 // The current deck's clips are fetched in the background when it's selected and held as blob
@@ -2817,7 +2961,7 @@ function renderSpelling() {
   els.cardSpelling.hidden = !groups;
   els.cardSpell.hidden = !groups;
   // On the front only when it shows the Thai: in English → Thai it would give the answer away.
-  els.cardSpellFront.hidden = !groups || state.direction !== 'th-en';
+  els.cardSpellFront.hidden = !groups || state.direction === 'en-th'; // Thai → English and Listen
 }
 
 // Read a spelling aloud step by step: each part's recording (manifest section sp), the card's own
@@ -2915,9 +3059,13 @@ function playSample(url, speed) {
     const finish = (ok) => {
       if (finishSample !== finish) return;
       finishSample = null;
+      playingUrl = null;
+      requestAnimationFrame(tickPlayback); // a waveform goes dark again
       resolve(ok);
     };
     finishSample = finish;
+    playingUrl = url;
+    waveformOf(url); // for where the voice stops (tickPlayback); decoded once, then cached
     sampleAudio.onended = () => finish(true);
     sampleAudio.onerror = () => finish(false);
     // Loading a new src resets playbackRate to defaultPlaybackRate, so set both.
@@ -2946,11 +3094,56 @@ function makeUtterance(text, lang) {
 
 // Speak text and wait for it to finish (or fail, or be stopped).
 async function speakAndWait(text, lang) {
-  const url = sampleUrl(text, lang);
-  if (url && await playSample(url, speedFor(lang))) return;
-  // No sample for this text, or it failed to load: fall back to browser TTS.
-  if (lang === 'sp') return ttsAndWait(text, 'th');
-  return ttsAndWait(lang === 'th' ? sayText.get(text) ?? text : text, lang);
+  // While a word's Thai is being said, its speaker buttons animate (markSpeakers). A newer call
+  // takes over; only the latest clears it when it finishes.
+  const seq = ++speakSeq;
+  speakingText = lang === 'th' ? text : null;
+  speechOver = false;
+  markSpeakers();
+  try {
+    const url = sampleUrl(text, lang);
+    if (url && await playSample(url, speedFor(lang))) return;
+    // No sample for this text, or it failed to load: fall back to browser TTS.
+    if (lang === 'sp') return await ttsAndWait(text, 'th');
+    return await ttsAndWait(lang === 'th' ? sayText.get(text) ?? text : text, lang);
+  } finally {
+    if (seq === speakSeq) {
+      speakingText = null;
+      markSpeakers();
+    }
+  }
+}
+
+// A speaker button plays its word, or, pressed while that word is playing (the button's lit), stops
+// it, as the spell button does (the user's request, 2026-10-08). Pressed during Read all, the lit
+// row's speaker stops the reading.
+function speakerPress(btn, thai) {
+  if (!btn.classList.contains('playing')) {
+    speak(thai);
+    return;
+  }
+  if (state.reading.active) stopReadAloud();
+  else stopAudio();
+}
+
+// The Thai being said now (speakAndWait), or null.
+let speakingText = null;
+let speakSeq = 0;
+
+// Whether this Thai is being said: its clip is playing and the voice hasn't stopped yet (tickPlayback).
+const sayingNow = (thai) => speakingText !== null && !speechOver && thai === speakingText;
+
+// Every speaker button for the word being said lights up and its waves pulse (2026-10-08, the
+// user's request): the Flashcards and Recall cards' corners when it's their word (a tap, the card
+// appearing, a turn to the script), and the Topics list's and search results' rows (a tap, or Read
+// all reaching the row).
+function markSpeakers() {
+  const on = sayingNow;
+  const flash = currentCard()?.thai;
+  const recall = state.review?.current && state.cardIndex.get(state.review.current.key)?.card.thai;
+  els.speakButtons.forEach((b) => b.classList.toggle('playing', on(flash)));
+  document.querySelectorAll('.review-speak').forEach((b) => b.classList.toggle('playing', on(recall)));
+  document.querySelectorAll('.row-speak').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
 }
 
 function ttsAndWait(text, lang) {
@@ -3022,6 +3215,7 @@ function bindEvents() {
     if (e.target.closest('.speak-btn')) return;
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
+    if (e.target.closest('.listen-btn')) return;
     flipCard();
   });
 
@@ -3043,7 +3237,7 @@ function bindEvents() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const c = currentCard();
-      if (c) speak(c.thai);
+      if (c) speakerPress(btn, c.thai);
     });
   });
 
@@ -3105,16 +3299,15 @@ function bindEvents() {
     const r = state.review;
     if (!r) return;
     if (!r.revealed) revealAnswer();
-    else setReviewFlipped(!r.flipped);
+    else turnReviewCard();
   }));
   els.reviewGrades.addEventListener('click', (e) => {
     const btn = e.target.closest('.grade');
     if (btn) gradeCurrent(Number(btn.dataset.grade));
   });
-  els.reviewScript.addEventListener('click', showReviewScript);
   els.reviewCard.querySelectorAll('.review-speak').forEach((btn) => btn.addEventListener('click', () => {
     const entry = state.review?.current;
-    if (entry) speak(state.cardIndex.get(entry.key).card.thai);
+    if (entry) speakerPress(btn, state.cardIndex.get(entry.key).card.thai);
   }));
   [els.reviewSpell, els.reviewSpellBack].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a tap on the card
@@ -3126,7 +3319,7 @@ function bindEvents() {
     const r = state.review;
     if (!r || e.target.closest('button')) return;
     if (!r.revealed) revealAnswer();
-    else setReviewFlipped(!r.flipped);
+    else turnReviewCard();
   });
 
   document.addEventListener('keydown', (e) => {
@@ -3516,7 +3709,7 @@ async function init() {
     b.setAttribute('aria-checked', b.dataset.order === state.orderMode ? 'true' : 'false');
   });
   els.stage.dataset.order = state.orderMode;
-  if (['en-th', 'th-en'].includes(prefs.direction)) {
+  if (['en-th', 'th-en', 'listen'].includes(prefs.direction)) {
     state.direction = prefs.direction;
   }
   els.directionButtons.forEach((b) => {
