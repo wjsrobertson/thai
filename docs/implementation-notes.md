@@ -74,9 +74,9 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-08 there are 7397 cards in 417 topics across 25 categories (see Topic list order,
-  Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs and Sound Pairs,
-  2026-10-08).
+- As of 2026-10-08 there are 7501 cards in 423 topics across 25 categories (see Topic list order,
+  Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs, Sound Pairs,
+  Thai school mnemonics and Learning tricks, 2026-10-08).
 
 **Writing cards.** Match the existing style:
 
@@ -337,6 +337,44 @@ Home & Everyday Things; and Southern Idioms.
 - **Audio uses the Central voice**, so the tones are Central, not Southern. Each deck description
   says so, and the user accepted this. Transliterations follow the Thai spelling.
 
+**Learning tricks, 2026-10-08** (scratchpad `decks/trick_topics.py` + `decks/merge_tricks.py`,
+backup `decks.backup28.json`).
+- **Look-alike Letters** (Thai Script → Consonants, 19 cards, all reused letter cards). The
+  pairs: บ/ป, ผ/ฝ, พ/ฟ, ค/ศ, ร/ธ (the tail trick), ด/ต, ข/ช/ซ, ล/ส and อ/ฮ.
+  - Each note says what tells the letters apart.
+  - The cards have `partners`, so Recognition offers the look-alikes as the wrong answers.
+    Checked: 19 of 19.
+- **A Word Building group in Grammar** (52 cards, 24 new), each card with its parts or literal
+  meaning:
+  - **Word Building: น้ำ:** น้ำตา "eye water", น้ำแข็ง "hard water", …
+  - **Word Building: ลูก & นัก:** ลูกตา, ลูกค้า; นักเรียน, นักข่าว, …
+  - **Word Building: ความ & การ:** ความสุข, ความรู้; การเรียน, การเดินทาง, and the fixed
+    การเมือง, การบ้าน.
+- **New `about` paragraphs:**
+  - **Short & Long Vowels:** the five vowels written first but said after (เ แ โ ไ ใ).
+  - **Tone Rules:** low-class marks give a tone one step higher than on mid-class letters.
+  - **Grammar Terms: Sounds & Tones:** each tone as an English intonation.
+  - **Both classifier topics:** rules of thumb. ตัว for anything with a body or legs, ใบ for flat
+    or hollow things, คัน for things with a handle, and the container as the classifier.
+
+**Thai school mnemonics, 2026-10-08** (scratchpad `decks/mnemonic_topics.py` +
+`decks/merge_mnemonics.py`, backup `decks.backup27.json`). The user asked for the common
+mnemonics, after our consonant-class memory scenes.
+- **The class rhymes,** as a card (recorded) in each class topic and a sentence added to its
+  `about`:
+  - **Mid:** ไก่จิกเด็กตายบนปากโอ่ง.
+  - **High:** ผีฝากถุงข้าวสารให้ฉัน.
+  - **Low sonorants:** งูใหญ่นอนอยู่ ณ ริมวัด โมฬีโลก.
+- **อย่าอยู่อย่างอยาก,** a card in Clusters & Odd Spellings: the four silent-อ words.
+- **The 20 ใ Words,** a new topic in Vowels (20 cards). The rhyme ผู้ใหญ่หาผ้าใหม่… is its `about`.
+- **Final Sound Families,** a new topic in Tones & Reading (9 cards): แม่ ก กา, แม่กก, แม่กด, แม่กบ,
+  แม่กง, แม่กน, แม่กม, แม่เกย, แม่เกอว, each with its letters and an example. Final Consonant
+  Sounds' description points to it.
+- **Tone marks:** Tone Marks & Symbols' `about` says the names count up: เอก, โท, ตรี, จัตวา =
+  1–4.
+- **`about` caution:** the renderer keeps each "(…)" on one line (for "(ด เด็ก)" pairs), so the
+  rhymes' translations are in quotes, not brackets.
+
 **Sound Pairs, 2026-10-08** (scratchpad `decks/sound_topics.py` + `decks/merge_sounds.py`, backup
 `decks.backup26.json`).
 - **What:** a Sound Pairs group in Thai Script after Tone Pairs: three topics, 42 cards, 15 new.
@@ -359,9 +397,19 @@ Home & Everyday Things; and Southern Idioms.
   - **Tone Pairs: Body, Family & Animals:** เสือ เสื้อ เสื่อ, ปา ป่า ป้า, นา หน้า น้า หนา, คอ ขอ ข้อ,
     ปู ปู่, เข่า เข้า เขา.
   - **Tone Pairs: Everyday Words:** หา ห้า ฮา, สวย ซวย, ซื้อ สื่อ ซื่อ, น้ำ นำ, ช้า ชา, ยา ย่า หญ้า, ไฟ ไฝ.
-- **Sets stay together in one topic,** so Recognition's wrong answers (drawn from the topic) can
-  be the near-identical words. They aren't guaranteed to be: answers are picked at random from
-  the whole topic.
+- **Recognition offers the partners as the wrong answers** (2026-10-08, the user's request; at
+  first they were random picks from the topic).
+  - **The data:** each card in a Tone or Sound Pairs topic has `partners`, the card keys
+    (`thai::english`) of the rest of its set in that topic. The sets were derived from the
+    "Compare …" notes, linked together within each topic. The audit checks that every partner is a
+    card in the same topic.
+  - **The answers:** `buildLearnTrial` takes up to two partners (seeded random), then fills the
+    rest from the usual pool, so two-word pairs get one partner and one other.
+  - **Which partners:** `partnersOf` uses the card's own topic in scope. On Everything or a
+    category, where the card may come from another topic, it uses every pair topic's partners: ป้า
+    can get ผ้า (Sound Pairs) and ปา (Tone Pairs).
+  - **Checked in Chromium:** on Five Tones & Common Words, all 16 cards with two or more partners
+    got only partners, in both directions. ใกล้ / ไกล got one partner and one other.
 - **Notes:** each names the word's tone and its partners ("Rising tone. Compare ข้าว (falling)
   rice, ข่าว (low) news"). Existing cards are reused, with these notes for this group.
 - **เขา:** the set uses "hill", said rising as written. เขา "he / she" is usually said high (kháo).
