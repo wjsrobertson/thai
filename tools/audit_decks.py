@@ -70,8 +70,15 @@ def audit(decks):
         for k in ('thai', 'translit', 'english'):
             if not c.get(k):
                 errors['card missing a field'].append(f'{where} ({k})')
-        if set(c) - {'thai', 'translit', 'english', 'note', 'say'}:
-            errors['unknown card field'].append(f'{where} {set(c) - {"thai", "translit", "english", "note", "say"}}')
+        fields = {'thai', 'translit', 'english', 'note', 'say', 'partners'}
+        if set(c) - fields:
+            errors['unknown card field'].append(f'{where} {set(c) - fields}')
+        # Tone / Sound Pairs: partners are card keys (thai::english) of other cards in the same topic.
+        if 'partners' in c:
+            own = {f"{x['thai']}::{x['english']}" for x in dk['cards']}
+            ps = c['partners']
+            if not isinstance(ps, list) or not ps or any(p not in own for p in ps) or f"{c['thai']}::{c['english']}" in ps:
+                errors['bad partners'].append(f'{where} {ps}')
         for k, v in c.items():
             if not isinstance(v, str):
                 continue

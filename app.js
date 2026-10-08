@@ -1753,6 +1753,28 @@ function distractorPool() {
   return pool.length >= 3 ? pool : state.cards;
 }
 
+// Tone and Sound Pairs words list their partners (decks.json `partners`: card keys of the same set,
+// in that topic). Recognition offers them as the wrong answers (the user's request, 2026-10-08).
+// The card's own topic in scope comes first; on Everything or a category, where the card may come
+// from another topic, every pair topic's partners for it.
+let partnerIndex = null;
+function partnersOf(card) {
+  const deck = flashScope()?.deckOf.get(card.key);
+  const own = deck?.cards.find((c) => c.partners && cardKey(c) === card.key)?.partners;
+  if (own) return own;
+  if (!partnerIndex) {
+    partnerIndex = new Map();
+    for (const d of state.decks) {
+      for (const c of d.cards) {
+        if (!c.partners) continue;
+        const k = cardKey(c);
+        partnerIndex.set(k, [...new Set([...(partnerIndex.get(k) || []), ...c.partners])]);
+      }
+    }
+  }
+  return partnerIndex.get(card.key) || [];
+}
+
 function buildLearnTrial(card, deckCards, seenOverride) {
   const seen = seenOverride != null ? seenOverride : (card.seen || 0);
   const seed = hashStr(`${state.flashScopeId}::${card.key}::${seen}::${state.direction}`);
@@ -1763,15 +1785,24 @@ function buildLearnTrial(card, deckCards, seenOverride) {
   // th-en: question is Thai (front), pills are English answers.
   const side = state.direction === 'en-th' ? 'th' : 'en';
 
-  // Pick 2 distinct distractors deterministically.
-  const others = deckCards.filter((d) => d.key !== card.key);
-  const pool = others.slice();
-  // Fisher-Yates with seeded rng, take first 2.
-  for (let i = pool.length - 1; i > 0 && i > pool.length - 4; i--) {
-    const j = Math.floor(rng() * (i + 1));
-    [pool[i], pool[j]] = [pool[j], pool[i]];
+  // Pick 2 distinct distractors deterministically: a Tone or Sound Pairs word's partners first (the
+  // near-identical words are the point), then any others from the pool.
+  const pick = (from, count) => {
+    const pool = from.slice();
+    // Fisher-Yates with seeded rng, take the last `count`.
+    for (let i = pool.length - 1; i > 0 && i > pool.length - 1 - count; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    return pool.slice(-count);
+  };
+  const partners = partnersOf(card).map((key) => state.cardIndex.get(key)?.card).filter(Boolean)
+    .map((c) => ({ ...c, key: cardKey(c) }));
+  const distractors = partners.length ? pick(partners, Math.min(2, partners.length)) : [];
+  if (distractors.length < 2) {
+    const others = deckCards.filter((d) => d.key !== card.key && !distractors.some((x) => x.key === d.key));
+    distractors.push(...pick(others, 2 - distractors.length));
   }
-  const distractors = pool.slice(-2);
 
   // Compose 3 options and shuffle deterministically.
   const opts = [card, ...distractors].map((c) => ({
