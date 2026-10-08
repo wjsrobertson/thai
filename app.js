@@ -964,7 +964,9 @@ function pickerModel(q) {
   const cats = new Map();
   for (const d of state.decks) {
     const cat = d.category || 'Uncategorized';
-    if (q && ![d.name, d.description || '', cat, d.group || ''].some((s) => s.toLowerCase().includes(q))) continue;
+    // Names only: descriptions matched too until word search (2026-10-08), whose results they
+    // pushed off a phone screen ("like" found nine topics).
+    if (q && ![d.name, cat, d.group || ''].some((s) => s.toLowerCase().includes(q))) continue;
     if (!cats.has(cat)) {
       cats.set(cat, {
         name: cat,
@@ -1136,12 +1138,148 @@ function renderDeckPicker() {
     els.deckPickerTree.appendChild(group);
   }
 
-  if (cats.length === 0) {
+  const words = q ? wordSearch(q) : null;
+  if (words?.total) els.deckPickerTree.appendChild(wordHitsSection(words));
+  if (cats.length === 0 && !words?.total) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
-    empty.textContent = `No topics match "${state.pickerFilter}".`;
+    empty.textContent = `Nothing matches "${state.pickerFilter.trim()}".`;
     els.deckPickerTree.appendChild(empty);
   }
+}
+
+// ---------- word search (the picker's search box, below the topics) ----------
+
+// Added 2026-10-08: the user kept asking "do we have X?". A Thai query matches the Thai; any other
+// matches the English or the transliteration. Ranked: the whole thing exactly, then one meaning of
+// several ("time" in "once / time"), then starts-with (a word start, for English), then contains;
+// one row per card key, however many topics share it.
+const WORD_HITS_SHOWN = 40;
+let searchIndex = null;
+
+// Transliteration, loosely: no tone marks, hyphens or spaces, ʉ ɔ ɛ ə as u o e e (ue and ae typed
+// for them too), and doubled letters single, so "nuea", "nua" and "nʉ̂a" all meet.
+function looseTranslit(s) {
+  return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/ʉ/g, 'u').replace(/ɔ/g, 'o').replace(/[ɛə]/g, 'e').replace(/ue/g, 'u').replace(/ae/g, 'e')
+    .replace(/[^a-z]/g, '').replace(/(.)\1+/g, '$1');
+}
+
+function wordSearch(query) {
+  if (!searchIndex) {
+    searchIndex = [...state.cardIndex].map(([key, { card, deckIds }]) => ({
+      key, card, deckIds,
+      thai: card.thai.replace(/\s/g, ''),
+      english: card.english.toLowerCase(),
+      parts: card.english.toLowerCase().replace(/\([^)]*\)/g, '').split(/[/,;]/).map((s) => s.trim()),
+      translit: looseTranslit(card.translit || ''),
+    }));
+  }
+  const thai = /[฀-๿]/.test(query);
+  const q = thai ? query.replace(/\s/g, '') : query.toLowerCase();
+  if (!thai && q.length < 2) return { hits: [], total: 0 };
+  const qt = thai ? '' : looseTranslit(q);
+  const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const wholeWord = new RegExp(`(^|[^a-z])${esc}($|[^a-z])`);
+  const wordStart = new RegExp(`(^|[^a-z])${esc}`);
+  const hits = [];
+  for (const w of searchIndex) {
+    let score = 4;
+    if (thai) {
+      if (w.thai === q) score = 0;
+      else if (w.thai.startsWith(q)) score = 2;
+      else if (w.thai.includes(q)) score = 3;
+    } else {
+      if (w.english === q) score = 0;
+      else if (w.parts.includes(q)) score = 1;
+      else if (wholeWord.test(w.english)) score = 1.5;
+      else if (wordStart.test(w.english)) score = 2;
+      else if (w.english.includes(q)) score = 3;
+      // Just behind an English match of the same kind, so "same" finds "about the same" before
+      // เสมอ (sà-mə̌ə, loosely "same"), but "nam" finds น้ำ before "name".
+      if (qt.length >= 2 && score > 0) {
+        if (w.translit === qt) score = Math.min(score, 1.75);
+        else if (qt.length >= 3 && w.translit.startsWith(qt)) score = Math.min(score, 2.5);
+        else if (qt.length >= 3 && w.translit.includes(qt)) score = Math.min(score, 3.5);
+      }
+    }
+    if (score < 4) hits.push({ ...w, score });
+  }
+  hits.sort((a, b) => a.score - b.score || a.thai.length - b.thai.length);
+  return { hits: hits.slice(0, WORD_HITS_SHOWN), total: hits.length };
+}
+
+function wordHitsSection({ hits, total }) {
+  const section = document.createElement('div');
+  section.className = 'word-hits';
+  const head = document.createElement('div');
+  head.className = 'word-hits-head';
+  head.textContent = `${total} word${total === 1 ? '' : 's'}`;
+  section.appendChild(head);
+  const inFlashcards = reviewWords();
+  for (const h of hits) section.appendChild(wordHitRow(h, h.key in inFlashcards));
+  if (total > hits.length) {
+    const more = document.createElement('p');
+    more.className = 'word-hits-more';
+    more.textContent = `Showing the best ${hits.length}. Type more to narrow it down.`;
+    section.appendChild(more);
+  }
+  return section;
+}
+
+// A result: tap it to see the word in its topic (the current topic if it's there); ✓ adds it to
+// Flashcards and 🔊 plays it, as on the Topics page.
+function wordHitRow(h, added) {
+  const row = document.createElement('div');
+  row.className = 'word-hit';
+  const main = document.createElement('button');
+  main.type = 'button';
+  main.className = 'word-hit-main';
+  main.innerHTML = '<span class="word-hit-thai"></span><span class="word-hit-translit"></span><span class="word-hit-english"></span><span class="word-hit-topic"></span>';
+  main.querySelector('.word-hit-thai').textContent = h.card.thai;
+  main.querySelector('.word-hit-translit').textContent = h.card.translit || '';
+  main.querySelector('.word-hit-english').textContent = h.card.english;
+  const deckId = h.deckIds.includes(state.currentDeckId) ? state.currentDeckId : h.deckIds[0];
+  const others = h.deckIds.length - 1;
+  main.querySelector('.word-hit-topic').textContent = (resolveScope(deckId)?.name || '') + (others ? ` +${others} more` : '');
+  main.title = `Show ${h.card.thai} in its topic`;
+  main.addEventListener('click', () => showWordInTopic(h.key, deckId));
+  const rv = document.createElement('button');
+  rv.type = 'button';
+  const paint = () => {
+    rv.className = 'row-review' + (added ? ' added' : '');
+    rv.replaceChildren(added ? '✓' : reviewIcon());
+    rv.title = added ? `Remove ${h.card.thai} from Flashcards` : `Add ${h.card.thai} to Flashcards`;
+    rv.setAttribute('aria-label', rv.title);
+  };
+  paint();
+  rv.addEventListener('click', () => {
+    added = !added;
+    setInReview([h.key], added);
+    toast(added ? `✓ Added ${h.card.thai} to Flashcards` : `Removed ${h.card.thai} from Flashcards`, { tone: added ? 'good' : '' });
+    paint();
+  });
+  const sp = document.createElement('button');
+  sp.type = 'button';
+  sp.className = 'row-speak';
+  sp.setAttribute('aria-label', `Play ${h.card.thai}`);
+  sp.textContent = '🔊';
+  sp.addEventListener('click', () => speak(h.card.thai));
+  row.append(main, rv, sp);
+  return row;
+}
+
+// Opens the word's topic on the Topics page, scrolled to the word and briefly highlighted.
+function showWordInTopic(key, deckId) {
+  closeDeckPicker();
+  if (state.view !== 'wordlist') setView('wordlist');
+  if (deckId !== state.currentDeckId) selectDeck(deckId);
+  else renderWordlist();
+  const row = els.wordtableBody.querySelector(`tr[data-key="${CSS.escape(key)}"]`);
+  if (!row) return;
+  row.scrollIntoView({ block: 'center' });
+  row.classList.add('search-hit');
+  setTimeout(() => row.classList.remove('search-hit'), 2500);
 }
 
 // On touch screens, don't auto-focus a modal's search box: on iOS, focusing an input inside a

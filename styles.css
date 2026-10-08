@@ -488,6 +488,75 @@ html.modal-open body {
   font-variant-numeric: tabular-nums;
 }
 
+/* Word search results, below the matching topics (wordHitsSection). */
+.word-hits { margin-top: 6px; }
+.word-hits-head {
+  padding: 8px 12px;
+  color: var(--muted);
+  font-size: calc(14px * var(--fs, 1));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.word-hit {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding-right: 8px;
+  border-radius: 8px;
+}
+.word-hit:hover { background: var(--panel-2); }
+.word-hit-main {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 10px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+}
+.word-hit-thai { font-size: calc(20px * var(--fs, 1)); }
+.word-hit-translit { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.word-hit-english, .word-hit-topic { grid-column: 1 / -1; }
+.word-hit-english { font-size: calc(15px * var(--fs, 1)); }
+.word-hit-topic { color: var(--muted); font-size: calc(13px * var(--fs, 1)); margin-top: 2px; }
+.word-hit .row-review {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 18px;
+  font-weight: 600;
+}
+.word-hit .row-review .review-icon { width: 18px; height: 18px; margin: 0; }
+.word-hit .row-review:hover { color: var(--accent); background: var(--panel); }
+.word-hit .row-review.added { color: var(--good); }
+.word-hit .row-speak {
+  flex: none;
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 14px;
+}
+.word-hit .row-speak:hover { color: var(--accent); border-color: var(--accent); }
+.word-hits-more { margin: 8px 12px 12px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
+/* The word a search result opened (showWordInTopic). */
+.wordtable tbody tr.search-hit { background: var(--accent-soft); transition: background .6s; }
+
 .modal-empty {
   padding: 32px;
   text-align: center;
