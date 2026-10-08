@@ -1718,14 +1718,19 @@ function renderWordlist() {
   let lastTopic = null;
 
   textWithArrows(els.wordlistDeckName, `${deck.name} — ${deck.description}`);
-  // A topic's optional `about` (decks.json), e.g. the consonant classes' memory scenes: a second
-  // paragraph under the heading.
+  // A topic's optional `about` (decks.json), e.g. the consonant classes' memory scenes: text under
+  // the heading. A blank line (\n\n) starts a new paragraph, so what Thai schools teach stands
+  // apart from our own tricks (the user's request, 2026-10-08).
   const about = deck.kind === 'topic' ? deck.decks[0].about || '' : '';
   els.wordlistAbout.hidden = !about;
   // Keep each bracketed pair, e.g. "(ฮ นกฮูก)", on one line: a line can otherwise break at the space,
   // or inside a Thai word (นก|ฮูก).
-  els.wordlistAbout.replaceChildren(...about.split(/(\([^()]*\))/).map((part) => (
-    part.startsWith('(') ? Object.assign(document.createElement('span'), { className: 'nowrap', textContent: part }) : part)));
+  els.wordlistAbout.replaceChildren(...about.split(/\n\n+/).map((para) => {
+    const el = document.createElement('p');
+    el.append(...para.split(/(\([^()]*\))/).map((part) => (
+      part.startsWith('(') ? Object.assign(document.createElement('span'), { className: 'nowrap', textContent: part }) : part)));
+    return el;
+  }));
   const words = reviewWords();
 
   const rows = visibleWordlistRows();

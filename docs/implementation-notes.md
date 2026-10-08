@@ -425,6 +425,14 @@ mnemonics, after our consonant-class memory scenes.
   1–4.
 - **`about` caution:** the renderer keeps each "(…)" on one line (for "(ด เด็ก)" pairs), so the
   rhymes' translations are in quotes, not brackets.
+- **`about` paragraphs** (2026-10-08, the user's request): a blank line (`\n\n`) in `about`
+  starts a new paragraph. `#wordlist-about` is now a `<div>` of `<p>`s, 10 px apart. What Thai
+  schools teach always gets its own paragraph, apart from our tricks and explanations:
+  - the class rhymes (Mid, High, Low Sonorants);
+  - the ก เอ๋ย ก ไก่ song (All Consonants ก–ถ);
+  - สระเกิน (Diphthongs & Special Vowels).
+  
+  The 20 ใ Words' `about` is only the school rhyme, so it stays one paragraph.
 
 **Sound Pairs, 2026-10-08** (scratchpad `decks/sound_topics.py` + `decks/merge_sounds.py`, backup
 `decks.backup26.json`).

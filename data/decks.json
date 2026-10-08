@@ -898,7 +898,7 @@
       "group": "Consonants",
       "name": "Mid Class",
       "description": "The 9 mid-class consonants. A letter's class decides its syllable's tone. The back gives the letter's name (the letter + a word starting with it), which the audio says.",
-      "about": "Remember them: on the ground, a dancing child (ด เด็ก) wearing a headdress (ฎ ชฎา) pokes a fish (ป ปลา) in a basin (อ อ่าง) with an ox goad (ฏ ปฏัก), feeds a leaf (บ ใบไม้) to a turtle (ต เต่า), and puts a chicken (ก ไก่) on a plate (จ จาน). Thai schoolchildren learn them as ไก่จิกเด็กตายบนปากโอ่ง, \"a chicken pecked a child to death on the rim of a jar\".",
+      "about": "Remember them: on the ground, a dancing child (ด เด็ก) wearing a headdress (ฎ ชฎา) pokes a fish (ป ปลา) in a basin (อ อ่าง) with an ox goad (ฏ ปฏัก), feeds a leaf (บ ใบไม้) to a turtle (ต เต่า), and puts a chicken (ก ไก่) on a plate (จ จาน).\n\nThai schoolchildren learn them as ไก่จิกเด็กตายบนปากโอ่ง, \"a chicken pecked a child to death on the rim of a jar\".",
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "จ", "translit": "jɔɔ jaan", "english": "j — plate", "note": "Mid class. Final: -t. Unaspirated, a soft j.", "say": "จอ จาน" },
@@ -918,7 +918,7 @@
       "group": "Consonants",
       "name": "High Class",
       "description": "The 11 high-class consonants, all aspirated or hissing sounds. An unmarked live syllable with one is rising.",
-      "about": "Remember them: up on a mountain-top pavilion (ศ ศาลา), a hermit (ษ ฤๅษี) sits on a stone pedestal (ฐ ฐาน), clashing tiny cymbals (ฉ ฉิ่ง). A tiger (ส เสือ) sneaks up and noses into his sack (ถ ถุง) for eggs (ข ไข่) and a bottle (ฃ ขวด), but a bee (ผ ผึ้ง) buzzes out of a wooden chest (ห หีบ), so the hermit slams the lid (ฝ ฝา) shut on it. Thai schoolchildren learn them as ผีฝากถุงข้าวสารให้ฉัน, \"a ghost left a bag of rice with me\".",
+      "about": "Remember them: up on a mountain-top pavilion (ศ ศาลา), a hermit (ษ ฤๅษี) sits on a stone pedestal (ฐ ฐาน), clashing tiny cymbals (ฉ ฉิ่ง). A tiger (ส เสือ) sneaks up and noses into his sack (ถ ถุง) for eggs (ข ไข่) and a bottle (ฃ ขวด), but a bee (ผ ผึ้ง) buzzes out of a wooden chest (ห หีบ), so the hermit slams the lid (ฝ ฝา) shut on it.\n\nThai schoolchildren learn them as ผีฝากถุงข้าวสารให้ฉัน, \"a ghost left a bag of rice with me\".",
       "cards": [
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
         { "thai": "ฃ", "translit": "khɔ̌ɔ khùat", "english": "kh — bottle (obsolete)", "note": "High class. No longer used (ข replaced it), but still recited in the alphabet.", "say": "ขอ ขวด" },
@@ -964,7 +964,7 @@
       "group": "Consonants",
       "name": "Low Class — Sonorants",
       "description": "The 10 low-class consonants with no high-class twin. A silent ห in front makes them high class.",
-      "about": "Remember them: out on the river, a giant (ย ยักษ์) rows a boat (ร เรือ) with a woman (ญ หญิง) and a novice monk (ณ เณร) aboard. A monkey (ล ลิง) snatches the woman's ring (ว แหวน) and leaps onto a horse (ม ม้า) on the bank, while a snake (ง งู) chases a mouse (น หนู) up the string of a star-shaped kite (ฬ จุฬา). Thai schoolchildren learn them as งูใหญ่นอนอยู่ ณ ริมวัด โมฬีโลก, \"a big snake lies beside Wat Molilok\".",
+      "about": "Remember them: out on the river, a giant (ย ยักษ์) rows a boat (ร เรือ) with a woman (ญ หญิง) and a novice monk (ณ เณร) aboard. A monkey (ล ลิง) snatches the woman's ring (ว แหวน) and leaps onto a horse (ม ม้า) on the bank, while a snake (ง งู) chases a mouse (น หนู) up the string of a star-shaped kite (ฬ จุฬา).\n\nThai schoolchildren learn them as งูใหญ่นอนอยู่ ณ ริมวัด โมฬีโลก, \"a big snake lies beside Wat Molilok\".",
       "cards": [
         { "thai": "ง", "translit": "ngɔɔ nguu", "english": "ng — snake", "note": "Low class. Final: -ng. Also starts syllables, which English never does: งู nguu.", "say": "งอ งู" },
         { "thai": "ญ", "translit": "yɔɔ yǐng", "english": "y — woman", "note": "Low class. Final: -n. หญิง yǐng (woman), บุญ bun (merit).", "say": "ยอ หญิง" },
@@ -985,7 +985,7 @@
       "group": "Consonants",
       "name": "All Consonants ก–ถ",
       "description": "The first half of the alphabet in order, for mixed review once the class topics are familiar. ฃ and ฅ are obsolete.",
-      "about": "Thai children learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\". The order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, and ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back.",
+      "about": "Thai children learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\".\n\nThe order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, and ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back.",
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
@@ -1105,7 +1105,7 @@
       "group": "Vowels",
       "name": "Diphthongs & Special Vowels",
       "description": "Gliding vowels, the vowels with a built-in ending (อำ, ใอ, ไอ, เอา) and the Sanskrit ฤ. อ is only a placeholder for the consonant.",
-      "about": "Each glide is two vowels run together: เอีย is อี sliding into อา, เอือ is อือ into อา, and อัว is อู into อา. The shortcut vowels อำ ไอ ใอ เอา have their ending built in: am, ai, ai, ao. Thai schools call them สระเกิน, the \"extra\" vowels.",
+      "about": "Each glide is two vowels run together: เอีย is อี sliding into อา, เอือ is อือ into อา, and อัว is อู into อา. The shortcut vowels อำ ไอ ใอ เอา have their ending built in: am, ai, ai, ao.\n\nThai schools call อำ ไอ ใอ เอา สระเกิน, the \"extra\" vowels.",
       "cards": [
         { "thai": "เอียะ", "translit": "ìa", "english": "ia — short (rare)", "note": "เ–ียะ: mostly sound words, like เพียะ (slap!)." },
         { "thai": "เอีย", "translit": "ia", "english": "ia — long, as in 'Mia'", "note": "เ–ีย: เมีย mia (wife), เรียน rian (study)." },

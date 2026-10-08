@@ -1237,13 +1237,15 @@ body { display: flex; flex-direction: column; }
   color: var(--ink);
   margin-bottom: 12px;
 }
-/* A topic's `about` paragraph (e.g. the consonant classes' memory scenes). */
+/* A topic's `about` paragraphs (e.g. the consonant classes' memory scenes). */
 .wordlist-about {
   margin: -4px 0 16px;
   color: var(--muted);
   font-size: calc(16px * var(--fs, 1));
   line-height: 1.5;
 }
+.wordlist-about p { margin: 0; }
+.wordlist-about p + p { margin-top: 10px; }
 .wordlist-about[hidden] { display: none; }
 .wordlist-about .nowrap { white-space: nowrap; }
 
