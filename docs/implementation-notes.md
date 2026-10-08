@@ -1395,8 +1395,12 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
         reused eight names (The Night Shift, Gossip, The Speech…) before this was added.
     - **Half 1** (2026-10-08): 159 stories (873 in all), for every category from Basics to
       Getting Around; every topic there has at least 5.
-    - **Half 2:** Work & Education, Health, Nature & Animals, Sport & Leisure, Music, News &
-      Politics, Crime & Law, Mathematics and Science (418 slots).
+    - **Half 2** (2026-10-08): 132 stories (1,005 in all), for Work & Education, Health, Nature &
+      Animals, Sport & Leisure, Music, News & Politics, Crime & Law, Mathematics and Science
+      (418 slots). `plan5.py` now reports 0 slots short: **every topic has at least 5 stories.**
+      - The automatic meanings needed picks again: ต่อย 'to punch' (not 'to sting'),
+        หนัง 'film', รอบ 'round', ลูก as the classifier for dice, and ฝรั่ง 'Westerner'.
+      - Audio: 24,597 samples (+713).
     - Audit: 0 errors. All 404 batch 1–3 stories opened from a matching topic in the browser
       test, each sentence with its sample.
 
