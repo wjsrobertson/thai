@@ -384,6 +384,15 @@ backup `decks.backup28.json`).
   - **The song ก เอ๋ย ก ไก่:** only its opening lines are quoted, as a pointer. Its modern words
     are copyrighted (by Mansiga Lewanich), so the full song isn't in the app.
   - **The rows:** the order is grouped by place in the mouth, each row ending in a nasal: ง ญ ณ น ม.
+- **Vowel tricks** (the user asked for vowel mnemonics) were added to the `about` paragraphs:
+  - **Short & Long Vowels** (appended):
+    - ะ cuts a vowel short;
+    - an extra stroke makes it long;
+    - "U is Under";
+    - three mouth shapes, with อือ as อู said with a smile.
+  - **Diphthongs & Special Vowels:**
+    - each glide is two vowels run together;
+    - อำ ไอ ใอ เอา have their ending built in (สระเกิน).
 - **"Same same"** (the user asked): เหมือน ๆ กัน (where the Thinglish comes from) and พอ ๆ กัน went
   into Doubled Words, and เหมือนแต่ไม่เหมือน ("same same but different") into Comparing.
 - **New `about` paragraphs:**

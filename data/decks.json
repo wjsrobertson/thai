@@ -1076,7 +1076,7 @@
       "group": "Vowels",
       "name": "Short & Long Vowels",
       "description": "The 9 basic vowels, each short and long. Length changes meaning, so it matters. อ is only a placeholder for the consonant.",
-      "about": "Five vowels are written before the consonant but said after it: เ แ โ ไ ใ. In เก, the ก is said first: \"gee\". Others sit above the consonant (อิ) or below it (อุ), and some wrap round it (เอือ).",
+      "about": "Five vowels are written before the consonant but said after it: เ แ โ ไ ใ. In เก, the ก is said first: \"gee\". Others sit above the consonant (อิ) or below it (อุ), and some wrap round it (เอือ). Tricks for length: ะ cuts a vowel short, its two dots a stop sign: เอ ee, เอะ e. An extra stroke makes it long: ิ i, ี ii; ุ u, ู uu. And U is Under: ุ and ู are the only vowels written below the consonant. Three mouth shapes: a smile for อิ อี เอ แอ, round lips for อุ อู โอ ออ, and in between for อึ อือ เออ. Say อู with a smile and you get อือ.",
       "cards": [
         { "thai": "อะ", "translit": "à", "english": "a — short, as in 'cut'", "note": "–ะ after the consonant. Before a final it becomes ั: กัน gan." },
         { "thai": "อา", "translit": "aa", "english": "aa — long, as in 'father'", "note": "–า after the consonant: มา maa (come)." },
@@ -1104,6 +1104,7 @@
       "group": "Vowels",
       "name": "Diphthongs & Special Vowels",
       "description": "Gliding vowels, the vowels with a built-in ending (อำ, ใอ, ไอ, เอา) and the Sanskrit ฤ. อ is only a placeholder for the consonant.",
+      "about": "Each glide is two vowels run together: เอีย is อี sliding into อา, เอือ is อือ into อา, and อัว is อู into อา. The shortcut vowels อำ ไอ ใอ เอา have their ending built in: am, ai, ai, ao. Thai schools call them สระเกิน, the \"extra\" vowels.",
       "cards": [
         { "thai": "เอียะ", "translit": "ìa", "english": "ia — short (rare)", "note": "เ–ียะ: mostly sound words, like เพียะ (slap!)." },
         { "thai": "เอีย", "translit": "ia", "english": "ia — long, as in 'Mia'", "note": "เ–ีย: เมีย mia (wife), เรียน rian (study)." },
