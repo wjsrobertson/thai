@@ -1252,11 +1252,27 @@ The other ten passages:
   breaks joined and the speaker's label dropped. In app.js that's `sentenceText()`; keep the two
   in step.
 - **The Reading page** (view `'reading'`, `#reading-section`, `renderReading`):
-  - **The list** shows the passages by level (their `group`), each with its description and a ✓
-    once opened (prefs `readingDone`).
-  - **A passage** has "‹ All passages", its title and description, the reader, then "Words in this
-    passage (N)". That opens its word list (rows like search results: add to Flashcards, play) and
-    Add all to Flashcards.
+  - **The list is per topic** (2026-10-08, the user's design). The page has the topic button, as
+    on Topics and Flashcards, sharing the same choice (`state.currentDeckId`). It lists the
+    stories that use that topic's words (`storiesFor`; a group or category pools its topics'
+    words).
+    - **Matching** is automatic: a story qualifies if it uses at least `READING_MIN_MATCH` (2) of
+      the words. Very common words (`READING_COMMON`: particles, pronouns, ไป มา มี เป็น ของ ไม่ …)
+      don't count, or "Spoken 1–20" would match every story.
+    - **Order:** most matched words first, then the easier level.
+    - **Each story** shows its title and description, then on the right a ✓ once opened (prefs
+      `readingDone`) and its level, flush right (moved there from beside the title at the user's
+      request). The matched words were shown as chips at first; the user had them removed.
+      The list's "Reading" heading and intro line went too.
+    - **There's never a list of every story**, as there will be too many (the user's call). A
+      topic with none says "No stories for … yet" and offers "Try all of <category>".
+    - **On 2026-10-08:** Food & Eating found 6, Numbers 0–20 found 2, and Farm Animals found 1.
+      Greetings & Politeness found none: its stories share just one greeting each once ครับ/ค่ะ
+      don't count. That's the case manual picks could fix if needed.
+  - **Changing topic** on the Reading page returns to the list (`selectDeck`).
+  - **A passage** has "‹ Stories", its title and description, and the reader. It had a "Words in
+    this passage (N)" list (add each to Flashcards, play) and Add all to Flashcards; the user had
+    both removed, since the Topics page does that.
   - It remembers the open passage while the app's open (`state.readingId`). The app still starts
     on Home.
   - **Where passages don't appear:**
@@ -1278,6 +1294,70 @@ The other ten passages:
   Flashcards (on Everything) in any direction.
 - **Tested:** all ten passages render at 320 px with no overflow, every sentence has its
   recording, and the tap, pop-up, toggles, play and press-to-stop all work, with no errors.
+
+## Stories for every topic (2026-10-08, in progress)
+
+The user asked for two or three stories for every topic ("don't hold back with the slang topics… we
+want real use"; letter topics creatively, e.g. the letter names). Written by me in batches of about
+10% of the topics, stopping after each batch so the user can check resource use.
+
+- **Source files** (scratchpad `decks/`):
+  - `stories_more.py` gathers the batch modules (`stories_basics.py`, `stories_conv.py`,
+    `stories_script.py`, `stories_b2_*.py`, `stories_b3_*.py`).
+  - Each story is `(id, level, name, description, lines, extra)`. Ids are `rs-…`; level is Easy or
+    Medium.
+  - Each batch has a `NEW` dict of words the app lacks. New words are shared across batches, but
+    a story's `pick` beats a shared new word: ละ is "per" at the market and the particle at the
+    temple fair. A new sense of an existing word (หก "to spill") goes in that story's own `new`,
+    or it would take over every story (หก "six").
+- **`extra` keys:**
+  - `for`: the topics the story is written for. The builder errors if the story uses fewer than 2
+    of a target topic's words, counted as the app counts them, so the common words don't count.
+  - `pick`: a word's meaning.
+  - `new`: new words for this story only.
+  - `topic_first`: keep the target topic's own cards, as the vowel stories want อะ / อา / อี as
+    vowels.
+- **`build_reading.py` chooses meanings automatically** when a word has several:
+  1. **The target topic's card.** Exception: if the topic is in Thai Script and the word has a
+     real meaning elsewhere, the spelling-example card is skipped. ลิง gets "monkey", not
+     "final sound -ng".
+  2. **Otherwise, the meaning used in the most topics,** leaving out spelling examples, dialect
+     and slang unless the story is written for those.
+  3. **`--picks` lists every automatic choice** for review. Wrong ones so far: กะ "with" for a
+     work shift, คัน "itchy" for a car, ชั้น "I" for a floor, ล้ม "kill" for a falling tree,
+     บาง "thin" for "some", พอ "enough" for "as soon as". Each was fixed with a `pick`.
+  4. **When the app has only a slang or wrong sense, add a shared new card.** แกง had only the slang
+     "to set someone up", เส้น only "connections", and ดวง only "fate". "Curry", "noodle" and the
+     classifier for lights and the moon were added as shared new words. That also fixed earlier
+     stories that had been getting the wrong sense (Grandma's Southern Kitchen; Loy Krathong).
+     A word with a different sense in just one story gets that story's own `new` (แฟนมวย "boxing
+     fan", not boyfriend).
+  - It also sorts the Reading topics by level, since the audit wants each group contiguous.
+- **`coverage.py <category…>`** lists each topic's story count (as `storiesFor` counts) and the
+  topics still short of 2.
+- **Passage format addition:** `_` is a space inside a word (จริง_ๆ, แม่_ก_กา,
+  งูใหญ่นอนอยู่_ณ_ริมวัด_โมฬีโลก). Cards with spaces can then be words in a passage. Handled
+  by app.js (`renderReader`, `sentenceText`), gen_audio's `sentence_text` and the audit.
+- **Letter topics:** stories use the letter names as words (ก ไก่ จ จาน…), so the letter cards
+  match, plus the class rhymes. Vowel topics use the recited vowels (อะ อา อิ อี…). Tone Marks
+  uses ๆ, ฯ and ฯลฯ in real text.
+- **Progress:**
+  - **Batch 1:** Basics, Conversation, Talking About Language, and 12 Thai Script topics. 42
+    topics, 68 stories.
+  - **Batch 2:** the rest of Thai Script, Grammar and Spoken Thai. 43 topics, 62 stories.
+  - **Every topic in those six categories has at least 2 stories.**
+  - **Batch 3:** 241 stories (now 404 in all) for 141 topics:
+    - Slang & Swearing: real use, such as before a fight, road rage, the drunk at the bar.
+    - Southern, Isan and Northern Thai: dialect words in simple frames. Their stories set `for`,
+      since dialect cards are left out of the automatic meaning choice.
+    - People & Relationships, Culture & Values, Food & Drink, Home, Shopping & Errands and Getting
+      Around.
+    - The two orphan stories now match a topic. The Mango Tree gets banana and coconut, so it
+      matches Fruit. A Text from a Friend uses the Plans & Invitations phrases (ว่างไหม,
+      ไปกินข้าวกันไหม, เจอกันที่ไหน…).
+  - **Still short (157 topics):** Work & Education, Health & Medicine, Nature & Animals, Sport &
+    Leisure, Music, News & Politics, Crime & Law (where the gangster and drug-dealer stories go),
+    Mathematics and Science.
 
 ## Speaker icon (2026-10-08)
 

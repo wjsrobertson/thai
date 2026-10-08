@@ -79,7 +79,7 @@ def playable_thai(run):
 def sentence_text(th):
     """A passage line as it's said: word breaks (|) joined up, and a speaker's label ("ลูกค้า: ")
     left off. Keep in step with sentenceText() in app.js."""
-    return re.sub(r'^[^ ]+: ', '', th).replace('|', '')
+    return re.sub(r'^[^ ]+: ', '', th).replace('|', '').replace('_', ' ')
 
 
 def voice_for(said, lang, voices):

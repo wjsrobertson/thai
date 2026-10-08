@@ -14,7 +14,7 @@
 
 importScripts('audio-store.js'); // self.ClipStore
 
-const SHELL_CACHE = 'learnthai-shell-v7';  // bump if SHELL changes, so stale entries are dropped
+const SHELL_CACHE = 'learnthai-shell-v9';  // bump if SHELL changes, so stale entries are dropped
 const OLD_AUDIO_CACHE = 'learnthai-audio'; // where clips were kept until 2026-10-07: deleted on activate
 const NETWORK_TIMEOUT_MS = 4000;
 // Paths relative to the service worker's scope ('' is the app's root URL).

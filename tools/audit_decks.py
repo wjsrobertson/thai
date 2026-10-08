@@ -129,7 +129,7 @@ def audit(decks):
                 errors['passage word-break glitch'].append(f"{dk['name']}: {line['th']}")
             for chunk in line['th'].split(' '):
                 for t in chunk.split('|'):
-                    w = t.rstrip(':')
+                    w = t.rstrip(':').replace('_', ' ')  # _ is a space inside a word (จริง_ๆ)
                     if THAI.search(w) and w not in own:
                         errors['passage word with no card in its topic'].append(f"{dk['name']}: {w}")
 

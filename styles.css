@@ -1208,7 +1208,6 @@ body { display: flex; flex-direction: column; }
 }
 /* Review mode (.today-only, since 2026-10-08 Flashcards' third mode) replaces the card and the Test
    round's summary. */
-.stage[data-view="reading"] .deck-picker-bar,
 .stage[data-view="reading"] .card-wrap,
 .stage[data-view="reading"] .flashcards-only,
 .stage[data-view="reading"] .wordlist-only,
@@ -1258,17 +1257,6 @@ body { display: flex; flex-direction: column; }
 /* The Reading page (2026-10-08): the passages by level, or one open. */
 .reading { max-width: 760px; margin: 0 auto; }
 .reading[hidden] { display: none; }
-.reading-title { margin: 8px 0 6px; font-size: calc(26px * var(--fs, 1)); }
-.reading-intro { margin: 0 0 18px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.45; }
-.reading-level { margin-bottom: 18px; }
-.reading-level-name {
-  margin: 0 0 6px;
-  color: var(--muted);
-  font-size: calc(13px * var(--fs, 1));
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
 .reading-item {
   display: flex;
   align-items: center;
@@ -1288,16 +1276,13 @@ body { display: flex; flex-direction: column; }
 .reading-item-name { display: block; font-size: calc(18px * var(--fs, 1)); font-weight: 600; }
 .reading-item-desc { display: block; margin-top: 2px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
 .reading-item-tick { flex: none; width: 1.2em; color: var(--good); font-size: 18px; font-weight: 700; text-align: center; }
+/* The level sits flush right, after the ✓ column. */
+.reading-item-level { flex: none; color: var(--muted); font-size: calc(13px * var(--fs, 1)); white-space: nowrap; }
+.reading-empty { padding: 20px 4px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
+.reading-empty .ghost { display: block; margin-top: 12px; padding: 8px 14px; }
 .reading-back { margin: 4px 0 10px; padding: 6px 12px; }
 .reading-name { margin: 0 0 4px; font-size: calc(24px * var(--fs, 1)); }
 .reading-desc { margin: 0 0 14px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
-.reading-words { margin-bottom: 24px; }
-.reading-words-bar { display: flex; flex-wrap: wrap; gap: 8px; }
-.reading-words-bar .ghost { padding: 8px 14px; }
-#reading-add-all.all-added { color: var(--good); border-color: var(--good); }
-.reading-word-list { margin-top: 8px; padding: 4px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
-.reading-word-list[hidden] { display: none; }
-.reading-word-list .word-hit-main { cursor: default; }
 .rw.found { color: var(--accent); background: var(--panel-2); }
 /* Home's third card spans both columns. */
 .home-card-wide { grid-column: 1 / -1; }
@@ -1306,7 +1291,7 @@ body { display: flex; flex-direction: column; }
    tapped word lights up and gets a pop-up with its transliteration and meaning. */
 .reader {
   position: relative;
-  margin: 0 0 16px;
+  margin: 0 0 24px;
   padding: 14px 16px 6px;
   background: var(--panel);
   border: 1px solid var(--border);

@@ -110,41 +110,12 @@
       <button type="button" class="home-card home-card-wide" data-go="reading">
         <span class="home-card-title">📰 Reading</span>
         <span class="home-card-text">
-          <span>Short passages to read, from signs and a café menu to short stories.</span>
+          <span>Short stories that use the words from each topic.</span>
           <span>Tap any word to hear it and see what it means.</span>
         </span>
       </button>
     </section>
 
-    <!-- The Reading page (renderReading): the passages by level, or one passage open in the reader. -->
-    <section class="reading reading-only" id="reading-section" hidden>
-      <div class="reading-library" id="reading-library">
-        <h2 class="reading-title">Reading</h2>
-        <p class="reading-intro">Short passages, from easy to harder. Tap any word to hear it and see what it means.</p>
-        <div id="reading-list"></div>
-      </div>
-      <div class="reading-passage" id="reading-passage" hidden>
-        <button type="button" class="ghost reading-back" id="reading-back">‹ All passages</button>
-        <h2 class="reading-name" id="reading-name"></h2>
-        <p class="reading-desc" id="reading-desc"></p>
-        <section class="reader" id="reader">
-          <div class="reader-toggles" role="group" aria-label="Show under each line">
-            <span class="reader-show">Show</span>
-            <button type="button" class="reader-toggle" id="reader-translit" aria-pressed="false">Transliteration</button>
-            <button type="button" class="reader-toggle" id="reader-english" aria-pressed="false">English</button>
-          </div>
-          <div class="reader-lines" id="reader-lines"></div>
-          <div class="reader-pop" id="reader-pop" role="status" hidden></div>
-        </section>
-        <div class="reading-words">
-          <div class="reading-words-bar">
-            <button type="button" class="ghost" id="reading-words-toggle" aria-expanded="false"></button>
-            <button type="button" class="ghost" id="reading-add-all"></button>
-          </div>
-          <div class="reading-word-list" id="reading-word-list" hidden></div>
-        </div>
-      </div>
-    </section>
 
     <div class="deck-picker-bar">
       <button type="button" id="deck-button" class="deck-button" aria-haspopup="dialog" aria-expanded="false">
@@ -167,6 +138,27 @@
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
       </div>
     </div>
+    <!-- The Reading page (renderReading): the current topic's stories, or one open in the reader. Under the
+         controls bar, so the topic button sits on top, as on Topics and Flashcards. -->
+    <section class="reading reading-only" id="reading-section" hidden>
+      <div class="reading-library" id="reading-library">
+        <div id="reading-list"></div>
+      </div>
+      <div class="reading-passage" id="reading-passage" hidden>
+        <button type="button" class="ghost reading-back" id="reading-back">‹ Stories</button>
+        <h2 class="reading-name" id="reading-name"></h2>
+        <p class="reading-desc" id="reading-desc"></p>
+        <section class="reader" id="reader">
+          <div class="reader-toggles" role="group" aria-label="Show under each line">
+            <span class="reader-show">Show</span>
+            <button type="button" class="reader-toggle" id="reader-translit" aria-pressed="false">Transliteration</button>
+            <button type="button" class="reader-toggle" id="reader-english" aria-pressed="false">English</button>
+          </div>
+          <div class="reader-lines" id="reader-lines"></div>
+          <div class="reader-pop" id="reader-pop" role="status" hidden></div>
+        </section>
+      </div>
+    </section>
     <section class="card-wrap">
       <div class="card-row">
         <button type="button" id="prev-btn" class="nav-btn" aria-label="Previous card" title="Previous (←)">‹</button>

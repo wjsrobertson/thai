@@ -103,9 +103,6 @@ const els = {
   readingBack: document.getElementById('reading-back'),
   readingName: document.getElementById('reading-name'),
   readingDesc: document.getElementById('reading-desc'),
-  readingWordsToggle: document.getElementById('reading-words-toggle'),
-  readingAddAll: document.getElementById('reading-add-all'),
-  readingWordList: document.getElementById('reading-word-list'),
   reader: document.getElementById('reader'),
   readerLines: document.getElementById('reader-lines'),
   readerPop: document.getElementById('reader-pop'),
@@ -966,6 +963,10 @@ function selectDeck(deckId) {
   renderDeckButton();
   if (state.orderMode !== 'review' || state.view !== 'flashcards') preloadDeckAudio(deck); // a session preloads its own
   renderWordlist();
+  if (state.view === 'reading') { // Reading lists the new topic's stories
+    state.readingId = null;
+    renderReading();
+  }
 }
 
 // ---------- deck picker modal ----------
@@ -2626,20 +2627,20 @@ function handleReviewKey(e) {
 
 // ---------- reading practice ----------
 // Added 2026-10-08 (kept; to be reshaped and tidied): passages as topics in a Reading
-// category. A topic's `passage` is lines of { th, en }. In th, | marks a word break and a space is a
-// real space; "ลูกค้า: " is a speaker's label. Every Thai word is a card in the topic (the audit
+// category. A topic's `passage` is lines of { th, en }. In th, | marks a word break, a space is a
+// real space, _ is a space inside a word (จริง_ๆ), and "ลูกค้า: " is a speaker's label. Every Thai word is a card in the topic (the audit
 // checks), which gives the tap look-up its transliteration and meaning, and the word list under the
 // passage its words. Each sentence is recorded whole too (gen_audio's sentence_text).
 
 // A passage line as it's said: the word breaks joined up, a speaker's label left off. Keep in step
 // with sentence_text() in tools/gen_audio.py.
 function sentenceText(th) {
-  return th.replace(/^[^ ]+: /, '').replace(/\|/g, '');
+  return th.replace(/^[^ ]+: /, '').replace(/\|/g, '').replace(/_/g, ' ');
 }
 
-// The Reading page: the passages by level (Easy, Medium, Harder: their `group`), or one open in the
-// reader with its words underneath. A passage you've opened gets a ✓ (prefs readingDone). The page
-// remembers the open passage while the app's open (state.readingId); it opens on the list.
+// The Reading page: the current topic's stories (renderReadingList), or one open in the reader. Adding
+// its words to Flashcards is left to the Topics page (the user's call, 2026-10-08). A story you've opened gets a ✓ (prefs readingDone). The page remembers the open
+// story while the app's open (state.readingId); it opens on the list.
 const isPassage = (id) => !!state.decks.find((d) => d.id === id)?.passage;
 
 function renderReading() {
@@ -2654,35 +2655,65 @@ function renderReading() {
   els.readingName.textContent = topic.name;
   els.readingDesc.textContent = topic.description;
   renderReader(topic);
-  renderReadingWords(topic);
 }
 
+// The list: the stories that use the current topic's words (the topic picker's choice, shared with
+// the Topics page), best matches first. There's no list of every story: there will be too many (the
+// user's call, 2026-10-08).
 function renderReadingList() {
+  const scope = currentScope();
   const done = new Set(getPreferences().readingDone || []);
-  const levels = new Map();
+  const found = scope ? storiesFor(scope) : [];
+  if (!found.length) {
+    const empty = document.createElement('div');
+    empty.className = 'reading-empty';
+    empty.append(scope ? `No stories for ${scope.name} yet.` : '');
+    // A narrower choice can try its whole category, whose words are pooled.
+    const cat = scope && scope.kind !== 'category' ? scope.decks[0]?.category : null;
+    if (cat) {
+      const wider = document.createElement('button');
+      wider.type = 'button';
+      wider.className = 'ghost';
+      wider.textContent = `Try all of ${cat}`;
+      wider.addEventListener('click', () => selectDeck(`cat:${cat}`));
+      empty.append(wider);
+    }
+    els.readingList.replaceChildren(empty);
+    return;
+  }
+  els.readingList.replaceChildren(...found.map(({ d }) => {
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.className = 'reading-item' + (done.has(d.id) ? ' done' : '');
+    item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"><span class="reading-item-title"></span></span><span class="reading-item-desc"></span></span><span class="reading-item-tick" aria-hidden="true"></span><span class="reading-item-level"></span>';
+    item.querySelector('.reading-item-title').textContent = d.name;
+    item.querySelector('.reading-item-level').textContent = d.group || '';
+    item.querySelector('.reading-item-desc').textContent = d.description;
+    item.querySelector('.reading-item-tick').textContent = done.has(d.id) ? '✓' : '';
+    if (done.has(d.id)) item.setAttribute('aria-label', `${d.name}, read`);
+    item.addEventListener('click', () => openReading(d.id));
+    return item;
+  }));
+}
+
+// Which stories go with a topic (or a group or category, their words pooled): those using at least
+// READING_MIN_MATCH of its words, not counting very common ones, which would tie every story to
+// every topic (READING_COMMON). Most matched words first, then the easier level. Automatic for now;
+// stories could be tagged by hand later if this picks oddly.
+const READING_MIN_MATCH = 2;
+const READING_COMMON = new Set(('ไป มา มี เป็น อยู่ ได้ ให้ ทำ ของ ที่ ไม่ ใน กับ และ แต่ แล้ว จะ ก็ นะ ครับ ค่ะ คะ จ้ะ '
+  + 'ฉัน ผม เรา เขา คุณ นี่ นี้ คือ ว่า มาก ดี ไหม เลย ยัง ด้วย กัน ตอน').split(' '));
+
+function storiesFor(scope) {
+  const words = new Set(scope.cards.map((c) => c.thai).filter((w) => !READING_COMMON.has(w)));
+  const levels = [...new Set(state.decks.filter((d) => d.passage).map((d) => d.group))];
+  const found = [];
   for (const d of state.decks) {
     if (!d.passage) continue;
-    if (!levels.has(d.group)) levels.set(d.group, []);
-    levels.get(d.group).push(d);
+    const hits = [...new Set(d.cards.map((c) => c.thai))].filter((w) => words.has(w));
+    if (hits.length >= READING_MIN_MATCH) found.push({ d, hits });
   }
-  els.readingList.replaceChildren(...[...levels].map(([level, passages]) => {
-    const group = document.createElement('div');
-    group.className = 'reading-level';
-    group.append(Object.assign(document.createElement('h3'), { className: 'reading-level-name', textContent: level }));
-    for (const d of passages) {
-      const item = document.createElement('button');
-      item.type = 'button';
-      item.className = 'reading-item' + (done.has(d.id) ? ' done' : '');
-      item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"></span><span class="reading-item-desc"></span></span><span class="reading-item-tick" aria-hidden="true"></span>';
-      item.querySelector('.reading-item-name').textContent = d.name;
-      item.querySelector('.reading-item-desc').textContent = d.description;
-      item.querySelector('.reading-item-tick').textContent = done.has(d.id) ? '✓' : '';
-      if (done.has(d.id)) item.setAttribute('aria-label', `${d.name}, read`);
-      item.addEventListener('click', () => openReading(d.id));
-      group.append(item);
-    }
-    return group;
-  }));
+  return found.sort((a, b) => b.hits.length - a.hits.length || levels.indexOf(a.d.group) - levels.indexOf(b.d.group));
 }
 
 // Opens a passage (from the list, or a search result, which also lights the word it found).
@@ -2700,49 +2731,6 @@ function openReading(id, word = null) {
     spans.forEach((w) => w.classList.add('found'));
     setTimeout(() => spans.forEach((w) => w.classList.remove('found')), 2500);
   }
-}
-
-// The passage's words, in reading order, as a list you can open under it: each to play and add to
-// Flashcards, or all at once.
-function renderReadingWords(topic) {
-  const inFlashcards = reviewWords();
-  const keys = topic.cards.map(cardKey);
-  const missing = keys.filter((k) => !(k in inFlashcards));
-  els.readingWordsToggle.textContent = `Words in this passage (${keys.length})`;
-  els.readingAddAll.replaceChildren(...(missing.length ? [reviewIcon(), 'Add all to Flashcards'] : ['✓ All in Flashcards']));
-  els.readingAddAll.classList.toggle('all-added', !missing.length);
-  els.readingWordList.replaceChildren(...topic.cards.map((c) => {
-    const key = cardKey(c);
-    const added = key in inFlashcards;
-    const row = document.createElement('div');
-    row.className = 'word-hit';
-    const main = document.createElement('div');
-    main.className = 'word-hit-main';
-    main.innerHTML = '<span class="word-hit-thai"></span><span class="word-hit-translit"></span><span class="word-hit-english"></span>';
-    main.querySelector('.word-hit-thai').textContent = c.thai;
-    main.querySelector('.word-hit-translit').textContent = c.translit;
-    main.querySelector('.word-hit-english').textContent = c.english;
-    const rv = document.createElement('button');
-    rv.type = 'button';
-    rv.className = 'row-review' + (added ? ' added' : '');
-    rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${c.thai} from Flashcards` : `Add ${c.thai} to Flashcards`;
-    rv.setAttribute('aria-label', rv.title);
-    rv.addEventListener('click', () => {
-      setInReview([key], !added);
-      toast(added ? `Removed ${c.thai} from Flashcards` : `✓ Added ${c.thai} to Flashcards`, { tone: added ? '' : 'good' });
-      renderReadingWords(topic);
-    });
-    const sp = document.createElement('button');
-    sp.type = 'button';
-    sp.className = 'row-speak' + (sayingNow(c.thai) ? ' playing' : '');
-    sp.dataset.say = c.thai;
-    sp.setAttribute('aria-label', `Play ${c.thai}`);
-    sp.append(speakerIcon());
-    sp.addEventListener('click', () => speakerPress(sp, c.thai));
-    row.append(main, rv, sp);
-    return row;
-  }));
 }
 
 function renderReader(topic) {
@@ -2768,7 +2756,7 @@ function renderReader(topic) {
       if (i) th.append(' ');
       for (const tok of chunk.split('|')) {
         const label = tok.endsWith(':');
-        const w = label ? tok.slice(0, -1) : tok;
+        const w = (label ? tok.slice(0, -1) : tok).replace(/_/g, ' '); // _ is a space inside a word (จริง_ๆ)
         const card = own.get(w);
         if (card) {
           const span = document.createElement('span');
@@ -3456,21 +3444,6 @@ function bindEvents() {
     state.readingId = null;
     renderReading();
     window.scrollTo(0, 0);
-  });
-  els.readingWordsToggle.addEventListener('click', () => {
-    const open = els.readingWordList.hidden;
-    els.readingWordList.hidden = !open;
-    els.readingWordsToggle.setAttribute('aria-expanded', String(open));
-  });
-  els.readingAddAll.addEventListener('click', () => {
-    const topic = state.decks.find((d) => d.id === state.readingId);
-    if (!topic) return;
-    const words = reviewWords();
-    const missing = topic.cards.map(cardKey).filter((k) => !(k in words));
-    if (!missing.length) return;
-    setInReview(missing, true);
-    toast(`✓ Added ${missing.length} word${missing.length === 1 ? '' : 's'} to Flashcards`, { tone: 'good' });
-    renderReadingWords(topic);
   });
   [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish']].forEach(([btn, key]) => {
     btn.addEventListener('click', () => {
