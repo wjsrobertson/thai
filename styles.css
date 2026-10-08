@@ -1237,6 +1237,17 @@ body { display: flex; flex-direction: column; }
 }
 .wordlist-title { display: block; font-size: calc(22px * var(--fs, 1)); font-weight: 600; }
 .wordlist-desc { display: block; margin-top: 4px; font-size: calc(17px * var(--fs, 1)); line-height: 1.45; }
+/* Tap-to-play Thai in notes and topic paragraphs (appendNoteText). */
+.say {
+  cursor: pointer;
+  text-decoration: underline dotted;
+  text-decoration-color: color-mix(in srgb, currentColor 55%, transparent);
+  text-underline-offset: 0.35em;
+  border-radius: 4px;
+}
+.say:hover, .say:focus-visible { color: var(--accent); outline: none; }
+.say.playing { color: var(--accent); text-decoration-color: var(--accent); }
+
 /* A topic's `about` paragraphs (e.g. the consonant classes' memory scenes). */
 .wordlist-about {
   margin: -4px 0 16px;

@@ -657,7 +657,7 @@ function renderCard() {
     els.english.textContent = c.thai;
     els.english.classList.add('back-th');
   }
-  textWithArrows(els.note, c.note || '');
+  noteText(els.note, c.note || '');
   renderSpelling();
   setFlipped(false);
   updateStats();
@@ -1731,8 +1731,15 @@ function renderWordlist() {
   // or inside a Thai word (นก|ฮูก).
   els.wordlistAbout.replaceChildren(...about.split(/\n\n+/).map((para) => {
     const el = document.createElement('p');
-    el.append(...para.split(/(\([^()]*\))/).map((part) => (
-      part.startsWith('(') ? Object.assign(document.createElement('span'), { className: 'nowrap', textContent: part }) : part)));
+    for (const part of para.split(/(\([^()]*\))/)) {
+      if (!part.startsWith('(')) appendNoteText(el, part);
+      else {
+        const span = document.createElement('span');
+        span.className = 'nowrap';
+        appendNoteText(span, part);
+        el.append(span);
+      }
+    }
     return el;
   }));
   const words = reviewWords();
@@ -1807,7 +1814,7 @@ function renderWordlist() {
         if (key === 'english' && c.note) {
           const span = document.createElement('span');
           span.className = 'col-note';
-          td.appendChild(textWithArrows(span, c.note));
+          td.appendChild(noteText(span, c.note));
         }
         tr.appendChild(td);
       }
@@ -2160,11 +2167,61 @@ function setInReview(keys, on) {
 // some fonts. `caps` centres the arrow on capitals (EN→TH) rather than lowercase letters.
 function textWithArrows(el, text, { caps = false } = {}) {
   el.replaceChildren();
+  appendWithArrows(el, text, caps);
+  return el;
+}
+
+function appendWithArrows(el, text, caps = false) {
   text.split(/\s*→\s*/).forEach((part, i) => {
     if (i) el.append(lineIcon('arrow-icon' + (caps ? ' caps' : ''), '0 0 16 16', 'M2.5 8h10.5M9 4l4 4-4 4', 'to'));
     el.append(part);
   });
+}
+
+// Thai in notes and topic paragraphs is tap-to-play (2026-10-08): the 576 notes with an example
+// like ยิ่งเร็วยิ่งดี = the sooner the better could be read but not heard. A run of Thai words is
+// playable if it has a consonant, doesn't start with a vowel or tone mark (a spelling note's –ือ),
+// and isn't a list of letters (ด ต ถ ท ธ …). tools/gen_audio.py records the same runs, keyed
+// under 'th' like a card's Thai; keep playableThai() and its playable_thai() in step.
+const THAI_RUN = /([\u0E01-\u0E5B]+(?:[ \u00A0]+[\u0E01-\u0E5B]+)*)/;
+
+function playableThai(run) {
+  if (!/[\u0E01-\u0E2E]/.test(run) || /^[\u0E30-\u0E3A\u0E45-\u0E4E]/.test(run)) return false;
+  const words = run.split(/[ \u00A0]+/);
+  return !(words.length >= 3 && words.every((w) => w.length <= 2));
+}
+
+// Fills el with text whose playable Thai runs are tap targets (.say); → is drawn as the arrow.
+function noteText(el, text) {
+  el.replaceChildren();
+  appendNoteText(el, text);
   return el;
+}
+
+function appendNoteText(el, text) {
+  text.split(THAI_RUN).forEach((part, i) => {
+    if (!part) return;
+    if (i % 2 === 0 || !playableThai(part)) {
+      appendWithArrows(el, part);
+      return;
+    }
+    const say = document.createElement('span');
+    say.className = 'say';
+    say.textContent = part;
+    say.tabIndex = 0;
+    say.setAttribute('role', 'button');
+    say.title = `Play ${part}`;
+    const play = (e) => {
+      e.stopPropagation(); // not a card flip
+      e.preventDefault();
+      stopAudio();
+      say.classList.add('playing');
+      speakAndWait(part, 'th').finally(() => say.classList.remove('playing'));
+    };
+    say.addEventListener('click', play);
+    say.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') play(e); });
+    el.append(say);
+  });
 }
 
 // A line icon: an SVG path stroked in the text colour (styled by `cls`). With a `label` screen
@@ -2305,7 +2362,7 @@ function presentEntry() {
   els.reviewMain.textContent = thaiFirst ? card.english : card.thai;
   els.reviewMain.className = 'english' + (thaiFirst ? '' : ' back-th');
   els.reviewTranslit.textContent = card.translit;
-  textWithArrows(els.reviewNote, card.note || '');
+  noteText(els.reviewNote, card.note || '');
   const groups = spellingFor(card);
   els.reviewSpelling.textContent = groups ? spellingText(groups) : '';
   els.reviewSpelling.hidden = !groups;

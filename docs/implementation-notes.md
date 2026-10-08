@@ -1823,6 +1823,23 @@ python3 -u tools/gen_audio.py --help     # --th-voice, --en-voice, --rate, --job
 
 ### App side (`app.js`)
 
+- **Tap-to-play Thai in notes and topic paragraphs** (2026-10-08, the user's pick from "what
+  else"). 576 notes had an example like ยิ่งเร็วยิ่งดี = the sooner the better that could be read but
+  not heard.
+  - **What plays:** each run of Thai words in a card's `note` or a topic's `about` is a tap target
+    (`.say`, dotted underline, accent while playing). This works on the Topics list, the Browse
+    and Recognition card back, the Recall card back and the paragraphs. The tap stops propagation,
+    so it never flips a card.
+  - **What doesn't:** a run is playable if it has a consonant, doesn't start with a vowel or tone
+    mark (a spelling note's –ือ), and isn't a list of one- or two-letter items (ด ต ถ ท ธ …).
+  - **The rule lives twice,** in `THAI_RUN` / `playableThai()` in app.js and `THAI_RUN` /
+    `playable_thai()` in gen_audio.py. Keep them in step. On 2026-10-08 both picked the same
+    1441 runs, checked by a script.
+  - **Recording:** gen_audio records each run under manifest `th`, like a card's Thai, so
+    `speakAndWait(run, 'th')` finds it. A run that is a card's Thai keeps that card's sample,
+    so a lone letter says its name. About 700 new clips, roughly 8 MB. The offline download takes
+    every manifest clip, so it includes them.
+
 - **Setting:** `settings.audioSource`, either `'samples'` (default) or `'browser'`. It's under
   Settings → Audio → **Voice**. The help text shows per-language coverage (e.g. "Thai 975 of 975"),
   which is a quick way to tell whether the generator needs re-running.

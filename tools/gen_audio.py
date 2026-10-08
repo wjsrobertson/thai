@@ -50,6 +50,9 @@ def spoken_text(text, lang):
         # Thai laughter "555" (5 = ห้า, hâa) would be read as "five hundred and fifty-five".
         if re.fullmatch(r'5+', text):
             return ' '.join(['ห้า'] * len(text))
+        # The obsolete letters ฦ and ฦๅ (in a note) get no audio at all from the voice: read them
+        # as they sound, lʉ and lʉʉ, as the ฤๅ card's 'say' does for its sibling.
+        text = {'ฦ': 'ลึ', 'ฦๅ': 'ลือ'}.get(text, text)
         # The Thai voice all but skips Thai digits (๐–๙) but reads Arabic ones in Thai.
         return text.translate(THAI_DIGITS)
     # English glosses list alternatives as "a / b", which the voice runs together with no pause.
@@ -58,6 +61,19 @@ def spoken_text(text, lang):
     # Symbol-only brackets like "(≠)" or "(∀)" are for the eye; the voice reads them out again.
     text = re.sub(r'\s*\((?:(?!\w)[^\s)])+\)', '', text)
     return text
+
+
+# A run of Thai words in a note or topic paragraph, and whether the app plays it: it has a
+# consonant, doesn't start with a vowel or tone mark (a spelling note's –ือ), and isn't a list of
+# letters (ด ต ถ ท ธ …). Keep in step with THAI_RUN and playableThai() in app.js.
+THAI_RUN = re.compile('[\u0E01-\u0E5B]+(?:[ \u00A0]+[\u0E01-\u0E5B]+)*')
+
+
+def playable_thai(run):
+    if not re.search('[\u0E01-\u0E2E]', run) or re.match('[\u0E30-\u0E3A\u0E45-\u0E4E]', run):
+        return False
+    words = re.split('[ \u00A0]+', run)
+    return not (len(words) >= 3 and all(len(w) <= 2 for w in words))
 
 
 def voice_for(said, lang, voices):
@@ -160,6 +176,17 @@ async def main():
                     print(f'warning: {c[field]!r} is said two ways; using {said!r} ({d["id"]})')
                 entries[(lang, c[field])] = name
                 samples[name] = (said, voice, False)
+    # Thai in notes and topic paragraphs, which the app makes tap-to-play (appendNoteText,
+    # 2026-10-08): each playable run, keyed under 'th' like a card's Thai. A run that is a card's
+    # Thai keeps that card's sample (its 'say' and all).
+    for text in [c.get('note', '') for d in decks for c in d['cards']] + [d.get('about', '') for d in decks]:
+        for run in THAI_RUN.findall(text):
+            if not playable_thai(run) or ('th', run) in entries:
+                continue
+            said = spoken_text(run, 'th')
+            name = sample_name(said, voices['th'], args.rate)
+            entries[('th', run)] = name
+            samples[name] = (said, voices['th'], False)
     # Spelling parts, read by the Thai voice (see the module docstring).
     if SPELLING_PARTS.exists():
         for part in json.loads(SPELLING_PARTS.read_text()):
