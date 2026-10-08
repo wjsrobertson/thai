@@ -74,7 +74,7 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-08 there are 7632 cards in 431 topics across 25 categories (see Topic list order,
+- As of 2026-10-08 there are 7635 cards in 431 topics across 25 categories (see Topic list order,
   Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs, Sound Pairs,
   Thai school mnemonics and Learning tricks, 2026-10-08).
 
@@ -365,6 +365,8 @@ backup `decks.backup28.json`).
 - **Two "like" words** were added after the user asked how to say "like": ยังกับ "just like
   (casual, exaggerating)" in Comparing, and the filler แบบว่า in Interjections: Ouch, Hmm & Ugh.
   เหมือน, เหมือนกับ, แบบ and เช่น already existed.
+- **"Same same"** (the user asked): เหมือน ๆ กัน (where the Thinglish comes from) and พอ ๆ กัน went
+  into Doubled Words, and เหมือนแต่ไม่เหมือน ("same same but different") into Comparing.
 - **New `about` paragraphs:**
   - **Short & Long Vowels:** the five vowels written first but said after (เ แ โ ไ ใ).
   - **Tone Rules:** low-class marks give a tone one step higher than on mid-class letters.

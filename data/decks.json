@@ -1859,7 +1859,8 @@
         { "thai": "เหมือนกัน", "translit": "mʉ̌an gan", "english": "the same / alike" },
         { "thai": "ต่างกัน", "translit": "tàang gan", "english": "different (from each other)" },
         { "thai": "ยิ่ง...ยิ่ง", "translit": "yîng...yîng", "english": "the more … the more …", "note": "ยิ่งเร็วยิ่งดี = the sooner the better." },
-        { "thai": "ยังกับ", "translit": "yang gàp", "english": "just like (casual, exaggerating)", "note": "โง่ยังกับควาย = as thick as a buffalo. Also said ยังกะ." }
+        { "thai": "ยังกับ", "translit": "yang gàp", "english": "just like (casual, exaggerating)", "note": "โง่ยังกับควาย = as thick as a buffalo. Also said ยังกะ." },
+        { "thai": "เหมือนแต่ไม่เหมือน", "translit": "mʉ̌an tɛ̀ɛ mâi mʉ̌an", "english": "same same but different", "note": "Lit. \"same but not same\". Thais know the T-shirt joke too." }
       ]
     },
     {
@@ -2144,7 +2145,9 @@
         { "thai": "เฉย ๆ", "translit": "chə̌əi chə̌əi", "english": "just (nothing special) / so-so", "note": "ถามเฉย ๆ = just asking." },
         { "thai": "ดัง ๆ", "translit": "dang dang", "english": "loudly" },
         { "thai": "นาน ๆ ที", "translit": "naan naan thii", "english": "once in a while", "note": "Lit. \"long-long time\"." },
-        { "thai": "ไป ๆ มา ๆ", "translit": "pai pai maa maa", "english": "in the end / after all that", "note": "Lit. \"going-going, coming-coming\"." }
+        { "thai": "ไป ๆ มา ๆ", "translit": "pai pai maa maa", "english": "in the end / after all that", "note": "Lit. \"going-going, coming-coming\"." },
+        { "thai": "เหมือน ๆ กัน", "translit": "mʉ̌an mʉ̌an gan", "english": "pretty much the same (\"same same\")", "note": "Where the Thinglish \"same same\" comes from. เสื้อสองตัวนี้เหมือน ๆ กัน = these two shirts are about the same." },
+        { "thai": "พอ ๆ กัน", "translit": "phɔɔ phɔɔ gan", "english": "about the same / roughly equal", "note": "ราคาพอ ๆ กัน = the prices are about the same." }
       ]
     },
     {
