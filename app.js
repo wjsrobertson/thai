@@ -1717,7 +1717,11 @@ function renderWordlist() {
   const topicHeadings = deck.decks.length > 1 && !state.sort.key;
   let lastTopic = null;
 
-  textWithArrows(els.wordlistDeckName, `${deck.name} — ${deck.description}`);
+  // The name in bold, the description under it in normal weight (until 2026-10-08 both were one
+  // bold line, "Name — description", five bold lines for some topics on a phone).
+  const title = Object.assign(document.createElement('span'), { className: 'wordlist-title', textContent: deck.name });
+  const desc = deck.description ? [textWithArrows(Object.assign(document.createElement('span'), { className: 'wordlist-desc' }), deck.description)] : [];
+  els.wordlistDeckName.replaceChildren(title, ...desc);
   // A topic's optional `about` (decks.json), e.g. the consonant classes' memory scenes: text under
   // the heading. A blank line (\n\n) starts a new paragraph, so what Thai schools teach stands
   // apart from our own tricks (the user's request, 2026-10-08).

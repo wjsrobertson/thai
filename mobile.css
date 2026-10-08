@@ -122,7 +122,8 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .setting-actions { flex-wrap: wrap; }
 
 /* ---------- wordlist: each row becomes a small card, 🔊 on the right ---------- */
-.wordlist-deck-name { font-size: calc(17px * var(--fs, 1)); }
+.wordlist-title { font-size: calc(20px * var(--fs, 1)); }
+.wordlist-desc { font-size: calc(16px * var(--fs, 1)); }
 .wordtable thead tr { display: flex; flex-wrap: wrap; }
 .wordtable th { padding: 8px 12px; font-size: calc(12px * var(--fs, 1)); }
 .wordtable th:empty { display: none; } /* the audio column */

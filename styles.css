@@ -1232,11 +1232,11 @@ body { display: flex; flex-direction: column; }
 }
 
 .wordlist-deck-name {
-  font-size: calc(22px * var(--fs, 1));
-  font-weight: 600;
   color: var(--ink);
   margin-bottom: 12px;
 }
+.wordlist-title { display: block; font-size: calc(22px * var(--fs, 1)); font-weight: 600; }
+.wordlist-desc { display: block; margin-top: 4px; font-size: calc(17px * var(--fs, 1)); line-height: 1.45; }
 /* A topic's `about` paragraphs (e.g. the consonant classes' memory scenes). */
 .wordlist-about {
   margin: -4px 0 16px;

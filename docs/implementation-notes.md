@@ -433,6 +433,23 @@ mnemonics, after our consonant-class memory scenes.
   - สระเกิน (Diphthongs & Special Vowels).
   
   The 20 ใ Words' `about` is only the school rhyme, so it stays one paragraph.
+- **Text cleanup** (2026-10-08, the user asked "any other cleanup to text needed?"):
+  - **Topics page heading:** the name is bold (`.wordlist-title`) and the description sits under it
+    in normal weight (`.wordlist-desc`). Before, both were one bold line, "Name — description",
+    which made five bold lines for Mid Class on a phone.
+  - **Sentence glosses** follow the phrase-card style: lowercase, no full stop, "I" kept. That's
+    60 cards in Sentence Patterns and Telling the Time, e.g. "I've eaten (already)" and "what
+    time is it now?".
+  - **The pair topics:** all nine Tone Pairs and Sound Pairs topics moved the listening tip ("use
+    Recall with Show Thai script turned off in Settings") from the description into `about`.
+    Sound Pairs also moved the hand-in-front-of-your-mouth test there, leaving a one-line
+    description.
+  - **One idea per paragraph:** Short & Long Vowels (3), Tone Rules (2), Tone Marks (2), Days of
+    the Week (2).
+  - **"Thai schoolchildren"** throughout, and "…" for "..." (13 cards, so new Thai audio for those).
+  - `gen_audio.py --prune` removed 95 clips no card uses.
+  - **Convention for new content:** glosses are lowercase with no full stop, even for sentences.
+    Tips and explanations go in `about`; the description stays short.
 
 **Sound Pairs, 2026-10-08** (scratchpad `decks/sound_topics.py` + `decks/merge_sounds.py`, backup
 `decks.backup26.json`).

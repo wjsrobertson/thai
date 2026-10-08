@@ -49,7 +49,7 @@
         { "thai": "เท่าไหร่ครับ", "translit": "thâo-rài kráp", "english": "how much? (male)" },
         { "thai": "แพงไป", "translit": "phɛɛng pai", "english": "too expensive" },
         { "thai": "ลดได้ไหม", "translit": "lót dâai mǎi", "english": "can you give a discount?" },
-        { "thai": "ขอ ... หน่อย", "translit": "khɔ̌ɔ ... nɔ̀i", "english": "may I have ..., please" },
+        { "thai": "ขอ … หน่อย", "translit": "khɔ̌ɔ ... nɔ̀i", "english": "may I have …, please" },
         { "thai": "ช่วยด้วย", "translit": "chûai dûai", "english": "help!" },
         { "thai": "ไม่เอา", "translit": "mâi ao", "english": "I don't want it / no thanks" },
         { "thai": "เอา", "translit": "ao", "english": "I'll take it / I want it" }
@@ -542,7 +542,7 @@
         { "thai": "อีกสิบห้านาทีหกโมง", "translit": "ìik sìp-hâa naa-thii hòk moong", "english": "quarter to six", "note": "Lit. \"15 more minutes, six o'clock\": the way to say \"to\"." },
         { "thai": "สองทุ่มตรง", "translit": "sɔ̌ɔng thûm trong", "english": "8 pm sharp", "note": "ตรง = exactly, on the dot." },
         { "thai": "ประมาณบ่ายสอง", "translit": "prà-maan bàai sɔ̌ɔng", "english": "around 2 pm", "note": "ประมาณ = about." },
-        { "thai": "ตอนนี้กี่โมงแล้ว", "translit": "tɔɔn-níi gìi moong lɛ́ɛo", "english": "What time is it now?", "note": "แล้ว at the end: \"by now\"." },
+        { "thai": "ตอนนี้กี่โมงแล้ว", "translit": "tɔɔn-níi gìi moong lɛ́ɛo", "english": "what time is it now?", "note": "แล้ว at the end: \"by now\"." },
         { "thai": "เจอกันกี่โมง", "translit": "jəə gan gìi moong", "english": "what time shall we meet?" },
         { "thai": "กี่ชั่วโมง", "translit": "gìi chûa-moong", "english": "how many hours?", "note": "ชั่วโมง = an hour, how long. โมง = o'clock, when." },
         { "thai": "นาฬิกา", "translit": "naa-lí-gaa", "english": "clock / o'clock", "note": "The o'clock of the 24-hour clock: สิบสี่นาฬิกา = 14:00." },
@@ -558,7 +558,7 @@
       "group": "Time & Date",
       "name": "Days of the Week",
       "description": "วัน (wan) means \"day\". Each day is named after a planet.",
-      "about": "The days are named after the same planets as in French and Spanish: จันทร์ is the moon, as in Monday and lundi; อังคาร Mars, as in mardi; พุธ Mercury; พฤหัส Jupiter; ศุกร์ Venus; เสาร์ Saturn; and อาทิตย์ the sun. Each day has a colour too, and many Thais wear their birthday's: Monday yellow, Tuesday pink, Wednesday green, Thursday orange, Friday blue, Saturday purple, Sunday red.",
+      "about": "The days are named after the same planets as in French and Spanish: จันทร์ is the moon, as in Monday and lundi; อังคาร Mars, as in mardi; พุธ Mercury; พฤหัส Jupiter; ศุกร์ Venus; เสาร์ Saturn; and อาทิตย์ the sun.\n\nEach day has a colour too, and many Thais wear their birthday's: Monday yellow, Tuesday pink, Wednesday green, Thursday orange, Friday blue, Saturday purple, Sunday red.",
       "cards": [
         { "thai": "วัน", "translit": "wan", "english": "day" },
         { "thai": "สัปดาห์", "translit": "sàp-daa", "english": "week", "note": "Formal. In speech, อาทิตย์ (aa-thít) — literally \"sun\" — is more common for \"week\"." },
@@ -985,7 +985,7 @@
       "group": "Consonants",
       "name": "All Consonants ก–ถ",
       "description": "The first half of the alphabet in order, for mixed review once the class topics are familiar. ฃ and ฅ are obsolete.",
-      "about": "Thai children learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\".\n\nThe order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, and ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back.",
+      "about": "Thai schoolchildren learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\".\n\nThe order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, and ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back.",
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
@@ -1077,7 +1077,7 @@
       "group": "Vowels",
       "name": "Short & Long Vowels",
       "description": "The 9 basic vowels, each short and long. Length changes meaning, so it matters. อ is only a placeholder for the consonant.",
-      "about": "Five vowels are written before the consonant but said after it: เ แ โ ไ ใ. In เก, the ก is said first: \"gee\". Others sit above the consonant (อิ) or below it (อุ), and some wrap round it (เอือ). Tricks for length: ะ cuts a vowel short, its two dots a stop sign: เอ ee, เอะ e. An extra stroke makes it long: ิ i, ี ii; ุ u, ู uu. And U is Under: ุ and ู are the only vowels written below the consonant. Three mouth shapes: a smile for อิ อี เอ แอ, round lips for อุ อู โอ ออ, and in between for อึ อือ เออ. Say อู with a smile and you get อือ.",
+      "about": "Five vowels are written before the consonant but said after it: เ แ โ ไ ใ. In เก, the ก is said first: \"gee\". Others sit above the consonant (อิ) or below it (อุ), and some wrap round it (เอือ).\n\nTricks for length: ะ cuts a vowel short, its two dots a stop sign: เอ ee, เอะ e. An extra stroke makes it long: ิ i, ี ii; ุ u, ู uu. And U is Under: ุ and ู are the only vowels written below the consonant.\n\nThree mouth shapes: a smile for อิ อี เอ แอ, round lips for อุ อู โอ ออ, and in between for อึ อือ เออ. Say อู with a smile and you get อือ.",
       "cards": [
         { "thai": "อะ", "translit": "à", "english": "a — short, as in 'cut'", "note": "–ะ after the consonant. Before a final it becomes ั: กัน gan." },
         { "thai": "อา", "translit": "aa", "english": "aa — long, as in 'father'", "note": "–า after the consonant: มา maa (come)." },
@@ -1145,7 +1145,7 @@
       "group": "Vowels",
       "name": "The 20 ใ Words",
       "description": "Two letters write the vowel ai: ใ (ไม้ม้วน) and ไ (ไม้มลาย). Only these 20 words use ใ; every other ai word uses ไ.",
-      "about": "Thai children learn them with a rhyme: ผู้ใหญ่หาผ้าใหม่ ให้สะใภ้ใช้คล้องคอ ใฝ่ใจเอาใส่ห่อ มิหลงใหลใครขอดู จะใคร่ลงเรือใบ ดูน้ำใสและปลาปู สิ่งใดอยู่ในตู้ มิใช่อยู่ใต้ตั่งเตียง บ้าใบ้ถือใยบัว หูตามัวมาใกล้เคียง เล่าเท่าอยู่ในเพียง ยี่สิบม้วนจำจงดี. It ends \"that's all twenty ไม้ม้วน, remember them well\".",
+      "about": "Thai schoolchildren learn them with a rhyme: ผู้ใหญ่หาผ้าใหม่ ให้สะใภ้ใช้คล้องคอ ใฝ่ใจเอาใส่ห่อ มิหลงใหลใครขอดู จะใคร่ลงเรือใบ ดูน้ำใสและปลาปู สิ่งใดอยู่ในตู้ มิใช่อยู่ใต้ตั่งเตียง บ้าใบ้ถือใยบัว หูตามัวมาใกล้เคียง เล่าเท่าอยู่ในเพียง ยี่สิบม้วนจำจงดี. It ends \"that's all twenty ไม้ม้วน, remember them well\".",
       "cards": [
         { "thai": "ใหญ่", "translit": "yài", "english": "big" },
         { "thai": "ใหม่", "translit": "mài", "english": "new" },
@@ -1175,7 +1175,7 @@
       "group": "Tones & Reading",
       "name": "Tone Marks & Symbols",
       "description": "The four tone marks and the other marks you'll meet. The audio says each mark's name.",
-      "about": "The names count up: ไม้เอก ◌่ is 1, ไม้โท ◌้ 2, ไม้ตรี ◌๊ 3 and ไม้จัตวา ◌๋ 4. เอก, โท, ตรี and จัตวา are old words for first to fourth, and each mark is fancier than the last. ไม้ตรี and ไม้จัตวา only go on mid-class letters in standard spelling, so either one tells you the letter's class. Slang and sound words sometimes break the rule.",
+      "about": "The names count up: ไม้เอก ◌่ is 1, ไม้โท ◌้ 2, ไม้ตรี ◌๊ 3 and ไม้จัตวา ◌๋ 4. เอก, โท, ตรี and จัตวา are old words for first to fourth, and each mark is fancier than the last.\n\nไม้ตรี and ไม้จัตวา only go on mid-class letters in standard spelling, so either one tells you the letter's class. Slang and sound words sometimes break the rule.",
       "cards": [
         { "thai": "◌่", "translit": "mái èek", "english": "tone mark 1", "note": "Mid and high class: low tone (ป่า pàa, forest). Low class: falling (แม่ mɛ̂ɛ, mother).", "say": "ไม้เอก" },
         { "thai": "◌้", "translit": "mái thoo", "english": "tone mark 2", "note": "Mid and high class: falling tone (ข้าว khâao, rice). Low class: high (ม้า máa, horse).", "say": "ไม้โท" },
@@ -1195,7 +1195,7 @@
       "group": "Tones & Reading",
       "name": "Tone Rules",
       "description": "Tone = consonant class + live or dead syllable + tone mark. One example word per rule; its meaning is in the note.",
-      "about": "Live or dead? Try to hum the end. A syllable ending in a long vowel or in m, n, ng, y or w can be held, so it's live; one that stops short, on a short vowel or a k, p or t, is dead. Then two defaults: high-class letters with no mark rise (ขา, สี, หู), and dead syllables on mid- and high-class letters are low (กัด, ขับ). A shortcut for low-class letters: a tone mark gives the tone one step higher than on a mid-class letter. With ่ they're falling, not low; with ้ they're high, not falling. So ไม่ (not) is falling and ไม้ (wood) high, while ป่า (forest) is low and ป้า (aunt) falling.",
+      "about": "Live or dead? Try to hum the end. A syllable ending in a long vowel or in m, n, ng, y or w can be held, so it's live; one that stops short, on a short vowel or a k, p or t, is dead. Then two defaults: high-class letters with no mark rise (ขา, สี, หู), and dead syllables on mid- and high-class letters are low (กัด, ขับ).\n\nA shortcut for low-class letters: a tone mark gives the tone one step higher than on a mid-class letter. With ่ they're falling, not low; with ้ they're high, not falling. So ไม่ (not) is falling and ไม้ (wood) high, while ป่า (forest) is low and ป้า (aunt) falling.",
       "cards": [
         { "thai": "ตา", "translit": "taa", "english": "mid class, live syllable, no mark: mid tone", "note": "eye. Live = ends in a long vowel or in -m, -n, -ng, -i, -o." },
         { "thai": "ป่า", "translit": "pàa", "english": "mid class + tone mark 1: low tone", "note": "forest" },
@@ -1289,7 +1289,8 @@
       "category": "Thai Script",
       "group": "Tone Pairs",
       "name": "Tone Pairs: Five Tones & Common Words",
-      "description": "Words that differ only in tone, starting with a full set of five: คา ข่า ค่า ค้า ขา. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Words that differ only in tone, starting with a full set of five: คา ข่า ค่า ค้า ขา.",
+      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "คา", "translit": "khaa", "english": "stuck (in something)", "note": "Mid tone. Compare ข่า (low) galangal, ค่า (falling) value, ค้า (high) to trade, ขา (rising) leg.", "partners": ["ข่า::galangal", "ค่า::value", "ค้า::to trade", "ขา::leg"] },
         { "thai": "ข่า", "translit": "khàa", "english": "galangal", "note": "Low tone. Compare คา (mid) stuck, ค่า (falling) value, ค้า (high) to trade, ขา (rising) leg.", "partners": ["คา::stuck (in something)", "ค่า::value", "ค้า::to trade", "ขา::leg"] },
@@ -1316,7 +1317,8 @@
       "category": "Thai Script",
       "group": "Tone Pairs",
       "name": "Tone Pairs: Body, Family & Animals",
-      "description": "Tigers, shirts and mats; aunts and forests; necks and joints; knees and hills. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Tigers, shirts and mats; aunts and forests; necks and joints; knees and hills.",
+      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "เสือ", "translit": "sʉ̌a", "english": "tiger", "note": "Rising tone. Compare เสื้อ (falling) shirt, เสื่อ (low) mat.", "partners": ["เสื้อ::shirt / top", "เสื่อ::mat (to sit on)"] },
         { "thai": "เสื้อ", "translit": "sʉ̂a", "english": "shirt / top", "note": "Falling tone. Compare เสือ (rising) tiger, เสื่อ (low) mat.", "partners": ["เสือ::tiger", "เสื่อ::mat (to sit on)"] },
@@ -1343,7 +1345,8 @@
       "category": "Thai Script",
       "group": "Tone Pairs",
       "name": "Tone Pairs: Everyday Words",
-      "description": "Easy to mix up in daily life: five and looking for, beautiful and unlucky, buying and honest, slow and tea. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Easy to mix up in daily life: five and looking for, beautiful and unlucky, buying and honest, slow and tea.",
+      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "หา", "translit": "hǎa", "english": "to look for", "note": "Rising tone. Compare ห้า (falling) five, ฮา (mid) hilarious.", "partners": ["ห้า::5 — five", "ฮา::hilarious"] },
         { "thai": "ห้า", "translit": "hâa", "english": "5 — five", "note": "Falling tone. Compare หา (rising) to look for, ฮา (mid) hilarious.", "partners": ["หา::to look for", "ฮา::hilarious"] },
@@ -1369,7 +1372,8 @@
       "category": "Thai Script",
       "group": "Tone Pairs",
       "name": "Tone Pairs: Numbers, Directions & Particles",
-      "description": "Colour and four, nine and old, left and late, and the female ค่ะ and คะ. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Colour and four, nine and old, left and late, and the female ค่ะ and คะ.",
+      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "สี", "translit": "sǐi", "english": "colour", "note": "Rising tone. Compare สี่ (low) four, ซี้ (high) best mate.", "partners": ["สี่::4 — four", "ซี้::best mate / close friend"] },
         { "thai": "สี่", "translit": "sìi", "english": "4 — four", "note": "Low tone. Compare สี (rising) colour, ซี้ (high) best mate.", "partners": ["สี::colour", "ซี้::best mate / close friend"] },
@@ -1396,7 +1400,8 @@
       "category": "Thai Script",
       "group": "Tone Pairs",
       "name": "Tone Pairs: Body, Home & Nature",
-      "description": "Tails and malls, shoulders and chasing, teeth and dreams, doctors and pots, wind and falling over. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Tails and malls, shoulders and chasing, teeth and dreams, doctors and pots, wind and falling over.",
+      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "หาง", "translit": "hǎang", "english": "tail", "note": "Rising tone. Compare ห่าง (low) far apart, ห้าง (falling) mall.", "partners": ["ห่าง::far apart / distant", "ห้าง::mall / shopping centre"] },
         { "thai": "ห่าง", "translit": "hàang", "english": "far apart / distant", "note": "Low tone. Compare หาง (rising) tail, ห้าง (falling) mall.", "partners": ["หาง::tail", "ห้าง::mall / shopping centre"] },
@@ -1423,7 +1428,8 @@
       "category": "Thai Script",
       "group": "Tone Pairs",
       "name": "Tone Pairs: Buying, Selling & More",
-      "description": "Selling and camps, broken and the rich boss, wrapping and dorms, turtles and stoves, little and a bit. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Selling and camps, broken and the rich boss, wrapping and dorms, turtles and stoves, little and a bit.",
+      "about": "For a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "ขาย", "translit": "khǎai", "english": "to sell", "note": "Rising tone. Compare คาย (mid) to spit out, ค่าย (falling) camp.", "partners": ["คาย::to spit out", "ค่าย::camp"] },
         { "thai": "คาย", "translit": "khaai", "english": "to spit out", "note": "Mid tone. Compare ขาย (rising) to sell, ค่าย (falling) camp.", "partners": ["ขาย::to sell", "ค่าย::camp"] },
@@ -1447,7 +1453,8 @@
       "category": "Thai Script",
       "group": "Sound Pairs",
       "name": "Sound Pairs: g and kh, j and ch",
-      "description": "ก (g) and จ (j) are said with no puff of air; ข/ค (kh) and ช/ฉ (ch) with one. Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Same tone, same vowel: only the first sound differs. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "ก (g) and จ (j) have no puff of air; ข/ค (kh) and ช/ฉ (ch) have one.",
+      "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "ไก่", "translit": "gài", "english": "chicken", "note": "g, no puff. Compare ไข่ (kh) egg.", "partners": ["ไข่::egg"] },
         { "thai": "ไข่", "translit": "khài", "english": "egg", "note": "kh, a puff of air. Compare ไก่ (g) chicken.", "partners": ["ไก่::chicken"] },
@@ -1470,7 +1477,8 @@
       "category": "Thai Script",
       "group": "Sound Pairs",
       "name": "Sound Pairs: p and ph, t and th",
-      "description": "ป (p) and ต (t) are said with no puff of air; พ/ผ (ph) and ท/ถ (th) with one. Duck or spicy, close or wrong depend on it. Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Same tone, same vowel: only the first sound differs. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "ป (p) and ต (t) have no puff of air; พ/ผ (ph) and ท/ถ (th) have one. Duck or spicy, close or wrong depend on it.",
+      "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "ปา", "translit": "paa", "english": "to throw", "note": "p, no puff. Compare พา (ph) to take someone along.", "partners": ["พา::to take (someone) / lead"] },
         { "thai": "พา", "translit": "phaa", "english": "to take (someone) / lead", "note": "ph, a puff of air. Compare ปา (p) to throw.", "partners": ["ปา::to throw"] },
@@ -1495,7 +1503,8 @@
       "category": "Thai Script",
       "group": "Sound Pairs",
       "name": "Sound Pairs: b and p, d and t",
-      "description": "ป and ต have no puff of air, so to English ears they sound like b and d. But บ and ด are true b and d, so crazy and aunt, good and hit are different words. Same tone, same vowel: only the first sound differs. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "description": "Real b and d against ป and ต, which English ears hear as b and d.",
+      "about": "ป and ต have no puff of air, so to English ears they sound like b and d. But บ and ด are true b and d, so crazy and aunt, good and hit are different words. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a pure listening test, use Recall with Show Thai script turned off in Settings.",
       "cards": [
         { "thai": "บ้า", "translit": "bâa", "english": "crazy / mad", "note": "b. Compare ป้า (p) aunt. Calling your aunt crazy is the classic slip.", "partners": ["ป้า::aunt (older than your parent)"] },
         { "thai": "ป้า", "translit": "pâa", "english": "aunt (older than your parent)", "note": "p. Compare บ้า (b) crazy.", "partners": ["บ้า::crazy / mad"] },
@@ -1563,7 +1572,7 @@
       "id": "time-markers",
       "category": "Grammar",
       "name": "Time Markers & Tense",
-      "description": "Thai has no verb conjugation. Tense comes from little words. กำลัง...อยู่ = present continuous. แล้ว = already. จะ = will.",
+      "description": "Thai has no verb conjugation. Tense comes from little words. กำลัง…อยู่ = present continuous. แล้ว = already. จะ = will.",
       "cards": [
         { "thai": "กำลัง", "translit": "gam-lang", "english": "currently / -ing (before verb)", "note": "กำลังกิน = (am) eating." },
         { "thai": "อยู่", "translit": "yùu", "english": "ongoing (after verb)", "note": "Pairs with กำลัง. Often just อยู่ alone for present continuous." },
@@ -1636,7 +1645,7 @@
         { "thai": "เลย", "translit": "ləəi", "english": "so / therefore (casual)", "note": "Different from เลย meaning \"really/at all\" — context decides." },
         { "thai": "ก็", "translit": "gɔ̂", "english": "then / also / (also softener)", "note": "Multi-purpose linker. ก็ได้ = that's OK." },
         { "thai": "ถ้า", "translit": "thâa", "english": "if" },
-        { "thai": "ถ้า...ก็", "translit": "thâa...gɔ̂", "english": "if...then", "note": "Pattern: ถ้าฝนตกก็ไม่ไป = if it rains, (then) I won't go." },
+        { "thai": "ถ้า…ก็", "translit": "thâa...gɔ̂", "english": "if…then", "note": "Pattern: ถ้าฝนตกก็ไม่ไป = if it rains, (then) I won't go." },
         { "thai": "หรือ", "translit": "rʉ̌ʉ", "english": "or" },
         { "thai": "หรือว่า", "translit": "rʉ̌ʉ-wâa", "english": "or (in questions)" },
         { "thai": "เพื่อ", "translit": "phʉ̂a", "english": "in order to / for" },
@@ -1646,7 +1655,7 @@
         { "thai": "อย่างไรก็ตาม", "translit": "yàang-rai gɔ̂-taam", "english": "however / nonetheless (formal)" },
         { "thai": "นอกจากนี้", "translit": "nɔ̂ɔk-jàak-níi", "english": "furthermore / besides this" },
         { "thai": "เช่น", "translit": "chên", "english": "for example / such as" },
-        { "thai": "ว่า", "translit": "wâa", "english": "that (introducing a clause)", "note": "ผมคิดว่า = I think that... Crucial linker." }
+        { "thai": "ว่า", "translit": "wâa", "english": "that (introducing a clause)", "note": "ผมคิดว่า = I think that… Crucial linker." }
       ]
     },
     {
@@ -1912,8 +1921,8 @@
         { "thai": "เท่าไหร่", "translit": "thâo-rài", "english": "how much / how many" },
         { "thai": "กี่", "translit": "gìi", "english": "how many (with counter)" },
         { "thai": "ไหม", "translit": "mǎi", "english": "yes/no question particle" },
-        { "thai": "หรือเปล่า", "translit": "rʉ̌ʉ-plàao", "english": "...or not? (question tag)" },
-        { "thai": "ใช่ไหม", "translit": "châi mǎi", "english": "...right? / isn't it?" }
+        { "thai": "หรือเปล่า", "translit": "rʉ̌ʉ-plàao", "english": "…or not? (question tag)" },
+        { "thai": "ใช่ไหม", "translit": "châi mǎi", "english": "…right? / isn't it?" }
       ]
     },
     {
@@ -1935,7 +1944,7 @@
         { "thai": "ไม่เท่ากัน", "translit": "mâi thâo-gan", "english": "unequal / not the same amount" },
         { "thai": "เหมือนกัน", "translit": "mʉ̌an gan", "english": "the same / alike" },
         { "thai": "ต่างกัน", "translit": "tàang gan", "english": "different (from each other)" },
-        { "thai": "ยิ่ง...ยิ่ง", "translit": "yîng...yîng", "english": "the more … the more …", "note": "ยิ่งเร็วยิ่งดี = the sooner the better." },
+        { "thai": "ยิ่ง…ยิ่ง", "translit": "yîng...yîng", "english": "the more … the more …", "note": "ยิ่งเร็วยิ่งดี = the sooner the better." },
         { "thai": "ยังกับ", "translit": "yang gàp", "english": "just like (casual, exaggerating)", "note": "โง่ยังกับควาย = as thick as a buffalo. Also said ยังกะ." },
         { "thai": "เหมือนแต่ไม่เหมือน", "translit": "mʉ̌an tɛ̀ɛ mâi mʉ̌an", "english": "same same but different", "note": "Lit. \"same but not same\". Thais know the T-shirt joke too." }
       ]
@@ -1977,22 +1986,22 @@
       "name": "Sentence Patterns: Past, Present & Future",
       "description": "Thai verbs never change: small words around them show when. Each card is a short sentence; the note gives the pattern.",
       "cards": [
-        { "thai": "กินข้าวแล้ว", "translit": "gin khâao lɛ́ɛo", "english": "I've eaten (already).", "note": "Verb + แล้ว = already, done." },
+        { "thai": "กินข้าวแล้ว", "translit": "gin khâao lɛ́ɛo", "english": "I've eaten (already)", "note": "Verb + แล้ว = already, done." },
         { "thai": "กินข้าวหรือยัง", "translit": "gin khâao rʉ̌ʉ-yang", "english": "have you eaten yet?", "note": "…หรือยัง = …yet? Answer กินแล้ว or ยัง (not yet). Also a greeting." },
-        { "thai": "ยังไม่ได้กิน", "translit": "yang mâi dâai gin", "english": "I haven't eaten yet.", "note": "ยังไม่ได้ + verb = haven't … yet." },
-        { "thai": "เขากำลังทำงานอยู่", "translit": "kháo gam-lang tham-ngaan yùu", "english": "She's working (right now).", "note": "กำลัง + verb + อยู่ = be …-ing. Either half can be left out." },
-        { "thai": "กำลังจะไป", "translit": "gam-lang jà pai", "english": "I'm about to go.", "note": "กำลังจะ + verb = about to." },
-        { "thai": "พรุ่งนี้จะไปทะเล", "translit": "phrûng-níi jà pai thá-lee", "english": "Tomorrow I'll go to the sea.", "note": "จะ + verb = will." },
-        { "thai": "ฝนจะตกแล้ว", "translit": "fǒn jà tòk lɛ́ɛo", "english": "It's about to rain.", "note": "จะ … แล้ว = any moment now." },
-        { "thai": "เพิ่งมาถึง", "translit": "phə̂ng maa thʉ̌ng", "english": "I've just arrived.", "note": "เพิ่ง + verb = have just." },
-        { "thai": "ยังอยู่ที่นี่", "translit": "yang yùu thîi-nîi", "english": "I'm still here.", "note": "ยัง + verb = still." },
-        { "thai": "เคยไปเชียงใหม่ไหม", "translit": "khəəi pai chiang-mài mǎi", "english": "Have you ever been to Chiang Mai?", "note": "เคย + verb = have ever. Answer เคย (yes) or ไม่เคย (no)." },
-        { "thai": "ไม่เคยกินทุเรียน", "translit": "mâi khəəi gin thú-rian", "english": "I've never eaten durian.", "note": "ไม่เคย + verb = have never." },
-        { "thai": "เมื่อก่อนเคยสูบบุหรี่", "translit": "mʉ̂a gɔ̀ɔn khəəi sùup bù-rìi", "english": "I used to smoke.", "note": "เคย also = used to." },
-        { "thai": "เมื่อวานไม่ได้ไป", "translit": "mʉ̂a-waan mâi dâai pai", "english": "I didn't go yesterday.", "note": "ไม่ได้ + verb = didn't." },
-        { "thai": "ไม่ได้โกรธ", "translit": "mâi dâai gròot", "english": "I'm not angry (really, I'm not).", "note": "ไม่ได้ + a word = it isn't that: a firm denial." },
-        { "thai": "เรียนภาษาไทยมาสองปีแล้ว", "translit": "rian phaa-sǎa-thai maa sɔ̌ɔng pii lɛ́ɛo", "english": "I've been learning Thai for two years.", "note": "Verb + มา + a time + แล้ว = have been …-ing for." },
-        { "thai": "ไปมาแล้ว", "translit": "pai maa lɛ́ɛo", "english": "I've been (there).", "note": "Verb + มาแล้ว = have done it (and come back)." }
+        { "thai": "ยังไม่ได้กิน", "translit": "yang mâi dâai gin", "english": "I haven't eaten yet", "note": "ยังไม่ได้ + verb = haven't … yet." },
+        { "thai": "เขากำลังทำงานอยู่", "translit": "kháo gam-lang tham-ngaan yùu", "english": "she's working (right now)", "note": "กำลัง + verb + อยู่ = be …-ing. Either half can be left out." },
+        { "thai": "กำลังจะไป", "translit": "gam-lang jà pai", "english": "I'm about to go", "note": "กำลังจะ + verb = about to." },
+        { "thai": "พรุ่งนี้จะไปทะเล", "translit": "phrûng-níi jà pai thá-lee", "english": "tomorrow I'll go to the sea", "note": "จะ + verb = will." },
+        { "thai": "ฝนจะตกแล้ว", "translit": "fǒn jà tòk lɛ́ɛo", "english": "it's about to rain", "note": "จะ … แล้ว = any moment now." },
+        { "thai": "เพิ่งมาถึง", "translit": "phə̂ng maa thʉ̌ng", "english": "I've just arrived", "note": "เพิ่ง + verb = have just." },
+        { "thai": "ยังอยู่ที่นี่", "translit": "yang yùu thîi-nîi", "english": "I'm still here", "note": "ยัง + verb = still." },
+        { "thai": "เคยไปเชียงใหม่ไหม", "translit": "khəəi pai chiang-mài mǎi", "english": "have you ever been to Chiang Mai?", "note": "เคย + verb = have ever. Answer เคย (yes) or ไม่เคย (no)." },
+        { "thai": "ไม่เคยกินทุเรียน", "translit": "mâi khəəi gin thú-rian", "english": "I've never eaten durian", "note": "ไม่เคย + verb = have never." },
+        { "thai": "เมื่อก่อนเคยสูบบุหรี่", "translit": "mʉ̂a gɔ̀ɔn khəəi sùup bù-rìi", "english": "I used to smoke", "note": "เคย also = used to." },
+        { "thai": "เมื่อวานไม่ได้ไป", "translit": "mʉ̂a-waan mâi dâai pai", "english": "I didn't go yesterday", "note": "ไม่ได้ + verb = didn't." },
+        { "thai": "ไม่ได้โกรธ", "translit": "mâi dâai gròot", "english": "I'm not angry (really, I'm not)", "note": "ไม่ได้ + a word = it isn't that: a firm denial." },
+        { "thai": "เรียนภาษาไทยมาสองปีแล้ว", "translit": "rian phaa-sǎa-thai maa sɔ̌ɔng pii lɛ́ɛo", "english": "I've been learning Thai for two years", "note": "Verb + มา + a time + แล้ว = have been …-ing for." },
+        { "thai": "ไปมาแล้ว", "translit": "pai maa lɛ́ɛo", "english": "I've been (there)", "note": "Verb + มาแล้ว = have done it (and come back)." }
       ]
     },
     {
@@ -2002,22 +2011,22 @@
       "name": "Sentence Patterns: Can, Must & Don't",
       "description": "ได้, เป็น and ไม่ออก go after the verb; ต้อง, ควร, อย่า and ห้าม go before it. Each card is a short sentence; the note gives the pattern.",
       "cards": [
-        { "thai": "พูดภาษาไทยได้", "translit": "phûut phaa-sǎa-thai dâai", "english": "I can speak Thai.", "note": "Verb + ได้ = can." },
-        { "thai": "พูดภาษาไทยไม่ได้", "translit": "phûut phaa-sǎa-thai mâi dâai", "english": "I can't speak Thai.", "note": "Verb + ไม่ได้ = can't. Before the verb, ไม่ได้พูด = didn't speak." },
-        { "thai": "ไปได้ไหม", "translit": "pai dâai mǎi", "english": "Can I go? / May I go?", "note": "Verb + ได้ไหม = can I? / may I?" },
-        { "thai": "ว่ายน้ำเป็นไหม", "translit": "wâai-náam pen mǎi", "english": "Can you swim?", "note": "Verb + เป็น = know how to: a learned skill." },
+        { "thai": "พูดภาษาไทยได้", "translit": "phûut phaa-sǎa-thai dâai", "english": "I can speak Thai", "note": "Verb + ได้ = can." },
+        { "thai": "พูดภาษาไทยไม่ได้", "translit": "phûut phaa-sǎa-thai mâi dâai", "english": "I can't speak Thai", "note": "Verb + ไม่ได้ = can't. Before the verb, ไม่ได้พูด = didn't speak." },
+        { "thai": "ไปได้ไหม", "translit": "pai dâai mǎi", "english": "can I go? / may I go?", "note": "Verb + ได้ไหม = can I? / may I?" },
+        { "thai": "ว่ายน้ำเป็นไหม", "translit": "wâai-náam pen mǎi", "english": "can you swim?", "note": "Verb + เป็น = know how to: a learned skill." },
         { "thai": "อ่านไม่ออก", "translit": "àan mâi ɔ̀ɔk", "english": "can't read it", "note": "Verb + ไม่ออก = can't manage to. คิดไม่ออก = can't think of it." },
-        { "thai": "ฟังไม่ทัน", "translit": "fang mâi than", "english": "I can't keep up (it's too fast).", "note": "Verb + ไม่ทัน = not in time." },
-        { "thai": "ฟังไม่รู้เรื่อง", "translit": "fang mâi rúu-rʉ̂ang", "english": "I can't understand what I'm hearing.", "note": "Verb + ไม่รู้เรื่อง = can't make sense of it." },
-        { "thai": "ต้องไปแล้ว", "translit": "tɔ̂ng pai lɛ́ɛo", "english": "I have to go now.", "note": "ต้อง + verb = must, have to." },
+        { "thai": "ฟังไม่ทัน", "translit": "fang mâi than", "english": "I can't keep up (it's too fast)", "note": "Verb + ไม่ทัน = not in time." },
+        { "thai": "ฟังไม่รู้เรื่อง", "translit": "fang mâi rúu-rʉ̂ang", "english": "I can't understand what I'm hearing", "note": "Verb + ไม่รู้เรื่อง = can't make sense of it." },
+        { "thai": "ต้องไปแล้ว", "translit": "tɔ̂ng pai lɛ́ɛo", "english": "I have to go now", "note": "ต้อง + verb = must, have to." },
         { "thai": "ไม่ต้องห่วง", "translit": "mâi tɔ̂ng hùang", "english": "don't worry", "note": "ไม่ต้อง + verb = no need to." },
-        { "thai": "ควรจะพักผ่อน", "translit": "khuan jà phák-phɔ̀n", "english": "You should rest.", "note": "ควร(จะ) + verb = should." },
-        { "thai": "น่าจะถึงแล้ว", "translit": "nâa-jà thʉ̌ng lɛ́ɛo", "english": "They've probably arrived.", "note": "น่าจะ + verb = probably, should be." },
-        { "thai": "อยากไปเที่ยว", "translit": "yàak pai thîao", "english": "I want to go on a trip.", "note": "อยาก + verb = want to." },
-        { "thai": "อย่าลืมนะ", "translit": "yàa lʉʉm ná", "english": "Don't forget!", "note": "อย่า + verb = don't. นะ softens it." },
+        { "thai": "ควรจะพักผ่อน", "translit": "khuan jà phák-phɔ̀n", "english": "you should rest", "note": "ควร(จะ) + verb = should." },
+        { "thai": "น่าจะถึงแล้ว", "translit": "nâa-jà thʉ̌ng lɛ́ɛo", "english": "they've probably arrived", "note": "น่าจะ + verb = probably, should be." },
+        { "thai": "อยากไปเที่ยว", "translit": "yàak pai thîao", "english": "I want to go on a trip", "note": "อยาก + verb = want to." },
+        { "thai": "อย่าลืมนะ", "translit": "yàa lʉʉm ná", "english": "don't forget!", "note": "อย่า + verb = don't. นะ softens it." },
         { "thai": "ห้ามสูบบุหรี่", "translit": "hâam sùup bù-rìi", "english": "no smoking", "note": "ห้าม + verb = it's forbidden to: on signs." },
-        { "thai": "ช่วยปิดประตูหน่อย", "translit": "chûai pìt prà-tuu nɔ̀i", "english": "Could you close the door?", "note": "ช่วย + verb + หน่อย = could you … please?" },
-        { "thai": "ลองดูสิ", "translit": "lɔɔng duu sì", "english": "Give it a try!", "note": "ลอง + verb + ดู = try …-ing." }
+        { "thai": "ช่วยปิดประตูหน่อย", "translit": "chûai pìt prà-tuu nɔ̀i", "english": "could you close the door?", "note": "ช่วย + verb + หน่อย = could you … please?" },
+        { "thai": "ลองดูสิ", "translit": "lɔɔng duu sì", "english": "give it a try!", "note": "ลอง + verb + ดู = try …-ing." }
       ]
     },
     {
@@ -2027,21 +2036,21 @@
       "name": "Sentence Patterns: Make, Let & Get",
       "description": "ให้ makes, lets or gives; โดน and ถูก are the passive; ได้ before a verb is \"got to\". Each card is a short sentence; the note gives the pattern.",
       "cards": [
-        { "thai": "แม่ให้ไปซื้อของ", "translit": "mɛ̂ɛ hâi pai sʉ́ʉ khɔ̌ɔng", "english": "Mum had me go shopping.", "note": "ให้ + verb = make or have someone do it." },
-        { "thai": "ให้ฉันช่วยนะ", "translit": "hâi chǎn chûai ná", "english": "Let me help.", "note": "ให้ + person + verb = let them do it." },
-        { "thai": "อยากให้คุณมา", "translit": "yàak hâi khun maa", "english": "I want you to come.", "note": "อยากให้ + person + verb = want someone to." },
-        { "thai": "บอกให้รอ", "translit": "bɔ̀ɔk hâi rɔɔ", "english": "They told me to wait.", "note": "บอกให้ + verb = tell someone to." },
-        { "thai": "ซื้อให้แม่", "translit": "sʉ́ʉ hâi mɛ̂ɛ", "english": "I bought it for Mum.", "note": "Verb + ให้ + person = for someone." },
-        { "thai": "เขียนให้ชัด ๆ", "translit": "khǐan hâi chát chát", "english": "Write it clearly.", "note": "Verb + ให้ + a word = do it so it's …" },
-        { "thai": "ทำให้เสียใจ", "translit": "tham-hâi sǐa-jai", "english": "It made me sad.", "note": "ทำให้ + a feeling = make someone feel." },
-        { "thai": "ทำให้ตกใจ", "translit": "tham-hâi tòk-jai", "english": "You gave me a fright.", "note": "ทำให้ตกใจ = to startle." },
-        { "thai": "โดนหมากัด", "translit": "doon mǎa gàt", "english": "I got bitten by a dog.", "note": "โดน + doer + verb = got …-ed: for bad things." },
-        { "thai": "โดนขโมยกระเป๋า", "translit": "doon khà-mooi grà-pǎo", "english": "I had my bag stolen.", "note": "โดน + verb + thing = had something …-ed." },
-        { "thai": "โดนตำรวจจับ", "translit": "doon tam-rùat jàp", "english": "He got arrested by the police." },
-        { "thai": "โดนแม่ดุ", "translit": "doon mɛ̂ɛ dù", "english": "I got told off by Mum.", "note": "ดุ = to scold." },
-        { "thai": "ถูกเลือกเป็นหัวหน้า", "translit": "thùuk lʉ̂ak pen hǔa-nâa", "english": "She was chosen as leader.", "note": "ถูก + verb = was …-ed: more formal, and not always bad." },
-        { "thai": "ได้ไปญี่ปุ่น", "translit": "dâai pai yîi-pùn", "english": "I got to go to Japan.", "note": "ได้ + verb = got the chance to." },
-        { "thai": "ได้รับรางวัล", "translit": "dâai-ráp raang-wan", "english": "I won a prize.", "note": "ได้รับ = to receive." }
+        { "thai": "แม่ให้ไปซื้อของ", "translit": "mɛ̂ɛ hâi pai sʉ́ʉ khɔ̌ɔng", "english": "mum had me go shopping", "note": "ให้ + verb = make or have someone do it." },
+        { "thai": "ให้ฉันช่วยนะ", "translit": "hâi chǎn chûai ná", "english": "let me help", "note": "ให้ + person + verb = let them do it." },
+        { "thai": "อยากให้คุณมา", "translit": "yàak hâi khun maa", "english": "I want you to come", "note": "อยากให้ + person + verb = want someone to." },
+        { "thai": "บอกให้รอ", "translit": "bɔ̀ɔk hâi rɔɔ", "english": "they told me to wait", "note": "บอกให้ + verb = tell someone to." },
+        { "thai": "ซื้อให้แม่", "translit": "sʉ́ʉ hâi mɛ̂ɛ", "english": "I bought it for Mum", "note": "Verb + ให้ + person = for someone." },
+        { "thai": "เขียนให้ชัด ๆ", "translit": "khǐan hâi chát chát", "english": "write it clearly", "note": "Verb + ให้ + a word = do it so it's …" },
+        { "thai": "ทำให้เสียใจ", "translit": "tham-hâi sǐa-jai", "english": "it made me sad", "note": "ทำให้ + a feeling = make someone feel." },
+        { "thai": "ทำให้ตกใจ", "translit": "tham-hâi tòk-jai", "english": "you gave me a fright", "note": "ทำให้ตกใจ = to startle." },
+        { "thai": "โดนหมากัด", "translit": "doon mǎa gàt", "english": "I got bitten by a dog", "note": "โดน + doer + verb = got …-ed: for bad things." },
+        { "thai": "โดนขโมยกระเป๋า", "translit": "doon khà-mooi grà-pǎo", "english": "I had my bag stolen", "note": "โดน + verb + thing = had something …-ed." },
+        { "thai": "โดนตำรวจจับ", "translit": "doon tam-rùat jàp", "english": "he got arrested by the police" },
+        { "thai": "โดนแม่ดุ", "translit": "doon mɛ̂ɛ dù", "english": "I got told off by Mum", "note": "ดุ = to scold." },
+        { "thai": "ถูกเลือกเป็นหัวหน้า", "translit": "thùuk lʉ̂ak pen hǔa-nâa", "english": "she was chosen as leader", "note": "ถูก + verb = was …-ed: more formal, and not always bad." },
+        { "thai": "ได้ไปญี่ปุ่น", "translit": "dâai pai yîi-pùn", "english": "I got to go to Japan", "note": "ได้ + verb = got the chance to." },
+        { "thai": "ได้รับรางวัล", "translit": "dâai-ráp raang-wan", "english": "I won a prize", "note": "ได้รับ = to receive." }
       ]
     },
     {
@@ -2051,22 +2060,22 @@
       "name": "Sentence Patterns: Linking Ideas",
       "description": "Because, so, if, although, before and after, and the pairs that frame a sentence: ถ้า … ก็, ทั้ง … ทั้ง, ยิ่ง … ยิ่ง. Each card is a short sentence; the note gives the pattern.",
       "cards": [
-        { "thai": "ไม่เผ็ดเลย", "translit": "mâi phèt ləəi", "english": "Not spicy at all.", "note": "ไม่ + a word + เลย = not at all." },
-        { "thai": "ไม่ค่อยเผ็ด", "translit": "mâi-khɔ̂i phèt", "english": "Not very spicy.", "note": "ไม่ค่อย = not very, not often." },
-        { "thai": "เผ็ดเกินไป", "translit": "phèt gəən-pai", "english": "Too spicy.", "note": "A word + เกินไป = too …" },
-        { "thai": "อร่อยจังเลย", "translit": "a-rɔ̀i jang ləəi", "english": "It's so delicious!", "note": "A word + จังเลย = so …!: casual and warm." },
-        { "thai": "ไม่ไปเพราะเหนื่อย", "translit": "mâi pai phrɔ́ nʉ̀ai", "english": "I'm not going because I'm tired.", "note": "เพราะ = because." },
-        { "thai": "ฝนตก ก็เลยไม่ไป", "translit": "fǒn-tòk gɔ̂ ləəi mâi pai", "english": "It rained, so I didn't go.", "note": "ก็เลย = so." },
-        { "thai": "ถ้าว่าง ก็มานะ", "translit": "thâa wâang gɔ̂ maa ná", "english": "If you're free, come over.", "note": "ถ้า … ก็ … = if …, then …" },
-        { "thai": "ถึงจะแพง ก็อยากซื้อ", "translit": "thʉ̌ng jà phɛɛng gɔ̂ yàak sʉ́ʉ", "english": "Even though it's expensive, I want it.", "note": "ถึง(จะ) … ก็ … = even though." },
-        { "thai": "ยิ่งเร็วยิ่งดี", "translit": "yîng reo yîng dii", "english": "The sooner the better.", "note": "ยิ่ง … ยิ่ง … = the more …, the more …" },
-        { "thai": "ทั้งถูกทั้งอร่อย", "translit": "tháng thùuk tháng a-rɔ̀i", "english": "Both cheap and tasty.", "note": "ทั้ง … ทั้ง … = both … and …" },
-        { "thai": "ไม่ใช่ของฉัน แต่เป็นของเขา", "translit": "mâi châi khɔ̌ɔng chǎn tɛ̀ɛ pen khɔ̌ɔng kháo", "english": "It's not mine, it's his.", "note": "ไม่ใช่ … แต่ … = not …, but …" },
-        { "thai": "กินไปคุยไป", "translit": "gin pai khui pai", "english": "Chatting while eating.", "note": "Verb ไป verb ไป = doing two things at once." },
-        { "thai": "พอถึงบ้าน ก็นอนเลย", "translit": "phɔɔ thʉ̌ng bâan gɔ̂ nɔɔn ləəi", "english": "As soon as I got home, I went to bed.", "note": "พอ … ก็ … = as soon as. เลย = straight away." },
-        { "thai": "ล้างมือก่อนกินข้าว", "translit": "láang mʉʉ gɔ̀ɔn gin khâao", "english": "Wash your hands before eating.", "note": "ก่อน + verb = before." },
-        { "thai": "หลังจากกินข้าวแล้ว", "translit": "lǎng-jàak gin khâao lɛ́ɛo", "english": "After eating …", "note": "หลังจาก … แล้ว = after." },
-        { "thai": "รอจนกว่าจะเสร็จ", "translit": "rɔɔ jon-gwàa jà sèt", "english": "Wait until it's done.", "note": "จนกว่าจะ + verb = until." }
+        { "thai": "ไม่เผ็ดเลย", "translit": "mâi phèt ləəi", "english": "not spicy at all", "note": "ไม่ + a word + เลย = not at all." },
+        { "thai": "ไม่ค่อยเผ็ด", "translit": "mâi-khɔ̂i phèt", "english": "not very spicy", "note": "ไม่ค่อย = not very, not often." },
+        { "thai": "เผ็ดเกินไป", "translit": "phèt gəən-pai", "english": "too spicy", "note": "A word + เกินไป = too …" },
+        { "thai": "อร่อยจังเลย", "translit": "a-rɔ̀i jang ləəi", "english": "it's so delicious!", "note": "A word + จังเลย = so …!: casual and warm." },
+        { "thai": "ไม่ไปเพราะเหนื่อย", "translit": "mâi pai phrɔ́ nʉ̀ai", "english": "I'm not going because I'm tired", "note": "เพราะ = because." },
+        { "thai": "ฝนตก ก็เลยไม่ไป", "translit": "fǒn-tòk gɔ̂ ləəi mâi pai", "english": "it rained, so I didn't go", "note": "ก็เลย = so." },
+        { "thai": "ถ้าว่าง ก็มานะ", "translit": "thâa wâang gɔ̂ maa ná", "english": "if you're free, come over", "note": "ถ้า … ก็ … = if …, then …" },
+        { "thai": "ถึงจะแพง ก็อยากซื้อ", "translit": "thʉ̌ng jà phɛɛng gɔ̂ yàak sʉ́ʉ", "english": "even though it's expensive, I want it", "note": "ถึง(จะ) … ก็ … = even though." },
+        { "thai": "ยิ่งเร็วยิ่งดี", "translit": "yîng reo yîng dii", "english": "the sooner the better", "note": "ยิ่ง … ยิ่ง … = the more …, the more …" },
+        { "thai": "ทั้งถูกทั้งอร่อย", "translit": "tháng thùuk tháng a-rɔ̀i", "english": "both cheap and tasty", "note": "ทั้ง … ทั้ง … = both … and …" },
+        { "thai": "ไม่ใช่ของฉัน แต่เป็นของเขา", "translit": "mâi châi khɔ̌ɔng chǎn tɛ̀ɛ pen khɔ̌ɔng kháo", "english": "it's not mine, it's his", "note": "ไม่ใช่ … แต่ … = not …, but …" },
+        { "thai": "กินไปคุยไป", "translit": "gin pai khui pai", "english": "chatting while eating", "note": "Verb ไป verb ไป = doing two things at once." },
+        { "thai": "พอถึงบ้าน ก็นอนเลย", "translit": "phɔɔ thʉ̌ng bâan gɔ̂ nɔɔn ləəi", "english": "as soon as I got home, I went to bed", "note": "พอ … ก็ … = as soon as. เลย = straight away." },
+        { "thai": "ล้างมือก่อนกินข้าว", "translit": "láang mʉʉ gɔ̀ɔn gin khâao", "english": "wash your hands before eating", "note": "ก่อน + verb = before." },
+        { "thai": "หลังจากกินข้าวแล้ว", "translit": "lǎng-jàak gin khâao lɛ́ɛo", "english": "after eating …", "note": "หลังจาก … แล้ว = after." },
+        { "thai": "รอจนกว่าจะเสร็จ", "translit": "rɔɔ jon-gwàa jà sèt", "english": "wait until it's done", "note": "จนกว่าจะ + verb = until." }
       ]
     },
     {
@@ -3755,7 +3764,7 @@
         { "thai": "มาต่ะ", "translit": "maa-tà", "english": "come on! / come here", "note": "Central: มาสิ. ตะ is the Southern สิ / นะ." },
         { "thai": "พันพรือหล้าว", "translit": "phan-phrʉʉ-lâao", "english": "what now?", "note": "Central: เป็นยังไงอีก." },
         { "thai": "บ่าวหยอกนิน้อง", "translit": "bàao yɔ̀ɔk ní nɔ́ɔng", "english": "I'm only teasing, love", "note": "Central: พี่แค่หยอกเล่น." },
-        { "thai": "หม่า...แหม่ะ", "translit": "mâa...mɛ̀", "english": "not … at all", "note": "Central: ไม่…หรอก. Wraps the verb: หม่าไปแหม่ะ = I'm not going." }
+        { "thai": "หม่า…แหม่ะ", "translit": "mâa...mɛ̀", "english": "not … at all", "note": "Central: ไม่…หรอก. Wraps the verb: หม่าไปแหม่ะ = I'm not going." }
       ]
     },
     {
@@ -5848,8 +5857,8 @@
         { "thai": "ไม่เอา", "translit": "mâi ao", "english": "I don't want it" },
         { "thai": "เดี๋ยวมาใหม่", "translit": "dǐao maa mài", "english": "I'll come back later", "note": "Polite way to leave; sometimes triggers a better offer." },
         { "thai": "ที่อื่นถูกกว่า", "translit": "thîi ʉ̀ʉn thùuk gwàa", "english": "it's cheaper elsewhere" },
-        { "thai": "ที่อื่นขาย...บาท", "translit": "thîi ʉ̀ʉn khǎai ... bàat", "english": "elsewhere they sell it for ... baht" },
-        { "thai": "ขอ...บาท", "translit": "khɔ̌ɔ ... bàat", "english": "would ... baht be OK?", "note": "Offer your counter-price. ขอ 200 บาท = I'd like (it for) 200 baht." },
+        { "thai": "ที่อื่นขาย…บาท", "translit": "thîi ʉ̀ʉn khǎai ... bàat", "english": "elsewhere they sell it for … baht" },
+        { "thai": "ขอ…บาท", "translit": "khɔ̌ɔ ... bàat", "english": "would … baht be OK?", "note": "Offer your counter-price. ขอ 200 บาท = I'd like (it for) 200 baht." },
         { "thai": "ไม่ไหว", "translit": "mâi wǎi", "english": "I can't do that / can't manage", "note": "What the seller says if your offer's too low." },
         { "thai": "เอาก็เอา", "translit": "ao gɔ̂ ao", "english": "fine, I'll take it / OK then" },
         { "thai": "ตกลง", "translit": "tòk-long", "english": "agreed / deal" },
@@ -6390,7 +6399,7 @@
         { "thai": "ตั๋ว", "translit": "tǔa", "english": "ticket" },
         { "thai": "ที่นั่ง", "translit": "thîi-nâng", "english": "seat" },
         { "thai": "ไปไหน", "translit": "pai nǎi", "english": "where are you going?", "note": "Also a casual greeting — answer วะ ๆ (\"around\") if you don't want to specify." },
-        { "thai": "ไปที่...", "translit": "pai thîi...", "english": "go to..." },
+        { "thai": "ไปที่…", "translit": "pai thîi...", "english": "go to…" },
         { "thai": "ตรงไป", "translit": "trong pai", "english": "go straight" },
         { "thai": "เลี้ยวซ้าย", "translit": "líao sáai", "english": "turn left" },
         { "thai": "เลี้ยวขวา", "translit": "líao khwǎa", "english": "turn right" },
@@ -7755,7 +7764,7 @@
         { "thai": "เป็นๆ หายๆ", "translit": "pen-pen hǎai-hǎai", "english": "it comes and goes" },
         { "thai": "ฉันแพ้ยา", "translit": "chǎn phɛ́ɛ yaa", "english": "I'm allergic to a medicine", "note": "Follow with the name of the drug." },
         { "thai": "ฉันแพ้ยาเพนิซิลลิน", "translit": "chǎn phɛ́ɛ yaa phee-ní-sin-lin", "english": "I'm allergic to penicillin" },
-        { "thai": "ฉันกินยา...ประจำ", "translit": "chǎn gin yaa ... prà-jam", "english": "I take … regularly" },
+        { "thai": "ฉันกินยา…ประจำ", "translit": "chǎn gin yaa ... prà-jam", "english": "I take … regularly" },
         { "thai": "ฉันเป็นเบาหวาน", "translit": "chǎn pen bao-wǎan", "english": "I have diabetes" },
         { "thai": "ฉันท้อง", "translit": "chǎn thɔ́ɔng", "english": "I'm pregnant" }
       ]
@@ -11057,7 +11066,7 @@
       "name": "Logic: Reasoning & Proof",
       "description": "If … then, if and only if, for all and there exists, theorems, axioms, proof by contradiction and induction.",
       "cards": [
-        { "thai": "ถ้า...แล้ว", "translit": "thâa...lɛ́ɛo", "english": "if … then …", "note": "The logic-textbook form. In speech ถ้า...ก็ is more common." },
+        { "thai": "ถ้า…แล้ว", "translit": "thâa...lɛ́ɛo", "english": "if … then …", "note": "The logic-textbook form. In speech ถ้า…ก็ is more common." },
         { "thai": "ก็ต่อเมื่อ", "translit": "gɔ̂ɔ tɔ̀ɔ mʉ̂a", "english": "if and only if" },
         { "thai": "ดังนั้น", "translit": "dang-nán", "english": "therefore" },
         { "thai": "สมมติ", "translit": "sǒm-mút", "english": "to assume / suppose" },
@@ -11193,7 +11202,7 @@
         { "thai": "การสังเกต", "translit": "gaan-sǎng-gèet", "english": "observation" },
         { "thai": "วัด", "translit": "wát", "english": "to measure" },
         { "thai": "ผลการทดลอง", "translit": "phǒn gaan-thót-lɔɔng", "english": "experimental results" },
-        { "thai": "สรุป", "translit": "sà-rùp", "english": "to conclude / summarise", "note": "Everyday: สรุปว่า... = \"so, in short...\"." },
+        { "thai": "สรุป", "translit": "sà-rùp", "english": "to conclude / summarise", "note": "Everyday: สรุปว่า… = \"so, in short…\"." },
         { "thai": "ข้อสรุป", "translit": "khɔ̂ɔ-sà-rùp", "english": "conclusion" },
         { "thai": "กล้องจุลทรรศน์", "translit": "glɔ̂ng-jun-lá-thát", "english": "microscope", "note": "กล้อง = camera / scope; จุล = tiny." },
         { "thai": "หลอดทดลอง", "translit": "lɔ̀ɔt-thót-lɔɔng", "english": "test tube", "note": "Literally \"experiment tube\"." },
