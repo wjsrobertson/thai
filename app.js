@@ -96,6 +96,21 @@ const els = {
   offlineHelp: document.getElementById('offline-help'),
   launchHelp: document.getElementById('launch-help'),
   wordlistAbout: document.getElementById('wordlist-about'),
+  readingSection: document.getElementById('reading-section'),
+  readingLibrary: document.getElementById('reading-library'),
+  readingList: document.getElementById('reading-list'),
+  readingPassage: document.getElementById('reading-passage'),
+  readingBack: document.getElementById('reading-back'),
+  readingName: document.getElementById('reading-name'),
+  readingDesc: document.getElementById('reading-desc'),
+  readingWordsToggle: document.getElementById('reading-words-toggle'),
+  readingAddAll: document.getElementById('reading-add-all'),
+  readingWordList: document.getElementById('reading-word-list'),
+  reader: document.getElementById('reader'),
+  readerLines: document.getElementById('reader-lines'),
+  readerPop: document.getElementById('reader-pop'),
+  readerTranslit: document.getElementById('reader-translit'),
+  readerEnglish: document.getElementById('reader-english'),
   backupExport: document.getElementById('backup-export'),
   backupLoad: document.getElementById('backup-load'),
   backupFile: document.getElementById('backup-file'),
@@ -152,6 +167,7 @@ const state = {
   pos: 0,             // index into queue
   showingBack: false,
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
+  readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   sort: { key: null, dir: 'asc' },
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
@@ -971,6 +987,7 @@ function deckProgress(deckId, deck) {
 function pickerModel(q) {
   const cats = new Map();
   for (const d of state.decks) {
+    if (d.passage) continue; // Reading's passages have their own page
     const cat = d.category || 'Uncategorized';
     // Names only: descriptions matched too until word search (2026-10-08), whose results they
     // pushed off a phone screen ("like" found nine topics).
@@ -1247,11 +1264,24 @@ function wordHitRow(h, added) {
   main.querySelector('.word-hit-thai').textContent = h.card.thai;
   main.querySelector('.word-hit-translit').textContent = h.card.translit || '';
   main.querySelector('.word-hit-english').textContent = h.card.english;
-  const deckId = h.deckIds.includes(state.currentDeckId) ? state.currentDeckId : h.deckIds[0];
-  const others = h.deckIds.length - 1;
-  main.querySelector('.word-hit-topic').textContent = (resolveScope(deckId)?.name || '') + (others ? ` +${others} more` : '');
-  main.title = `Show ${h.card.thai} in its topic`;
-  main.addEventListener('click', () => showWordInTopic(h.key, deckId));
+  // Its topic: the current one if it's there. A word found only in Reading's passages opens the
+  // passage instead (they aren't topics on the Topics page).
+  const topicIds = h.deckIds.filter((id) => !isPassage(id));
+  const deckId = topicIds.includes(state.currentDeckId) ? state.currentDeckId : topicIds[0];
+  if (deckId) {
+    const others = topicIds.length - 1;
+    main.querySelector('.word-hit-topic').textContent = (resolveScope(deckId)?.name || '') + (others ? ` +${others} more` : '');
+    main.title = `Show ${h.card.thai} in its topic`;
+    main.addEventListener('click', () => showWordInTopic(h.key, deckId));
+  } else {
+    const passageId = h.deckIds[0];
+    main.querySelector('.word-hit-topic').textContent = `Reading: ${resolveScope(passageId)?.name || ''}`;
+    main.title = `Show ${h.card.thai} in its passage`;
+    main.addEventListener('click', () => {
+      closeDeckPicker();
+      openReading(passageId, h.card.thai);
+    });
+  }
   const rv = document.createElement('button');
   rv.type = 'button';
   const paint = () => {
@@ -1369,6 +1399,9 @@ function setView(view) {
     t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
   });
   els.wordlistSection.hidden = view !== 'wordlist';
+  els.readingSection.hidden = view !== 'reading';
+  if (view === 'reading') renderReading();
+  else hideReaderWord();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
   // Leaving Flashcards: Recall's audio stops, and a Recognition card's pending move waits for the
   // return (below).
@@ -2591,6 +2624,226 @@ function handleReviewKey(e) {
   }
 }
 
+// ---------- reading practice ----------
+// Added 2026-10-08 (kept; to be reshaped and tidied): passages as topics in a Reading
+// category. A topic's `passage` is lines of { th, en }. In th, | marks a word break and a space is a
+// real space; "ลูกค้า: " is a speaker's label. Every Thai word is a card in the topic (the audit
+// checks), which gives the tap look-up its transliteration and meaning, and the word list under the
+// passage its words. Each sentence is recorded whole too (gen_audio's sentence_text).
+
+// A passage line as it's said: the word breaks joined up, a speaker's label left off. Keep in step
+// with sentence_text() in tools/gen_audio.py.
+function sentenceText(th) {
+  return th.replace(/^[^ ]+: /, '').replace(/\|/g, '');
+}
+
+// The Reading page: the passages by level (Easy, Medium, Harder: their `group`), or one open in the
+// reader with its words underneath. A passage you've opened gets a ✓ (prefs readingDone). The page
+// remembers the open passage while the app's open (state.readingId); it opens on the list.
+const isPassage = (id) => !!state.decks.find((d) => d.id === id)?.passage;
+
+function renderReading() {
+  hideReaderWord();
+  const topic = state.readingId ? state.decks.find((d) => d.id === state.readingId && d.passage) : null;
+  els.readingLibrary.hidden = !!topic;
+  els.readingPassage.hidden = !topic;
+  if (!topic) {
+    renderReadingList();
+    return;
+  }
+  els.readingName.textContent = topic.name;
+  els.readingDesc.textContent = topic.description;
+  renderReader(topic);
+  renderReadingWords(topic);
+}
+
+function renderReadingList() {
+  const done = new Set(getPreferences().readingDone || []);
+  const levels = new Map();
+  for (const d of state.decks) {
+    if (!d.passage) continue;
+    if (!levels.has(d.group)) levels.set(d.group, []);
+    levels.get(d.group).push(d);
+  }
+  els.readingList.replaceChildren(...[...levels].map(([level, passages]) => {
+    const group = document.createElement('div');
+    group.className = 'reading-level';
+    group.append(Object.assign(document.createElement('h3'), { className: 'reading-level-name', textContent: level }));
+    for (const d of passages) {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'reading-item' + (done.has(d.id) ? ' done' : '');
+      item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"></span><span class="reading-item-desc"></span></span><span class="reading-item-tick" aria-hidden="true"></span>';
+      item.querySelector('.reading-item-name').textContent = d.name;
+      item.querySelector('.reading-item-desc').textContent = d.description;
+      item.querySelector('.reading-item-tick').textContent = done.has(d.id) ? '✓' : '';
+      if (done.has(d.id)) item.setAttribute('aria-label', `${d.name}, read`);
+      item.addEventListener('click', () => openReading(d.id));
+      group.append(item);
+    }
+    return group;
+  }));
+}
+
+// Opens a passage (from the list, or a search result, which also lights the word it found).
+function openReading(id, word = null) {
+  state.readingId = id;
+  const done = new Set(getPreferences().readingDone || []);
+  done.add(id);
+  setPreferences({ readingDone: [...done] });
+  if (state.view !== 'reading') setView('reading');
+  else renderReading();
+  window.scrollTo(0, 0);
+  if (word) {
+    const spans = [...els.readerLines.querySelectorAll('.rw')].filter((w) => w.textContent === word);
+    spans[0]?.scrollIntoView({ block: 'center' });
+    spans.forEach((w) => w.classList.add('found'));
+    setTimeout(() => spans.forEach((w) => w.classList.remove('found')), 2500);
+  }
+}
+
+// The passage's words, in reading order, as a list you can open under it: each to play and add to
+// Flashcards, or all at once.
+function renderReadingWords(topic) {
+  const inFlashcards = reviewWords();
+  const keys = topic.cards.map(cardKey);
+  const missing = keys.filter((k) => !(k in inFlashcards));
+  els.readingWordsToggle.textContent = `Words in this passage (${keys.length})`;
+  els.readingAddAll.replaceChildren(...(missing.length ? [reviewIcon(), 'Add all to Flashcards'] : ['✓ All in Flashcards']));
+  els.readingAddAll.classList.toggle('all-added', !missing.length);
+  els.readingWordList.replaceChildren(...topic.cards.map((c) => {
+    const key = cardKey(c);
+    const added = key in inFlashcards;
+    const row = document.createElement('div');
+    row.className = 'word-hit';
+    const main = document.createElement('div');
+    main.className = 'word-hit-main';
+    main.innerHTML = '<span class="word-hit-thai"></span><span class="word-hit-translit"></span><span class="word-hit-english"></span>';
+    main.querySelector('.word-hit-thai').textContent = c.thai;
+    main.querySelector('.word-hit-translit').textContent = c.translit;
+    main.querySelector('.word-hit-english').textContent = c.english;
+    const rv = document.createElement('button');
+    rv.type = 'button';
+    rv.className = 'row-review' + (added ? ' added' : '');
+    rv.replaceChildren(added ? '✓' : reviewIcon());
+    rv.title = added ? `Remove ${c.thai} from Flashcards` : `Add ${c.thai} to Flashcards`;
+    rv.setAttribute('aria-label', rv.title);
+    rv.addEventListener('click', () => {
+      setInReview([key], !added);
+      toast(added ? `Removed ${c.thai} from Flashcards` : `✓ Added ${c.thai} to Flashcards`, { tone: added ? '' : 'good' });
+      renderReadingWords(topic);
+    });
+    const sp = document.createElement('button');
+    sp.type = 'button';
+    sp.className = 'row-speak' + (sayingNow(c.thai) ? ' playing' : '');
+    sp.dataset.say = c.thai;
+    sp.setAttribute('aria-label', `Play ${c.thai}`);
+    sp.append(speakerIcon());
+    sp.addEventListener('click', () => speakerPress(sp, c.thai));
+    row.append(main, rv, sp);
+    return row;
+  }));
+}
+
+function renderReader(topic) {
+  hideReaderWord();
+  const own = new Map(topic.cards.map((c) => [c.thai, c]));
+  els.readerLines.replaceChildren(...topic.passage.map((line) => {
+    const row = document.createElement('div');
+    row.className = 'reader-line';
+    // ▶ the whole sentence: a speaker like the rows' (lit while it plays; pressed again, it stops).
+    const sentence = sentenceText(line.th);
+    const play = document.createElement('button');
+    play.type = 'button';
+    play.className = 'row-speak reader-play';
+    play.dataset.say = sentence;
+    play.title = 'Play the sentence';
+    play.setAttribute('aria-label', play.title);
+    play.append(speakerIcon());
+    play.addEventListener('click', () => speakerPress(play, sentence));
+    const th = document.createElement('p');
+    th.className = 'reader-th';
+    const tr = [];
+    line.th.split(' ').forEach((chunk, i) => {
+      if (i) th.append(' ');
+      for (const tok of chunk.split('|')) {
+        const label = tok.endsWith(':');
+        const w = label ? tok.slice(0, -1) : tok;
+        const card = own.get(w);
+        if (card) {
+          const span = document.createElement('span');
+          span.className = 'rw' + (label ? ' rw-label' : '');
+          span.textContent = w;
+          span.tabIndex = 0;
+          span.setAttribute('role', 'button');
+          const pick = (e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            showReaderWord(span, card);
+          };
+          span.addEventListener('click', pick);
+          span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') pick(e); });
+          th.append(span);
+          tr.push(card.translit + (label ? ':' : ''));
+        } else {
+          th.append(w);
+          if (w) tr.push(w + (label ? ':' : ''));
+        }
+        if (label) th.append(':');
+      }
+    });
+    const body = document.createElement('div');
+    body.className = 'reader-body';
+    const trEl = Object.assign(document.createElement('p'), { className: 'reader-tr', textContent: tr.join(' ') });
+    const enEl = Object.assign(document.createElement('p'), { className: 'reader-en', textContent: line.en });
+    body.append(th, trEl, enEl);
+    row.append(play, body);
+    return row;
+  }));
+  applyReaderToggles();
+}
+
+// Transliteration and English under each line: off to start (the point is to read the script), and
+// remembered (prefs).
+function applyReaderToggles() {
+  const prefs = getPreferences();
+  const tr = !!prefs.readerTranslit;
+  const en = !!prefs.readerEnglish;
+  els.reader.classList.toggle('show-tr', tr);
+  els.reader.classList.toggle('show-en', en);
+  els.readerTranslit.setAttribute('aria-pressed', String(tr));
+  els.readerEnglish.setAttribute('aria-pressed', String(en));
+}
+
+// A tapped word: say it, light it, and show its transliteration and meaning in a pop-up under it.
+let readerWord = null;
+
+function showReaderWord(span, card) {
+  speak(card.thai);
+  if (readerWord !== span) {
+    readerWord?.classList.remove('on');
+    readerWord = span;
+    span.classList.add('on');
+  }
+  const pop = els.readerPop;
+  pop.replaceChildren(
+    Object.assign(document.createElement('span'), { className: 'pop-tr', textContent: card.translit }),
+    Object.assign(document.createElement('span'), { className: 'pop-en', textContent: card.english }),
+  );
+  pop.hidden = false;
+  const box = els.reader.getBoundingClientRect();
+  const r = span.getBoundingClientRect();
+  const left = clamp(r.left - box.left + r.width / 2 - pop.offsetWidth / 2, 8, box.width - pop.offsetWidth - 8);
+  pop.style.left = `${left}px`;
+  pop.style.top = `${r.bottom - box.top + 6}px`;
+}
+
+function hideReaderWord() {
+  els.readerPop.hidden = true;
+  readerWord?.classList.remove('on');
+  readerWord = null;
+}
+
 // ---------- wordlist read-aloud ----------
 
 async function startReadAloud() {
@@ -3169,7 +3422,16 @@ function wait(ms) {
 
 function bindEvents() {
   els.tabs.forEach((t) => {
-    t.addEventListener('click', () => setView(t.dataset.view));
+    t.addEventListener('click', () => {
+      // Reading's tab again, with a passage open: back to the list.
+      if (t.dataset.view === 'reading' && state.view === 'reading' && state.readingId) {
+        state.readingId = null;
+        renderReading();
+        window.scrollTo(0, 0);
+        return;
+      }
+      setView(t.dataset.view);
+    });
   });
 
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
@@ -3190,6 +3452,39 @@ function bindEvents() {
   els.settingsModal.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeSettings();
   });
+  els.readingBack.addEventListener('click', () => {
+    state.readingId = null;
+    renderReading();
+    window.scrollTo(0, 0);
+  });
+  els.readingWordsToggle.addEventListener('click', () => {
+    const open = els.readingWordList.hidden;
+    els.readingWordList.hidden = !open;
+    els.readingWordsToggle.setAttribute('aria-expanded', String(open));
+  });
+  els.readingAddAll.addEventListener('click', () => {
+    const topic = state.decks.find((d) => d.id === state.readingId);
+    if (!topic) return;
+    const words = reviewWords();
+    const missing = topic.cards.map(cardKey).filter((k) => !(k in words));
+    if (!missing.length) return;
+    setInReview(missing, true);
+    toast(`✓ Added ${missing.length} word${missing.length === 1 ? '' : 's'} to Flashcards`, { tone: 'good' });
+    renderReadingWords(topic);
+  });
+  [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish']].forEach(([btn, key]) => {
+    btn.addEventListener('click', () => {
+      setPreferences({ [key]: !getPreferences()[key] });
+      hideReaderWord(); // the lines move
+      applyReaderToggles();
+    });
+  });
+  // A tap anywhere else closes a word's pop-up.
+  document.addEventListener('click', (e) => {
+    if (readerWord && !e.target.closest('.rw, .reader-pop')) hideReaderWord();
+  });
+  window.addEventListener('resize', () => { if (readerWord) hideReaderWord(); });
+
   els.deckPickerSearch.addEventListener('input', (e) => {
     state.pickerFilter = e.target.value;
     renderDeckPicker();
@@ -3345,7 +3640,7 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-    if (state.view === 'home') return;
+    if (state.view === 'home' || state.view === 'reading') return; // Flashcards' and Topics' keys
     if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);
       return;
@@ -3722,7 +4017,7 @@ async function init() {
   // A topic that was split or regrouped lists its old ids in `formerIds` (decks.json), so a saved
   // current topic still resolves.
   const start =
-    resolveScope(prefs.currentDeckId)?.id ||
+    (!isPassage(prefs.currentDeckId) && resolveScope(prefs.currentDeckId)?.id) ||
     state.decks.find((d) => d.formerIds?.includes(prefs.currentDeckId))?.id ||
     state.decks[0]?.id;
   if (start) {

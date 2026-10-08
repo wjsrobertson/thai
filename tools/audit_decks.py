@@ -110,6 +110,29 @@ def audit(decks):
         if n and not re.search(r'[.!?)…"”]$', n):
             review['note without final punctuation'].append(f'{where}: …{n[-30:]!r}')
 
+    # Reading passages (a topic's `passage`, 2026-10-08): lines of {th, en}. In th, | marks a word
+    # break and a space is a real space; a trailing ':' (a speaker's label) is punctuation. Every
+    # Thai word must be a card in the topic, for the reader's look-up.
+    for dk in decks:
+        if 'passage' not in dk:
+            continue
+        own = {c['thai'] for c in dk['cards']}
+        lines = dk['passage']
+        if not isinstance(lines, list) or not lines:
+            errors['bad passage'].append(dk['name'])
+            continue
+        for line in lines:
+            if not isinstance(line, dict) or set(line) != {'th', 'en'} or not line['th'] or not line['en']:
+                errors['bad passage line'].append(f"{dk['name']}: {line!r}")
+                continue
+            if re.search(r'\|\||^\||\|$|\| | \||  ', line['th']):
+                errors['passage word-break glitch'].append(f"{dk['name']}: {line['th']}")
+            for chunk in line['th'].split(' '):
+                for t in chunk.split('|'):
+                    w = t.rstrip(':')
+                    if THAI.search(w) and w not in own:
+                        errors['passage word with no card in its topic'].append(f"{dk['name']}: {w}")
+
     # Within a topic
     for dk in decks:
         for k in ('thai', 'english'):

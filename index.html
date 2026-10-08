@@ -31,10 +31,12 @@
 </head>
 <body>
   <header class="topbar">
-    <h1><button type="button" class="home-link" id="home-link" title="Home">Learn Thai</button></h1>
+    <!-- "Home" was "Learn Thai" until 2026-10-08: it frees the room for a third tab, Reading. -->
+    <h1><button type="button" class="home-link" id="home-link" title="Home">Home</button></h1>
     <nav class="tabs" role="tablist">
       <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Topics</button>
       <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Flashcards</button>
+      <button type="button" class="tab" role="tab" data-view="reading" aria-selected="false">Reading</button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -104,6 +106,44 @@
           <span class="home-card-row"><b>Recall</b><span>Remember each word yourself; the hard ones come back sooner</span></span>
         </span>
       </button>
+      <!-- Reading (2026-10-08): its own page, not a topic list. -->
+      <button type="button" class="home-card home-card-wide" data-go="reading">
+        <span class="home-card-title">📰 Reading</span>
+        <span class="home-card-text">
+          <span>Short passages to read, from signs and a café menu to short stories.</span>
+          <span>Tap any word to hear it and see what it means.</span>
+        </span>
+      </button>
+    </section>
+
+    <!-- The Reading page (renderReading): the passages by level, or one passage open in the reader. -->
+    <section class="reading reading-only" id="reading-section" hidden>
+      <div class="reading-library" id="reading-library">
+        <h2 class="reading-title">Reading</h2>
+        <p class="reading-intro">Short passages, from easy to harder. Tap any word to hear it and see what it means.</p>
+        <div id="reading-list"></div>
+      </div>
+      <div class="reading-passage" id="reading-passage" hidden>
+        <button type="button" class="ghost reading-back" id="reading-back">‹ All passages</button>
+        <h2 class="reading-name" id="reading-name"></h2>
+        <p class="reading-desc" id="reading-desc"></p>
+        <section class="reader" id="reader">
+          <div class="reader-toggles" role="group" aria-label="Show under each line">
+            <span class="reader-show">Show</span>
+            <button type="button" class="reader-toggle" id="reader-translit" aria-pressed="false">Transliteration</button>
+            <button type="button" class="reader-toggle" id="reader-english" aria-pressed="false">English</button>
+          </div>
+          <div class="reader-lines" id="reader-lines"></div>
+          <div class="reader-pop" id="reader-pop" role="status" hidden></div>
+        </section>
+        <div class="reading-words">
+          <div class="reading-words-bar">
+            <button type="button" class="ghost" id="reading-words-toggle" aria-expanded="false"></button>
+            <button type="button" class="ghost" id="reading-add-all"></button>
+          </div>
+          <div class="reading-word-list" id="reading-word-list" hidden></div>
+        </div>
+      </div>
     </section>
 
     <div class="deck-picker-bar">

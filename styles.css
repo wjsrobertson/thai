@@ -1208,6 +1208,11 @@ body { display: flex; flex-direction: column; }
 }
 /* Review mode (.today-only, since 2026-10-08 Flashcards' third mode) replaces the card and the Test
    round's summary. */
+.stage[data-view="reading"] .deck-picker-bar,
+.stage[data-view="reading"] .card-wrap,
+.stage[data-view="reading"] .flashcards-only,
+.stage[data-view="reading"] .wordlist-only,
+.stage:not([data-view="reading"]) .reading-only,
 .stage[data-view="home"] .deck-picker-bar,
 .stage[data-view="home"] .card-wrap,
 .stage[data-view="home"] .flashcards-only,
@@ -1249,6 +1254,126 @@ body { display: flex; flex-direction: column; }
 }
 .say:hover, .say:focus-visible { color: var(--accent); outline: none; }
 .say.playing { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* The Reading page (2026-10-08): the passages by level, or one open. */
+.reading { max-width: 760px; margin: 0 auto; }
+.reading[hidden] { display: none; }
+.reading-title { margin: 8px 0 6px; font-size: calc(26px * var(--fs, 1)); }
+.reading-intro { margin: 0 0 18px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.45; }
+.reading-level { margin-bottom: 18px; }
+.reading-level-name {
+  margin: 0 0 6px;
+  color: var(--muted);
+  font-size: calc(13px * var(--fs, 1));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.reading-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.reading-item:hover { border-color: var(--accent); }
+.reading-item-main { flex: 1; min-width: 0; }
+.reading-item-name { display: block; font-size: calc(18px * var(--fs, 1)); font-weight: 600; }
+.reading-item-desc { display: block; margin-top: 2px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
+.reading-item-tick { flex: none; width: 1.2em; color: var(--good); font-size: 18px; font-weight: 700; text-align: center; }
+.reading-back { margin: 4px 0 10px; padding: 6px 12px; }
+.reading-name { margin: 0 0 4px; font-size: calc(24px * var(--fs, 1)); }
+.reading-desc { margin: 0 0 14px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
+.reading-words { margin-bottom: 24px; }
+.reading-words-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.reading-words-bar .ghost { padding: 8px 14px; }
+#reading-add-all.all-added { color: var(--good); border-color: var(--good); }
+.reading-word-list { margin-top: 8px; padding: 4px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+.reading-word-list[hidden] { display: none; }
+.reading-word-list .word-hit-main { cursor: default; }
+.rw.found { color: var(--accent); background: var(--panel-2); }
+/* Home's third card spans both columns. */
+.home-card-wide { grid-column: 1 / -1; }
+
+/* Reading practice (renderReader): the passage, a line per sentence, each with its play button. A
+   tapped word lights up and gets a pop-up with its transliteration and meaning. */
+.reader {
+  position: relative;
+  margin: 0 0 16px;
+  padding: 14px 16px 6px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+.reader[hidden] { display: none; }
+.reader-toggles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px; }
+.reader-show { color: var(--muted); font-size: calc(13px * var(--fs, 1)); margin-right: 2px; }
+.reader-toggle {
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: calc(13px * var(--fs, 1));
+  cursor: pointer;
+}
+.reader-toggle:hover { color: var(--ink); }
+.reader-toggle[aria-pressed="true"] { color: var(--accent); border-color: var(--accent); background: var(--panel-2); }
+.reader-line { display: flex; align-items: flex-start; gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); }
+.reader-line:first-child { border-top: 0; }
+.reader-body { flex: 1; min-width: 0; }
+.reader-th { margin: 0; color: var(--ink); font-size: calc(26px * var(--fs, 1)); line-height: 1.55; }
+.rw { border-radius: 6px; cursor: pointer; transition: background-color .1s, color .1s; }
+.rw:hover, .rw:focus-visible { background: var(--panel-2); outline: none; }
+.rw.on { color: var(--accent); background: var(--panel-2); }
+.reader-tr, .reader-en { display: none; margin: 2px 0 0; font-size: calc(15px * var(--fs, 1)); line-height: 1.4; }
+.reader-tr { color: var(--accent); font-style: italic; }
+.reader-en { color: var(--muted); }
+.reader.show-tr .reader-tr, .reader.show-en .reader-en { display: block; }
+.reader-play {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-top: 4px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+}
+.reader-play:hover { color: var(--accent); background: var(--panel-2); }
+.reader-play .speaker-icon { width: 20px; height: 20px; }
+.reader-pop {
+  position: absolute;
+  z-index: 5;
+  max-width: min(280px, calc(100% - 16px));
+  padding: 8px 12px;
+  background: var(--panel-2);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
+  font-size: calc(15px * var(--fs, 1));
+  line-height: 1.35;
+}
+.reader-pop[hidden] { display: none; }
+.pop-tr { color: var(--accent); font-style: italic; margin-right: 8px; }
+.pop-en { color: var(--ink); }
+@media (max-width: 600px) {
+  .reader { padding: 12px 12px 4px; }
+  .reader-th { font-size: calc(24px * var(--fs, 1)); }
+}
 
 /* A topic's `about` paragraphs (e.g. the consonant classes' memory scenes). */
 .wordlist-about {

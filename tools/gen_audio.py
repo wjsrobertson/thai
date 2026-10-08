@@ -76,6 +76,12 @@ def playable_thai(run):
     return not (len(words) >= 3 and all(len(w) <= 2 for w in words))
 
 
+def sentence_text(th):
+    """A passage line as it's said: word breaks (|) joined up, and a speaker's label ("ลูกค้า: ")
+    left off. Keep in step with sentenceText() in app.js."""
+    return re.sub(r'^[^ ]+: ', '', th).replace('|', '')
+
+
 def voice_for(said, lang, voices):
     # The English voice silently drops Thai script, so English glosses that
     # quote a Thai word ("formal version of เถอะ") use the Thai voice instead.
@@ -186,6 +192,17 @@ async def main():
             said = spoken_text(run, 'th')
             name = sample_name(said, voices['th'], args.rate)
             entries[('th', run)] = name
+            samples[name] = (said, voices['th'], False)
+    # Reading passages (a topic's `passage`): each sentence, so the reader can play it whole. Keyed
+    # by sentence_text(), as the app's reader does.
+    for d in decks:
+        for line in d.get('passage', []):
+            text = sentence_text(line['th'])
+            if ('th', text) in entries:
+                continue
+            said = spoken_text(text, 'th')
+            name = sample_name(said, voices['th'], args.rate)
+            entries[('th', text)] = name
             samples[name] = (said, voices['th'], False)
     # Spelling parts, read by the Thai voice (see the module docstring).
     if SPELLING_PARTS.exists():

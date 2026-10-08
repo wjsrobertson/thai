@@ -74,7 +74,7 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-08 there are 7743 cards in 438 topics across 25 categories (see Topic list order,
+- As of 2026-10-08 there are 8315 cards in 471 topics across 26 categories (see Topic list order,
   Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs, Sound Pairs,
   Thai school mnemonics and Learning tricks, 2026-10-08).
 
@@ -344,6 +344,14 @@ backup `decks.backup28.json`).
   - Each note says what tells the letters apart.
   - The cards have `partners`, so Recognition offers the look-alikes as the wrong answers.
     Checked: 19 of 19.
+  - **Bug, fixed later the same day:** the merge script copied each letter card without its
+    `say` ("บอ ใบไม้", how the voice reads a lone letter).
+    - The manifest is keyed by the Thai, so the generator mapped all 19 letters to a bare-letter
+      clip, everywhere in the app. It printed "said two ways" warnings, unnoticed until the
+      Reading work.
+    - `say` is restored on the 19 cards, and `merge_new.py` and `build_reading.py` now copy it.
+      The 19 bare clips were pruned.
+    - **Check:** a gen_audio run should print no "said two ways" warnings.
 - **A Word Building group in Grammar** (52 cards, 24 new), each card with its parts or literal
   meaning:
   - **Word Building: น้ำ:** น้ำตา "eye water", น้ำแข็ง "hard water", …
@@ -1156,6 +1164,120 @@ Thai → English only.
 - **English → Thai** already leads its back with the Thai, so the extra line is hidden there.
 - **Checked in Chromium:** 20px on a 390px phone and 32px on desktop, the same as the English.
   Nothing overflowed, even on a card with a long note.
+
+## Reading practice (2026-10-08)
+
+**Status:** kept and committed ("we'll keep reading although we will need to reshape and clean
+it up"). The page's layout and shape are still to be reworked. It began as an uncommitted
+experiment, since the user wanted to see it before deciding ("I am not sure of this").
+- **First version:** passages were topics shown on the Topics page.
+- **The user's verdict:** they liked the features but not the place ("too different from the other
+  wordlists").
+- **Now:** a **Reading page** of its own, reached from a third Home card (option A).
+- **Then a tab too,** at the user's request: Topics | Flashcards | Reading. To make room, the top
+  bar's title, which is the Home button, now says **Home** instead of "Learn Thai" (the user's
+  suggestion; the page title is still Learn Thai). Tapping Reading's tab with a passage open goes
+  back to the list.
+
+In decks.json the passages are still topics, in a **Reading** category after Grammar, with groups
+Little Stories, Easy, Medium and Harder, so their words work in Flashcards and search like any
+card.
+
+**Little Stories** (8, added after the user asked for "cat sat on the mat style" stories) are made
+up for a first read. Each is 6 short lines that repeat and build, using words the app already has
+plus 6 new ones (แดง, เหลือง, ออกไข่, ตะกร้า, ว่าย, หอม "smells good"):
+- The Cat on the Mat
+- The Tiger in a Shirt (เสือ / เสื้อ / เสื่อ)
+- The Dog and the Horse (หมา / ม้า / มา)
+- The Hen and the Egg
+- Grandma Goes to Market
+- It's Raining
+- The Little Fish
+- Dad's Fried Rice
+
+**15 more Little Stories** came the same day, at the same level but with new vocabulary (the user:
+"don't worry about how the page looks for now"). That's 23 in all.
+- **The stories:**
+  - My Family
+  - The Big Elephant
+  - Off to School (the morning routine)
+  - I'm Not Well
+  - At the Beach
+  - Songkran
+  - Where's the Cat? (under, on, in)
+  - Which Shirt? (colours, and ตัว for clothes)
+  - Five Little Ducks (counting)
+  - The Bus
+  - A Birthday
+  - The Mango Tree
+  - At the Temple
+  - Grandma on the Phone
+  - Night Time
+- **16 new words:** กล่อง, ก๊าบ, ไข้, ครัว, ชุดนักเรียน, ดีกว่า, ปืนฉีดน้ำ, ฟ้า, ราตรีสวัสดิ์,
+  วาดรูป, สว่าง, สุก, สุขสันต์, พร "blessing", มืด "dark", ดัง "to ring (a phone)".
+- **Watch for spelling-example cards.** พร and มืด only had Thai Script example glosses ("a lone
+  r after a consonant reads ɔɔn"), which the builder had picked as the only card. Check
+  `build_reading.py`'s choices for that when adding passages.
+- ตัว uses the classifier gloss where it counts things (shirts, ducks, a hen), and "body" for
+  ตัวเล็ก / ตัวใหญ่.
+
+**Sources for more**, noted for later at the user's request:
+- **[StoryWeaver](https://storyweaver.org.in/en/stories?language=Thai)** (Pratham Books): about 255 Thai children's stories, all CC BY 4.0, levels 1–4.
+- **[Bloom Library](https://bloomlibrary.org/language:th)** (SIL): about 347 Thai books, mostly Creative Commons, licence per book.
+
+The catches:
+- each story needs an attribution line (author, illustrator, translator, licence, link);
+- they're picture books, so the text can lean on the pictures;
+- translation quality varies;
+- each needs word breaks marked, and cards for new words.
+
+The plan was to try a few StoryWeaver Level 1 stories once the format proved itself.
+
+The other ten passages:
+- Easy: Signs Around Town, A Café Menu, A Text from a Friend.
+- Medium: At the Market, Asking the Way, Today's Weather.
+- Harder: My Morning, A Trip to Chiang Mai, Notice: Water Cut, Homework Piles Up (which ends on
+  the idiom ดินพอกหางหมู).
+
+- **Data:** a topic's `passage` is lines of `{ th, en }`. In `th`, `|` marks a word break and a
+  space is a real space; a trailing `:` makes a speaker's label (ลูกค้า:). The topic's cards are
+  its words in reading order: 220 in all. 192 of them reused existing cards, with the meaning picked for the
+  passage (เย็น is "cool / cold" on the café menu but "evening" in the text message), and 28 are
+  new (ละ "per / each" for กิโลละ, สะดวก, ประกาศ, …).
+  - Built by scratchpad `decks/reading_topics.py` + `decks/build_reading.py` (backup
+    `decks.backup31.json`).
+  - `tools/audit_decks.py` checks passages: the line shape, word-break glitches, and that every
+    Thai word is a card in its topic.
+- **Audio:** `gen_audio.py` records each sentence whole. It's keyed by `sentence_text()`: the word
+  breaks joined and the speaker's label dropped. In app.js that's `sentenceText()`; keep the two
+  in step.
+- **The Reading page** (view `'reading'`, `#reading-section`, `renderReading`):
+  - **The list** shows the passages by level (their `group`), each with its description and a ✓
+    once opened (prefs `readingDone`).
+  - **A passage** has "‹ All passages", its title and description, the reader, then "Words in this
+    passage (N)". That opens its word list (rows like search results: add to Flashcards, play) and
+    Add all to Flashcards.
+  - It remembers the open passage while the app's open (`state.readingId`). The app still starts
+    on Home.
+  - **Where passages don't appear:**
+    - the topic picker (`pickerModel` skips them), so they're not on the Topics page;
+    - the start-up topic (`isPassage`).
+  - **A search hit** for a word found only in a passage says "Reading: <passage>" and opens it,
+    lighting the word (`openReading(id, word)`, `.rw.found`).
+  - **Keys:** Flashcards' and Topics' shortcuts (Space, P, arrows) do nothing on the page.
+- **The reader** (`renderReader`, `#reader`, on the passage page):
+  - a line per sentence, with a play button (a `.row-speak`, so it lights while playing and stops
+    when pressed again);
+  - each word is a tap target (`.rw`). It plays the word, lights it, and shows a pop-up
+    (`#reader-pop`) with its transliteration and meaning, centred under it and kept inside the
+    box. A tap elsewhere, a resize, or a toggle closes it.
+  - **Show:** Transliteration and English toggles add those lines under each sentence. They start
+    off (the point is to read the script) and are remembered (prefs `readerTranslit`,
+    `readerEnglish`).
+- **The words** are cards like any others: added from the passage page, they're studied in
+  Flashcards (on Everything) in any direction.
+- **Tested:** all ten passages render at 320 px with no overflow, every sentence has its
+  recording, and the tap, pop-up, toggles, play and press-to-stop all work, with no errors.
 
 ## Speaker icon (2026-10-08)
 
@@ -2091,6 +2213,22 @@ it's the same everywhere and works offline.
   Thai Bold (the embedded file), Test answers and Wordlists in Regular, and English text in the
   system font. Switching to Loopless gave Noto Sans Thai (the embedded file), applied before first
   paint after a reload. All four files were in the offline cache.
+- **Looped font replaced, 2026-10-08:** it dropped tone marks.
+  - **What I saw:** writing the Little Stories, เสือ เสื้อ เสื่อ showed as three "tigers".
+  - **The bug:** Noto Looped Thai **1.00** (Debian's fonts-noto-core 20201225, the source of the
+    files) positions a tone mark over an upper vowel (ิ ี ึ ื) 283 units *down*, onto the vowel,
+    in its GPOS. So ่ vanished (นี่ → นี, ที่ → ที, ชื่อ → ชือ, เสื่อ → เสือ) and ้ collided with
+    the vowel.
+  - **Where:** this was in the font itself, not the trimming (HarfBuzz `hb-shape` / `hb-view` on
+    the full .ttf did the same). It showed on every page since the font came in on 2026-10-07,
+    on iPhone too.
+  - **The fix:** the current release, **Noto Sans Thai Looped 2.000** (renamed upstream; from
+    Google Fonts, `fonts.gstatic.com/s/notosansthailooped/v16`), places them correctly, ไม้ตรี
+    and ไม้จัตวา included. It's trimmed the same way and saved under the old file names, so
+    `styles.css`, the preload and `sw.js`'s SHELL list are unchanged.
+  - **Other changes:** `SHELL_CACHE` went to v7 so installed copies fetch the new files, and
+    `fonts/OFL.txt` has the 2022 Noto Project Authors copyright.
+  - **Loopless** (Noto Sans Thai 2.000) was always fine.
 
 ## Phone layout (2026-10-03), `mobile.css`
 
@@ -2102,6 +2240,10 @@ untouched. It fixes what made the app cramped on iPhone:
   more padding. There's room since Review stopped being a third tab. The top bar's spare width,
   measured in Chromium, is 49px at 320, 55 at 360, 70 at 375 and 77 at 390. That's still above
   the ~30px kept for iOS's wider font from 375px up.
+- **A third tab, Reading** (2026-10-08). The title became "Home" (was
+  "Learn Thai") to make room. Spare width is now 15px at 320, 18 at 360, 33 at 375, 36 at 390
+  and 76 at 430. That keeps the ~30px margin on iPhones (375 and up) but is tight on 320–360px
+  screens.
 
 - **Sideways overflow:** the controls bar didn't wrap, so the page was 502px wide on a 390px
   screen. Now the deck button gets its own row and the two toggles share the next.
