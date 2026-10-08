@@ -1,5 +1,5 @@
-Noto Looped Thai (fonts/NotoLoopedThai-Regular.woff2, fonts/NotoLoopedThai-Bold.woff2)
-Copyright 2020 Google LLC. All rights reserved. https://github.com/notofonts/thai
+Noto Sans Thai Looped 2.000, was Noto Looped Thai 1.00 until 2026-10-08 (fonts/NotoLoopedThai-Regular.woff2, fonts/NotoLoopedThai-Bold.woff2)
+Copyright 2022 The Noto Project Authors (https://github.com/notofonts/thai)
 
 Noto Sans Thai (fonts/NotoSansThai-Regular.woff2, fonts/NotoSansThai-Bold.woff2)
 Copyright 2016 Google Inc. All Rights Reserved. https://github.com/notofonts/thai
