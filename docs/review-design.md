@@ -6,6 +6,16 @@ four phases; implementation details go in `implementation-notes.md` as each phas
 
 ## Decisions
 
+- **2026-10-08: "Review" is renamed Recall** in the app (Flashcards → Learn | Test | Recall), and
+  the list of words you add is called "Flashcards". This document keeps the old name.
+- **2026-10-08: Review is a continuous stream,** with no start, end, counts or "new" labels.
+  Again brings a card back 2–4 cards later and Hard 6–9 later; due cards come weakest first, with a
+  new word every 4 cards; when nothing's due, the cards most likely forgotten. Every grade still
+  goes to FSRS. The daily maximum and Practise again went. See "Views" in `implementation-notes.md`.
+- **2026-10-08: Review became a Flashcards mode** (Learn | Test | Review), following the
+  Flashcards direction toggle and its Everything / By topic scope. The Review tab, its own scope
+  switch, the "Both directions" setting and the English → Thai unlock rule went. See "Views" in
+  `implementation-notes.md`.
 - **Today** is the landing tab.
 - **New cards** get multiple choice for their first one or two goes, then switch to recall and
   self-grading. *Superseded 2026-10-07:* Review is recall only, new cards too; recognition

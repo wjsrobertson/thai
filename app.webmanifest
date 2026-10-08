@@ -1,7 +1,7 @@
 {
   "name": "Learn Thai",
   "short_name": "Learn Thai",
-  "description": "Learn Thai words by topic, with flashcards, spaced review and audio.",
+  "description": "Learn Thai words by topic, with flashcards, spaced recall and audio.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

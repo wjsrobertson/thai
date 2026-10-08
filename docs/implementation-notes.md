@@ -74,8 +74,8 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-07 there are 6750 cards in 378 topics across 22 categories (see Topic list order,
-  Topic splits and Verb topics).
+- As of 2026-10-08 there are 7355 cards in 414 topics across 25 categories (see Topic list order,
+  Topic splits, Verb topics, New topics, Business topics, More idioms and Tone Pairs, 2026-10-08).
 
 **Writing cards.** Match the existing style:
 
@@ -336,6 +336,98 @@ Home & Everyday Things; and Southern Idioms.
 - **Audio uses the Central voice**, so the tones are Central, not Southern. Each deck description
   says so, and the user accepted this. Transliterations follow the Thai spelling.
 
+**Tone Pairs, 2026-10-08** (scratchpad `decks/tone_topics.py` + `decks/merge_tones.py`, backup
+`decks.backup24.json`).
+- **What:** a Tone Pairs group at the end of Thai Script, in three topics (53 cards, 11 new). The
+  user picked this as the quick option. The full tone trainer (`review-design.md` §5: hear a word,
+  pick it from its set, two voices) wasn't built.
+  - **Tone Pairs: Five Tones & Common Words:** คา ข่า ค่า ค้า ขา, ไม่ ไม้ ใหม่ ไหม ไหม้, มา ม้า หมา,
+    ขาว ข้าว ข่าว, ใกล้ ไกล.
+  - **Tone Pairs: Body, Family & Animals:** เสือ เสื้อ เสื่อ, ปา ป่า ป้า, นา หน้า น้า หนา, คอ ขอ ข้อ,
+    ปู ปู่, เข่า เข้า เขา.
+  - **Tone Pairs: Everyday Words:** หา ห้า ฮา, สวย ซวย, ซื้อ สื่อ ซื่อ, น้ำ นำ, ช้า ชา, ยา ย่า หญ้า, ไฟ ไฝ.
+- **Sets stay together in one topic,** so Recognition's wrong answers (drawn from the topic) can
+  be the near-identical words. They aren't guaranteed to be: answers are picked at random from
+  the whole topic.
+- **Notes:** each names the word's tone and its partners ("Rising tone. Compare ข้าว (falling)
+  rice, ข่าว (low) news"). Existing cards are reused, with these notes for this group.
+- **เขา:** the set uses "hill", said rising as written. เขา "he / she" is usually said high (kháo).
+- **Descriptions suggest Recall with Show Thai script off,** for a pure listening test.
+- **Three more topics the same day** (scratchpad `decks/tone_topics2.py` + `decks/merge_tones2.py`,
+  backup `decks.backup25.json`; 51 cards, 18 new). Six topics and 104 cards in all.
+  - **Tone Pairs: Numbers, Directions & Particles:** สี สี่ ซี้, เก้า เก่า เกา, ทราย ส่าย ซ้าย สาย,
+    มี หมี่ หมี, ไว ไหว ไหว้, ค่ะ คะ.
+  - **Tone Pairs: Body, Home & Nature:** หาง ห่าง ห้าง, ไหล ไหล่ ไล่, ฟัน ฝัน, หมอ หม้อ, ใส ใส่,
+    นอน หนอน, ลม ล้ม, ต้ม ตม.
+  - **Tone Pairs: Buying, Selling & More:** ขาย คาย ค่าย, เสีย เสี่ย, ห่อ หอ, เล่น เลน, เต่า เตา,
+    น้อย หน่อย, ปี ปี่.
+  - **New everyday cards:** ซ้าย "left" (only เลี้ยวซ้าย existed) and ล้ม "to fall over" (only the
+    crime-slang sense existed).
+
+**More idioms, 2026-10-08** (scratchpad `decks/idiom_topics.py` + `decks/merge_idioms.py`,
+backup `decks.backup23.json`).
+- **Why:** the user asked about important idioms. There were already 41: Wisdom (16), People &
+  Behaviour (16) and Southern: Idioms (9).
+- **Two new topics** after them in Culture & Values → Language & Literature (34 new cards):
+  - **Idioms & Proverbs: Work, Effort & Luck:** ดินพอกหางหมู, จับแพะชนแกะ, เอามะพร้าวห้าวไปขายสวน,
+    ไก่ได้พลอย, หนามยอกเอาหนามบ่ง, ชาติหน้าตอนบ่าย ๆ, …
+  - **Idioms & Proverbs: Talk & Relationships:** หมาเห่าใบตองแห้ง, ปลาหมอตายเพราะปาก,
+    มือถือสาก ปากถือศีล, กินบนเรือน ขี้บนหลังคา, นกสองหัว, ข้าวใหม่ปลามัน, …
+- **Style:** as Southern: Idioms, the English gives the meaning and the note gives the literal
+  image ("Lit. 'a dog barking at a dry banana leaf'").
+
+**Business topics, 2026-10-08** (scratchpad `decks/biz_topics.py` + `decks/merge_biz.py`, backup
+`decks.backup22.json`).
+- **Why:** the user asked about business terms for professionals. The basics existed (meetings,
+  money and deals, email phrases), but not the working language.
+- **A Business group** in Work & Education, after At Work, holds the two existing Business topics
+  (moved in) and seven new ones (112 cards, 94 new):
+  - Meeting Phrases: let's start, may I add, who's responsible, by when, the minutes.
+  - Management & HR.
+  - Sales & Marketing.
+  - Finance & Accounting, with the Thai tax paperwork: ใบกำกับภาษี, withholding tax and its 50 ทวิ
+    certificate.
+  - Contracts & Company Admin: the company stamp, certified true copies, BOI, registered capital.
+  - Customer Service.
+  - Workplace Manners: seniority, รุ่นพี่ / รุ่นน้อง, ขออนุญาต, saving face, who pays.
+- **Reuse and fixes:**
+  - Matching meanings reused existing cards (สวัสดิการ "benefits", รุ่นพี่ "senior (at school or
+    work)", ไว้หน้า "to spare someone's face").
+  - The existing โฆษณา card's transliteration was fixed: khoo-sà-naa → khôot-sà-naa.
+  - ไหว้ stays "wâai" everywhere on purpose: it's pronounced with a long vowel.
+
+**New topics, 2026-10-08** (scratchpad `decks/new_topics.py` + `decks/merge_new.py`, backup
+`decks.backup21.json`).
+- **Why:** the user asked what was missing. A sample-word check found the library broad but thin
+  on everyday conversation: no "what's your name?", "I think", "I agree", "are you free?" or
+  "hello" on the phone. Hotels, signs, materials, babies, Isan and Northern Thai were missing
+  too.
+- **The 18 topics (355 cards, 292 new):**
+  - **Conversation**, a new category after Basics: Small Talk: Questions · Small Talk: About You ·
+    Opinions & Reactions · Everyday Responses · Plans & Invitations · Phone Calls & Messages.
+  - **Getting Around:** Signs & Notices (in Travel), and a new Staying & Sightseeing group with
+    Hotels: Booking & Checking In, Hotels: Rooms & Problems and Sightseeing & Tours.
+  - **Basics → Everyday Words:** Materials.
+  - **People & Relationships:** a new Family Life group with Babies & Toddlers and Raising Kids.
+  - **Nature & Animals:** Pet Care & the Vet, after Pets. Pets already had the vet, vaccines,
+    neutering and walks, so this adds fleas, worming, grooming, litter, adopting and commands.
+  - **Isan Thai** (4 topics) and **Northern Thai** (3), new categories after Southern Thai.
+    - They follow the Southern pattern: the note gives the Central word ("Central: ไม่."), and the
+      description says the audio uses the Central voice.
+    - Topic names carry the region ("Isan: Food", "Northern: Food"), since topic names must be
+      unique. At the user's suggestion, Southern Thai's topics took the same prefix the same day:
+      "Southern: Phrases", "Southern: Idioms" (was "Southern Idioms"), and "Southern: Verbs &
+      Describing" / "Southern: Places & Things" (were "Everyday Words: …"). Ids are unchanged.
+    - The app spells the region "Isan", as the existing ภาคอีสาน card does.
+- **Same meaning, same card.** The merge script reuses an existing card when the Thai and the
+  meaning match. 20 drafts were switched to the existing English, e.g. ก็ได้ "that's fine too /
+  whatever" and เลื่อนนัด "to reschedule an appointment".
+  - **Real differences stayed separate cards:** Isan หลาย "very" against Central "several",
+    แซ่บ "delicious" against the slang "hot", and Northern ปี้ "older sibling", whose note warns it's
+    crude Central slang.
+- **Checks:** audit 0 errors; spelling parts and audio regenerated (`spelling.mjs --write`,
+  `gen_audio.py`).
+
 **Verb topics, 2026-10-07** (scratchpad `decks/verbs.py`, backup `decks.backup20.json`).
 - **Why:** the user couldn't find need, have or want. Common Verbs had 23 words, and most everyday
   verbs were only in the Spoken frequency topics, mixed in with other kinds of word.
@@ -460,6 +552,201 @@ Script: scratchpad `decks/merge15.py`.
   note.
 
 ## Views
+
+**Each mode keeps its own place** (2026-10-08, the user's call).
+- **What each keeps:** Browse its position, Recognition its stream (queue, position, words being
+  relearnt, carried comebacks), and Recall its stream (`state.review`, kept when you switch away).
+- **Saving and restoring:** `setOrderMode` saves the place you leave (`snapMode` →
+  `state.modeSnap`) and restores the one you return to (`restoreMode`).
+  - **Recognition left mid-pause** comes back on the next card, since the answer was already
+    saved.
+  - **Recall** comes back on its current card, from the front.
+- **Starting afresh:** a place is dropped if words went into or out of Flashcards meanwhile (the
+  `reviewOnlySig` check). Changing direction or topic starts every mode afresh (`discardModes`).
+  Leaving Flashcards keeps all three (see "Flashcards reopens as you left it").
+- **Tried first:** the same day, switching mode kept the word on screen, but the user didn't like
+  it.
+- **Checked in Chromium:**
+  - Browse at 3/8 stayed there across every switch.
+  - Recognition came back mid-stream, with a missed word returning 3 cards later.
+  - Recall came back on its own card.
+  - A direction change reset all three, and leaving the page kept only Browse.
+
+**The modes are Browse | Recognition | Recall (2026-10-08).** Learn became Browse (the user's
+placeholder; a better name is being discussed) and Test became Recognition.
+- **Where:** the mode buttons, Home's rows, Settings → Flashcards → "Recognition", "Scheduling
+  (Recognition and Recall)", and the help that mentioned Learn or Test.
+- **Code values are unchanged:** `orderMode` `practice` / `test` / `review`. Settings search still
+  finds "test" and "learn".
+- **Phone:** the row fits from 375px up (Recognition is 81px). At 320px the modes wrap onto
+  their own full-width row under the directions, which looks tidy.
+
+**"Review" is gone from the app's wording (2026-10-08).** The user called Review "a dead
+concept".
+- **The mode is now Recall:**
+  - Learn | Test | Recall.
+  - Home's row: "**Recall** Remember each word yourself; the hard ones come back sooner".
+  - Settings → Flashcards → "Recall" and "Scheduling (Test and Recall)".
+  - "Recall cards" in Show Thai script.
+  - The card's aria-label.
+  - The manifest: "spaced recall".
+- **The list of words you add is "Flashcards":**
+  - "None of this topic's words are in Flashcards yet" (and "No words in Flashcards yet").
+  - Settings → Reset → **Clear Flashcards** (was "Reset Review list"), with its dialog and the
+    "Flashcards cleared" toast.
+  - "the words in Flashcards" in the Backup, Reset progress and Reset settings text, and in the
+    backup summary.
+  - The topic picker's "Every word you've added to Flashcards".
+  - (The Add-all button and its toasts changed earlier the same day.)
+- **Desired retention** says "words come back less / more often" instead of "fewer / more
+  reviews".
+- **Code names are unchanged:** `orderMode: 'review'`, `state.review`, `reviewWords`,
+  `#review-card`, `.today-only` and the rest. "review" stays in settings search words, so the old
+  name still finds things.
+- **Below:** the notes from earlier on 2026-10-08 still say "Review mode"; read it as Recall.
+
+**Review moved into Flashcards (2026-10-08).** The user asked to get rid of the Review tab and
+make it a Flashcards mode. Where older notes below say "Review" for the page, it's now
+**Flashcards → Review**.
+- **The page:** the tabs are **Topics | Flashcards**, and Home has two cards.
+- **Home's cards** (restyled 2026-10-08 at the user's request: the bullets were cramped, and Topics
+  needed balancing). Each card has a title and three lines.
+  - **Flashcards' rows:** `.home-card-list` is a two-column grid (label | description), so the
+    descriptions line up. Each label has an accent dot. The rows use spans, since a button can
+    only hold phrasing content.
+  - **No topic line:** the cards used to end with their topic ("Topic: …", or "Everything" for
+    Flashcards). The user found it redundant and had it removed, `renderHome` included
+    (2026-10-08). Home is now static.
+  - **Topics: plain sentences**, one per line (`.home-card-text`, at the rows' size, with more
+    space between them, 26px or 22px on the phone, so the card fills out beside Flashcards'):
+    "Every word, sorted by topic, with audio and spelling.", "Tap 🔁 on a word to practise it in
+    Flashcards." and "Hear a whole topic read out with Read all."
+    - They replace "Browse words by topic" and the 🔁 note.
+    - The user didn't want the Flashcards-style rows (Browse / Add / Listen) here.
+  - **Flashcards:** "**Learn** Flip through the cards to memorise words", "**Test** Pick the right answer to check
+    you recognise each word" and "**Review** Recall each word; the hard ones come back sooner".
+  - **Earlier:** Flashcards' stat also counted what Review had waiting ("12 to review ·
+    Everything"), and its description was one line: "Learn, test your recognition, then review
+    to build recall".
+- **Modes:** Flashcards' modes are **Learn | Test | Review** (`state.orderMode`: `practice`,
+  `test`, `review`; `stage[data-order]`).
+  - Review mode hides the card and the Test summary, and shows the old Review section
+    (`.today-only`, `#today-section`) in their place.
+  - Its card already matched the Flashcards card's size. It gained the spelling button
+    (`#review-spell`, bottom left; on the front only for Thai → English). Tapping the card shows
+    the answer, as Show does.
+- **Direction:** Review follows Thai → English / English → Thai. `planReview(now, dir)`,
+  `planPractice`, `dueTomorrow` and `nextReviewText` all take one direction.
+  - The buttons read the same in every mode. A count of cards to review on each was tried for a
+    day and removed at the user's request (2026-10-08).
+  - **English → Thai is open for any added word.** It used to unlock once the meaning was known
+    (`it.u`, still set by `gradeItem` but unused). The "Both directions" setting is gone.
+- **Scope:** Review follows Flashcards' Everything / By topic (`flashScope()`;
+  `reviewScopeDeckIds()`). Review's own switch (`prefs.reviewBy`) is gone. The dialog's help now
+  reads "Shared with the Topics page" or "Every word you've added to Review".
+- **A continuous stream, no sessions** (2026-10-08, the user's request, later the same day).
+  - **What the user asked for:** no single test of "6 things" with a start and an end. The hard
+    things should come back quickly and the easy ones less. New words still appear, but aren't
+    marked as new: just a stream of words from the selection, in an order that helps recall.
+  - **Gone:** the start panel (counts and Start), "All caught up", Practise again (and practice
+    rounds that didn't touch the schedule), the end screen, the badge ("12 left · New") and
+    Settings → "Maximum reviews per day". `planReview`, `planPractice`, `dueTomorrow` and the
+    daily `rv` count went with them.
+  - **`state.review`** is the stream: `count` (cards shown), `shownAt` and `returnAt` (item →
+    count), `sinceNew`, `lastKey` and `current`. `enterReview()` starts it when you choose the
+    mode, a direction or a topic. Changing mode, direction or topic starts afresh
+    (`leaveReviewSession`). Grades are saved as you go.
+  - **Flashcards reopens as you left it** (the user's request, 2026-10-08).
+    - **What's kept:** the direction and the mode (both in prefs, so they survive a reload too),
+      and each mode's place, Recall's and Recognition's streams included. A Recognition card
+      answered just before leaving moves on to the next one on return.
+    - **History:** earlier that day it always opened on Browse (then "Learn"), and leaving ended
+      the streams. The user found that unhelpful. The old migration from the Review tab went then.
+  - **`pickReviewEntry()` picks each card**, from `reviewPool()`: every added word in scope, with
+    its item in the current direction, or null if not started.
+    1. **Returning cards** whose turn has come, longest waiting first. **Again** sets a return 2–4
+       cards later, and **Hard** 6–9 later (`REVIEW_RETURN`). **Easy** clears it, so the card
+       drops out of the rotation.
+    2. **Due cards** (`it.due <= now`), lowest recall probability (`fsrsR`) first. A new word
+       comes in every `NEW_EVERY` (4) cards.
+    3. **New words** in the order added, when nothing is due. They look like any other card.
+    4. **Nothing due:** the lowest recall probability first. Elapsed time ÷ stability ranks them,
+       so low-stability (hard) words come round more often than easy ones in a big pool.
+    - **No repeats:** a card isn't shown again within `RECENT` (5) cards, fewer in a small pool,
+      and never twice in a row. When everything is recent or waiting to return, the card shown
+      longest ago comes next.
+  - **The schedule:** every grade goes to FSRS (`gradeItem`, recall). Reviews ahead of time use
+    FSRS's early-review maths, and the same-day tweak (repeats never lengthen a gap) stops a long
+    sitting from pushing words out. Across days, due words come first.
+  - **Home:** the Flashcards card shows cards due now plus words not started, in both
+    directions (`reviewToDo`).
+  - With none of the scope's words in Review (or all taken out mid-stream), Flashcards' empty
+    message shows (`.stage.review-only-none .today` is hidden).
+  - **Tested in Chromium (6 words):**
+    - Again on w1 brought it back 3 cards later, twice.
+    - Hard on w2 brought it back 8 and then 6 cards later.
+    - Once all were Easy they rotated, never back to back.
+    - With 4 overdue cards and 8 new words, the due cards came weakest first (by elapsed ÷
+      stability), then the new words.
+    - Leaving and returning kept the card, and removing every word showed the empty message.
+- **No header:** the old session header (topic, "12 left", End review) is gone.
+- **The card flips** (2026-10-08, the user's request). Review's card is now built like the
+  Flashcards card: `#review-card` is a `.card` with a front and a back `.face`.
+  - **Before:** the answer appeared under the large prompt.
+  - **The front** has the prompt (large, fitted by `fitText`, which `fitCardText` now runs for both
+    cards), the eye button, the hint, and the 🔊 and spelling buttons (Thai → English only).
+  - **The back** is laid out as Flashcards' (`renderCard`): for Thai → English, the Thai at the
+    English's size, then the transliteration, English, note and spelling line. English → Thai
+    leads with the transliteration, then the large Thai.
+  - **Turning it:** Show, Enter or a tap turns it to the back (`setReviewFlipped`). After that a
+    tap turns it either way.
+  - **The next card** is set up on the front without the turn (`instant`), so the next answer
+    never shows mid-turn.
+  - **Checked in Chromium:** the card is the same size and position as Learn's (366×354 at 390px,
+    296×269 at 320px, 900×506 on desktop). The back's text sizes match Learn's, the 30-character
+    phrase fits, and there were no JS errors.
+- **Show and the grades are Test's answer-button size** (2026-10-08, the user's request).
+  - **Sizes:** the grades sit three across, as `.learn-pill` in `.learn-pills`: a 12px gap and
+    120px minimum height on desktop, 8px and 72px on the phone. Show is the middle button's size,
+    `calc((100% - 2 gaps) / 3)` wide and centred. The card-to-buttons gap matches `.card-wrap`
+    (16px, 12px on the phone).
+  - **Measured in Chromium:** the same widths and x-positions as Test's buttons (117px at 390,
+    93px at 320, 292px on desktop).
+  - **Heights:** Test's buttons grow when an answer wraps (up to about 114px on the phone).
+    Review's stay at the one-line height.
+  - **Easy is outlined green** (`--good`, as it schedules as FSRS Good). It was blue (`--easy`).
+- **"Again" is labelled "Very Hard"** (2026-10-08, the user's request). This covers the grade
+  button and Settings → Flashcards → "Very Hard: wait (minutes)", whose help now says "a word you
+  mark Very Hard".
+  - Code and notes still say Again: grade 1, `waitAgainMin`, `.grade-again`.
+  - The button wraps to two lines at 320px, inside its 72px.
+- **Show moved into the card as a yellow ⟳** (2026-10-08, the user's idea).
+  - **The button:** it's the Flashcards card's flip button (`.flip-btn`, bottom right, on both
+    faces), the same size as Learn's (72px desktop, 48px phone). On the front it's filled yellow
+    (`.reveal`, `--accent`) until the card has been turned, then grey as on Learn.
+  - **What turns the card:** ⟳, a tap or Enter turns it to the answer, then either way. Nothing
+    sits under the card until the grades appear.
+  - **Gone:** the Show button, the "Say it aloud, then tap Show" hint (also removed at the user's
+    request), and with it Settings → "Say it aloud" (`sayAloud`), which only chose that hint's
+    wording.
+  - The "Show Thai script" setting now says "before you turn them over".
+- **Short direction labels on the phone:** "TH → EN" / "EN → TH" (`.dir-long` / `.dir-short`).
+  Direction and Learn | Test | Review then share one row from 320 to 430px.
+  - At 320px the buttons are slightly tighter (`padding: 8px 4px`); otherwise that width is 4px
+    short. Measured in Chromium.
+  - The 340px rule sits after the general `.seg-btn` rule, which would otherwise override it.
+- **Settings:** Review's settings joined Flashcards under a "Review mode" subheading
+  (`.setting-subhead`). The sections are now Display, Audio, Topics, Flashcards, App, Reset.
+- **Quiet card:** the hidden Flashcards card doesn't speak in Review mode (`renderCard`).
+- **Migration:** a saved `prefs.view = 'today'` (the Review tab) opens Flashcards in Review mode.
+- **Tested in Chromium:**
+  - A 6-word session, then Done gave "All caught up · More words are due in 3 days".
+  - English → Thai then started its own 6-card session, with no spelling button on the front.
+  - Enter revealed the answer, and 1 graded Again.
+  - Learn showed the card again.
+  - Switching scope started a 4-card session.
+  - Practise again worked, and a topic with no Review words showed the empty message.
+  - Test mode was unaffected, and there were no JS errors.
 
 The app opens on a **Home** page: three cards (Wordlists, Flashcards, Review; the top tabs match. Wordlists moved first on 2026-10-07), each with a short
 description. Flashcards and Wordlists show the current deck ("Topic: Time of Day"), and Review shows today's due/new counts
@@ -683,7 +970,67 @@ a category alone, on every page).
     above.
   - The choices survived a reload, and the migration from `reviewScope: 'current'` worked.
 
+**"Add all to Review" became "Add all to Flashcards"** (2026-10-08, the user's request).
+- **What changed:**
+  - The Topics page button and its states ("✓ All in Flashcards", "− Remove all").
+  - Both dialogs ("Add all to Flashcards?", "Remove all from Flashcards?").
+  - Every add and remove toast ("✓ Added 24 words to Flashcards", "Removed สวัสดี from
+    Flashcards").
+  - The 🔁 button's tooltip and the inline icon's label.
+  - The two Settings → Topics confirmations named after the button.
+- **Not changed:** other wording still calls the list "Review", e.g. "None of this topic's words
+  are in Review yet", "Reset Review list" and the backup text. Code names (`reviewWords`,
+  `setInReview`) are unchanged.
+- **Phone layout:** the longer label wrapped in its half of the row, so the button now takes the
+  room "Read all" doesn't need (`flex: 1 1 auto` against `0 0 auto`) and stays on one line. At
+  320px the two buttons' text is 13px: 202px + 86px there, 258px + 100px at 390px.
+
+**The card's back repeats the Thai** (2026-10-08, the user's request), for Learn and Test,
+Thai → English only.
+- **Order:** the Thai script, then the transliteration, English, note and spelling
+  (`#card-back-thai`, filled in `renderCard`).
+- **Style:** the same size, colour and weight as the English (class `english` plus
+  `back-script`), not the front's large Thai.
+- **English → Thai** already leads its back with the Thai, so the extra line is hidden there.
+- **Checked in Chromium:** 20px on a 390px phone and 32px on desktop, the same as the English.
+  Nothing overflowed, even on a card with a long note.
+
 ## Test mode
+
+**Recognition (Test mode's new name) is a continuous stream (2026-10-08, the user's request).**
+- **Removed:** the round with a score, the end-of-round summary (`showRoundSummary`, `#round-summary`,
+  `fillMissedList`), the "3 / 24" badge, ‹ ›, and the arrow keys. Answering is the only way on.
+  Browse keeps ‹ › and the badge.
+- **Moving on:** after an answer the card moves on by itself.
+  - The wait is Settings → Flashcards → "Pause after a right answer" (`learnPauseMs`, 1.5 s) or
+    "Pause after a wrong answer" (`wrongPauseMs`, 4 s; 3 s for its first hour), both shown in seconds.
+  - At first a wrong answer waited twice the one pause. The user wanted it longer and separate
+    (2026-10-08).
+  - The new key needs no migration: it isn't in saved settings, so the default applies.
+  - Checked in Chromium: 1.51 s and 3.01 s, and 4.52 s after setting 4.5.
+  - "Move on after an answer" (`learnAutoProgress`, with its migration) and the pending rating
+    that waited for › (`pendingLearnRating`) are gone.
+  - The rating is saved as soon as you answer (`saveDeckRating`).
+  - The move is a timer guarded by `state.answerSeq`. Changing mode, direction or topic
+    (`resetRecognition`) cancels it, and nothing is lost.
+- **Order:** passes through the words in Settings → Card order. Each pass is rebuilt by
+  `buildFlashcardQueue` (reshuffled if Random) and never starts with the card just seen.
+- **Relearning a miss** (`requeueRecognition`, `state.relearn`; expanding retrieval practice, as in
+  Recall):
+  - wrong → the card is spliced back 2–4 cards later (step 1);
+  - right at step 1 → once more 6–9 cards later (step 2);
+  - right at step 2, or first time → back to the normal passes;
+  - wrong at any step starts again from step 1.
+- **Comebacks past the end of a pass** go into the next pass at the same distance
+  (`state.carry`), replacing that card's turn there. At first they were appended to the end of
+  the pass, which could bring a card straight back. Those cards are taken out of the new pass
+  before any is put back, so one can't shift another.
+- **Checked in Chromium** (6 words, five runs, missing w1 once and w3 twice):
+  - First comebacks came 2–4 cards later, and confirmations 6–9 later.
+  - Nothing came back to back, and there was no summary.
+  - A direction change during the pause cancelled the move.
+  - When misses cluster, one comeback can slip a card later (5 instead of 2–4).
+- The older Test-mode notes below describe the round version.
 
 **Random order puts new words first** (2026-10-07, the user's request: newly added Review words
 should come up first). In random order, `buildQueue` moves cards never answered in this direction
@@ -840,7 +1187,8 @@ request; the setting and "New cards per day" (`newPerDay`) are gone.
     to remove a category or single words. The user removed it to make the page simpler, now that
     Review can be narrowed with Everything / By topic.
   - A Tomorrow / next 7 days forecast line was removed on 2026-10-05 as noise.
-- **Practise again** (2026-10-07). The user finished their 6 words and wanted to keep going.
+- **Practise again** (2026-10-07; gone 2026-10-08, when Review became a continuous stream with no
+  end, see "Views"). The user finished their 6 words and wanted to keep going.
   - **Where:** the button shows on the Review screen when nothing's due, with "Nothing's due.
     Practising doesn't change when words come back." It also shows next to Done on the end
     screen, when nothing's left to review. Enter starts it from the Review screen.
@@ -871,7 +1219,9 @@ request; the setting and "New cards per day" (`newPerDay`) are gone.
     - **The "switch to Everything" line is hidden** whenever Review is empty, since Everything
       would be empty too (`#today-topic-empty-hint`).
 - **Due items** are everything due by the end of the study day (days roll over at 4 am), weakest
-  (lowest retrievability) first, capped by `maxReviews` minus today's `rv`.
+  (lowest retrievability) first, capped by `maxReviews` minus today's `rv`. *(Superseded
+  2026-10-08: Review is a continuous stream; see "Views". Due now, not by the end of the day, and
+  no cap.)*
   - **They come from what Review covers** (see "Scopes" below): Everything by default, or a
     topic, group or category. `reviewDeckId(…, scopeIds)` skips items with no deck in scope;
     "due tomorrow" uses the same filter.
@@ -996,6 +1346,28 @@ The settings modal (gear icon, top right) is searchable through each group's `da
 keywords. Since 2026-10-07 its sections are Display, Audio, Topics (was Wordlists), Flashcards
 (was "Deck mode"), Review (was "Daily review"), App and Reset, at the user's request. App moved
 from first to just above Reset later the same day.
+- **Flashcards' settings reviewed** (2026-10-08, at the user's request). There are now three
+  parts:
+  - **Test:** "Card order" (was "Test card order"), "Move on after an answer" (was "Auto-progress
+    after multiple choice"; options Off / After a right answer / After every answer), and "Pause
+    before moving on", now in seconds. It's still saved as `learnPauseMs`, so no migration was
+    needed.
+  - **Review:** Show Thai script.
+  - **Scheduling (Test and Review):** the three waits and Desired retention. They were under
+    "Review mode", but Test answers use the same schedule: a wrong one counts as Very Hard, a
+    right one as Hard. The help says so.
+  - **Smart order is gone** (prefs `srsOn`, with `isDue`, `boxForStability`, `BOX_WEIGHTS` and
+    `boxWeightedQueue`). It put due cards first in Test, and spacing is now Review's job. Test is
+    every word once per round: random with never-answered words first, or list order.
+    - Checked in Chromium: 3 new and 5 answered words gave NNNooooo.
+- **Read all's settings moved to Topics** (2026-10-08, at the user's request, after a review of
+  what belongs where). Repeats, Pause between words and Speak English too only affect the Topics
+  page's Read all, so they sit at the end of Topics under a "Read all" subheading. "Read-aloud
+  repeats" became plain "Repeats".
+  - **Repeats now defaults to 2** (was 1). Settings are saved in full, so the `read-repeats-2`
+    migration moves a saved 1 to 2. A value the user picks afterwards sticks.
+  - **The rest stayed:** Voice, Thai speed, Spelling and Offline audio affect cards and the
+    Topics page alike, so they stay in Audio.
 - **What moved:** Spelling went from Display to Audio. The Confirmations section's two settings
   joined Wordlists, beside the buttons they confirm: "Confirm “Add all to Review”" / "Ask before
   adding every word in the list", and the same for Remove.

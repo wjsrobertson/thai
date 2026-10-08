@@ -14,15 +14,12 @@ const els = {
   deckPicker: document.getElementById('deck-picker'),
   deckPickerSearch: document.getElementById('deck-picker-search'),
   deckPickerTree: document.getElementById('deck-picker-tree'),
-  srsToggle: document.getElementById('srs-toggle'),
   reviewOnlyEmpty: document.getElementById('review-only-empty'),
-  todayTopicEmpty: document.getElementById('today-topic-empty'),
-  todayTopicEmptyTitle: document.getElementById('today-topic-empty-title'),
-  todayTopicEmptyHint: document.getElementById('today-topic-empty-hint'),
   reviewOnlyEmptyTitle: document.querySelector('#review-only-empty .review-only-empty-title'),
   card: document.getElementById('card'),
   thai: document.getElementById('card-thai'),
   translit: document.getElementById('card-translit'),
+  backThai: document.getElementById('card-back-thai'),
   english: document.getElementById('card-english'),
   note: document.getElementById('card-note'),
   cardSpelling: document.getElementById('card-spelling'),
@@ -32,12 +29,6 @@ const els = {
   flipButtons: document.querySelectorAll('.flip-btn'),
   posBadges: document.querySelectorAll('.stat-pos'),
   learnPills: document.getElementById('learn-pills'),
-  roundSummary: document.getElementById('round-summary'),
-  roundScore: document.getElementById('round-score'),
-  roundSub: document.getElementById('round-sub'),
-  roundMissedTitle: document.getElementById('round-missed-title'),
-  roundMissed: document.getElementById('round-missed'),
-  roundAgain: document.getElementById('round-again'),
   prevBtn: document.getElementById('prev-btn'),
   nextBtn: document.getElementById('next-btn'),
   orderButtons: document.querySelectorAll('.seg-btn[data-order]'),
@@ -50,21 +41,16 @@ const els = {
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
-  setMaxReviews: document.getElementById('setting-max-reviews'),
   setWaitAgain: document.getElementById('setting-wait-again'),
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
   setRetention: document.getElementById('setting-retention'),
-  setBothDirections: document.getElementById('setting-both-directions'),
-  setSayAloud: document.getElementById('setting-say-aloud'),
   reviewBy: document.getElementById('review-by'),
   reviewByButtons: document.querySelectorAll('[data-review-by]'),
   reviewByHelp: document.getElementById('review-by-help'),
   reviewBySwitch: document.querySelector('#review-by .segmented'),
   reviewOnlyEmptyHint: document.getElementById('review-only-empty-hint'),
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
-  todayDueFrom: document.getElementById('today-due-from'),
-  todayNewFrom: document.getElementById('today-new-from'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
   confirmTitle: document.getElementById('confirm-title'),
@@ -79,40 +65,21 @@ const els = {
   updateReload: document.getElementById('update-reload'),
   homeLink: document.getElementById('home-link'),
   homeCards: document.querySelectorAll('.home-card'),
-  homeDeckStat: document.getElementById('home-deck-stat'),
-  homeWordlistStat: document.getElementById('home-wordlist-stat'),
-  homeReviewStat: document.getElementById('home-review-stat'),
-  todayHome: document.getElementById('today-home'),
-  todayDue: document.getElementById('today-due'),
-  todayNew: document.getElementById('today-new'),
-  todayStart: document.getElementById('today-start'),
-  todayPractise: document.getElementById('today-practise'),
-  todayPractiseNote: document.getElementById('today-practise-note'),
   review: document.getElementById('review'),
-  reviewTop: document.getElementById('review-top'),
-  reviewLeft: document.getElementById('review-left'),
-  reviewDeck: document.getElementById('review-deck'),
-  reviewQuit: document.getElementById('review-quit'),
-  reviewBadge: document.getElementById('review-badge'),
+  reviewCard: document.getElementById('review-card'),
+  reviewSpell: document.getElementById('review-spell'),
+  reviewSpellBack: document.getElementById('review-spell-back'),
+  reviewBackThai: document.getElementById('review-back-thai'),
+  reviewSpelling: document.getElementById('review-spelling'),
   reviewPrompt: document.getElementById('review-prompt'),
   reviewSpeak: document.getElementById('review-speak'),
   reviewScript: document.getElementById('review-script'),
   setReviewScript: document.getElementById('setting-review-script'),
-  reviewHint: document.getElementById('review-hint'),
-  reviewAnswer: document.getElementById('review-answer'),
+  reviewFlip: document.getElementById('review-flip'),
   reviewMain: document.getElementById('review-main'),
   reviewTranslit: document.getElementById('review-translit'),
   reviewNote: document.getElementById('review-note'),
-  reviewShow: document.getElementById('review-show'),
   reviewGrades: document.getElementById('review-grades'),
-  reviewSummary: document.getElementById('review-summary'),
-  reviewScore: document.getElementById('review-score'),
-  reviewSub: document.getElementById('review-sub'),
-  reviewMissedTitle: document.getElementById('review-missed-title'),
-  reviewMissed: document.getElementById('review-missed'),
-  reviewDone: document.getElementById('review-done'),
-  reviewPractise: document.getElementById('review-practise'),
-  reviewTitle: document.getElementById('review-title'),
   resetAll: document.getElementById('reset-all'),
   resetSettings: document.getElementById('reset-settings'),
   resetReview: document.getElementById('reset-review'),
@@ -141,34 +108,26 @@ const els = {
   setReadPause: document.getElementById('setting-read-pause'),
   setReadEnglish: document.getElementById('setting-read-english'),
   setLearnPause: document.getElementById('setting-learn-pause'),
-  setLearnAuto: document.getElementById('setting-learn-auto'),
+  setWrongPause: document.getElementById('setting-wrong-pause'),
   setTestOrder: document.getElementById('setting-test-order'),
-  learnPauseRow: document.getElementById('learn-pause-row'),
   settingsSearch: document.getElementById('settings-search'),
   settingsEmpty: document.getElementById('settings-empty'),
 };
 
 const STORAGE_KEY = 'learnthai:v1';
 
-// Deck Test mode's study-ahead weighting, by a box derived from FSRS stability (boxForStability).
-// Lower box → weaker card → tends to come earlier.
-const BOX_WEIGHTS = [0, 8, 4, 2, 1, 0.5]; // index = box number
-
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
 const DAY = 24 * HOUR;
 
 const DEFAULT_SETTINGS = {
-  maxReviews: 200,                // due reviews per study day
   waitAgainMin: 10,               // Again: back after this many minutes (scheduleItem)
   waitHardDays: 1,                // Hard: a new word's first wait; later waits grow from it
   waitEasyDays: 3,                // Easy (FSRS Good): a new word's first wait; later waits grow from it
   retention: 0.9,                 // FSRS desired retention
-  bothDirections: true,           // also schedule English → Thai items (unlocked per word; see gradeItem)
-  sayAloud: true,                 // recall prompt says "Say it aloud…"
   reviewScript: true,             // Review: show the Thai on Thai → English cards before Show (off: audio only)
-  confirmAddAll: true,            // Topics page "Add all to Review" asks first (Settings → Topics)
-  confirmRemoveAll: true,         // Wordlist "✓ All in Review" (remove all) asks first
+  confirmAddAll: true,            // Topics page "Add all to Flashcards" asks first (Settings → Topics)
+  confirmRemoveAll: true,         // Topics page "✓ All in Flashcards" (remove all) asks first
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
   theme: 'dark',                  // Settings → Display → Theme: dark | light | night
@@ -176,13 +135,13 @@ const DEFAULT_SETTINGS = {
   spellingStyle: 'letters',       // card-back spelling and the spell-aloud buttons: 'letters' (names) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
-  readRepeats: 1,                 // times to repeat each word during read-aloud
+  readRepeats: 2,                 // times Read all says each word (Settings → Topics; 1 until 2026-10-08)
   readPauseSec: 1.5,              // seconds of silence between words
   readSpeakEnglish: true,         // whether to speak English after Thai
-  learnPauseMs: 1500,             // pause after answering before auto-advancing (Test mode)
+  learnPauseMs: 1500,             // Recognition: pause after a right answer before the next card
+  wrongPauseMs: 4000,             // Recognition: pause after a wrong one (its own setting since 2026-10-08; 3 s at first)
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → Topics)
-  learnAutoProgress: 'correct',   // 'off' (wait for Next) | 'always' | 'correct' (only on a right answer); older saves hold true/false
 };
 
 const state = {
@@ -195,9 +154,9 @@ const state = {
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
-  view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists) | 'today' (the Review tab)
+  view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
   sort: { key: null, dir: 'asc' },
-  orderMode: 'practice', // 'practice' | 'test' — card sequencing in flashcards
+  orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back)
   pickerOpen: false,
   pickerFilter: '',
@@ -206,11 +165,13 @@ const state = {
   expandedGroups: new Set(),     // same for deck groups, keyed `${category}::${group}`
   lastFocus: null,
   reading: { active: false, token: 0, currentKey: null },
-  pendingLearnRating: null, // 'good' | 'again' | null — set when user answered but hasn't committed
-  roundOver: false,         // the end-of-round score is showing (Test mode)
+  relearn: new Map(),       // Recognition: card key -> relearning step (requeueRecognition)
+  carry: [],                // Recognition: comebacks past the end of the pass, for the next one
+  modeSnap: { practice: null, test: null }, // Browse's and Recognition's places while in another mode (snapMode)
+  answerSeq: 0,             // Recognition: bumped to cancel a pending move to the next card
   learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen } for this session
   cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
-  review: null,             // Today's review session while it runs (see startReview)
+  review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
 };
 
@@ -239,7 +200,7 @@ function saveStore(store) {
 
 function getPreferences() {
   const store = loadStore();
-  return store.prefs || { currentDeckId: null, srsOn: true };
+  return store.prefs || { currentDeckId: null };
 }
 
 function setPreferences(prefs) {
@@ -259,8 +220,6 @@ function getSettings() {
 const SETTINGS_MIGRATIONS = [
   // 2026-10-03: Test-mode pause default 3000 -> 1000 ms.
   ['pause-1000', (s) => (s.learnPauseMs === 3000 ? { learnPauseMs: 1000 } : null)],
-  // 2026-10-05: Test card auto-progress default 'off' -> 'correct' (older saves hold false).
-  ['auto-progress-correct', (s) => ([false, 'off'].includes(s.learnAutoProgress) ? { learnAutoProgress: 'correct' } : null)],
   // 2026-10-05: Test-mode pause default 1000 -> 1500 ms. Runs after pause-1000, so 3000 ends at 1500.
   ['pause-1500', (s) => (s.learnPauseMs === 1000 ? { learnPauseMs: 1500 } : null)],
   // 2026-10-06: Review became manual by default (words you add); both automatic sources move to it.
@@ -273,6 +232,8 @@ const SETTINGS_MIGRATIONS = [
     if (s.reviewScope === 'current') store.prefs = { ...(store.prefs || {}), reviewBy: 'topic' };
     return null;
   }],
+  // 2026-10-08: Read all says each word twice by default (it was once).
+  ['read-repeats-2', (s) => (s.readRepeats === 1 ? { readRepeats: 2 } : null)],
 ];
 
 function migrateSettings() {
@@ -430,8 +391,8 @@ function endOfStudyDay(ts = Date.now()) {
   return d.getTime() + DAY + DAY_ROLLOVER_HOURS * HOUR;
 }
 
-// Today's counters in store.daily (g gradings, ok correct, n new items, nd new per deck,
-// rv due reviews done). Keeps the last 60 days.
+// Today's counters in store.daily (g gradings, ok correct, n new items, nd new per deck; rv, due
+// reviews done, until Review's daily maximum went on 2026-10-08). Keeps the last 60 days.
 function dayLog(store, now = Date.now()) {
   store.daily ||= {};
   const key = dayKey(now);
@@ -441,18 +402,6 @@ function dayLog(store, now = Date.now()) {
     for (const old of keys.slice(0, Math.max(0, keys.length - 60))) delete store.daily[old];
   }
   return store.daily[key];
-}
-
-function todayLog() {
-  return loadStore().daily?.[dayKey()] || {};
-}
-
-// Deck Test mode orders study-ahead cards by box (boxWeightedQueue); derive one from stability.
-function boxForStability(s) {
-  if (s == null || s < 2) return 1;
-  if (s < 5) return 2;
-  if (s < 12) return 3;
-  return s < 30 ? 4 : 5;
 }
 
 // One-off (2026-10-05): per-deck Leitner progress becomes th-en items. Box → rough stability; due
@@ -515,7 +464,7 @@ function mergeProgressIntoCards(deckCards) {
     const key = cardKey(c);
     const it = items[itemKeyOf(key, state.direction)];
     // dueAt 0 = never answered (always eligible).
-    return { ...c, key, seen: it?.reps || 0, dueAt: it ? it.due : 0, box: boxForStability(it?.s) };
+    return { ...c, key, seen: it?.reps || 0, dueAt: it ? it.due : 0 };
   });
 }
 
@@ -533,47 +482,18 @@ function buildCardIndex() {
 
 // ---------- queue building ----------
 
-function isDue(card, now) {
-  // dueAt 0 means brand new — always eligible.
-  return card.dueAt === 0 || card.dueAt <= now;
-}
-
-function buildQueue(cards, srsOn) {
-  // Practice = plain list order, no SRS.
-  if (state.orderMode === 'practice') {
-    return cards.map((_, i) => i);
-  }
-  // Test mode. Settings → "Test card order" picks random or deck order (as Learn mode and the
-  // wordlist show them). With Smart order on, it orders cards within each tier: due first, then
-  // study-ahead. Random order puts new words (never answered in this direction, e.g. just added to
-  // Review) first, still shuffled among themselves (the user's request, 2026-10-07).
-  const settings = getSettings();
-  const deckOrder = settings.testOrder === 'deck';
-  const newFirst = (queue) => {
-    const isNew = (i) => cards[i].dueAt === 0;
-    return [...queue.filter(isNew), ...queue.filter((i) => !isNew(i))];
-  };
-  if (!srsOn) {
-    const all = cards.map((_, i) => i);
-    return deckOrder ? all : newFirst(shuffled(all));
-  }
-  const now = Date.now();
-
-  const dueIndices = [];
-  const notDueIndices = [];
-  cards.forEach((c, i) => {
-    if (isDue(c, now)) dueIndices.push(i);
-    else notDueIndices.push(i);
-  });
-
-  // Each round covers every due card, so they're ordered for variety, not urgency. (Until
-  // 2026-10-05 they were sorted most-overdue first, which put a new deck, all due "now", in deck
-  // order.) Not-due cards: deck order, or box-weighted random so weaker cards tend to come first.
-  const due = deckOrder ? dueIndices : shuffled(dueIndices);
-  const ahead = deckOrder ? notDueIndices : boxWeightedQueue(notDueIndices, cards);
-
-  // After due cards, the rest, so you can keep studying ahead of schedule.
-  return deckOrder ? [...due, ...ahead] : newFirst([...due, ...ahead]);
+function buildQueue(cards) {
+  const all = cards.map((_, i) => i);
+  // Learn: list order.
+  if (state.orderMode === 'practice') return all;
+  // Test: every card once per round, in Settings → Flashcards → Card order: list order, or random
+  // with new words (never answered in this direction, e.g. just added to Review) first, shuffled
+  // among themselves (the user's request, 2026-10-07). Smart order, which put due cards first and
+  // weighted the rest by stability, went on 2026-10-08: spacing is Review mode's job.
+  if (getSettings().testOrder === 'deck') return all;
+  const isNew = (i) => cards[i].dueAt === 0;
+  const queue = shuffled(all);
+  return [...queue.filter(isNew), ...queue.filter((i) => !isNew(i))];
 }
 
 // ---------- "Review words only": Flashcards shows the topic's words that are in Review ----------
@@ -592,7 +512,7 @@ const reviewOnlySignature = () => reviewOnlyCards().map((c) => c.key).join('\n')
 // The Flashcards queue: indices into state.cards, which stays the whole topic, or every card on
 // Everything (Test-mode answer choices come from it too).
 function buildFlashcardQueue() {
-  const queue = buildQueue(state.cards, els.srsToggle.checked);
+  const queue = buildQueue(state.cards);
   const keep = reviewOnlyCards();
   state.reviewOnlySig = keep.map((c) => c.key).join('\n');
   const keys = new Set(keep.map((c) => c.key));
@@ -609,8 +529,8 @@ function renderReviewOnly() {
   els.stage.classList.toggle('review-only-none', empty);
   if (empty) {
     const scope = flashScope();
-    els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Review yet'
-      : !scope || scope.kind === 'topic' ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
+    els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Flashcards yet'
+      : !scope || scope.kind === 'topic' ? "None of this topic's words are in Flashcards yet" : `None of the words in ${scope.name} are in Flashcards yet`;
     // "Switch to Everything" (as on Review), when that would show something.
     els.reviewOnlyEmptyHint.hidden = scope?.kind === 'all' || !Object.keys(reviewWords()).length;
   }
@@ -642,16 +562,6 @@ function syncReviewOnly() {
   }
 }
 
-function boxWeightedQueue(indices, cards) {
-  // Each card once, in a weighted random order: weaker (lower-box) cards tend to come first.
-  // Sorting by u^(1/w) is a weighted shuffle (Efraimidis–Spirakis), so the queue stays the deck's
-  // size and the "n / total" counter is meaningful.
-  return indices
-    .map((i) => [i, Math.random() ** (1 / Math.max(BOX_WEIGHTS[cards[i].box] ?? 1, 0.1))])
-    .sort((a, b) => b[1] - a[1])
-    .map(([i]) => i);
-}
-
 function shuffled(arr) {
   const a = arr.slice();
   for (let i = a.length - 1; i > 0; i--) {
@@ -673,8 +583,13 @@ function currentCard() {
 // size) can overflow it, so shrink it a step at a time, down to 70%, until it fits. Ordinary words
 // keep the full size. Runs after renderCard, on coming to Flashcards, on resize and on a Text size
 // change. (The back scrolls, and Review's card grows, so they don't need it.)
+// The front's big text on Flashcards' card and Review's.
 function fitCardText() {
-  const el = els.thai;
+  fitText(els.thai);
+  if (els.reviewPrompt) fitText(els.reviewPrompt);
+}
+
+function fitText(el) {
   el.style.fontSize = '';
   const face = el.closest('.face');
   if (!face?.offsetParent || !el.textContent) return;
@@ -695,7 +610,6 @@ window.addEventListener('resize', () => {
 document.fonts?.addEventListener?.('loadingdone', () => fitCardText());
 
 function renderCard() {
-  hideRoundSummary(); // the next round was set up when the summary opened
   renderReviewOnly();
   // Showing the back? Jump to the front before the new card's text goes in. Flipping back with
   // the animation would show the new card's answer for the first half of the turn.
@@ -704,6 +618,7 @@ function renderCard() {
   if (!c) {
     els.learnPills.hidden = true;
     els.thai.textContent = '✓';
+    els.backThai.hidden = true;
     els.translit.textContent = '';
     const dueLater = state.cards.find((card) => card.dueAt > Date.now());
     if (state.cards.length === 0) {
@@ -725,6 +640,10 @@ function renderCard() {
   }
   // The .thai element acts as the front face; .english/.translit/.note are the back.
   // Direction decides which language sits where.
+  // Thai → English's back also repeats the Thai, styled as the English (the user's request,
+  // 2026-10-08). English → Thai's back already leads with it.
+  els.backThai.textContent = state.direction === 'th-en' ? c.thai : '';
+  els.backThai.hidden = state.direction !== 'th-en';
   if (state.direction === 'th-en') {
     els.thai.textContent = c.thai;
     els.thai.classList.remove('front-en');
@@ -748,7 +667,7 @@ function renderCard() {
   // showing: English → Thai keeps quiet until the card is flipped (flipCard, handleLearnPick), or the
   // sound would give the answer away. An answered Test card opens on its Thai back.
   fitCardText();
-  if (state.view === 'flashcards' && !state.reading.active) {
+  if (state.view === 'flashcards' && state.orderMode !== 'review' && !state.reading.active) { // Review mode hides this card
     if (state.direction === 'th-en' || state.showingBack) speak(c.thai);
     else stopAudio(); // nothing to say yet, but don't carry on with the last card's word or spelling
   }
@@ -765,22 +684,14 @@ function formatRelative(ts) {
   return `in ${days} day${days === 1 ? '' : 's'}`;
 }
 
+// Browse's "3 / 24" and ‹ ›. Recognition hides them: it's a stream, and you move on by answering.
 function updateStats() {
   const posText = state.queue.length
     ? `${state.pos + 1} / ${state.queue.length}`
     : '—';
   els.posBadges.forEach((p) => { p.textContent = posText; });
   els.prevBtn.disabled = state.pos <= 0;
-
-  const atEnd = state.pos >= state.queue.length - 1;
-  let nextDisabled = atEnd && !state.pendingLearnRating;
-  // In Learn mode, block Next until the current card has been answered.
-  if (state.orderMode === 'test' && !state.pendingLearnRating) {
-    const c = currentCard();
-    if (c && !state.learnAnswers.has(c.key)) nextDisabled = true;
-  }
-  els.nextBtn.disabled = nextDisabled;
-  els.nextBtn.classList.toggle('pulse', !!state.pendingLearnRating);
+  els.nextBtn.disabled = state.pos >= state.queue.length - 1;
 }
 
 // `instant` skips the flip animation (.no-anim).
@@ -807,149 +718,88 @@ function flipCard() {
   if (state.showingBack && state.direction === 'en-th') speak(c.thai);
 }
 
-// Deck Test mode answers ('good' or 'again') update the same items as Today's review.
+// Recognition answers ('good' or 'again') update the same items as Recall: right counts as Hard,
+// wrong as Very Hard (gradeItem, mode 'mc').
 function saveDeckRating(c, rating) {
-  const store = loadStore();
   const deckId = flashScope()?.deckOf.get(c.key)?.id || state.currentDeckId; // the card's own topic
   const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId });
   c.dueAt = it.due;
   c.seen = it.reps;
-  c.box = boxForStability(it.s);
-}
-
-function rateCard(rating) {
-  const c = currentCard();
-  if (!c) return;
-  saveDeckRating(c, rating);
-  advance();
-  if (state.pickerOpen) renderDeckPicker();
 }
 
 function clamp(n, lo, hi) {
   return Math.max(lo, Math.min(hi, n));
 }
 
+// ---------- Recognition: a continuous stream ----------
+// Since 2026-10-08 (the user's request) Recognition (was Test) isn't a round with a score: it's a
+// stream with no ‹ ›, where answering moves you on. Words come round in passes, in Settings →
+// Card order (each pass rebuilt, reshuffled if Random, never starting with the card just seen).
+// A miss is relearnt, expanding retrieval practice (Landauer & Bjork) as in Recall:
+// - wrong: back RELEARN_GAPS[1] cards later (step 1);
+// - right at step 1: once more RELEARN_GAPS[2] cards later (step 2), to make sure it's stuck;
+// - right at step 2, or first time: back to the normal rotation.
+// A wrong answer at any step starts again from step 1.
+const RELEARN_GAPS = { 1: [2, 4], 2: [6, 9] };
+
+// A fresh stream: no words being relearnt, and no pending move to the next card.
+function resetRecognition() {
+  state.relearn = new Map();
+  state.carry = [];
+  state.answerSeq += 1;
+}
+
+function requeueRecognition(c, isCorrect) {
+  const step = isCorrect ? (state.relearn.get(c.key) === 1 ? 2 : 0) : 1;
+  if (!step) {
+    state.relearn.delete(c.key);
+    return;
+  }
+  state.relearn.set(c.key, step);
+  const [lo, hi] = RELEARN_GAPS[step];
+  const at = state.pos + 1 + lo + Math.floor(Math.random() * (hi - lo + 1));
+  // Past the end of this pass: into the next one, the same distance on (appending it here could
+  // bring it straight back).
+  if (at > state.queue.length) state.carry.push({ idx: state.queue[state.pos], at: at - state.queue.length });
+  else state.queue.splice(at, 0, state.queue[state.pos]);
+}
+
+// Recognition's next card: on through the pass, then straight into the next one.
 function advance() {
+  state.learnAnswers = new Map(); // a card that comes round again starts unanswered
   state.pos += 1;
   if (state.pos >= state.queue.length) {
-    if (state.orderMode === 'test' && state.learnAnswers.size) {
-      showRoundSummary();
-      return;
-    }
-    // Rebuild queue at end of pass so newly-due cards come up sooner.
-    state.queue = buildFlashcardQueue();
+    const last = state.queue[state.queue.length - 1];
+    // Comebacks carried over take the place of that card's turn in the new pass: take those cards
+    // out first, then put each in at its distance (in order, so one can't shift another).
+    const carried = new Map(state.carry.map((c) => [c.idx, c.at])); // a card's latest comeback wins
+    const queue = buildFlashcardQueue().filter((i) => !carried.has(i));
+    if (queue.length > 1 && queue[0] === last) [queue[0], queue[1]] = [queue[1], queue[0]];
+    for (const [idx, at] of [...carried].sort((x, y) => x[1] - y[1])) queue.splice(Math.min(queue.length, at), 0, idx);
+    state.carry = [];
+    state.queue = queue;
     state.pos = 0;
   }
   renderCard();
 }
 
-// ---------- end of a Test round ----------
-
-// At the end of a Test-mode pass: show the score and the missed cards. The next round is set up
-// underneath straight away (answers cleared, queue rebuilt), so whatever re-renders the card next
-// (Start again, or changing deck, direction or mode) starts it fresh.
-function showRoundSummary() {
-  const answers = [...state.learnAnswers.entries()];
-  const total = answers.length;
-  const correct = answers.filter(([, a]) => a.isCorrect).length;
-  const missed = answers.filter(([, a]) => !a.isCorrect)
-    .map(([key]) => state.cards.find((c) => c.key === key))
-    .filter(Boolean);
-
-  state.learnAnswers = new Map();
-  state.pendingLearnRating = null;
-  // Rebuild at the end of a pass so newly-due cards come up sooner.
-  state.queue = buildFlashcardQueue();
-  state.pos = 0;
-
-  const pct = Math.round((correct / total) * 100);
-  els.roundScore.textContent = `${correct} / ${total}`;
-  els.roundSub.textContent = `${pct}% correct · ` + (
-    pct === 100 ? 'Perfect round!' : pct >= 80 ? 'Great work.' : pct >= 50 ? 'Getting there.' : 'Keep at it.');
-  fillMissedList(els.roundMissed, els.roundMissedTitle, missed);
-
-  stopAudio();
-  state.roundOver = true;
-  els.stage.classList.add('round-over');
-  els.roundSummary.hidden = false;
-  els.roundAgain.focus({ preventScroll: true });
-  window.scrollTo({ top: 0 });
-}
-
-// The "Missed (n)" list on an end-of-round screen: each card with its translit, meaning and 🔊.
-function fillMissedList(list, title, cards) {
-  title.textContent = cards.length ? `Missed (${cards.length})` : '';
-  title.hidden = !cards.length;
-  list.hidden = !cards.length;
-  list.replaceChildren(...cards.map((c) => {
-    const li = document.createElement('li');
-    for (const [cls, text] of [['rm-thai', c.thai], ['rm-translit', c.translit], ['rm-english', c.english]]) {
-      const span = document.createElement('span');
-      span.className = cls;
-      span.textContent = text;
-      li.appendChild(span);
-    }
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'rm-speak';
-    btn.setAttribute('aria-label', 'Play audio');
-    btn.textContent = '🔊';
-    btn.addEventListener('click', () => speak(c.thai));
-    li.appendChild(btn);
-    return li;
-  }));
-}
-
-function hideRoundSummary() {
-  if (!state.roundOver) return;
-  state.roundOver = false;
-  els.stage.classList.remove('round-over');
-  els.roundSummary.hidden = true;
-}
-
+// Browse's ‹ ›.
 function goPrev() {
-  if (state.pos <= 0) return;
-  // Commit any pending rating before leaving — keeps SRS in sync with the visible locked state.
-  if (state.pendingLearnRating) {
-    commitPendingRatingWithoutAdvance();
-  }
+  if (state.orderMode === 'test' || state.pos <= 0) return;
   state.pos -= 1;
   renderCard();
 }
 
-function commitPendingRatingWithoutAdvance() {
-  // Like rateCard but without advancing: used when leaving a pending card via Prev, so the
-  // answer is saved but navigation isn't hijacked.
-  const r = state.pendingLearnRating;
-  state.pendingLearnRating = null;
-  const c = currentCard();
-  if (!c || !r) return;
-  saveDeckRating(c, r);
-}
-
 function goNext() {
-  // In Learn mode without auto-progress, Next first commits the answer's rating
-  // (which calls advance() through the rating pipeline).
-  if (state.pendingLearnRating) {
-    const r = state.pendingLearnRating;
-    state.pendingLearnRating = null;
-    rateCard(r);
-    return;
-  }
-  // In Learn mode, require an answer on the current card before advancing.
-  if (state.orderMode === 'test') {
-    const c = currentCard();
-    if (c && !state.learnAnswers.has(c.key)) return;
-  }
-  if (state.pos >= state.queue.length - 1) return;
+  if (state.orderMode === 'test' || state.pos >= state.queue.length - 1) return;
   state.pos += 1;
   renderCard();
 }
 
 // ---------- scopes: a topic, a group of topics, or a whole category ----------
-// Wordlists and Flashcards show a scope (state.currentDeckId, prefs.currentDeckId); Review covers
-// its own or the same one (reviewScope()). A scope id is a topic's id, `group:<category>::<group>`,
-// `cat:<category>`, or (Review only) 'all'. resolveScope() gives { id, kind, name, label,
+// The Topics page and Flashcards show a scope (state.currentDeckId, prefs.currentDeckId);
+// Flashcards can also be on Everything (flashScope()). A scope id is a topic's id,
+// `group:<category>::<group>`, `cat:<category>`, or (Flashcards only) 'all'. resolveScope() gives { id, kind, name, label,
 // description, decks, cards, deckOf }: cards are the decks' cards with repeats dropped (a word in
 // two topics counts once), and deckOf maps a card key to the first of the scope's decks with it.
 const scopeCache = new Map();
@@ -997,9 +847,10 @@ function resolveScope(id) {
 const currentScope = () => resolveScope(state.currentDeckId);
 const groupScopeId = (cat, group) => `group:${cat}::${group}`;
 
-// What Flashcards shows: Everything (every word in Review), or "By topic" (prefs.flashcardsBy,
-// the default), the topic the Topics page shows. Set in Flashcards' topic dialog, like Review's
-// below; the two switches are separate, the topic is shared (the user's request, 2026-10-07).
+// What Flashcards shows, in every mode: Everything (every word in Review), or "By topic"
+// (prefs.flashcardsBy, the default), the topic the Topics page shows. Set in Flashcards' topic
+// dialog (the user's request, 2026-10-07). Review mode follows it since Review moved into
+// Flashcards (2026-10-08); Review's own switch (prefs.reviewBy) went with the Review tab.
 const flashcardsByAll = () => getPreferences().flashcardsBy === 'all';
 function flashScope() {
   return flashcardsByAll() ? resolveScope('all') : currentScope();
@@ -1010,7 +861,6 @@ function setFlashcardsBy(by) {
   setPreferences({ flashcardsBy: by });
   reloadFlashcards();
   renderDeckButton();
-  renderHome();
   if (state.flashScopeId) preloadDeckAudio(flashScope());
 }
 
@@ -1023,9 +873,11 @@ function loadCards() {
   state.cards = flashcardsByAll() ? mergeProgressIntoCards(resolveScope('all').cards) : state.listCards;
 }
 
-// A new Flashcards round for its current scope.
+// A new Flashcards round for its current scope. In Review mode, a new session for it.
 function reloadFlashcards() {
-  state.pendingLearnRating = null;
+  if (state.review) stopAudio();
+  discardModes();
+  resetRecognition();
   state.learnAnswers = new Map();
   loadCards();
   state.flashScopeId = flashScope()?.id || null;
@@ -1033,34 +885,47 @@ function reloadFlashcards() {
   state.pos = 0;
   renderReviewOnly();
   renderCard();
+  enterReview();
 }
 
-// What Review covers: Everything, or "By topic" (prefs.reviewBy), the topic, group or category
-// the Topics page shows. Both are set in Review's topic dialog.
-const reviewByTopic = () => getPreferences().reviewBy === 'topic';
-function reviewScope() {
-  return (reviewByTopic() && currentScope()) || resolveScope('all');
-}
-
-function setReviewBy(by) {
-  if (getPreferences().reviewBy === by || (by === 'all' && !reviewByTopic())) return;
-  leaveReviewSession();
-  setPreferences({ reviewBy: by });
-  renderDeckButton();
-  renderToday();
-}
-
-// Changing what Review covers mid-session ends the session (answers are saved as you go), so the
-// start screen's counts match the new choice. The topic button stays on screen throughout.
+// Changing what Review covers (the topic, the direction, the mode) starts the stream afresh.
+// Grades are saved as you go.
 function leaveReviewSession() {
   if (!state.review) return;
   stopAudio();
   state.review = null;
+  renderToday();
 }
 
-// The topic button: what the page shows (Review and Flashcards can be on Everything).
+// Recall's stream starts when you choose the mode, a direction or a topic, or come to Flashcards in
+// Recall with none running. It's kept while you're in another mode or on another page.
+function enterReview() {
+  if (state.orderMode !== 'review') return;
+  // Back in Recall: carry on with its stream, the same card from its front.
+  if (state.review && state.view === 'flashcards') presentEntry();
+  if (!state.review && state.view === 'flashcards' && state.cardIndex.size) {
+    const pool = reviewPool();
+    if (pool.length) {
+      state.review = {
+        count: 0,             // cards shown so far
+        shownAt: new Map(),   // itemKey -> count when last shown
+        returnAt: new Map(),  // itemKey -> count from which a missed or hard card comes back
+        sinceNew: 0,          // cards since the last new word
+        lastKey: null,
+        current: null,
+        revealed: false,
+        answered: false,
+      };
+      preloadDeckAudio({ cards: pool.map((e) => state.cardIndex.get(e.key).card) });
+      nextEntry();
+    }
+  }
+  renderToday();
+}
+
+// The topic button: what the page shows (Flashcards can be on Everything).
 function renderDeckButton() {
-  const scope = state.view === 'today' ? reviewScope() : state.view === 'flashcards' ? flashScope() : currentScope();
+  const scope = state.view === 'flashcards' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
   els.deckButtonIcon.textContent = !scope || scope.kind === 'topic' ? '📖' : '📚';
 }
@@ -1075,9 +940,8 @@ function selectDeck(deckId) {
   if ((flashcardsByAll() ? 'all' : deckId) !== state.flashScopeId) reloadFlashcards();
   else state.listCards = mergeProgressIntoCards(deck.cards);
   renderDeckButton();
-  preloadDeckAudio(deck);
+  if (state.orderMode !== 'review' || state.view !== 'flashcards') preloadDeckAudio(deck); // a session preloads its own
   renderWordlist();
-  if (state.view === 'today') renderToday();
 }
 
 // ---------- deck picker modal ----------
@@ -1132,17 +996,15 @@ function pickerModel(q) {
   return [...cats.values()];
 }
 
-// The picker always picks the shared topic. Opened from Review or Flashcards, it also has
-// Everything / By topic at the top (renderReviewBy), and picking a topic means By topic there.
+// The picker always picks the shared topic. Opened from Flashcards, it also has Everything / By
+// topic at the top (renderReviewBy), and picking a topic means By topic there.
 function pickerSelectedId() {
   return state.currentDeckId;
 }
 
 // Whether the page the picker was opened from is By topic (the Topics page always is).
 function pickerByTopic() {
-  if (state.pickerFor === 'review') return reviewByTopic();
-  if (state.pickerFor === 'flashcards') return !flashcardsByAll();
-  return true;
+  return state.pickerFor !== 'flashcards' || !flashcardsByAll();
 }
 
 function pickScope(id) {
@@ -1150,30 +1012,20 @@ function pickScope(id) {
     closeDeckPicker();
     return;
   }
-  if (state.pickerFor === 'review') {
-    leaveReviewSession();
-    setPreferences({ reviewBy: 'topic' });
-  } else if (state.pickerFor === 'flashcards') {
-    setPreferences({ flashcardsBy: 'topic' });
-  }
-  selectDeck(id); // redraws Review too, and rebuilds Flashcards if it was on Everything
+  if (state.pickerFor === 'flashcards') setPreferences({ flashcardsBy: 'topic' });
+  selectDeck(id); // rebuilds Flashcards (and a Review session) if its scope changed
   renderDeckButton();
-  renderHome();
   closeDeckPicker();
 }
 
-// Review's and Flashcards' dialog: Everything hides the topic list (there's nothing to pick); By
-// topic shows it. The Topics page's dialog is just the list.
+// Flashcards' dialog: Everything hides the topic list (there's nothing to pick); By topic shows
+// it. The Topics page's dialog is just the list.
 function renderReviewBy() {
-  const review = state.pickerFor === 'review';
-  const has = review || state.pickerFor === 'flashcards';
+  const has = state.pickerFor === 'flashcards';
   const topic = pickerByTopic();
   els.reviewBy.hidden = !has;
   els.reviewByButtons.forEach((b) => b.setAttribute('aria-checked', String((b.dataset.reviewBy === 'topic') === topic)));
-  els.reviewBySwitch.setAttribute('aria-label', review ? 'What to review' : 'What to study');
-  els.reviewByHelp.textContent = review
-    ? (topic ? 'Shared with the Topics page and Flashcards' : 'Review words from every topic')
-    : (topic ? 'Shared with the Topics page and Review' : "Every word you've added to Review");
+  els.reviewByHelp.textContent = topic ? 'Shared with the Topics page' : "Every word you've added to Flashcards";
   const list = !has || topic;
   els.deckPickerSearchRow.hidden = !list;
   els.deckPickerTree.hidden = !list;
@@ -1309,8 +1161,8 @@ function openDeckPicker() {
   els.deckButton.setAttribute('aria-expanded', 'true');
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
-  state.pickerFor = { today: 'review', flashcards: 'flashcards' }[state.view] || 'study';
-  els.deckPickerTitle.textContent = { review: 'What to review', flashcards: 'What to study' }[state.pickerFor] || 'Choose a topic';
+  state.pickerFor = state.view === 'flashcards' ? 'flashcards' : 'study';
+  els.deckPickerTitle.textContent = state.pickerFor === 'flashcards' ? 'What to study' : 'Choose a topic';
   renderReviewBy();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -1371,17 +1223,28 @@ function setView(view) {
   });
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
-  if (view !== 'today' && leaving === 'today') stopAudio();
-  if (view === 'today') renderToday();
-  if (view === 'home') renderHome();
-  // Back to Flashcards after reviewing: refresh the cards' progress (the queue order stays).
-  if (view === 'flashcards' && leaving === 'today') loadCards();
-  renderDeckButton(); // Review's button shows what Review covers
+  // Leaving Flashcards: Recall's audio stops, and a Recognition card's pending move waits for the
+  // return (below).
+  if (view !== 'flashcards' && leaving === 'flashcards') {
+    if (state.review) stopAudio();
+    state.answerSeq += 1;
+  }
+  renderDeckButton(); // Flashcards' button can say Everything
   if (view === 'flashcards') fitCardText(); // laid out only now if the card was hidden
   // Words added to or taken out of Review elsewhere (Wordlists, Review) apply on coming back.
   if (view === 'flashcards' && leaving !== 'flashcards' && state.flashScopeId && reviewOnlySignature() !== state.reviewOnlySig) {
     rebuildCurrentQueue();
     renderReviewOnly();
+  }
+  // Flashcards reopens in the mode you left, where you left it (the user's request, 2026-10-08;
+  // that morning it always opened on Browse and leaving ended the streams). Direction is kept too
+  // (prefs, like the mode).
+  if (view === 'flashcards' && leaving !== 'flashcards') {
+    if (state.orderMode === 'review') enterReview(); // Recall's stream: its card, or a new stream
+    if (state.orderMode === 'test') {
+      const c = currentCard();
+      if (c && state.learnAnswers.has(c.key)) advance(); // answered (and saved) just before leaving
+    }
   }
   setPreferences({ view });
 }
@@ -1419,13 +1282,10 @@ function applyThaiFont() {
 
 function renderSettings() {
   const s = getSettings();
-  els.setMaxReviews.value = s.maxReviews;
   els.setWaitAgain.value = s.waitAgainMin;
   els.setWaitHard.value = s.waitHardDays;
   els.setWaitEasy.value = s.waitEasyDays;
   els.setRetention.value = String(s.retention);
-  els.setBothDirections.checked = s.bothDirections;
-  els.setSayAloud.checked = s.sayAloud;
   els.setReviewScript.checked = s.reviewScript !== false;
   for (const box of els.confirmSettings) box.checked = s[box.dataset.confirmSetting] !== false;
 
@@ -1443,10 +1303,9 @@ function renderSettings() {
   els.setReadRepeats.value = s.readRepeats;
   els.setReadPause.value = s.readPauseSec;
   els.setReadEnglish.checked = s.readSpeakEnglish;
-  els.setLearnPause.value = s.learnPauseMs;
+  els.setLearnPause.value = s.learnPauseMs / 1000; // shown in seconds, saved in ms
+  els.setWrongPause.value = s.wrongPauseMs / 1000;
   els.setTestOrder.value = s.testOrder;
-  els.setLearnAuto.value = autoProgressMode(s);
-  els.learnPauseRow.style.display = autoProgressMode(s) === 'off' ? 'none' : '';
 
 }
 
@@ -1459,21 +1318,9 @@ function bindSettings() {
       input.value = getSettings()[key];
     });
   }
-  els.setMaxReviews.addEventListener('change', () => {
-    const n = parseInt(els.setMaxReviews.value, 10);
-    if (n >= 10 && n <= 1000) setSettings({ maxReviews: n });
-    renderToday();
-  });
   els.setRetention.addEventListener('change', () => {
     const r = parseFloat(els.setRetention.value);
     if (r >= 0.7 && r <= 0.97) setSettings({ retention: r });
-  });
-  els.setBothDirections.addEventListener('change', () => {
-    setSettings({ bothDirections: els.setBothDirections.checked });
-    renderToday();
-  });
-  els.setSayAloud.addEventListener('change', () => {
-    setSettings({ sayAloud: els.setSayAloud.checked });
   });
   els.setReviewScript.addEventListener('change', () => {
     setSettings({ reviewScript: els.setReviewScript.checked });
@@ -1571,16 +1418,16 @@ function bindSettings() {
     setSettings({ readSpeakEnglish: els.setReadEnglish.checked });
   });
   els.setLearnPause.addEventListener('change', () => {
-    const n = parseInt(els.setLearnPause.value, 10);
-    if (n >= 0 && n <= 5000) setSettings({ learnPauseMs: n });
+    const sec = parseFloat(els.setLearnPause.value);
+    if (sec >= 0 && sec <= 5) setSettings({ learnPauseMs: Math.round(sec * 1000) });
+  });
+  els.setWrongPause.addEventListener('change', () => {
+    const sec = parseFloat(els.setWrongPause.value);
+    if (sec >= 0 && sec <= 10) setSettings({ wrongPauseMs: Math.round(sec * 1000) });
   });
   els.setTestOrder.addEventListener('change', () => {
     setSettings({ testOrder: els.setTestOrder.value });
     if (state.orderMode === 'test') rebuildCurrentQueue();
-  });
-  els.setLearnAuto.addEventListener('change', () => {
-    setSettings({ learnAutoProgress: els.setLearnAuto.value });
-    renderSettings();
   });
 
   els.settingsSearch.addEventListener('input', (e) => filterSettings(e.target.value));
@@ -1629,9 +1476,8 @@ function filterSettings(q) {
 
 function rebuildCurrentQueue() {
   if (!state.flashScopeId) return;
-  // A rebuilt queue is a new round: clear Test answers so cards don't come back pre-answered.
-  // An answer still waiting for Next is saved to the SRS first.
-  if (state.pendingLearnRating) commitPendingRatingWithoutAdvance();
+  // A rebuilt queue is a new round, and a fresh Recognition stream (answers are saved as given).
+  resetRecognition();
   state.learnAnswers = new Map();
   state.queue = buildFlashcardQueue();
   state.pos = 0;
@@ -1639,18 +1485,58 @@ function rebuildCurrentQueue() {
 }
 
 function setOrderMode(mode) {
-  if (!['practice', 'test'].includes(mode)) return;
+  if (!['practice', 'test', 'review'].includes(mode) || mode === state.orderMode) return;
+  const leaving = state.orderMode;
+  if (leaving !== 'review') state.modeSnap[leaving] = snapMode();
   state.orderMode = mode;
   els.stage.dataset.order = mode;
   els.orderButtons.forEach((b) => {
     b.setAttribute('aria-checked', b.dataset.order === mode ? 'true' : 'false');
   });
-  // Leaving Test: drop any pending answer and the Next pulse.
-  if (mode !== 'test') {
-    state.pendingLearnRating = null;
-  }
+  state.answerSeq += 1; // cancels a pending move to the next card
   setPreferences({ orderMode: mode });
-  rebuildCurrentQueue();
+  if (leaving === 'review') stopAudio(); // Recall's stream itself stays in state.review
+  if (mode === 'review') {
+    enterReview();
+  } else {
+    if (leaving === 'review') loadCards(); // Recall's grades, for the cards' progress
+    restoreMode(mode);
+  }
+}
+
+// Each mode keeps its own place (the user's call, 2026-10-08, after trying one shared word): Browse
+// its position, Recognition its stream (words waiting to come back included), Recall its stream
+// (state.review). Changing direction or topic, or leaving Flashcards, starts them all afresh
+// (discardModes).
+function snapMode() {
+  const c = currentCard();
+  return {
+    queue: state.queue, pos: state.pos, relearn: state.relearn, carry: state.carry, sig: state.reviewOnlySig,
+    answered: !!(c && state.learnAnswers.has(c.key)), // Recognition left mid-pause
+  };
+}
+
+function restoreMode(mode) {
+  const snap = state.modeSnap[mode];
+  state.modeSnap[mode] = null;
+  // Never been here, or words have gone into or out of Flashcards since: start afresh.
+  if (!snap || snap.sig !== reviewOnlySignature()) {
+    rebuildCurrentQueue();
+    return;
+  }
+  state.learnAnswers = new Map();
+  Object.assign(state, { queue: snap.queue, pos: snap.pos, relearn: snap.relearn, carry: snap.carry, reviewOnlySig: snap.sig });
+  // An answered Recognition card was saved when answered: carry on to the next one.
+  if (mode === 'test' && snap.answered) advance();
+  else renderCard();
+}
+
+function discardModes() {
+  state.modeSnap = { practice: null, test: null };
+  if (state.review) {
+    state.review = null;
+    renderToday();
+  }
 }
 
 function setDirection(direction) {
@@ -1660,9 +1546,12 @@ function setDirection(direction) {
     b.setAttribute('aria-checked', b.dataset.direction === direction ? 'true' : 'false');
   });
   setPreferences({ direction });
-  // Each direction has its own progress, so re-read it; a new round starts.
+  // Each direction has its own progress, so re-read it; every mode starts afresh.
   loadCards();
+  if (state.review) stopAudio();
+  discardModes();
   rebuildCurrentQueue();
+  enterReview();
 }
 
 // ---------- wordlist ----------
@@ -1782,11 +1671,11 @@ function renderWordlist() {
       rv.type = 'button';
       rv.className = 'row-review' + (added ? ' added' : '');
       rv.replaceChildren(added ? '✓' : reviewIcon());
-      rv.title = added ? `Remove ${c.thai} from Review` : `Add ${c.thai} to Review`;
+      rv.title = added ? `Remove ${c.thai} from Flashcards` : `Add ${c.thai} to Flashcards`;
       rv.setAttribute('aria-label', rv.title);
       rv.addEventListener('click', () => {
         setInReview([c.key], !added);
-        toast(added ? `Removed ${c.thai} from Review` : `✓ Added ${c.thai} to Review`, { tone: added ? '' : 'good' });
+        toast(added ? `Removed ${c.thai} from Flashcards` : `✓ Added ${c.thai} to Flashcards`, { tone: added ? '' : 'good' });
       });
       audioTd.append(rv);
       if (isSpellable(c.thai)) {
@@ -1818,11 +1707,11 @@ function renderWordlist() {
   if (allIn) {
     // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
     const label = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
-    els.wordlistAddAll.replaceChildren(label('label-idle', '✓ All in Review'), label('label-hover', '− Remove all'));
+    els.wordlistAddAll.replaceChildren(label('label-idle', '✓ All in Flashcards'), label('label-hover', '− Remove all'));
   } else {
-    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Review');
+    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Flashcards'); // "…to Review" until 2026-10-08
   }
-  els.wordlistAddAll.title = allIn ? 'Remove all from Review' : '';
+  els.wordlistAddAll.title = allIn ? 'Remove all from Flashcards' : '';
 }
 
 // ---------- Learn mode ----------
@@ -1940,17 +1829,6 @@ function renderLearnPills() {
   }
 }
 
-// Test-mode auto-progress. Older saves stored a boolean, where true meant "always".
-function autoProgressMode(s) {
-  const v = s.learnAutoProgress;
-  if (v === true) return 'always';
-  return v === 'always' || v === 'correct' ? v : 'off';
-}
-
-function shouldAutoAdvance(mode, isCorrect) {
-  return mode === 'always' || (mode === 'correct' && isCorrect);
-}
-
 function handleLearnPick(btn, isCorrect) {
   if (els.learnPills.classList.contains('locked')) return;
   els.learnPills.classList.add('locked');
@@ -1976,7 +1854,7 @@ function handleLearnPick(btn, isCorrect) {
     }
   }
 
-  // Record the answer so it persists across prev/next navigation.
+  // The answer, so a re-render (Settings opened over it, say) shows the card still answered.
   state.learnAnswers.set(c.key, {
     pickedText: btn.textContent,
     isCorrect,
@@ -1988,89 +1866,88 @@ function handleLearnPick(btn, isCorrect) {
   setFlipped(true);
   if (state.direction === 'en-th') speak(c.thai);
 
-  const settings = getSettings();
-  if (shouldAutoAdvance(autoProgressMode(settings), isCorrect)) {
-    setTimeout(() => rateCard(isCorrect ? 'good' : 'again'), settings.learnPauseMs ?? 1500);
-  } else {
-    // Stash pending rating; applied when user advances.
-    state.pendingLearnRating = isCorrect ? 'good' : 'again';
-    updateStats();
-  }
+  // Saved now, so leaving during the pause loses nothing; then on to the next card, after Settings →
+  // Flashcards' pause for a right answer, or the longer one for a wrong answer (to take in the right
+  // one). Changing mode, direction or topic cancels it.
+  saveDeckRating(c, isCorrect ? 'good' : 'again');
+  requeueRecognition(c, isCorrect);
+  if (state.pickerOpen) renderDeckPicker();
+  const s = getSettings();
+  const seq = ++state.answerSeq;
+  setTimeout(() => {
+    if (seq === state.answerSeq && state.orderMode === 'test' && state.view === 'flashcards') advance();
+  }, isCorrect ? s.learnPauseMs : s.wrongPauseMs);
 }
 
-// ---------- Today: daily review ----------
-// One session across all decks: due items first (weakest first), with new cards mixed in. Every
-// item is recall and self-grading, new ones too (multiple choice is Flashcards' Test mode). Missed
-// items come back a few cards later in the same session (successive relearning).
-// See docs/review-design.md.
+// ---------- Review mode: a continuous stream ----------
+// Since 2026-10-08 (the user's request) Review has no start or end: a stream of cards from the
+// words you've added, in Flashcards' scope and direction, ordered to help recall. Every card is
+// recall and self-grading (multiple choice is Test mode's). Every grade goes to FSRS, which decides
+// what's due on later visits. Within a visit (pickReviewEntry):
+// 1. A card you missed (Again) comes back REVIEW_RETURN[1] cards later, a Hard one REVIEW_RETURN[2]
+//    later, until you mark it Easy. An Easy card drops out of the rotation.
+// 2. Due cards, weakest (lowest recall probability) first, with a new word every NEW_EVERY cards.
+// 3. New words, in the order you added them. They aren't labelled as new.
+// 4. When nothing's due, the cards you're most likely to have forgotten, so the stream never runs
+//    dry. (FSRS's same-day rule, tweaked so repeats never lengthen a gap, keeps a long sitting
+//    from pushing words out.)
+// A card isn't shown again within RECENT cards (fewer in a small pool). See docs/review-design.md.
 
-const REQUEUE_GAP = [5, 8];    // a missed or just-introduced item comes back this many cards later
+const REVIEW_RETURN = { 1: [2, 4], 2: [6, 9] }; // cards later: Again, Hard
+const NEW_EVERY = 4;
+const RECENT = 5;
 
 // The decks Review is narrowed to, or null for Everything.
 function reviewScopeDeckIds() {
-  const scope = reviewScope();
-  return scope.kind === 'all' ? null : new Set(scope.decks.map((d) => d.id));
+  const scope = flashScope();
+  return !scope || scope.kind === 'all' ? null : new Set(scope.decks.map((d) => d.id));
 }
 
-// Today's plan: due and new entries, and the session queue mixing them. An entry is
-// { key, dir, deckId, kind: 'due' | 'new' }.
-function planReview(now = Date.now()) {
-  const s = getSettings();
+// Review mode's words: every word you've added in Flashcards' scope, in the order you added them,
+// with its progress in one direction (it: null for a word not started in it).
+function reviewPool(dir = state.direction) {
   const items = loadStore().items || {};
-  const log = todayLog();
-  const end = endOfStudyDay(now);
-
   const f = reviewFilter();
   const scopeIds = reviewScopeDeckIds();
-  const due = [];
-  for (const [itemKey, it] of Object.entries(items)) {
-    if (it.due > end) continue;
-    const [key, dir] = splitItemKey(itemKey);
-    if (!f.has(key)) continue;
-    const deckId = reviewDeckId(key, dir, s, scopeIds);
-    if (deckId) due.push({ key, dir, deckId, kind: 'due', r: fsrsR(Math.max(0, (now - it.last) / DAY), it.s) });
+  const pool = [];
+  for (const key of Object.keys(f.words).sort((x, y) => f.words[x] - f.words[y])) {
+    const deckId = reviewDeckId(key, scopeIds);
+    if (deckId) pool.push({ key, dir, deckId, it: items[itemKeyOf(key, dir)] || null });
   }
-  due.sort((a, b) => a.r - b.r);
-  due.splice(Math.max(0, s.maxReviews - (log.rv || 0)));
-
-  // Words you add all show up straight away: no daily allowance.
-  const news = [];
-  // English → Thai for words whose meaning is known, oldest unlock first.
-  if (s.bothDirections) {
-    const unlocked = Object.entries(items)
-      .filter(([k, it]) => it.u && k.endsWith('##th-en'))
-      .map(([k, it]) => ({ key: splitItemKey(k)[0], last: it.last }))
-      .filter((u) => !items[itemKeyOf(u.key, 'en-th')] && state.cardIndex.has(u.key) && f.has(u.key))
-      .map((u) => ({ ...u, deckId: reviewDeckId(u.key, 'en-th', s, scopeIds) }))
-      .filter((u) => u.deckId)
-      .sort((a, b) => a.last - b.last);
-    for (const u of unlocked) news.push({ key: u.key, dir: 'en-th', deckId: u.deckId, kind: 'new' });
-  }
-  // Words you've added that haven't started yet, in the order you added them.
-  for (const key of Object.keys(f.words).sort((a, b) => f.words[a] - f.words[b])) {
-    if (items[itemKeyOf(key, 'th-en')]) continue;
-    const deckId = reviewDeckId(key, 'th-en', s, scopeIds);
-    if (deckId) news.push({ key, dir: 'th-en', deckId, kind: 'new' });
-  }
-
-  // Spread the new cards evenly through the reviews.
-  const queue = [];
-  const every = news.length ? Math.max(1, Math.floor(due.length / news.length)) : 0;
-  let ni = 0;
-  due.forEach((e, i) => {
-    queue.push(e);
-    if (every && (i + 1) % every === 0 && ni < news.length) queue.push(news[ni++]);
-  });
-  queue.push(...news.slice(ni));
-  return { due, news, queue };
+  return pool;
 }
 
-// The deck an item is reviewed under, or null if Review skips it: its card was edited or removed,
-// its direction is off, or none of its decks is in what Review covers (scopeIds, null for
-// Everything). It's the first of the card's decks in scope that hasn't been removed from Review.
-function reviewDeckId(key, dir, s, scopeIds = null) {
+// The next card in the stream (see the top of this section), or null with no words to review.
+function pickReviewEntry(r, now = Date.now()) {
+  const pool = reviewPool();
+  if (!pool.length) return null;
+  const ik = (e) => itemKeyOf(e.key, e.dir);
+  const gap = Math.min(RECENT, pool.length - 1);
+  const recent = (e) => r.shownAt.has(ik(e)) && r.count - r.shownAt.get(ik(e)) < gap;
+  const R = (e) => fsrsR(Math.max(0, (now - e.it.last) / DAY), e.it.s);
+  // 1. Missed and hard cards whose turn has come, the longest waiting first.
+  const back = pool.filter((e) => r.returnAt.has(ik(e)) && r.returnAt.get(ik(e)) <= r.count && ik(e) !== r.lastKey)
+    .sort((x, y) => r.returnAt.get(ik(x)) - r.returnAt.get(ik(y)));
+  if (back.length) return back[0];
+  const free = pool.filter((e) => !recent(e) && !r.returnAt.has(ik(e)));
+  const due = free.filter((e) => e.it && e.it.due <= now).sort((x, y) => R(x) - R(y));
+  const news = free.filter((e) => !e.it);
+  // 2 and 3. Due cards, with a new word every NEW_EVERY cards; new words when nothing's due.
+  if (news.length && (!due.length || r.sinceNew >= NEW_EVERY)) return news[0];
+  if (due.length) return due[0];
+  // 4. Nothing due: the cards most likely forgotten.
+  const ahead = free.filter((e) => e.it).sort((x, y) => R(x) - R(y));
+  if (ahead.length) return ahead[0];
+  // A small pool, everything recent or waiting to come back: the card shown longest ago.
+  const rest = pool.filter((e) => ik(e) !== r.lastKey);
+  return (rest.length ? rest : pool).sort((x, y) => (r.shownAt.get(ik(x)) ?? -1) - (r.shownAt.get(ik(y)) ?? -1))[0];
+}
+
+// The deck a word is reviewed under, or null if Review skips it: its card was edited or removed,
+// or none of its decks is in what Flashcards covers (scopeIds, null for Everything).
+function reviewDeckId(key, scopeIds = null) {
   const entry = state.cardIndex.get(key);
-  if (!entry || (dir === 'en-th' && !s.bothDirections)) return null;
+  if (!entry) return null;
   return entry.deckIds.find((id) => !scopeIds || scopeIds.has(id)) || null;
 }
 
@@ -2097,7 +1974,6 @@ function setInReview(keys, on) {
   }
   saveStore(store);
   renderToday();
-  if (state.view === 'home') renderHome();
   if (state.view === 'wordlist') renderWordlist();
   syncReviewOnly();
 }
@@ -2199,126 +2075,43 @@ function closeConfirm(ok) {
 }
 
 
-// For the end-of-session screen.
-function dueTomorrow(now = Date.now()) {
-  const s = getSettings();
-  const end = endOfStudyDay(now);
-  let n = 0;
-  const f = reviewFilter();
-  const scopeIds = reviewScopeDeckIds();
-  for (const [itemKey, it] of Object.entries(loadStore().items || {})) {
-    if (it.due <= end || it.due > end + DAY) continue;
-    const [key, dir] = splitItemKey(itemKey);
-    if (f.has(key) && reviewDeckId(key, dir, s, scopeIds)) n += 1;
-  }
-  return n;
-}
-
+// Review mode (Flashcards → Review, since 2026-10-08; it was the Review tab): the card, while the
+// stream runs. With none of the scope's words in Review, Flashcards' empty message shows instead
+// (renderReviewOnly).
 function renderToday() {
   if (!state.cardIndex.size) return; // decks not loaded yet
+  els.review.hidden = !state.review;
+}
+
+// The next card in the stream. With no words left (all taken out of Review), the stream stops and
+// Flashcards' empty message shows.
+function nextEntry() {
   const r = state.review;
-  // Nothing added (on Everything), or none of the topic's words (By topic): the same message as
-  // Flashcards', instead of 0 / 0. "Switch to Everything" only when that would show something.
-  const scope = reviewScope();
-  const words = reviewWords();
-  const none = Object.keys(words).length === 0;
-  const all = scope.kind === 'all';
-  const topicEmpty = !r && (none || (!all && ![...scope.deckOf.keys()].some((key) => key in words)));
-  els.todayTopicEmpty.hidden = !topicEmpty;
-  els.stage.classList.toggle('today-topic-none', topicEmpty);
-  if (topicEmpty) {
-    els.todayTopicEmptyTitle.textContent = all ? 'No words in Review yet'
-      : scope.kind === 'topic' ? "None of this topic's words are in Review yet" : `None of the words in ${scope.name} are in Review yet`;
-    els.todayTopicEmptyHint.hidden = none;
+  const e = r && pickReviewEntry(r);
+  if (!e) {
+    leaveReviewSession();
+    renderToday();
+    return;
   }
-  els.todayHome.hidden = !!r;
-  els.review.hidden = !r || r.finished;
-  els.reviewTop.hidden = !r || r.finished;
-  els.stage.classList.toggle('review-session', !!r && !r.finished); // the bar's three-column layout
-  els.reviewSummary.hidden = !r?.finished;
-  if (r) return;
-  const plan = planReview();
-  const where = scope.kind === 'all' ? '' : ` in ${scope.name}`;
-  els.todayDue.textContent = plan.due.length;
-  els.todayDueFrom.textContent = scope.kind === 'all' ? 'across all topics' : `in ${scope.name}`;
-  els.todayNew.textContent = plan.news.length;
-  els.todayNewFrom.textContent = `you've added${where}`;
-  els.todayStart.hidden = plan.queue.length === 0;
-  const practise = !plan.queue.length && planPractice().length > 0;
-  els.todayPractise.hidden = els.todayPractiseNote.hidden = !practise;
-}
-
-// The landing page: a card per view. Decks and Wordlist show the current deck, Review today's counts.
-function renderHome() {
-  if (!state.cardIndex.size) return; // decks not loaded yet
-  const plan = planReview();
-  const deck = currentScope();
-  const label = (s) => (!s ? '' : s.kind === 'topic' ? `Topic: ${s.name}` : s.label);
-  els.homeWordlistStat.textContent = label(deck);
-  els.homeDeckStat.textContent = label(flashScope()); // "Everything" when Flashcards is
-  const empty = Object.keys(reviewWords()).length === 0;
-  const scope = reviewScope();
-  els.homeReviewStat.textContent = empty ? 'Nothing added yet'
-    : `${plan.due.length} due · ${plan.news.length} new${scope.kind === 'all' ? '' : ` · ${scope.name}`}`;
-}
-
-function startReview() {
-  beginSession(planReview().queue, false);
-}
-
-// Practice: once more through every word Review covers that you've started, in random order, after
-// the session (or whenever nothing's due). The user asked to keep repeating (2026-10-07).
-// Grades don't touch the schedule (no gradeItem, no daily count): they'd only be same-day repeats,
-// which FSRS mostly ignores, and Again would push a word back for a slip in extra practice.
-// Again still brings the word back later in the round.
-function startPractice() {
-  beginSession(planPractice(), true);
-}
-
-function planPractice() {
-  const s = getSettings();
-  const items = loadStore().items || {};
-  const f = reviewFilter();
-  const scopeIds = reviewScopeDeckIds();
-  const queue = [];
-  for (const itemKey of Object.keys(items)) {
-    const [key, dir] = splitItemKey(itemKey);
-    if (!f.has(key)) continue;
-    const deckId = reviewDeckId(key, dir, s, scopeIds);
-    if (deckId) queue.push({ key, dir, deckId, kind: 'practice' });
-  }
-  return shuffled(queue);
-}
-
-function beginSession(queue, practice) {
-  if (!queue.length) return;
-  state.review = {
-    queue, pos: 0, mode: null, revealed: false, answered: false, finished: false, practice,
-    graded: 0, ok: 0, seen: new Set(), newItems: new Set(), missed: new Map(),
-  };
-  preloadDeckAudio({ cards: queue.map((e) => state.cardIndex.get(e.key).card) });
-  renderToday();
+  const key = itemKeyOf(e.key, e.dir);
+  r.count += 1;
+  r.shownAt.set(key, r.count);
+  r.lastKey = key;
+  r.sinceNew = e.it ? r.sinceNew + 1 : 0;
+  r.current = e;
   presentEntry();
-}
-
-function endReview() {
-  stopAudio();
-  state.review = null;
-  renderToday();
 }
 
 function presentEntry() {
   const r = state.review;
-  const e = r.queue[r.pos];
-  if (!e) {
-    finishReview();
-    return;
-  }
+  const e = r.current;
   const { card } = state.cardIndex.get(e.key);
-  const it = getItem(itemKeyOf(e.key, e.dir));
   const thaiFirst = e.dir === 'th-en';
   r.revealed = false;
   r.answered = false;
+  // Back to the front before the new card's text goes in, without the turn (it would show the new
+  // answer for half of it).
+  setReviewFlipped(false, { instant: true });
 
   els.reviewPrompt.textContent = thaiFirst ? card.thai : card.english;
   els.reviewPrompt.className = 'review-prompt thai' + (thaiFirst ? '' : ' front-en');
@@ -2327,24 +2120,41 @@ function presentEntry() {
   const audioOnly = thaiFirst && !getSettings().reviewScript;
   els.reviewPrompt.hidden = audioOnly;
   els.reviewScript.hidden = !audioOnly;
+  // The back, as Flashcards' (renderCard): Thai → English repeats the Thai at the English's size,
+  // then the transliteration, the answer, the note and the spelling.
+  els.reviewBackThai.textContent = thaiFirst ? card.thai : '';
+  els.reviewBackThai.hidden = !thaiFirst;
   els.reviewMain.textContent = thaiFirst ? card.english : card.thai;
-  els.reviewMain.className = 'review-main english' + (thaiFirst ? '' : ' back-th');
+  els.reviewMain.className = 'english' + (thaiFirst ? '' : ' back-th');
   els.reviewTranslit.textContent = card.translit;
   textWithArrows(els.reviewNote, card.note || '');
-  els.reviewAnswer.hidden = true;
-  const badge = [r.practice && 'Practice', e.again && 'Again', !it && 'New', !thaiFirst && 'English → Thai'].filter(Boolean).join(' · ');
-  textWithArrows(els.reviewBadge, badge);
-  els.reviewBadge.hidden = !badge;
-  els.reviewDeck.textContent = state.decks.find((d) => d.id === e.deckId)?.name || '';
-  els.reviewLeft.textContent = `${r.queue.length - r.pos} left`;
+  const groups = spellingFor(card);
+  els.reviewSpelling.textContent = groups ? spellingText(groups) : '';
+  els.reviewSpelling.hidden = !groups;
+  // Spell it aloud: on the front only when it shows the Thai (as on Flashcards' card).
+  els.reviewSpell.hidden = !thaiFirst || !groups;
+  els.reviewSpellBack.hidden = !groups;
   els.reviewGrades.hidden = true;
   // Every item is recall, new ones too (the user's call, 2026-10-07): recognition is Flashcards' job.
-  els.reviewHint.textContent = getSettings().sayAloud ? 'Say it aloud, then tap Show' : 'Recall it, then tap Show';
-  els.reviewHint.hidden = false;
-  els.reviewShow.hidden = false;
+  // The ⟳ is yellow until the card's turned: the next thing to do (Show's job until 2026-10-08).
+  els.reviewFlip.classList.add('reveal');
   // English → Thai: no audio until the answer is shown, or it would give the answer away.
   els.reviewSpeak.hidden = !thaiFirst;
+  fitText(els.reviewPrompt);
   if (thaiFirst) speak(card.thai);
+}
+
+// Review's card turns like Flashcards' (.card.flipped). Before Show it only turns to the answer
+// (revealAnswer); after, a tap turns it either way.
+function setReviewFlipped(flipped, { instant = false } = {}) {
+  const r = state.review;
+  if (r) r.flipped = flipped;
+  if (instant) els.reviewCard.classList.add('no-anim');
+  els.reviewCard.classList.toggle('flipped', flipped);
+  if (instant) {
+    void els.reviewCard.offsetWidth; // apply the new side before the transition comes back
+    els.reviewCard.classList.remove('no-anim');
+  }
 }
 
 // The Thai on an audio-only card (Show Thai script off): the eye button, or Show.
@@ -2356,40 +2166,27 @@ function showReviewScript() {
 function revealAnswer() {
   const r = state.review;
   if (!r || r.revealed) return;
-  const e = r.queue[r.pos];
+  const e = r.current;
   r.revealed = true;
-  showReviewScript();
-  els.reviewHint.hidden = true; // "…then tap Show": done
-  els.reviewAnswer.hidden = false;
-  els.reviewShow.hidden = true;
+  setReviewFlipped(true);
+  showReviewScript(); // for when the card's turned back to its front
+  els.reviewFlip.classList.remove('reveal');
   els.reviewSpeak.hidden = false;
+  els.reviewSpell.hidden = !spellingFor(state.cardIndex.get(e.key).card);
   if (e.dir === 'en-th') speak(state.cardIndex.get(e.key).card.thai);
   els.reviewGrades.hidden = false;
 }
 
-// Save the grade, keep session stats, and requeue: a miss comes back later in the session until
-// it's right.
+// Save the grade, and set when the card comes back in this visit: Again and Hard a few cards later
+// (REVIEW_RETURN), Easy not until its turn comes round again.
 function recordGrade(g) {
   const r = state.review;
-  const e = r.queue[r.pos];
-  const itemKey = itemKeyOf(e.key, e.dir);
-  if (!r.practice) gradeItem(e.key, e.dir, g, { mode: 'recall', deckId: e.deckId });
-  r.graded += 1;
-  if (g > 1) r.ok += 1;
-  r.seen.add(itemKey);
-  if (e.kind === 'new') r.newItems.add(itemKey);
-  if (g === 1) r.missed.set(itemKey, e);
-  if (e.kind === 'due' && !e.again && !e.requeued) {
-    const store = loadStore();
-    const day = dayLog(store);
-    day.rv = (day.rv || 0) + 1;
-    saveStore(store);
-  }
-  if (g === 1) {
-    const [lo, hi] = REQUEUE_GAP;
-    const at = Math.min(r.queue.length, r.pos + 1 + lo + Math.floor(Math.random() * (hi - lo + 1)));
-    r.queue.splice(at, 0, { ...e, again: g === 1, requeued: true });
-  }
+  const e = r.current;
+  const key = itemKeyOf(e.key, e.dir);
+  gradeItem(e.key, e.dir, g, { mode: 'recall', deckId: e.deckId });
+  const back = REVIEW_RETURN[g];
+  if (back) r.returnAt.set(key, r.count + back[0] + Math.floor(Math.random() * (back[1] - back[0] + 1)));
+  else r.returnAt.delete(key);
 }
 
 function gradeCurrent(g) {
@@ -2400,49 +2197,10 @@ function gradeCurrent(g) {
   nextEntry();
 }
 
-function nextEntry() {
-  state.review.pos += 1;
-  presentEntry();
-}
-
-function finishReview() {
-  const r = state.review;
-  r.finished = true;
-  stopAudio();
-  const reviewed = r.seen.size;
-  const pct = r.graded ? Math.round((r.ok / r.graded) * 100) : 0;
-  els.reviewTitle.textContent = r.practice ? 'Practice complete' : 'Review complete';
-  els.reviewScore.textContent = String(reviewed);
-  els.reviewSub.textContent = r.practice ? `${reviewed === 1 ? 'card' : 'cards'} practised · ${pct}% right`
-    : `${reviewed === 1 ? 'card' : 'cards'} reviewed · ${pct}% right · ${r.newItems.size} new · ${dueTomorrow()} due tomorrow`;
-  // Again from here when nothing's due (a Review session that hit the daily maximum leaves some).
-  els.reviewPractise.hidden = planReview().queue.length > 0 || !planPractice().length;
-  fillMissedList(els.reviewMissed, els.reviewMissedTitle, [...r.missed.values()].map((e) => state.cardIndex.get(e.key).card));
-  renderToday();
-  els.reviewDone.focus({ preventScroll: true });
-  window.scrollTo({ top: 0 });
-}
-
 function handleReviewKey(e) {
   const r = state.review;
   const enter = e.key === 'Enter' || e.key === ' ';
-  if (!r) {
-    if (enter && !els.todayStart.hidden) {
-      e.preventDefault();
-      startReview();
-    } else if (enter && !els.todayPractise.hidden) {
-      e.preventDefault();
-      startPractice();
-    }
-    return;
-  }
-  if (r.finished) {
-    if (enter) {
-      e.preventDefault();
-      endReview();
-    }
-    return;
-  }
+  if (!r) return;
   if (!r.revealed) {
     if (enter) {
       e.preventDefault();
@@ -2544,17 +2302,18 @@ async function resetAllProgress() {
   toast('All progress reset');
 }
 
-// Every word out of Review (the "Only words I add" list). Progress is kept, so re-adding carries on.
+// Settings → Reset → Clear Flashcards: every word you've added out of it (store.reviewWords; it was
+// "Reset Review list" until 2026-10-08). Progress is kept, so re-adding carries on.
 async function resetReviewList() {
   const n = Object.keys(reviewWords()).length;
   if (!n) {
-    toast('Review is already empty');
+    toast('Flashcards has no words in it');
     return;
   }
   const ok = await confirmDialog({
-    title: 'Reset the Review list?',
-    message: `This takes all ${n} word${n === 1 ? '' : 's'} you've added out of Review. Their progress is kept, so adding them again carries on.`,
-    confirmLabel: 'Reset Review list',
+    title: 'Clear Flashcards?',
+    message: `This takes all ${n} word${n === 1 ? '' : 's'} you've added out of Flashcards. Their progress is kept, so adding them again carries on.`,
+    confirmLabel: 'Clear Flashcards',
     danger: true,
   });
   if (!ok) return;
@@ -2564,8 +2323,7 @@ async function resetReviewList() {
   renderToday();
   renderWordlist();
   syncReviewOnly();
-  if (state.view === 'home') renderHome();
-  toast('Review list reset');
+  toast('Flashcards cleared');
 }
 
 // Every setting back to its default (getSettings merges DEFAULT_SETTINGS over what's saved).
@@ -2574,7 +2332,7 @@ async function resetReviewList() {
 async function resetSettings() {
   const ok = await confirmDialog({
     title: 'Reset all settings?',
-    message: 'Every setting goes back to its default. Your progress and Review list are kept.',
+    message: 'Every setting goes back to its default. Your progress and the words in Flashcards are kept.',
     confirmLabel: 'Reset settings',
     danger: true,
   });
@@ -2590,7 +2348,6 @@ async function resetSettings() {
   syncReviewOnly();
   renderToday();
   renderWordlist();
-  if (state.view === 'home') renderHome();
   toast('Settings reset to defaults');
 }
 
@@ -2992,8 +2749,7 @@ function bindEvents() {
   // Deck picker
   els.deckButton.addEventListener('click', openDeckPicker);
   els.reviewByButtons.forEach((b) => b.addEventListener('click', () => {
-    if (state.pickerFor === 'review') setReviewBy(b.dataset.reviewBy);
-    else setFlashcardsBy(b.dataset.reviewBy);
+    setFlashcardsBy(b.dataset.reviewBy);
     if (b.dataset.reviewBy === 'all') closeDeckPicker(); // nothing more to pick
     else renderReviewBy();
   }));
@@ -3016,11 +2772,6 @@ function bindEvents() {
       const first = els.deckPickerTree.querySelector('.deck-row');
       if (first) first.click();
     }
-  });
-
-  els.srsToggle.addEventListener('change', () => {
-    setPreferences({ srsOn: els.srsToggle.checked });
-    rebuildCurrentQueue();
   });
 
   els.resetAll.addEventListener('click', resetAllProgress);
@@ -3072,7 +2823,6 @@ function bindEvents() {
     btn.addEventListener('click', () => setDirection(btn.dataset.direction));
   });
 
-  els.roundAgain.addEventListener('click', () => renderCard());
 
   els.homeLink.addEventListener('click', () => setView('home'));
   els.homeCards.forEach((card) => card.addEventListener('click', () => setView(card.dataset.go)));
@@ -3086,50 +2836,63 @@ function bindEvents() {
       // All in Review: remove them all (their progress is kept).
       const n = state.listCards.length;
       const ok = await confirmDialog({
-        title: 'Remove all from Review?',
-        message: `Remove all ${n} words in ${deck.name} from Review? Your progress on them is kept.`,
+        title: 'Remove all from Flashcards?',
+        message: `Remove all ${n} words in ${deck.name} from Flashcards? Your progress on them is kept.`,
         confirmLabel: `Remove ${n}`,
         setting: 'confirmRemoveAll',
       });
       if (ok) {
         setInReview(state.listCards.map((c) => c.key), false);
-        toast(`Removed ${n} words from Review`);
+        toast(`Removed ${n} words from Flashcards`);
       }
       return;
     }
     const n = keys.length;
     const ok = await confirmDialog({
-      title: 'Add all to Review?',
+      title: 'Add all to Flashcards?',
       message: n === state.listCards.length
-        ? `Add all ${n} words in ${deck.name} to Review?`
-        : `Add the ${n} words in ${deck.name} that aren't in Review yet?`,
+        ? `Add all ${n} words in ${deck.name} to Flashcards?`
+        : `Add the ${n} words in ${deck.name} that aren't in Flashcards yet?`,
       confirmLabel: `Add ${n}`,
       setting: 'confirmAddAll',
     });
     if (ok) {
       setInReview(keys, true);
-      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Review`, { tone: 'good' });
+      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Flashcards`, { tone: 'good' });
     }
   });
   els.confirmOk.addEventListener('click', () => closeConfirm(true));
   els.confirmCancel.addEventListener('click', () => closeConfirm(false));
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
 
-  els.todayStart.addEventListener('click', startReview);
-  els.todayPractise.addEventListener('click', startPractice);
-  els.reviewPractise.addEventListener('click', startPractice);
-  els.reviewShow.addEventListener('click', revealAnswer);
+  // ⟳ turns the card: to the answer first, then either way (as a tap on the card does).
+  els.reviewCard.querySelectorAll('.review-flip').forEach((btn) => btn.addEventListener('click', () => {
+    const r = state.review;
+    if (!r) return;
+    if (!r.revealed) revealAnswer();
+    else setReviewFlipped(!r.flipped);
+  }));
   els.reviewGrades.addEventListener('click', (e) => {
     const btn = e.target.closest('.grade');
     if (btn) gradeCurrent(Number(btn.dataset.grade));
   });
   els.reviewScript.addEventListener('click', showReviewScript);
-  els.reviewSpeak.addEventListener('click', () => {
-    const entry = state.review?.queue[state.review.pos];
+  els.reviewCard.querySelectorAll('.review-speak').forEach((btn) => btn.addEventListener('click', () => {
+    const entry = state.review?.current;
     if (entry) speak(state.cardIndex.get(entry.key).card.thai);
+  }));
+  [els.reviewSpell, els.reviewSpellBack].forEach((btn) => btn.addEventListener('click', (e) => {
+    e.stopPropagation(); // not a tap on the card
+    const entry = state.review?.current;
+    if (entry) speakSpelling(state.cardIndex.get(entry.key).card, [els.reviewSpell, els.reviewSpellBack]);
+  }));
+  // Tapping the card turns it, as on Flashcards: to the answer first (as Show does), then either way.
+  els.reviewCard.addEventListener('click', (e) => {
+    const r = state.review;
+    if (!r || e.target.closest('button')) return;
+    if (!r.revealed) revealAnswer();
+    else setReviewFlipped(!r.flipped);
   });
-  els.reviewQuit.addEventListener('click', endReview);
-  els.reviewDone.addEventListener('click', endReview);
 
   document.addEventListener('keydown', (e) => {
     if (state.confirm) {
@@ -3155,15 +2918,8 @@ function bindEvents() {
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
     if (state.view === 'home') return;
-    if (state.view === 'today') {
+    if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);
-      return;
-    }
-    if (state.roundOver) {
-      if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowRight') {
-        e.preventDefault();
-        renderCard();
-      }
       return;
     }
     if (e.key === ' ') {
@@ -3434,7 +3190,7 @@ const BACKUP_FORMAT = 'learnthai-backup';
 function backupSummary(store) {
   const words = Object.keys(store.reviewWords || {}).length;
   const studied = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0])).size;
-  return `${words} word${words === 1 ? '' : 's'} in Review, progress on ${studied}`;
+  return `${words} word${words === 1 ? '' : 's'} in Flashcards, progress on ${studied}`;
 }
 
 async function exportBackup() {
@@ -3478,7 +3234,7 @@ async function loadBackup(file) {
   const when = backup.exported ? new Date(backup.exported).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'an unknown date';
   const ok = await confirmDialog({
     title: 'Load this backup?',
-    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and Review list on this device (${backupSummary(loadStore())}).`,
+    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and words in Flashcards on this device (${backupSummary(loadStore())}).`,
     confirmLabel: 'Load backup',
     danger: true,
   });
@@ -3511,7 +3267,6 @@ async function init() {
   migrateLeitnerToItems();
 
   const prefs = getPreferences();
-  els.srsToggle.checked = prefs.srsOn !== false;
   // 2026-10-06: Wordlists' "Show first" moved from the page (prefs.primaryCol) to Settings.
   if (prefs.primaryCol === 'english' && !('wordlistFirst' in (loadStore().settings || {}))) {
     setSettings({ wordlistFirst: 'english' });
@@ -3519,7 +3274,7 @@ async function init() {
   // Migrate legacy values: 'list' → 'practice', 'shuffle' → 'practice', 'learn' → 'test'.
   const legacy = { list: 'practice', shuffle: 'practice', learn: 'test' };
   const incoming = legacy[prefs.orderMode] || prefs.orderMode;
-  if (['practice', 'test'].includes(incoming)) {
+  if (['practice', 'test', 'review'].includes(incoming)) {
     state.orderMode = incoming;
   }
   els.orderButtons.forEach((b) => {
@@ -3545,8 +3300,7 @@ async function init() {
   if (start) {
     selectDeck(start);
   }
-  renderToday(); // again, now the current deck (a source of new cards) is known
-  renderHome();
+  renderToday(); // again, now the current deck is known
   performance.mark('app-ready');
 
   registerServiceWorker();

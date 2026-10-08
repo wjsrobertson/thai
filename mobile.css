@@ -34,18 +34,24 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 
 /* ---------- controls: deck button on its own row, toggles share the next ---------- */
 .deck-picker-bar { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-.stage.review-only-none[data-view="flashcards"]:not(.round-over) { padding-bottom: 12px; } /* = the bar's margin */
-.stage.today-topic-none[data-view="today"] { padding-bottom: 12px; }
+.stage.review-only-none[data-view="flashcards"] { padding-bottom: 12px; } /* = the bar's margin */
 .deck-button { flex: 1 1 100%; max-width: none; padding: 10px 14px; }
 .deck-button-label { flex: 1; max-width: none; text-align: left; }
 .deck-picker-bar .segmented { flex: 1 1 auto; }
-/* Review's session header: the second row, as tall as Flashcards' controls, so the cards line up. */
-.deck-picker-bar .review-top { flex-basis: 100%; min-height: 37px; font-size: 13px; }
-.review-quit { padding: 8px 10px; font-size: 15px; } /* as the Topics page's Read all / Add all on the phone */
+.dir-long { display: none; }
+.dir-short { display: inline; }
 .deck-picker-bar .seg-btn { flex: 1; padding: 8px 6px; font-size: 13px; white-space: nowrap; }
+/* The original 320px iPhone SE: a little tighter, so direction and Learn | Test | Review share a
+   row (measured in Chromium, 2026-10-08). */
+@media (max-width: 340px) { .deck-picker-bar .seg-btn { padding: 8px 4px; } }
 /* "Add all to Review" and "Read all" share their row in two equal halves. */
 .wordlist-bar-right { flex: 1 1 100%; gap: 8px; }
 .wordlist-bar-right > button { flex: 1 1 0; min-width: 0; margin-left: 0; padding: 8px 10px; justify-content: center; text-align: center; }
+/* "Add all to Flashcards" (longer than "…to Review" was) takes the room "Read all" doesn't need, so
+   it stays on one line: 2026-10-08. At 320px the text is a little smaller as well. */
+.wordlist-bar-right > #wordlist-add-all { flex: 1 1 auto; white-space: nowrap; }
+.wordlist-bar-right > #read-aloud { flex: 0 0 auto; }
+@media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- flashcard: full-width card, answer pills, then prev/next under the thumb ---------- */
 .card-wrap {
@@ -153,19 +159,16 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .setting-row select { min-width: 0; max-width: 100%; }
 
 /* Today */
-.today-home { padding: 24px 16px; }
-.review-card { /* the Flashcards card's height (.card above) and padding (.card .face) */
-  aspect-ratio: auto;
-  min-height: clamp(240px, calc(42vh + (var(--fs, 1) - 1) * 50vh), calc(380px * var(--fs, 1)));
-  padding: 56px 16px;
-}
-.review-badge { top: 10px; left: 10px; height: 28px; padding: 0 10px; font-size: 13px; }
-.review-grades { gap: 6px; }
-.grade { padding: 12px 2px; font-size: 15px; }
+/* As the phone's Test answer buttons (.learn-pill above, in .learn-pills, under the card). */
+.review { gap: 12px; }
+.review-grades { gap: 8px; }
+.grade { min-height: 72px; padding: 12px 8px; border-radius: 10px; font-size: calc(17px * var(--fs, 1)); }
 
 /* Home: the three cards stack */
 .home { grid-template-columns: 1fr; gap: 12px; margin-top: 4px; }
-.home-card { padding: 18px 16px; }
+.home-card { padding: 20px 18px 18px; gap: 16px; }
+.home-card-list { column-gap: 12px; row-gap: 10px; }
+.home-card-text { gap: 22px; }
 
 /* Adding to Review */
 /* The Review button and speaker sit side by side, centred in the row's height. */

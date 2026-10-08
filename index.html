@@ -35,7 +35,6 @@
     <nav class="tabs" role="tablist">
       <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Topics</button>
       <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Flashcards</button>
-      <button type="button" class="tab" role="tab" data-view="today" aria-selected="false">Review</button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -50,7 +49,7 @@
         <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
       </div>
       <div class="review-by" id="review-by" hidden>
-        <div class="segmented" role="radiogroup" aria-label="What to review">
+        <div class="segmented" role="radiogroup" aria-label="What to study">
           <button type="button" role="radio" class="seg-btn" data-review-by="all" aria-checked="true">Everything</button>
           <button type="button" role="radio" class="seg-btn" data-review-by="topic" aria-checked="false">By topic</button>
         </div>
@@ -86,21 +85,24 @@
 
   <main class="stage" data-view="home">
     <section class="home home-only" id="home-section">
+      <!-- Each card: a title and its text (Topics: plain sentences; Flashcards: a row per mode, a
+           label then what it does; spans, since a button may only hold phrasing content).
+           2026-10-08. The topic line at the foot went the same day. -->
       <button type="button" class="home-card" data-go="wordlist">
         <span class="home-card-title">📋 Topics</span>
-        <span class="home-card-desc">Browse words by topic</span>
-        <span class="home-card-note">Words you add with the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button appear in Flashcards and Review</span>
-        <span class="home-card-stat" id="home-wordlist-stat"></span>
+        <span class="home-card-text">
+          <span>Every word, sorted by topic, with audio and spelling.</span>
+          <span>Tap <span class="inline-icon" role="img" aria-label="Add to Flashcards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> on a word to practise it in Flashcards.</span>
+          <span>Hear a whole topic read out with Read all.</span>
+        </span>
       </button>
       <button type="button" class="home-card" data-go="flashcards">
         <span class="home-card-title">📖 Flashcards</span>
-        <span class="home-card-desc">Flip cards to learn, then test your recognition</span>
-        <span class="home-card-stat" id="home-deck-stat"></span>
-      </button>
-      <button type="button" class="home-card" data-go="today">
-        <span class="home-card-title">🔁 Review</span>
-        <span class="home-card-desc">Practise recalling the words you've added</span>
-        <span class="home-card-stat" id="home-review-stat"></span>
+        <span class="home-card-list">
+          <span class="home-card-row"><b>Browse</b><span>Flip through the cards to memorise words</span></span>
+          <span class="home-card-row"><b>Recognition</b><span>Pick the right answer to check you recognise each word</span></span>
+          <span class="home-card-row"><b>Recall</b><span>Remember each word yourself; the hard ones come back sooner</span></span>
+        </span>
       </button>
     </section>
 
@@ -111,20 +113,16 @@
         <span class="deck-button-chevron" aria-hidden="true">▾</span>
       </button>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
-        <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true">Thai<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>English</button>
-        <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false">English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai</button>
+        <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true"><span class="dir-long">Thai</span><span class="dir-short">TH</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
+        <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false"><span class="dir-long">English</span><span class="dir-short">EN</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">Thai</span><span class="dir-short">TH</span></button>
       </div>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card order">
-        <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Learn</button>
-        <button type="button" role="radio" class="seg-btn" data-order="test" aria-checked="false">Test</button>
-      </div>
-      <!-- Review's session header: in the topic bar, level with Flashcards' controls (renderToday). -->
-      <div class="review-top today-only" id="review-top" hidden>
-        <span class="review-deck" id="review-deck"></span>
-        <span class="review-top-end"><span class="review-left" id="review-left"></span><button type="button" class="ghost review-quit" id="review-quit"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>End review</button></span>
+        <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Browse</button> <!-- "Learn" until 2026-10-08 (a placeholder name) -->
+        <button type="button" role="radio" class="seg-btn" data-order="test" aria-checked="false">Recognition</button> <!-- "Test" until 2026-10-08 -->
+        <button type="button" role="radio" class="seg-btn" data-order="review" aria-checked="false">Recall</button> <!-- "Review" until 2026-10-08 -->
       </div>
       <div class="wordlist-only wordlist-bar-right">
-        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Review</button>
+        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Flashcards</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list">🔊 Read all</button>
       </div>
     </div>
@@ -149,6 +147,8 @@
               <button type="button" class="spell-btn" id="card-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
             <div class="face-body">
+              <!-- Thai → English: the Thai again, at the English's size, above the transliteration. -->
+              <div class="english back-script" id="card-back-thai" hidden></div>
               <div class="translit" id="card-translit"></div>
               <div class="english" id="card-english"></div>
               <div class="note" id="card-note"></div>
@@ -164,53 +164,43 @@
     </section>
 
     <div class="review-only-empty flashcards-only" id="review-only-empty" role="status" hidden>
-      <p class="review-only-empty-title">None of this topic's words are in Review yet</p>
-      <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
+      <p class="review-only-empty-title">None of this topic's words are in Flashcards yet</p>
+      <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Add to Flashcards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
       <p class="review-only-empty-small" id="review-only-empty-hint">Or switch to Everything with the button above to see all your words</p>
     </div>
-    <section class="round-summary flashcards-only" id="round-summary" hidden>
-      <h2 class="round-title">Round complete</h2>
-      <div class="round-score" id="round-score"></div>
-      <div class="round-sub" id="round-sub"></div>
-      <h3 class="round-missed-title" id="round-missed-title"></h3>
-      <ul class="round-missed" id="round-missed"></ul>
-      <div class="round-actions">
-        <button type="button" class="round-again" id="round-again">Start again</button>
-      </div>
-    </section>
 
-    <div class="review-only-empty today-only" id="today-topic-empty" role="status" hidden>
-      <p class="review-only-empty-title" id="today-topic-empty-title">None of this topic's words are in Review yet</p>
-      <p>Add some on the Topics page using the <span class="inline-icon" role="img" aria-label="Review"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here.</p>
-      <p class="review-only-empty-small" id="today-topic-empty-hint">Or switch to Everything with the button above to review all your words</p>
-    </div>
     <section class="today today-only" id="today-section">
-      <div class="today-home" id="today-home">
-        <div class="today-counts" id="today-counts">
-          <span class="today-num" id="today-due">0</span><span class="today-kind">due</span><span class="today-from" id="today-due-from"></span>
-          <span class="today-num" id="today-new">0</span><span class="today-kind">new</span><span class="today-from" id="today-new-from"></span>
-        </div>
-        <button type="button" class="round-again today-start" id="today-start">Start review</button>
-        <button type="button" class="round-again today-start" id="today-practise" hidden>Practise again</button>
-        <p class="today-practise-note" id="today-practise-note" hidden>Nothing's due. Practising doesn't change when words come back.</p>
-      </div>
-
       <div class="review" id="review" hidden>
-        <div class="review-card">
-          <div class="review-badge" id="review-badge" hidden></div>
-          <div class="review-prompt" id="review-prompt"></div>
-          <button type="button" class="review-script" id="review-script" title="Show the Thai script" hidden><svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" /><circle cx="12" cy="12" r="3" /></svg><span>Show Thai</span></button>
-          <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
-          <div class="review-hint" id="review-hint"></div>
-          <div class="review-answer" id="review-answer" hidden>
-            <div class="review-main" id="review-main"></div>
-            <div class="translit" id="review-translit"></div>
-            <div class="note" id="review-note"></div>
+        <!-- Built like the Flashcards card (.card: a front and a back face), so Show flips it
+             (2026-10-08, the user's request; the answer used to appear under the prompt). -->
+        <div class="card review-card" id="review-card" role="button" tabindex="0" aria-label="Recall card. Tap or press Enter to turn it over.">
+          <div class="face front">
+            <div class="face-overlay">
+              <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <!-- In place of Show (2026-10-08): yellow until the card's been turned, then Learn's grey ⟳. -->
+              <button type="button" class="flip-btn review-flip reveal" id="review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
+              <button type="button" class="spell-btn review-spell" id="review-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
+            </div>
+            <div class="review-prompt thai" id="review-prompt"></div>
+            <button type="button" class="review-script" id="review-script" title="Show the Thai script" hidden><svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z" /><circle cx="12" cy="12" r="3" /></svg><span>Show Thai</span></button>
+          </div>
+          <div class="face back">
+            <div class="face-overlay">
+              <button type="button" class="speak review-speak" aria-label="Play Thai audio" title="Play Thai audio">🔊</button>
+              <button type="button" class="flip-btn review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
+              <button type="button" class="spell-btn review-spell" id="review-spell-back" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
+            </div>
+            <div class="face-body">
+              <div class="english back-script" id="review-back-thai" hidden></div>
+              <div class="translit" id="review-translit"></div>
+              <div class="english" id="review-main"></div>
+              <div class="note" id="review-note"></div>
+              <div class="spelling" id="review-spelling" hidden></div>
+            </div>
           </div>
         </div>
-        <button type="button" class="round-again review-show" id="review-show">Show</button>
         <div class="review-grades" id="review-grades" hidden>
-          <button type="button" class="grade grade-again" data-grade="1">Again</button>
+          <button type="button" class="grade grade-again" data-grade="1">Very Hard</button> <!-- "Again" until 2026-10-08 -->
           <button type="button" class="grade grade-hard" data-grade="2">Hard</button>
           <!-- Three grades since 2026-10-07: "Easy" schedules as FSRS Good (3), the normal remembered
                answer; FSRS Easy (4) would push a new word out to about 16 days. -->
@@ -218,20 +208,6 @@
         </div>
       </div>
 
-      <div class="review-summary" id="review-summary" hidden>
-        <section class="round-summary">
-          <h2 class="round-title" id="review-title">Review complete</h2>
-          <div class="round-score" id="review-score"></div>
-          <div class="round-sub" id="review-sub"></div>
-          <h3 class="round-missed-title" id="review-missed-title"></h3>
-          <ul class="round-missed" id="review-missed"></ul>
-        </section>
-        <!-- Under the card, not in it (the user's call, 2026-10-07). -->
-        <div class="round-actions review-summary-actions">
-          <button type="button" class="ghost round-practise" id="review-practise" hidden>Practise again</button>
-          <button type="button" class="round-again" id="review-done">Done</button>
-        </div>
-      </div>
     </section>
 
     <div id="settings-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="settings-modal-title">
@@ -310,29 +286,6 @@
             <span class="setting-help">Slows Thai audio without lowering the pitch. English always plays at normal speed.</span>
           </label>
         </div>
-        <div class="setting-group" data-search="read aloud repeats wordlist topics playback">
-          <label class="setting-row">
-            <span class="setting-label">Read-aloud repeats</span>
-            <input type="number" min="1" max="10" id="setting-read-repeats" />
-            <span class="setting-help">Times to repeat each word before moving on.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="pause silence between words seconds delay">
-          <label class="setting-row">
-            <span class="setting-label">Pause between words</span>
-            <input type="number" min="0" max="20" step="0.1" id="setting-read-pause" />
-            <span class="setting-help">Seconds of silence between consecutive words.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="speak english translation read aloud language">
-          <label class="setting-row">
-            <span class="setting-label">Speak English too</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-read-english" />
-              <span>Say the English translation after the Thai</span>
-            </label>
-          </label>
-        </div>
         <div class="setting-group" data-search="audio spelling spell school method letter names dictation sound out สะกด">
           <label class="setting-row">
             <span class="setting-label">Spelling</span>
@@ -370,7 +323,7 @@
         </div>
         <div class="setting-group" data-search="topics wordlists confirm confirmation ask before add all whole deck review don't ask again topic">
           <label class="setting-row">
-            <span class="setting-label">Confirm “Add all to Review”</span>
+            <span class="setting-label">Confirm “Add all to Flashcards”</span>
             <label class="checkbox-inline">
               <input type="checkbox" data-confirm-setting="confirmAddAll" />
               <span>Ask before adding every word in the list</span>
@@ -379,10 +332,34 @@
         </div>
         <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
           <label class="setting-row">
-            <span class="setting-label">Confirm “Remove all from Review”</span>
+            <span class="setting-label">Confirm “Remove all from Flashcards”</span>
             <label class="checkbox-inline">
               <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
-              <span>Ask before taking every word in the list out of Review</span>
+              <span>Ask before taking every word in the list out of Flashcards</span>
+            </label>
+          </label>
+        </div>
+        <div class="setting-group" data-search="topics read all read aloud repeats wordlist playback twice">
+          <p class="setting-subhead">Read all</p>
+          <label class="setting-row">
+            <span class="setting-label">Repeats</span>
+            <input type="number" min="1" max="10" id="setting-read-repeats" />
+            <span class="setting-help">How many times Read all says each word before moving on.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="topics read all read aloud pause silence between words seconds delay">
+          <label class="setting-row">
+            <span class="setting-label">Pause between words</span>
+            <input type="number" min="0" max="20" step="0.1" id="setting-read-pause" />
+            <span class="setting-help">Seconds of silence between one word and the next.</span>
+          </label>
+        </div>
+        <div class="setting-group" data-search="topics read all read aloud speak english translation language">
+          <label class="setting-row">
+            <span class="setting-label">Speak English too</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-read-english" />
+              <span>Say the English translation after the Thai</span>
             </label>
           </label>
         </div>
@@ -390,53 +367,51 @@
 
       <details class="settings-cat" data-cat="deck-mode">
         <summary>Flashcards</summary>
-        <div class="setting-group" data-search="flashcards smart order spaced repetition shuffle random due">
+        <!-- Three parts since 2026-10-08: Test, Review, and the schedule both of them feed (a wrong
+             Test answer counts as Very Hard, a right one as Hard). Smart order went the same day. -->
+        <div class="setting-group" data-search="flashcards recognition test mode card order random shuffle deck order sequence list topic">
+          <p class="setting-subhead">Recognition</p>
           <label class="setting-row">
-            <span class="setting-label">Smart order</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="srs-toggle" checked />
-              <span>Due cards first in Test mode</span>
-            </label>
-            <span class="setting-help">Off = every card once per round, ignoring due dates.</span>
-          </label>
-        </div>
-
-        <div class="setting-group" data-search="flashcards test mode card order random shuffle deck order sequence list topic">
-          <label class="setting-row">
-            <span class="setting-label">Test card order</span>
+            <span class="setting-label">Card order</span>
             <select id="setting-test-order">
               <option value="random">Random</option>
               <option value="deck">List order</option>
             </select>
-            <span class="setting-help">Random starts with words you haven't studied yet, then the rest, each in random order. List order is the order Learn mode and the Topics page show. With Smart order on, due cards come before the others.</span>
+            <span class="setting-help">The order words come round in. Random starts with words you haven't answered yet, then the rest. List order is the order Browse and the Topics page show. A word you get wrong also comes back a few cards later.</span>
           </label>
         </div>
 
-        <div class="setting-group" data-search="flashcards learn test mode auto progress advance next button manual correct right wrong answer multiple choice">
+        <div class="setting-group" data-search="flashcards recognition test mode auto progress advance move on next pause seconds answer wrong right">
           <label class="setting-row">
-            <span class="setting-label">Auto-progress after multiple choice</span>
-            <select id="setting-learn-auto">
-              <option value="off">Off — press Next (›) to move on</option>
-              <option value="correct">Only after a correct answer</option>
-              <option value="always">After every answer</option>
-            </select>
-            <span class="setting-help">Flashcards Test mode. "Only after a correct answer" waits on a wrong one so you can study the card.</span>
+            <span class="setting-label">Pause after a right answer</span>
+            <input type="number" min="0" max="5" step="0.1" id="setting-learn-pause" />
+            <span class="setting-help">Seconds before the next card.</span>
           </label>
-          <label class="setting-row" id="learn-pause-row">
-            <span class="setting-label">Pause before moving on</span>
-            <input type="number" min="0" max="5000" step="100" id="setting-learn-pause" />
-            <span class="setting-help">Milliseconds to pause after you tap an answer, before auto-advancing.</span>
+          <label class="setting-row">
+            <span class="setting-label">Pause after a wrong answer</span>
+            <input type="number" min="0" max="10" step="0.1" id="setting-wrong-pause" />
+            <span class="setting-help">Seconds before the next card, with the right answer showing. Longer, so you can take it in.</span>
           </label>
         </div>
-      </details>
 
-      <details class="settings-cat" data-cat="review">
-        <summary>Review</summary>
-        <div class="setting-group" data-search="wait waits again hard easy delay interval minutes days gap schedule first new word come back">
+        <div class="setting-group" data-search="flashcards recall review show thai script text letters audio only listen hide sound">
+          <p class="setting-subhead">Recall</p>
           <label class="setting-row">
-            <span class="setting-label">Again: wait (minutes)</span>
+            <span class="setting-label">Show Thai script</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-review-script" />
+              <span>Show the Thai on Recall cards before you turn them over</span>
+            </label>
+            <span class="setting-help">Off: Thai<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>English cards are audio only until you turn them over, so you recall from the sound alone. The eye on the card shows the script early.</span>
+          </label>
+        </div>
+
+        <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits again very hard easy delay interval minutes days gap first new word come back">
+          <p class="setting-subhead">Scheduling (Recognition and Recall)</p>
+          <label class="setting-row">
+            <span class="setting-label">Very Hard: wait (minutes)</span>
             <input type="number" min="1" max="1440" step="1" id="setting-wait-again" />
-            <span class="setting-help">How soon a word you missed comes back. It also returns later in the same session.</span>
+            <span class="setting-help">How soon a word you mark Very Hard, or get wrong in Recognition, is due again. In Recall it also comes back a few cards later, and a Hard one a few more.</span>
           </label>
           <label class="setting-row">
             <span class="setting-label">Hard: first wait (days)</span>
@@ -445,55 +420,19 @@
           <label class="setting-row">
             <span class="setting-label">Easy: first wait (days)</span>
             <input type="number" min="1" max="60" step="1" id="setting-wait-easy" />
-            <span class="setting-help">The first waits are for a new word. Each later right answer makes the wait longer, so words you know come back less and less often (Hard grows it only a little).</span>
+            <span class="setting-help">The first waits are for a new word; a right answer in Recognition counts as Hard. Each later right answer makes the wait longer, so words you know come back less and less often (Hard grows it only a little).</span>
           </label>
         </div>
-        <div class="setting-group" data-search="maximum reviews per day limit daily">
-          <label class="setting-row">
-            <span class="setting-label">Maximum reviews per day</span>
-            <input type="number" min="10" max="1000" step="10" id="setting-max-reviews" />
-          </label>
-        </div>
-        <div class="setting-group" data-search="desired retention fsrs scheduling intervals remember percent">
+        <div class="setting-group" data-search="flashcards scheduling desired retention fsrs intervals remember percent recognition test recall review">
           <label class="setting-row">
             <span class="setting-label">Desired retention</span>
             <select id="setting-retention">
-              <option value="0.8">80% (fewer reviews)</option>
+              <option value="0.8">80% (words come back less often)</option>
               <option value="0.85">85%</option>
               <option value="0.9">90% (Recommended)</option>
-              <option value="0.95">95% (many more reviews)</option>
+              <option value="0.95">95% (words come back much more often)</option>
             </select>
-            <span class="setting-help">How likely you should be to remember a card when it comes up. Higher means shorter gaps and more reviews.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="both directions english to thai production reverse">
-          <label class="setting-row">
-            <span class="setting-label">Both directions</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-both-directions" />
-              <span>Also practise English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai</span>
-            </label>
-            <span class="setting-help">A word's English<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Thai card unlocks once you've recalled its meaning after a gap of a day or more.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="show thai script text letters review audio only listen hide sound">
-          <label class="setting-row">
-            <span class="setting-label">Show Thai script</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-review-script" />
-              <span>Show the Thai on Review cards before you tap Show</span>
-            </label>
-            <span class="setting-help">Off: Thai<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>English cards are audio only until you tap Show, so you recall from the sound alone. The eye on the card shows the script early.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="say aloud speak prompt pronounce">
-          <label class="setting-row">
-            <span class="setting-label">Say it aloud</span>
-            <label class="checkbox-inline">
-              <input type="checkbox" id="setting-say-aloud" />
-              <span>Prompt me to say the answer before showing it</span>
-            </label>
-            <span class="setting-help">Saying words aloud helps you remember them.</span>
+            <span class="setting-help">How likely you should be to remember a word when it's due. Higher means shorter gaps, so words come back more often.</span>
           </label>
         </div>
       </details>
@@ -518,7 +457,7 @@
         <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
           <label class="setting-row">
             <span class="setting-label">Backup</span>
-            <span class="setting-help">Save your settings, progress and Review list to a file, or load them from one, e.g. to move to another device. Loading replaces what's on this device. Downloaded audio isn't included.</span>
+            <span class="setting-help">Save your settings, progress and the words in Flashcards to a file, or load them from one, e.g. to move to another device. Loading replaces what's on this device. Downloaded audio isn't included.</span>
           </label>
           <div class="setting-actions">
             <button type="button" id="backup-export" class="ghost">Export</button>
@@ -533,25 +472,25 @@
         <div class="setting-group danger" data-search="reset progress wipe delete everything study history">
           <label class="setting-row">
             <span class="setting-label">Reset progress</span>
-            <span class="setting-help">Wipes your study history on every topic. Your settings and Review list are kept.</span>
+            <span class="setting-help">Wipes your study history on every topic. Your settings and the words in Flashcards are kept.</span>
           </label>
           <div class="setting-actions">
             <button type="button" id="reset-all" class="ghost danger-btn">Reset all progress</button>
           </div>
         </div>
-        <div class="setting-group danger" data-search="reset review list clear empty remove words added">
+        <div class="setting-group danger" data-search="reset clear flashcards review list empty remove words added">
           <label class="setting-row">
-            <span class="setting-label">Reset Review list</span>
-            <span class="setting-help">Takes every word you've added out of Review. Their progress is kept, so adding them again carries on where they left off.</span>
+            <span class="setting-label">Clear Flashcards</span>
+            <span class="setting-help">Takes every word you've added out of Flashcards. Their progress is kept, so adding them again carries on where they left off.</span>
           </label>
           <div class="setting-actions">
-            <button type="button" id="reset-review" class="ghost danger-btn">Reset Review list</button>
+            <button type="button" id="reset-review" class="ghost danger-btn">Clear Flashcards</button>
           </div>
         </div>
         <div class="setting-group danger" data-search="reset settings defaults default restore options">
           <label class="setting-row">
             <span class="setting-label">Reset settings</span>
-            <span class="setting-help">Puts every setting back to its default. Your progress and Review list are kept.</span>
+            <span class="setting-help">Puts every setting back to its default. Your progress and the words in Flashcards are kept.</span>
           </label>
           <div class="setting-actions">
             <button type="button" id="reset-settings" class="ghost danger-btn">Reset settings</button>
