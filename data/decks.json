@@ -558,6 +558,7 @@
       "group": "Time & Date",
       "name": "Days of the Week",
       "description": "วัน (wan) means \"day\". Each day is named after a planet.",
+      "about": "The days are named after the same planets as in French and Spanish: จันทร์ is the moon, as in Monday and lundi; อังคาร Mars, as in mardi; พุธ Mercury; พฤหัส Jupiter; ศุกร์ Venus; เสาร์ Saturn; and อาทิตย์ the sun. Each day has a colour too, and many Thais wear their birthday's: Monday yellow, Tuesday pink, Wednesday green, Thursday orange, Friday blue, Saturday purple, Sunday red.",
       "cards": [
         { "thai": "วัน", "translit": "wan", "english": "day" },
         { "thai": "สัปดาห์", "translit": "sàp-daa", "english": "week", "note": "Formal. In speech, อาทิตย์ (aa-thít) — literally \"sun\" — is more common for \"week\"." },
@@ -1174,7 +1175,7 @@
       "group": "Tones & Reading",
       "name": "Tone Marks & Symbols",
       "description": "The four tone marks and the other marks you'll meet. The audio says each mark's name.",
-      "about": "The names count up: ไม้เอก ◌่ is 1, ไม้โท ◌้ 2, ไม้ตรี ◌๊ 3 and ไม้จัตวา ◌๋ 4. เอก, โท, ตรี and จัตวา are old words for first to fourth, and each mark is fancier than the last.",
+      "about": "The names count up: ไม้เอก ◌่ is 1, ไม้โท ◌้ 2, ไม้ตรี ◌๊ 3 and ไม้จัตวา ◌๋ 4. เอก, โท, ตรี and จัตวา are old words for first to fourth, and each mark is fancier than the last. ไม้ตรี and ไม้จัตวา only go on mid-class letters in standard spelling, so either one tells you the letter's class. Slang and sound words sometimes break the rule.",
       "cards": [
         { "thai": "◌่", "translit": "mái èek", "english": "tone mark 1", "note": "Mid and high class: low tone (ป่า pàa, forest). Low class: falling (แม่ mɛ̂ɛ, mother).", "say": "ไม้เอก" },
         { "thai": "◌้", "translit": "mái thoo", "english": "tone mark 2", "note": "Mid and high class: falling tone (ข้าว khâao, rice). Low class: high (ม้า máa, horse).", "say": "ไม้โท" },
@@ -1194,7 +1195,7 @@
       "group": "Tones & Reading",
       "name": "Tone Rules",
       "description": "Tone = consonant class + live or dead syllable + tone mark. One example word per rule; its meaning is in the note.",
-      "about": "A shortcut for low-class letters: a tone mark gives the tone one step higher than on a mid-class letter. With ่ they're falling, not low; with ้ they're high, not falling. So ไม่ (not) is falling and ไม้ (wood) high, while ป่า (forest) is low and ป้า (aunt) falling.",
+      "about": "Live or dead? Try to hum the end. A syllable ending in a long vowel or in m, n, ng, y or w can be held, so it's live; one that stops short, on a short vowel or a k, p or t, is dead. Then two defaults: high-class letters with no mark rise (ขา, สี, หู), and dead syllables on mid- and high-class letters are low (กัด, ขับ). A shortcut for low-class letters: a tone mark gives the tone one step higher than on a mid-class letter. With ่ they're falling, not low; with ้ they're high, not falling. So ไม่ (not) is falling and ไม้ (wood) high, while ป่า (forest) is low and ป้า (aunt) falling.",
       "cards": [
         { "thai": "ตา", "translit": "taa", "english": "mid class, live syllable, no mark: mid tone", "note": "eye. Live = ends in a long vowel or in -m, -n, -ng, -i, -o." },
         { "thai": "ป่า", "translit": "pàa", "english": "mid class + tone mark 1: low tone", "note": "forest" },
@@ -1596,6 +1597,7 @@
       "category": "Grammar",
       "name": "Polite Particles (Deep Dive)",
       "description": "These tiny end-of-sentence words change tone, politeness, and gender. Skipping them sounds blunt; using them right = native-feeling speech.",
+      "about": "ค่ะ or คะ? The mark means telling. ค่ะ, with ่ and a falling tone, ends a statement or says yes. คะ, with no mark and a high tone, asks a question, and softens a request as นะคะ. Men use ครับ for both.",
       "cards": [
         { "thai": "ครับ", "translit": "khráp", "english": "polite particle (male)", "note": "Most-used polite ending for men. Statement or question, doesn't change." },
         { "thai": "ค่ะ", "translit": "khâ", "english": "polite particle (female, statement)", "note": "Falling tone. For declarative statements." },

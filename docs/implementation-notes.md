@@ -393,6 +393,12 @@ backup `decks.backup28.json`).
   - **Diphthongs & Special Vowels:**
     - each glide is two vowels run together;
     - อำ ไอ ใอ เอา have their ending built in (สระเกิน).
+- **Four more tricks** were added to the `about` paragraphs:
+  - **Tone Rules** (prepended): live or dead, "can you hum it?". Then the two defaults: high
+    class with no mark rises, and dead syllables on mid and high are low.
+  - **Tone Marks & Symbols** (appended): ๊ and ๋ only go on mid-class letters.
+  - **Days of the Week:** the same planets as French and Spanish, and the day colours.
+  - **Polite Particles:** ค่ะ vs คะ, "the mark means telling".
 - **"Same same"** (the user asked): เหมือน ๆ กัน (where the Thinglish comes from) and พอ ๆ กัน went
   into Doubled Words, and เหมือนแต่ไม่เหมือน ("same same but different") into Comparing.
 - **New `about` paragraphs:**
