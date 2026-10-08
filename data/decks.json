@@ -1283,6 +1283,75 @@
       ]
     },
     {
+      "id": "script-sound-pairs-g-kh",
+      "category": "Thai Script",
+      "group": "Sound Pairs",
+      "name": "Sound Pairs: g and kh, j and ch",
+      "description": "ก (g) and จ (j) are said with no puff of air; ข/ค (kh) and ช/ฉ (ch) with one. Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Same tone, same vowel: only the first sound differs. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "cards": [
+        { "thai": "ไก่", "translit": "gài", "english": "chicken", "note": "g, no puff. Compare ไข่ (kh) egg." },
+        { "thai": "ไข่", "translit": "khài", "english": "egg", "note": "kh, a puff of air. Compare ไก่ (g) chicken." },
+        { "thai": "กา", "translit": "gaa", "english": "crow / kettle", "note": "g. Compare คา (kh) stuck." },
+        { "thai": "คา", "translit": "khaa", "english": "stuck (in something)", "note": "kh. Compare กา (g) crow." },
+        { "thai": "กาง", "translit": "gaang", "english": "to spread out / open (an umbrella)", "note": "g. Compare คาง (kh) chin." },
+        { "thai": "คาง", "translit": "khaang", "english": "chin", "note": "kh. Compare กาง (g) to spread out." },
+        { "thai": "กัน", "translit": "gan", "english": "together / each other", "note": "g. Compare คัน (kh) itchy." },
+        { "thai": "คัน", "translit": "khan", "english": "itchy", "note": "kh. Compare กัน (g) each other." },
+        { "thai": "กว้าง", "translit": "gwâang", "english": "wide", "note": "g. Compare ขว้าง (kh) to hurl." },
+        { "thai": "ขว้าง", "translit": "khwâang", "english": "to hurl / throw hard", "note": "kh. Compare กว้าง (g) wide." },
+        { "thai": "จาน", "translit": "jaan", "english": "plate / dish", "note": "j, no puff. Compare ชาน (ch) porch." },
+        { "thai": "ชาน", "translit": "chaan", "english": "porch / platform", "note": "ch, a puff of air. Compare จาน (j) plate. ชานชาลา = station platform." },
+        { "thai": "จุด", "translit": "jùt", "english": "point / spot / to light", "note": "j. Compare ฉุด (ch) to drag." },
+        { "thai": "ฉุด", "translit": "chùt", "english": "to drag / haul", "note": "ch. Compare จุด (j) point." }
+      ]
+    },
+    {
+      "id": "script-sound-pairs-p-ph",
+      "category": "Thai Script",
+      "group": "Sound Pairs",
+      "name": "Sound Pairs: p and ph, t and th",
+      "description": "ป (p) and ต (t) are said with no puff of air; พ/ผ (ph) and ท/ถ (th) with one. Duck or spicy, close or wrong depend on it. Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Same tone, same vowel: only the first sound differs. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "cards": [
+        { "thai": "ปา", "translit": "paa", "english": "to throw", "note": "p, no puff. Compare พา (ph) to take someone along." },
+        { "thai": "พา", "translit": "phaa", "english": "to take (someone) / lead", "note": "ph, a puff of air. Compare ปา (p) to throw." },
+        { "thai": "เป็ด", "translit": "pèt", "english": "duck", "note": "p. Compare เผ็ด (ph) spicy." },
+        { "thai": "เผ็ด", "translit": "phèt", "english": "spicy", "note": "ph. Compare เป็ด (p) duck." },
+        { "thai": "ปิด", "translit": "pìt", "english": "to close / turn off", "note": "p. Compare ผิด (ph) wrong." },
+        { "thai": "ผิด", "translit": "phìt", "english": "wrong", "note": "ph. Compare ปิด (p) to close." },
+        { "thai": "ป้า", "translit": "pâa", "english": "aunt (older than your parent)", "note": "p. Compare ผ้า (ph) cloth." },
+        { "thai": "ผ้า", "translit": "phâa", "english": "cloth / fabric", "note": "ph. Compare ป้า (p) aunt." },
+        { "thai": "ตา", "translit": "taa", "english": "eye", "note": "t, no puff. Compare ทา (th) to apply." },
+        { "thai": "ทา", "translit": "thaa", "english": "to apply / spread on", "note": "th, a puff of air. Compare ตา (t) eye. ทาครีม = to put on cream." },
+        { "thai": "ไต", "translit": "tai", "english": "kidney", "note": "t. Compare ไทย (th) Thai." },
+        { "thai": "ไทย", "translit": "thai", "english": "Thai", "note": "th. Compare ไต (t) kidney." },
+        { "thai": "ตก", "translit": "tòk", "english": "to fall", "note": "t. Compare ถก (th) to discuss." },
+        { "thai": "ถก", "translit": "thòk", "english": "to debate / discuss", "note": "th. Compare ตก (t) to fall. Also to roll up (sleeves)." },
+        { "thai": "ตี", "translit": "tii", "english": "to strike, beat", "note": "t. Compare ที (th) time." },
+        { "thai": "ที", "translit": "thii", "english": "once (softener) / time", "note": "th. Compare ตี (t) to hit." }
+      ]
+    },
+    {
+      "id": "script-sound-pairs-b-p",
+      "category": "Thai Script",
+      "group": "Sound Pairs",
+      "name": "Sound Pairs: b and p, d and t",
+      "description": "ป and ต have no puff of air, so to English ears they sound like b and d. But บ and ด are true b and d, so crazy and aunt, good and hit are different words. Same tone, same vowel: only the first sound differs. For a pure listening test, use Recall with Settings → Show Thai script off.",
+      "cards": [
+        { "thai": "บ้า", "translit": "bâa", "english": "crazy / mad", "note": "b. Compare ป้า (p) aunt. Calling your aunt crazy is the classic slip." },
+        { "thai": "ป้า", "translit": "pâa", "english": "aunt (older than your parent)", "note": "p. Compare บ้า (b) crazy." },
+        { "thai": "ใบ", "translit": "bai", "english": "leaf / sheet", "note": "b. Compare ไป (p) to go. Also a classifier for flat things." },
+        { "thai": "ไป", "translit": "pai", "english": "to go", "note": "p. Compare ใบ (b) leaf." },
+        { "thai": "บ่า", "translit": "bàa", "english": "shoulder", "note": "b. Compare ป่า (p) forest. ไหล่ is more common for shoulder." },
+        { "thai": "ป่า", "translit": "pàa", "english": "forest", "note": "p. Compare บ่า (b) shoulder." },
+        { "thai": "บก", "translit": "bòk", "english": "land (not sea)", "note": "b. Compare ปก (p) cover. ทางบก = by land." },
+        { "thai": "ปก", "translit": "pòk", "english": "cover (of a book)", "note": "p. Compare บก (b) land." },
+        { "thai": "ดี", "translit": "dii", "english": "good", "note": "d. Compare ตี (t) to hit." },
+        { "thai": "ตี", "translit": "tii", "english": "to strike, beat", "note": "t. Compare ดี (d) good." },
+        { "thai": "ดำ", "translit": "dam", "english": "black", "note": "d. Compare ตำ (t) to pound." },
+        { "thai": "ตำ", "translit": "tam", "english": "to pound", "note": "t. Compare ดำ (d) black. As in ส้มตำ." }
+      ]
+    },
+    {
       "id": "classifiers",
       "category": "Grammar",
       "name": "Classifiers: People, Animals & Objects",

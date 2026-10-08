@@ -74,8 +74,9 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-08 there are 7355 cards in 414 topics across 25 categories (see Topic list order,
-  Topic splits, Verb topics, New topics, Business topics, More idioms and Tone Pairs, 2026-10-08).
+- As of 2026-10-08 there are 7397 cards in 417 topics across 25 categories (see Topic list order,
+  Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs and Sound Pairs,
+  2026-10-08).
 
 **Writing cards.** Match the existing style:
 
@@ -335,6 +336,18 @@ Home & Everyday Things; and Southern Idioms.
   - Phuket Hokkien words (โก่ปี้, กิ้ดเหล้ง) are marked as such.
 - **Audio uses the Central voice**, so the tones are Central, not Southern. Each deck description
   says so, and the user accepted this. Transliterations follow the Thai spelling.
+
+**Sound Pairs, 2026-10-08** (scratchpad `decks/sound_topics.py` + `decks/merge_sounds.py`, backup
+`decks.backup26.json`).
+- **What:** a Sound Pairs group in Thai Script after Tone Pairs: three topics, 42 cards, 15 new.
+  Each pair has the same tone and vowel, and only the first sound differs.
+  - **Sound Pairs: g and kh, j and ch:** ไก่ ไข่, กา คา, กาง คาง, กัน คัน, กว้าง ขว้าง, จาน ชาน, จุด ฉุด.
+  - **Sound Pairs: p and ph, t and th:** ปา พา, เป็ด เผ็ด, ปิด ผิด, ป้า ผ้า, ตา ทา, ไต ไทย, ตก ถก, ตี ที.
+  - **Sound Pairs: b and p, d and t:** บ้า ป้า, ใบ ไป, บ่า ป่า, บก ปก, ดี ตี, ดำ ตำ.
+- **Why the third topic:** ป and ต are unaspirated, so English ears hear them as b and d.
+- **Notes and descriptions:** notes name the sound and the partner ("p, no puff. Compare เผ็ด (ph)
+  spicy."). The descriptions give the hand-in-front-of-your-mouth test and suggest Recall with
+  Show Thai script off.
 
 **Tone Pairs, 2026-10-08** (scratchpad `decks/tone_topics.py` + `decks/merge_tones.py`, backup
 `decks.backup24.json`).
