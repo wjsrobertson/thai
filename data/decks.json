@@ -1858,7 +1858,8 @@
         { "thai": "ไม่เท่ากัน", "translit": "mâi thâo-gan", "english": "unequal / not the same amount" },
         { "thai": "เหมือนกัน", "translit": "mʉ̌an gan", "english": "the same / alike" },
         { "thai": "ต่างกัน", "translit": "tàang gan", "english": "different (from each other)" },
-        { "thai": "ยิ่ง...ยิ่ง", "translit": "yîng...yîng", "english": "the more … the more …", "note": "ยิ่งเร็วยิ่งดี = the sooner the better." }
+        { "thai": "ยิ่ง...ยิ่ง", "translit": "yîng...yîng", "english": "the more … the more …", "note": "ยิ่งเร็วยิ่งดี = the sooner the better." },
+        { "thai": "ยังกับ", "translit": "yang gàp", "english": "just like (casual, exaggerating)", "note": "โง่ยังกับควาย = as thick as a buffalo. Also said ยังกะ." }
       ]
     },
     {
@@ -1968,6 +1969,207 @@
         { "thai": "การศึกษา", "translit": "gaan-sʉ̀k-sǎa", "english": "education", "note": "ศึกษา = to study (formal)." },
         { "thai": "การเมือง", "translit": "gaan-mʉang", "english": "politics", "note": "Lit. \"affairs of the city\": a fixed noun." },
         { "thai": "การบ้าน", "translit": "gaan-bâan", "english": "homework", "note": "Lit. \"house work\": a fixed noun." }
+      ]
+    },
+    {
+      "id": "grammar-wb-people",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: People",
+      "description": "ผู้ (one who), ชาว (people of), คน (person) and หมอ (doctor, expert) + a word make words for people.",
+      "cards": [
+        { "thai": "ผู้ใหญ่", "translit": "phûu-yài", "english": "elders, senior people", "note": "Lit. \"big one\": adults, and the seniors you defer to." },
+        { "thai": "ผู้ชาย", "translit": "phûu-chaai", "english": "man", "note": "Lit. \"male one\"." },
+        { "thai": "ผู้หญิง", "translit": "phûu-yǐng", "english": "woman", "note": "Lit. \"female one\"." },
+        { "thai": "ผู้จัดการ", "translit": "phûu-jàt-gaan", "english": "manager", "note": "จัดการ = to manage." },
+        { "thai": "ผู้ป่วย", "translit": "phûu-pùai", "english": "patient (formal)", "note": "ป่วย = sick." },
+        { "thai": "ผู้โดยสาร", "translit": "phûu-dooi-sǎan", "english": "passenger", "note": "โดยสาร = to ride along." },
+        { "thai": "ผู้สมัคร", "translit": "phûu-sà-màk", "english": "candidate", "note": "สมัคร = to apply. Also a job applicant." },
+        { "thai": "ชาวนา", "translit": "chaao-naa", "english": "rice farmer", "note": "Lit. \"field people\"." },
+        { "thai": "ชาวบ้าน", "translit": "chaao-bâan", "english": "villagers / ordinary people", "note": "Lit. \"home people\"." },
+        { "thai": "ชาวต่างชาติ", "translit": "chaao-tàang-châat", "english": "foreigner", "note": "Lit. \"other-nation people\"." },
+        { "thai": "ชาวประมง", "translit": "chaao-prà-mong", "english": "fisherman", "note": "ประมง = fishing." },
+        { "thai": "คนขับ", "translit": "khon-khàp", "english": "driver", "note": "ขับ = to drive." },
+        { "thai": "คนไทย", "translit": "khon-thai", "english": "Thai person" },
+        { "thai": "คนรัก", "translit": "khon-rák", "english": "loved one / sweetheart", "note": "Lit. \"love person\"." },
+        { "thai": "หมอฟัน", "translit": "mɔ̌ɔ-fan", "english": "dentist", "note": "Lit. \"teeth doctor\"." },
+        { "thai": "หมอดู", "translit": "mɔ̌ɔ-duu", "english": "fortune-teller", "note": "Lit. \"seeing doctor\"." },
+        { "thai": "หมอนวด", "translit": "mɔ̌ɔ-nûat", "english": "masseur, masseuse", "note": "Lit. \"massage doctor\"." }
+      ]
+    },
+    {
+      "id": "grammar-wb-places",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: Places",
+      "description": "โรง (building), ร้าน (shop), ห้อง (room), ที่ (place for) and สนาม (field) + a word make places.",
+      "cards": [
+        { "thai": "โรงเรียน", "translit": "roong-rian", "english": "school", "note": "Lit. \"study building\"." },
+        { "thai": "โรงพยาบาล", "translit": "roong-phá-yaa-baan", "english": "hospital", "note": "Lit. \"nursing building\"." },
+        { "thai": "โรงแรม", "translit": "roong-rɛɛm", "english": "hotel", "note": "Lit. \"lodging building\"." },
+        { "thai": "โรงงาน", "translit": "roong-ngaan", "english": "factory", "note": "Lit. \"work building\"." },
+        { "thai": "โรงหนัง", "translit": "roong-nǎng", "english": "cinema", "note": "Lit. \"film building\"." },
+        { "thai": "ร้านอาหาร", "translit": "ráan-aa-hǎan", "english": "restaurant", "note": "Lit. \"food shop\"." },
+        { "thai": "ร้านขายยา", "translit": "ráan-khǎai-yaa", "english": "pharmacy", "note": "Lit. \"medicine-selling shop\"." },
+        { "thai": "ร้านกาแฟ", "translit": "ráan-gaa-fɛɛ", "english": "café", "note": "Lit. \"coffee shop\"." },
+        { "thai": "ห้องนอน", "translit": "hɔ̂ng-nɔɔn", "english": "bedroom", "note": "Lit. \"sleeping room\"." },
+        { "thai": "ห้องสมุด", "translit": "hɔ̂ng-sà-mùt", "english": "library", "note": "Lit. \"notebook room\"." },
+        { "thai": "ห้องครัว", "translit": "hɔ̂ng-khrua", "english": "kitchen", "note": "ครัว = kitchen." },
+        { "thai": "ที่จอดรถ", "translit": "thîi-jɔ̀ɔt-rót", "english": "parking space / carport", "note": "Lit. \"place to park cars\"." },
+        { "thai": "ที่อยู่", "translit": "thîi-yùu", "english": "address", "note": "Lit. \"place you live\"." },
+        { "thai": "สนามบิน", "translit": "sà-nǎam-bin", "english": "airport", "note": "Lit. \"flying field\"." },
+        { "thai": "สนามกีฬา", "translit": "sà-nǎam-gii-laa", "english": "stadium", "note": "Lit. \"sports field\"." },
+        { "thai": "สถานีรถไฟ", "translit": "sà-thǎa-nii rót-fai", "english": "railway station", "note": "สถานี = station." },
+        { "thai": "ตลาดนัด", "translit": "tà-làat-nát", "english": "weekend / flea market", "note": "Lit. \"appointment market\": it meets on set days." }
+      ]
+    },
+    {
+      "id": "grammar-wb-things",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: Things",
+      "description": "เครื่อง (machine, gear), ที่ (thing for), ตู้ (cupboard, box), รถ (vehicle) and ผ้า (cloth) + a word make everyday things.",
+      "cards": [
+        { "thai": "เครื่องบิน", "translit": "khrʉ̂ang-bin", "english": "airplane", "note": "Lit. \"flying machine\"." },
+        { "thai": "เครื่องซักผ้า", "translit": "khrʉ̂ang-sák-phâa", "english": "washing machine", "note": "Lit. \"cloth-washing machine\"." },
+        { "thai": "เครื่องดื่ม", "translit": "khrʉ̂ang-dʉ̀ʉm", "english": "drinks", "note": "Lit. \"drinking things\"." },
+        { "thai": "เครื่องมือ", "translit": "khrʉ̂ang-mʉʉ", "english": "tools", "note": "Lit. \"hand gear\"." },
+        { "thai": "เครื่องปรับอากาศ", "translit": "khrʉ̂ang-pràp-aa-gàat", "english": "air conditioner (formal)", "note": "Lit. \"air-adjusting machine\". Day to day: แอร์." },
+        { "thai": "ที่เปิดขวด", "translit": "thîi-pə̀ət-khùat", "english": "bottle opener", "note": "Lit. \"thing for opening bottles\"." },
+        { "thai": "ที่ชาร์จ", "translit": "thîi-cháat", "english": "charger", "note": "Lit. \"thing for charging\"." },
+        { "thai": "ที่เขี่ยบุหรี่", "translit": "thîi-khìa-bù-rìi", "english": "ashtray", "note": "Lit. \"thing for flicking cigarettes\"." },
+        { "thai": "ตู้เย็น", "translit": "tûu-yen", "english": "refrigerator", "note": "Lit. \"cold cupboard\"." },
+        { "thai": "ตู้เสื้อผ้า", "translit": "tûu-sʉ̂a-phâa", "english": "wardrobe", "note": "Lit. \"clothes cupboard\"." },
+        { "thai": "ตู้เอทีเอ็ม", "translit": "tûu ee-thii-em", "english": "ATM", "note": "Lit. \"ATM box\"." },
+        { "thai": "รถไฟ", "translit": "rót-fai", "english": "train", "note": "Lit. \"fire vehicle\", from the steam days." },
+        { "thai": "รถเมล์", "translit": "rót-mee", "english": "bus (city)", "note": "Lit. \"mail vehicle\": early buses carried the post." },
+        { "thai": "รถยนต์", "translit": "rót-yon", "english": "automobile (formal)", "note": "Lit. \"engine vehicle\". Day to day: รถ." },
+        { "thai": "รถเข็น", "translit": "rót-khěn", "english": "cart; wheelchair", "note": "Lit. \"push vehicle\"." },
+        { "thai": "ผ้าเช็ดตัว", "translit": "phâa-chét-tua", "english": "bath towel", "note": "Lit. \"cloth for wiping the body\"." },
+        { "thai": "ผ้าห่ม", "translit": "phâa-hòm", "english": "blanket", "note": "Lit. \"cloth to wrap up in\"." }
+      ]
+    },
+    {
+      "id": "grammar-wb-naa",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: น่า Words",
+      "description": "น่า + a verb = worth …-ing, like English -able: น่ารัก = lovable, cute. One of the most used patterns in everyday Thai.",
+      "cards": [
+        { "thai": "น่ารัก", "translit": "nâa-rák", "english": "cute / lovely", "note": "Lit. \"worth loving\"." },
+        { "thai": "น่ากิน", "translit": "nâa-gin", "english": "appetising / looks tasty", "note": "Lit. \"worth eating\"." },
+        { "thai": "น่าเบื่อ", "translit": "nâa-bʉ̀a", "english": "boring", "note": "Lit. \"worth being bored by\"." },
+        { "thai": "น่ากลัว", "translit": "nâa-glua", "english": "scary", "note": "Lit. \"worth fearing\"." },
+        { "thai": "น่าสนใจ", "translit": "nâa-sǒn-jai", "english": "interesting", "note": "Lit. \"worth paying attention to\"." },
+        { "thai": "น่าเกลียด", "translit": "nâa-glìat", "english": "ugly", "note": "Lit. \"worth hating\"." },
+        { "thai": "น่าอยู่", "translit": "nâa-yùu", "english": "nice to live in", "note": "Lit. \"worth living in\"." },
+        { "thai": "น่าเชื่อ", "translit": "nâa-chʉ̂a", "english": "believable", "note": "ไม่น่าเชื่อ = unbelievable." },
+        { "thai": "น่าสงสาร", "translit": "nâa-sǒng-sǎan", "english": "pitiful / poor thing", "note": "Lit. \"worth pitying\"." },
+        { "thai": "น่าอาย", "translit": "nâa-aai", "english": "embarrassing", "note": "Lit. \"worth being ashamed of\"." },
+        { "thai": "น่าตื่นเต้น", "translit": "nâa-tʉ̀ʉn-tên", "english": "exciting", "note": "ตื่นเต้น = excited." },
+        { "thai": "น่าดู", "translit": "nâa-duu", "english": "worth seeing", "note": "Lit. \"worth looking at\"." },
+        { "thai": "น่าลอง", "translit": "nâa-lɔɔng", "english": "worth trying" },
+        { "thai": "น่ารำคาญ", "translit": "nâa-ram-khaan", "english": "annoying", "note": "รำคาญ = annoyed." },
+        { "thai": "น่าเสียดาย", "translit": "nâa-sǐa-daai", "english": "what a shame", "note": "Lit. \"worth regretting\"." },
+        { "thai": "น่าจะ", "translit": "nâa-jà", "english": "probably / should", "note": "น่าจะฝนตก = it'll probably rain." }
+      ]
+    },
+    {
+      "id": "grammar-wb-paired",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: Paired Words",
+      "description": "Paired words (คำซ้อน): two words of similar meaning joined into one, a very Thai habit. The note gives each half.",
+      "cards": [
+        { "thai": "เสื้อผ้า", "translit": "sʉ̂a-phâa", "english": "clothing / clothes", "note": "เสื้อ (shirt) + ผ้า (cloth)." },
+        { "thai": "บ้านช่อง", "translit": "bâan-chɔ̂ng", "english": "home / house", "note": "บ้าน (house) + ช่อง (compartment)." },
+        { "thai": "ถ้วยชาม", "translit": "thûai-chaam", "english": "dishes / crockery", "note": "ถ้วย (cup) + ชาม (bowl)." },
+        { "thai": "ญาติพี่น้อง", "translit": "yâat-phîi-nɔ́ɔng", "english": "relatives", "note": "ญาติ (relative) + พี่น้อง (siblings)." },
+        { "thai": "เจ็บไข้ได้ป่วย", "translit": "jèp-khâi-dâai-pùai", "english": "to fall ill", "note": "เจ็บ (hurt) + ไข้ (fever) + ได้ป่วย (get sick)." },
+        { "thai": "ข้าวปลาอาหาร", "translit": "khâao-plaa-aa-hǎan", "english": "food", "note": "ข้าว (rice) + ปลา (fish) + อาหาร (food)." },
+        { "thai": "บ้านเมือง", "translit": "bâan-mʉang", "english": "the country / the nation", "note": "บ้าน (house) + เมือง (town)." },
+        { "thai": "เงินทอง", "translit": "ngən-thɔɔng", "english": "money / wealth", "note": "เงิน (silver) + ทอง (gold)." },
+        { "thai": "ทรัพย์สิน", "translit": "sáp-sǐn", "english": "property / assets", "note": "ทรัพย์ + สิน: both mean wealth." },
+        { "thai": "ดูแล", "translit": "duu-lɛɛ", "english": "to look after", "note": "ดู + แล: both mean to look." },
+        { "thai": "เพื่อนฝูง", "translit": "phʉ̂an-fǔung", "english": "friends / your crowd", "note": "เพื่อน (friend) + ฝูง (flock)." },
+        { "thai": "หน้าตา", "translit": "nâa-taa", "english": "looks, appearance", "note": "หน้า (face) + ตา (eyes)." },
+        { "thai": "ใจคอ", "translit": "jai-khɔɔ", "english": "temperament / heart", "note": "ใจ (heart) + คอ (neck). ใจคอไม่ดี = feeling uneasy." },
+        { "thai": "เก็บกวาด", "translit": "gèp-gwàat", "english": "to tidy up", "note": "เก็บ (put away) + กวาด (sweep)." },
+        { "thai": "ซื่อสัตย์", "translit": "sʉ̂ʉ-sàt", "english": "honest", "note": "ซื่อ (straight) + สัตย์ (truthful)." },
+        { "thai": "ว่องไว", "translit": "wɔ̂ng-wai", "english": "nimble / quick", "note": "ว่อง + ไว: both mean quick." }
+      ]
+    },
+    {
+      "id": "grammar-wb-opposites",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: Opposite Pairs",
+      "description": "Two opposites joined into one word, often for the whole range between them: ซื้อขาย (buy-sell) = trade.",
+      "cards": [
+        { "thai": "ซื้อขาย", "translit": "sʉ́ʉ-khǎai", "english": "to trade (buy and sell)", "note": "ซื้อ (buy) + ขาย (sell)." },
+        { "thai": "ขึ้นลง", "translit": "khʉ̂n-long", "english": "ups and downs / to go up and down", "note": "ขึ้น (up) + ลง (down)." },
+        { "thai": "ไปมา", "translit": "pai-maa", "english": "back and forth / coming and going", "note": "ไป (go) + มา (come)." },
+        { "thai": "ผิดชอบ", "translit": "phìt-chɔ̂ɔp", "english": "right and wrong", "note": "ผิด (wrong) + ชอบ (right, in the old sense). รับผิดชอบ = to be responsible." },
+        { "thai": "ได้เสีย", "translit": "dâai-sǐa", "english": "gains and losses / what's at stake", "note": "ได้ (gain) + เสีย (lose)." },
+        { "thai": "เข้าออก", "translit": "khâo-ɔ̀ɔk", "english": "in and out", "note": "เข้า (enter) + ออก (exit)." },
+        { "thai": "ดีชั่ว", "translit": "dii-chûa", "english": "good and evil", "note": "ดี (good) + ชั่ว (bad)." },
+        { "thai": "เป็นตาย", "translit": "pen-taai", "english": "life and death", "note": "เป็น (alive) + ตาย (dead)." },
+        { "thai": "ขาวดำ", "translit": "khǎao-dam", "english": "black and white", "note": "ขาว (white) + ดำ (black): the other way round from English." },
+        { "thai": "เท็จจริง", "translit": "thét-jing", "english": "true or false", "note": "เท็จ (false) + จริง (true). ข้อเท็จจริง = the facts." },
+        { "thai": "เปิดปิด", "translit": "pə̀ət-pìt", "english": "on / off (a switch)", "note": "เปิด (open) + ปิด (close)." },
+        { "thai": "ถามตอบ", "translit": "thǎam-tɔ̀ɔp", "english": "questions and answers", "note": "ถาม (ask) + ตอบ (answer)." },
+        { "thai": "ใกล้ไกล", "translit": "glâi-glai", "english": "near and far", "note": "ใกล้ (near) + ไกล (far)." },
+        { "thai": "แพ้ชนะ", "translit": "phɛ́ɛ-chá-ná", "english": "win or lose", "note": "แพ้ (lose) + ชนะ (win)." },
+        { "thai": "สุขทุกข์", "translit": "sùk-thúk", "english": "joys and sorrows", "note": "สุข (happiness) + ทุกข์ (suffering)." }
+      ]
+    },
+    {
+      "id": "grammar-wb-doubled",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: Doubled Words",
+      "description": "ๆ (ไม้ยมก) repeats the word before it. Doubling softens or stresses an adjective, makes a noun plural, or turns a word into \"-ly\".",
+      "cards": [
+        { "thai": "ช้า ๆ", "translit": "cháa cháa", "english": "slowly / take it slow" },
+        { "thai": "ดี ๆ", "translit": "dii dii", "english": "properly / nicely", "note": "พูดดี ๆ = speak nicely." },
+        { "thai": "เด็ก ๆ", "translit": "dèk dèk", "english": "the kids", "note": "A doubled noun can be plural." },
+        { "thai": "เพื่อน ๆ", "translit": "phʉ̂an phʉ̂an", "english": "friends (all of them)" },
+        { "thai": "บ่อย ๆ", "translit": "bɔ̀i bɔ̀i", "english": "often / again and again" },
+        { "thai": "เร็ว ๆ", "translit": "reo reo", "english": "quickly / hurry up" },
+        { "thai": "เบา ๆ", "translit": "bao bao", "english": "gently / quietly" },
+        { "thai": "ค่อย ๆ", "translit": "khɔ̂i khɔ̂i", "english": "gradually / bit by bit" },
+        { "thai": "ใกล้ ๆ", "translit": "glâi glâi", "english": "nearby" },
+        { "thai": "จริง ๆ", "translit": "jing jing", "english": "really / truly" },
+        { "thai": "ง่าย ๆ", "translit": "ngâai ngâai", "english": "simple / easily" },
+        { "thai": "เฉย ๆ", "translit": "chə̌əi chə̌əi", "english": "just (nothing special) / so-so", "note": "ถามเฉย ๆ = just asking." },
+        { "thai": "ดัง ๆ", "translit": "dang dang", "english": "loudly" },
+        { "thai": "นาน ๆ ที", "translit": "naan naan thii", "english": "once in a while", "note": "Lit. \"long-long time\"." },
+        { "thai": "ไป ๆ มา ๆ", "translit": "pai pai maa maa", "english": "in the end / after all that", "note": "Lit. \"going-going, coming-coming\"." }
+      ]
+    },
+    {
+      "id": "grammar-wb-formal",
+      "category": "Grammar",
+      "group": "Word Building",
+      "name": "Word Building: Formal Endings",
+      "description": "Endings from Sanskrit and Pali build formal and academic words: ศาสตร์ and วิทยา (-ology, science), ภาพ (state of), กรรม (an activity), กร (a person who does it).",
+      "cards": [
+        { "thai": "วิทยาศาสตร์", "translit": "wít-thá-yaa-sàat", "english": "science", "note": "วิทยา (knowledge) + ศาสตร์ (science)." },
+        { "thai": "เศรษฐศาสตร์", "translit": "sèet-thà-sàat", "english": "economics", "note": "ศาสตร์ = science." },
+        { "thai": "ประวัติศาสตร์", "translit": "prà-wàt-tì-sàat", "english": "history", "note": "ประวัติ = history, record." },
+        { "thai": "ดาราศาสตร์", "translit": "daa-raa-sàat", "english": "astronomy", "note": "ดารา = star." },
+        { "thai": "คณิตศาสตร์", "translit": "khá-nít-sàat", "english": "mathematics", "note": "คณิต = calculation." },
+        { "thai": "ชีววิทยา", "translit": "chii-wá-wít-thá-yaa", "english": "biology", "note": "ชีว = life." },
+        { "thai": "จิตวิทยา", "translit": "jìt-tà-wít-thá-yaa", "english": "psychology", "note": "จิต = mind." },
+        { "thai": "สุขภาพ", "translit": "sùk-khà-phâap", "english": "health", "note": "สุข (well) + ภาพ (state)." },
+        { "thai": "อิสรภาพ", "translit": "ìt-sà-rà-phâap", "english": "freedom", "note": "อิสระ (free) + ภาพ." },
+        { "thai": "สันติภาพ", "translit": "sǎn-tì-phâap", "english": "peace", "note": "สันติ (calm) + ภาพ." },
+        { "thai": "คุณภาพ", "translit": "khun-ná-phâap", "english": "quality", "note": "คุณ (merit) + ภาพ." },
+        { "thai": "อุตสาหกรรม", "translit": "ùt-sǎa-hà-gam", "english": "industry", "note": "กรรม = an activity." },
+        { "thai": "เกษตรกรรม", "translit": "gà-sèet-trà-gam", "english": "agriculture", "note": "เกษตร (farming) + กรรม." },
+        { "thai": "ศัลยกรรม", "translit": "sǎn-lá-yá-gam", "english": "surgery (department)", "note": "ศัลย (a dart, surgery) + กรรม (activity). ศัลยกรรมความงาม = cosmetic surgery." },
+        { "thai": "เกษตรกร", "translit": "gà-sèet-trà-gɔɔn", "english": "farmer", "note": "กร = one who does it." },
+        { "thai": "วิศวกร", "translit": "wít-sà-wá-gɔɔn", "english": "engineer", "note": "วิศว (engineering) + กร." }
       ]
     },
     {
@@ -2804,7 +3006,8 @@
         { "thai": "ชิ", "translit": "chí", "english": "tsk! / pfft" },
         { "thai": "จุ๊ๆ", "translit": "jú-jú", "english": "shh!" },
         { "thai": "เอ้า", "translit": "âo", "english": "here! / come on then / well then" },
-        { "thai": "นั่นไง", "translit": "nân-ngai", "english": "there you go! / see!" }
+        { "thai": "นั่นไง", "translit": "nân-ngai", "english": "there you go! / see!" },
+        { "thai": "แบบว่า", "translit": "bɛ̀ɛp wâa", "english": "like, you know… (filler)", "note": "Buys time, like English \"like…\": แบบว่า… ไม่รู้จะพูดยังไง = like… I don't know how to put it." }
       ]
     },
     {

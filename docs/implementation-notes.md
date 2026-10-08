@@ -74,7 +74,7 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-08 there are 7501 cards in 423 topics across 25 categories (see Topic list order,
+- As of 2026-10-08 there are 7632 cards in 431 topics across 25 categories (see Topic list order,
   Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs, Sound Pairs,
   Thai school mnemonics and Learning tricks, 2026-10-08).
 
@@ -350,6 +350,21 @@ backup `decks.backup28.json`).
   - **Word Building: ลูก & นัก:** ลูกตา, ลูกค้า; นักเรียน, นักข่าว, …
   - **Word Building: ความ & การ:** ความสุข, ความรู้; การเรียน, การเดินทาง, and the fixed
     การเมือง, การบ้าน.
+- **Eight more Word Building topics the same day** (scratchpad `decks/wordbuild_topics.py` +
+  `decks/merge_wordbuild.py`, backup `decks.backup29.json`; 129 cards, 67 new). The user found word
+  building the most interesting part.
+  - **People:** ผู้, ชาว, คน, หมอ. **Places:** โรง, ร้าน, ห้อง, ที่, สนาม. **Things:** เครื่อง, ที่,
+    ตู้, รถ, ผ้า.
+  - **น่า Words:** น่า + verb = worth …-ing.
+  - **Paired Words:** คำซ้อน, two near-synonyms. The note gives each half.
+  - **Opposite Pairs:** ซื้อขาย, ขึ้นลง, ผิดชอบ, …
+  - **Doubled Words:** ๆ, softening, stressing or making plural.
+  - **Formal Endings:** ศาสตร์, วิทยา, ภาพ, กรรม, กร.
+  - 21 drafts reused existing cards with the same meaning, e.g. ตู้เย็น "refrigerator" and
+    เครื่องบิน "airplane".
+- **Two "like" words** were added after the user asked how to say "like": ยังกับ "just like
+  (casual, exaggerating)" in Comparing, and the filler แบบว่า in Interjections: Ouch, Hmm & Ugh.
+  เหมือน, เหมือนกับ, แบบ and เช่น already existed.
 - **New `about` paragraphs:**
   - **Short & Long Vowels:** the five vowels written first but said after (เ แ โ ไ ใ).
   - **Tone Rules:** low-class marks give a tone one step higher than on mid-class letters.
