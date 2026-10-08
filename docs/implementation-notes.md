@@ -1381,6 +1381,22 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
     - Mathematics and Science: classroom-style stories, one target topic each. That way the topic's
       own sense wins for words like จุด, ส่วน, นิ้ว, หัว, ราก, งาน and แก๊ส.
   - **Every one of the 438 topics now has at least 2 stories** (`coverage.py`: 0 short).
+  - **Batch 5: to 5 stories a topic** (the user's call, 2026-10-08). The new stories should use
+    words no story had yet.
+    - **Each story serves 2–5 related topics**, with at least 2 words from each, so 902 topic slots
+      take about 300 stories, not 900. Examples: Hospital + Costs + Medicine labels; letters from
+      all four consonant classes in one story; all four idiom topics in one.
+    - **Tools** (scratchpad `decks/`):
+      - `plan5.py [--decks PATH] <category…>`: each topic under 5, with its words no story uses
+        (NEW) and, if those run short, the used ones.
+      - `build_reading.py --out trial.json`: a trial build, so coverage can be checked without
+        touching decks.json (which a running browser test reads).
+      - `dupcheck.py <module…>`: new story names and ids that clash with decks.json. Batch 5
+        reused eight names (The Night Shift, Gossip, The Speech…) before this was added.
+    - **Half 1** (2026-10-08): 159 stories (873 in all), for every category from Basics to
+      Getting Around; every topic there has at least 5.
+    - **Half 2:** Work & Education, Health, Nature & Animals, Sport & Leisure, Music, News &
+      Politics, Crime & Law, Mathematics and Science (418 slots).
     - Audit: 0 errors. All 404 batch 1–3 stories opened from a matching topic in the browser
       test, each sentence with its sample.
 
