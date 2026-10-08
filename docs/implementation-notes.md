@@ -1259,7 +1259,8 @@ The other ten passages:
     - **Matching** is automatic: a story qualifies if it uses at least `READING_MIN_MATCH` (2) of
       the words. Very common words (`READING_COMMON`: particles, pronouns, ไป มา มี เป็น ของ ไม่ …)
       don't count, or "Spoken 1–20" would match every story.
-    - **Order:** most matched words first, then the easier level.
+    - **Order:** most matched words first, then alphabetical by title (since 2026-10-08, the user's
+      call; it was the easier level).
     - **Each story** shows its title and description, then on the right a ✓ once opened (prefs
       `readingDone`) and its level, flush right (moved there from beside the title at the user's
       request). The matched words were shown as chips at first; the user had them removed.
@@ -1270,7 +1271,12 @@ The other ten passages:
       Greetings & Politeness found none: its stories share just one greeting each once ครับ/ค่ะ
       don't count. That's the case manual picks could fix if needed.
   - **Changing topic** on the Reading page returns to the list (`selectDeck`).
-  - **A passage** has "‹ Stories", its title and description, and the reader. It had a "Words in
+  - **A passage** has "Back to Stories" (a line ← icon, drawn like the other button icons; it was
+    "‹ Stories"), its title and description, and the reader.
+    - **Back to Stories sits in the controls bar** (`.reading-only`, hidden unless a story is
+      open). On desktop it's at the right end, where Topics has Read all: same top and height
+      (31px), and the same right edge once you allow for Topics' scrollbar. On the phone the bar
+      wraps, so it's on its own row under the topic button. It had a "Words in
     this passage (N)" list (add each to Flashcards, play) and Add all to Flashcards; the user had
     both removed, since the Topics page does that.
   - It remembers the open passage while the app's open (`state.readingId`). The app still starts
@@ -1287,15 +1293,20 @@ The other ten passages:
   - each word is a tap target (`.rw`). It plays the word, lights it, and shows a pop-up
     (`#reader-pop`) with its transliteration and meaning, centred under it and kept inside the
     box. A tap elsewhere, a resize, or a toggle closes it.
-  - **Show:** Transliteration and English toggles add those lines under each sentence. They start
-    off (the point is to read the script) and are remembered (prefs `readerTranslit`,
-    `readerEnglish`).
-- **The words** are cards like any others: added from the passage page, they're studied in
-  Flashcards (on Everything) in any direction.
+  - **Show:** Transliteration and English toggles add those lines under each sentence. Spaces
+    between words (2026-10-08, the user's request) puts a space between the Thai words, as
+    written ones have none. They all start off (the point is to read the script as written) and
+    are remembered (prefs `readerTranslit`, `readerEnglish`, `readerSpaces`).
+    - **How the spaces work:** `renderReader` puts a hidden `.rw-gap` space between the
+      `|`-joined words of a run, and `.reader.show-spaces` shows them. A real space in the text is
+      always there, and a word's own space (`_`, as in จริง ๆ) stays inside the word. An idiom
+      card stays one block.
+- **The words** are cards like any others, studied in Flashcards (on Everything) in any
+  direction. The passage page no longer adds them (the user's call): that's done from Topics.
 - **Tested:** all ten passages render at 320 px with no overflow, every sentence has its
   recording, and the tap, pop-up, toggles, play and press-to-stop all work, with no errors.
 
-## Stories for every topic (2026-10-08, in progress)
+## Stories for every topic (2026-10-08)
 
 The user asked for two or three stories for every topic ("don't hold back with the slang topics… we
 want real use"; letter topics creatively, e.g. the letter names). Written by me in batches of about
@@ -1303,7 +1314,7 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
 
 - **Source files** (scratchpad `decks/`):
   - `stories_more.py` gathers the batch modules (`stories_basics.py`, `stories_conv.py`,
-    `stories_script.py`, `stories_b2_*.py`, `stories_b3_*.py`).
+    `stories_script.py`, `stories_b2_*.py`, `stories_b3_*.py`, `stories_b4_*.py`).
   - Each story is `(id, level, name, description, lines, extra)`. Ids are `rs-…`; level is Easy or
     Medium.
   - Each batch has a `NEW` dict of words the app lacks. New words are shared across batches, but
@@ -1332,6 +1343,13 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
      stories that had been getting the wrong sense (Grandma's Southern Kitchen; Loy Krathong).
      A word with a different sense in just one story gets that story's own `new` (แฟนมวย "boxing
      fan", not boyfriend).
+     - Later fixes of the same kind: ยก had only the boxing "round", so "lift, carry" became a
+       shared card, and Fight Night keeps "round" with a pick. พัน "to wrap" (not "thousand") is
+       in one story's `new`.
+     - **A shared new word beats the target topic's own card.** A story that needs the topic's
+       sense back needs a `pick`.
+  5. **Check story names and ids are unique** across every batch module before writing. Batch 4
+     reused The Interview (and its id) and The Rainbow; the audit catches it too.
   - It also sorts the Reading topics by level, since the audit wants each group contiguous.
 - **`coverage.py <category…>`** lists each topic's story count (as `storiesFor` counts) and the
   topics still short of 2.
@@ -1355,9 +1373,16 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
     - The two orphan stories now match a topic. The Mango Tree gets banana and coconut, so it
       matches Fruit. A Text from a Friend uses the Plans & Invitations phrases (ว่างไหม,
       ไปกินข้าวกันไหม, เจอกันที่ไหน…).
-  - **Still short (157 topics):** Work & Education, Health & Medicine, Nature & Animals, Sport &
-    Leisure, Music, News & Politics, Crime & Law (where the gangster and drug-dealer stories go),
-    Mathematics and Science.
+  - **Batch 4:** 310 stories (now 714 in all) for the last 157 topics:
+    - Work & Education, Health & Medicine, Nature & Animals, Sport & Leisure, Music and News &
+      Politics.
+    - Crime & Law: real use, such as The Dealer, The Godfather, Gang War, The Hit, The Street
+      Gang and Nabbed (the crime slang).
+    - Mathematics and Science: classroom-style stories, one target topic each. That way the topic's
+      own sense wins for words like จุด, ส่วน, นิ้ว, หัว, ราก, งาน and แก๊ส.
+  - **Every one of the 438 topics now has at least 2 stories** (`coverage.py`: 0 short).
+    - Audit: 0 errors. All 404 batch 1–3 stories opened from a matching topic in the browser
+      test, each sentence with its sample.
 
 ## Speaker icon (2026-10-08)
 

@@ -108,6 +108,7 @@ const els = {
   readerPop: document.getElementById('reader-pop'),
   readerTranslit: document.getElementById('reader-translit'),
   readerEnglish: document.getElementById('reader-english'),
+  readerSpaces: document.getElementById('reader-spaces'),
   backupExport: document.getElementById('backup-export'),
   backupLoad: document.getElementById('backup-load'),
   backupFile: document.getElementById('backup-file'),
@@ -2648,6 +2649,7 @@ function renderReading() {
   const topic = state.readingId ? state.decks.find((d) => d.id === state.readingId && d.passage) : null;
   els.readingLibrary.hidden = !!topic;
   els.readingPassage.hidden = !topic;
+  els.readingBack.hidden = !topic;
   if (!topic) {
     renderReadingList();
     return;
@@ -2698,7 +2700,8 @@ function renderReadingList() {
 
 // Which stories go with a topic (or a group or category, their words pooled): those using at least
 // READING_MIN_MATCH of its words, not counting very common ones, which would tie every story to
-// every topic (READING_COMMON). Most matched words first, then the easier level. Automatic for now;
+// every topic (READING_COMMON). Most matched words first, then by title (the user's call, 2026-10-08;
+// it was the easier level). Automatic for now;
 // stories could be tagged by hand later if this picks oddly.
 const READING_MIN_MATCH = 2;
 const READING_COMMON = new Set(('ไป มา มี เป็น อยู่ ได้ ให้ ทำ ของ ที่ ไม่ ใน กับ และ แต่ แล้ว จะ ก็ นะ ครับ ค่ะ คะ จ้ะ '
@@ -2706,14 +2709,13 @@ const READING_COMMON = new Set(('ไป มา มี เป็น อยู่ 
 
 function storiesFor(scope) {
   const words = new Set(scope.cards.map((c) => c.thai).filter((w) => !READING_COMMON.has(w)));
-  const levels = [...new Set(state.decks.filter((d) => d.passage).map((d) => d.group))];
   const found = [];
   for (const d of state.decks) {
     if (!d.passage) continue;
     const hits = [...new Set(d.cards.map((c) => c.thai))].filter((w) => words.has(w));
     if (hits.length >= READING_MIN_MATCH) found.push({ d, hits });
   }
-  return found.sort((a, b) => b.hits.length - a.hits.length || levels.indexOf(a.d.group) - levels.indexOf(b.d.group));
+  return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
 }
 
 // Opens a passage (from the list, or a search result, which also lights the word it found).
@@ -2754,7 +2756,9 @@ function renderReader(topic) {
     const tr = [];
     line.th.split(' ').forEach((chunk, i) => {
       if (i) th.append(' ');
-      for (const tok of chunk.split('|')) {
+      chunk.split('|').forEach((tok, j) => {
+        // Between the words of a run (Thai writes none): a space that "Spaces between words" shows.
+        if (j) th.append(Object.assign(document.createElement('span'), { className: 'rw-gap', textContent: ' ' }));
         const label = tok.endsWith(':');
         const w = (label ? tok.slice(0, -1) : tok).replace(/_/g, ' '); // _ is a space inside a word (จริง_ๆ)
         const card = own.get(w);
@@ -2778,7 +2782,7 @@ function renderReader(topic) {
           if (w) tr.push(w + (label ? ':' : ''));
         }
         if (label) th.append(':');
-      }
+      });
     });
     const body = document.createElement('div');
     body.className = 'reader-body';
@@ -2791,16 +2795,19 @@ function renderReader(topic) {
   applyReaderToggles();
 }
 
-// Transliteration and English under each line: off to start (the point is to read the script), and
-// remembered (prefs).
+// Transliteration and English under each line, and spaces between the Thai words: off to start (the
+// point is to read the script as written), and remembered (prefs).
 function applyReaderToggles() {
   const prefs = getPreferences();
   const tr = !!prefs.readerTranslit;
   const en = !!prefs.readerEnglish;
+  const sp = !!prefs.readerSpaces;
   els.reader.classList.toggle('show-tr', tr);
   els.reader.classList.toggle('show-en', en);
+  els.reader.classList.toggle('show-spaces', sp);
   els.readerTranslit.setAttribute('aria-pressed', String(tr));
   els.readerEnglish.setAttribute('aria-pressed', String(en));
+  els.readerSpaces.setAttribute('aria-pressed', String(sp));
 }
 
 // A tapped word: say it, light it, and show its transliteration and meaning in a pop-up under it.
@@ -3445,7 +3452,7 @@ function bindEvents() {
     renderReading();
     window.scrollTo(0, 0);
   });
-  [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish']].forEach(([btn, key]) => {
+  [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish'], [els.readerSpaces, 'readerSpaces']].forEach(([btn, key]) => {
     btn.addEventListener('click', () => {
       setPreferences({ [key]: !getPreferences()[key] });
       hideReaderWord(); // the lines move

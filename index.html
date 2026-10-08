@@ -137,6 +137,9 @@
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Flashcards</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
       </div>
+      <!-- Shown while a story is open (renderReading): at the bar's right end, where Topics has Read all;
+           on the phone the bar wraps, so it gets its own row under the topic button. -->
+      <button type="button" class="ghost reading-back reading-only" id="reading-back" hidden><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>Back to Stories</button>
     </div>
     <!-- The Reading page (renderReading): the current topic's stories, or one open in the reader. Under the
          controls bar, so the topic button sits on top, as on Topics and Flashcards. -->
@@ -145,7 +148,6 @@
         <div id="reading-list"></div>
       </div>
       <div class="reading-passage" id="reading-passage" hidden>
-        <button type="button" class="ghost reading-back" id="reading-back">‹ Stories</button>
         <h2 class="reading-name" id="reading-name"></h2>
         <p class="reading-desc" id="reading-desc"></p>
         <section class="reader" id="reader">
@@ -153,6 +155,7 @@
             <span class="reader-show">Show</span>
             <button type="button" class="reader-toggle" id="reader-translit" aria-pressed="false">Transliteration</button>
             <button type="button" class="reader-toggle" id="reader-english" aria-pressed="false">English</button>
+            <button type="button" class="reader-toggle" id="reader-spaces" aria-pressed="false">Spaces between words</button>
           </div>
           <div class="reader-lines" id="reader-lines"></div>
           <div class="reader-pop" id="reader-pop" role="status" hidden></div>

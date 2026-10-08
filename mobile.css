@@ -52,6 +52,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
    it stays on one line: 2026-10-08. At 320px the text is a little smaller as well. */
 .wordlist-bar-right > #wordlist-add-all { flex: 1 1 auto; white-space: nowrap; }
 .wordlist-bar-right > #read-aloud { flex: 0 0 auto; }
+.reading-back { margin-left: 0; padding: 8px 12px; } /* its own row, under the topic button */
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- flashcard: full-width card, answer pills, then prev/next under the thumb ---------- */

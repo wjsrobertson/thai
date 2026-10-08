@@ -1280,7 +1280,20 @@ body { display: flex; flex-direction: column; }
 .reading-item-level { flex: none; color: var(--muted); font-size: calc(13px * var(--fs, 1)); white-space: nowrap; }
 .reading-empty { padding: 20px 4px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
 .reading-empty .ghost { display: block; margin-top: 12px; padding: 8px 14px; }
-.reading-back { margin: 4px 0 10px; padding: 6px 12px; }
+/* In the controls bar, at its right end like Topics' Read all (same .ghost size). */
+.reading-back { display: inline-flex; align-items: center; margin-left: auto; white-space: nowrap; }
+.reading-back[hidden] { display: none; }
+/* A line left arrow, drawn like the other button icons (.review-icon). */
+.back-icon {
+  width: 1.05em;
+  height: 1.05em;
+  margin-right: 0.4em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .reading-name { margin: 0 0 4px; font-size: calc(24px * var(--fs, 1)); }
 .reading-desc { margin: 0 0 14px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
 .rw.found { color: var(--accent); background: var(--panel-2); }
@@ -1318,6 +1331,8 @@ body { display: flex; flex-direction: column; }
 .rw { border-radius: 6px; cursor: pointer; transition: background-color .1s, color .1s; }
 .rw:hover, .rw:focus-visible { background: var(--panel-2); outline: none; }
 .rw.on { color: var(--accent); background: var(--panel-2); }
+.rw-gap { display: none; }
+.reader.show-spaces .rw-gap { display: inline; }
 .reader-tr, .reader-en { display: none; margin: 2px 0 0; font-size: calc(15px * var(--fs, 1)); line-height: 1.4; }
 .reader-tr { color: var(--accent); font-style: italic; }
 .reader-en { color: var(--muted); }
