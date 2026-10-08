@@ -74,7 +74,7 @@ Audio / TTS → Generator).
 - Adding optional fields is fine; restructuring the file breaks the app and the curated content.
 - **The file is hand-formatted:** one card per line, 2-space indent. Rewrite it in that style
   (not `json.dump(indent=2)`) so diffs stay readable.
-- As of 2026-10-08 there are 7635 cards in 431 topics across 25 categories (see Topic list order,
+- As of 2026-10-08 there are 7743 cards in 438 topics across 25 categories (see Topic list order,
   Topic splits, Verb topics, New topics, Business topics, More idioms, Tone Pairs, Sound Pairs,
   Thai school mnemonics and Learning tricks, 2026-10-08).
 
@@ -365,6 +365,25 @@ backup `decks.backup28.json`).
 - **Two "like" words** were added after the user asked how to say "like": ยังกับ "just like
   (casual, exaggerating)" in Comparing, and the filler แบบว่า in Interjections: Ouch, Hmm & Ugh.
   เหมือน, เหมือนกับ, แบบ and เช่น already existed.
+- **Telling the time and sentence patterns** (scratchpad `decks/time_pattern_topics.py` +
+  `decks/merge_time_patterns.py`, backup `decks.backup30.json`; 108 cards, 97 new):
+  - **Basics → Time & Date** gets three topics after Time of Day:
+    - **Telling the Time: Day:** …โมงเช้า, บ่าย…โมง, …โมงเย็น.
+    - **Night:** …ทุ่ม, ตี…, ดึก, สองยาม.
+    - **Minutes & 24-Hour:** ครึ่ง, minutes, "quarter to" with อีก, and …นาฬิกา written 14.00 น.
+  - The clock โมง is a new card. The existing โมง card is the Southern "bottom / backside".
+  - **A Sentence Patterns group in Grammar,** before Word Building:
+    - Past, Present & Future
+    - Can, Must & Don't
+    - Make, Let & Get (ให้, โดน, ถูก, ได้)
+    - Linking Ideas
+  - Each card is a short sentence; the note gives the pattern. Five sentences reuse existing
+    phrase cards, e.g. กินข้าวหรือยัง and ห้ามสูบบุหรี่.
+- **The alphabet order** (the user asked for a mnemonic): `about` paragraphs on All Consonants
+  ก–ถ and ท–ฮ.
+  - **The song ก เอ๋ย ก ไก่:** only its opening lines are quoted, as a pointer. Its modern words
+    are copyrighted (by Mansiga Lewanich), so the full song isn't in the app.
+  - **The rows:** the order is grouped by place in the mouth, each row ending in a nasal: ง ญ ณ น ม.
 - **"Same same"** (the user asked): เหมือน ๆ กัน (where the Thinglish comes from) and พอ ๆ กัน went
   into Doubled Words, and เหมือนแต่ไม่เหมือน ("same same but different") into Comparing.
 - **New `about` paragraphs:**
@@ -890,8 +909,33 @@ The controls row holds:
   - **Accordion** (since 2026-10-05): opening a category closes the other open category, and
     opening a group closes the other groups in that category (`pickerHeader`). What you open
     lasts until the picker closes; reopening starts from the current deck again.
-  - Search matches deck name, description, category and group, and opens everything that
-    matches.
+  - Search matches deck name, category and group, and opens everything that matches.
+    Descriptions were matched too until word search came (2026-10-08). Common words like "like"
+    then found nine topics, which pushed the word results off a phone screen.
+  - **Word search** (2026-10-08) was added because the user kept asking "do we have X?". The
+    same box ("Search topics and words…") lists matching words below the topics, in
+    `wordSearch`, `wordHitsSection` and `wordHitRow`:
+    - A Thai query matches the Thai, ignoring spaces. Any other query matches the English, or a
+      loose transliteration: no tone marks, hyphens or doubled letters; ʉ ɔ ɛ ə become u o e e;
+      ue and ae are accepted for them. So "nuea", "nua" and nʉ̂a all meet.
+    - **Ranking:**
+      1. Exact match.
+      2. One of several meanings ("time" in "once / time").
+      3. A whole English word ("about the same").
+      4. An exact transliteration.
+      5. A word start.
+      6. Contains.
+      
+      Ties go to the shorter Thai. An English match beats a transliteration match of the same
+      kind, so "same" isn't led by เสมอ (sà-mə̌ə), but "nam" still finds น้ำ before "name".
+    - There is one row per card key. The best 40 are shown with the total.
+    - **Each row has:**
+      - ✓ / ⇄ to add to or remove from Flashcards;
+      - 🔊 to play it;
+      - the row itself, which opens the word's topic on the Topics page (`showWordInTopic`).
+        It prefers the current topic if the word is in it. The word is scrolled to the centre
+        and highlighted for 2.5 s (`tr.search-hit`).
+    - The search is hidden, with the list, when Flashcards is on Everything.
   - `pickerModel()` builds the tree as plain data; the render functions only draw it.
 - The **direction** toggle (Thai→English / English→Thai), which sets the language on the front.
 - The **mode** toggle, Learn / Test. Internally these are `practice` / `test`; legacy pref values
