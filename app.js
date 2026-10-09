@@ -1,4 +1,4 @@
-import { letterSpelling, letterStep, schoolSpelling, isSpellable } from './spell.js';
+import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable } from './spell.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -141,7 +141,7 @@ const DEFAULT_SETTINGS = {
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
   theme: 'dark',                  // Settings → Display → Theme: dark | light | night
   thaiFont: 'looped',             // Settings → Display → Thai font: 'looped' (Noto Looped Thai) | 'loopless' (Noto Sans Thai)
-  spellingStyle: 'letters',       // card-back spelling and the spell-aloud buttons: 'letters' (names) | 'school' (sounds)
+  spellingStyle: 'vowels',        // the spell-aloud buttons: 'vowels' (names, vowels whole) | 'letters' (names, as written) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
   readRepeats: 2,                 // times Read all says each word (Settings → Topics; 1 until 2026-10-08)
@@ -236,6 +236,8 @@ const SETTINGS_MIGRATIONS = [
   ['review-manual', (s) => (['started', 'current'].includes(s.newSource) ? { newSource: 'manual' } : null)],
   // 2026-10-06: the default spelling style became letter names (it was the school method).
   ['spelling-letters', (s) => (s.spellingStyle === 'school' ? { spellingStyle: 'letters' } : null)],
+  // 2026-10-09: the default became letter names with whole vowels (เรียน: ร เรือ · สระเอีย · น หนู).
+  ['spelling-vowels', (s) => (s.spellingStyle === 'letters' ? { spellingStyle: 'vowels' } : null)],
   // 2026-10-07: "Due reviews from: Current topic only" became Review → "By topic" (prefs.reviewBy),
   // which follows Wordlists and Flashcards' topic, group or category, and narrows new words too.
   ['review-by-topic', (s, store) => {
@@ -1599,7 +1601,7 @@ function bindSettings() {
     applyTheme();
   });
   els.setSpelling.addEventListener('change', () => {
-    setSettings({ spellingStyle: els.setSpelling.value === 'school' ? 'school' : 'letters' });
+    setSettings({ spellingStyle: ['school', 'letters'].includes(els.setSpelling.value) ? els.setSpelling.value : 'vowels' });
     renderSpelling();
   });
   els.setThaiSpeed.addEventListener('change', () => {
@@ -2888,7 +2890,7 @@ function showWordPop(anchor, card, host = els.reader) {
   big.addEventListener('click', (e) => {
     const hit = partAt(big, e.clientX, e.clientY);
     if (!hit) return;
-    big.closest('.reader-pop').querySelector('.pop-reading')?.remove(); // speaking stops any spelling
+    big.closest('.reader-pop').querySelectorAll('.pop-reading').forEach((x) => x.remove()); // speaking stops any spelling
     speak(hit.step.say, 'sp');
     flashPart(pop, hit.box);
   });
@@ -3050,21 +3052,29 @@ function tapCardThai(el, e) {
 }
 
 
-// While the word is spelt aloud, the part being read stays lit (a letter name: its letter; the
-// school method: its syllable, or its tone mark; at the end, the whole word). `at` lists the
-// characters' indexes (the spelling steps' `at`); none clears it. `el` holds the word: the pop-up's
-// big word, or the Thai on a Flashcards or Recall card (the light goes on the card's face).
+// While the word is spelt aloud, the part being read stays lit (a letter name: its letter; a whole
+// vowel: each of its parts; the school method: its syllable, or its tone mark; at the end, the whole
+// word). `at` lists the characters' indexes (the spelling steps' `at`); none clears it. `el` holds the
+// word: the pop-up's big word, or the Thai on a Flashcards or Recall card (the light goes on the
+// card's face). A run of characters (a syllable, the word) gets one box round it all. A vowel written
+// round its consonant (เ-ีย in เรียน) gets a box on each of its parts, so the consonant between them
+// isn't lit: ี sits above ร, and one box round ีย would cover ร too.
 function lightParts(el, at) {
   const pop = el.closest('.reader-pop, .face');
-  pop?.querySelector('.pop-reading')?.remove();
+  pop?.querySelectorAll('.pop-reading').forEach((x) => x.remove());
   if (!pop || !at?.length || !el.isConnected) return;
-  const boxes = partBoxes(el).filter((p) => at.includes(p.i)).map((p) => p.box);
-  if (!boxes.length) return;
-  const b = {
-    left: Math.min(...boxes.map((x) => x.left)), right: Math.max(...boxes.map((x) => x.right)),
-    top: Math.min(...boxes.map((x) => x.top)), bottom: Math.max(...boxes.map((x) => x.bottom)),
-  };
-  pop.append(partHighlight(pop, b, 'pop-reading'));
+  const parts = partBoxes(el);
+  const sorted = [...at].sort((a, b) => a - b);
+  const together = sorted.every((i, n) => !n || i === sorted[n - 1] + 1);
+  for (const run of together ? [sorted] : sorted.map((i) => [i])) {
+    const boxes = parts.filter((p) => run.includes(p.i)).map((p) => p.box);
+    if (!boxes.length) continue;
+    const b = {
+      left: Math.min(...boxes.map((x) => x.left)), right: Math.max(...boxes.map((x) => x.right)),
+      top: Math.min(...boxes.map((x) => x.top)), bottom: Math.max(...boxes.map((x) => x.bottom)),
+    };
+    pop.append(partHighlight(pop, b, 'pop-reading'));
+  }
 }
 
 // The element showing the card's Thai as text right now, for lighting it up as it's spelt (null when
@@ -3492,12 +3502,15 @@ function stopAudio() {
 
 // ---------- spelling (spell.js) ----------
 
-// A card's spelling in the chosen style; the school method falls back to letter names where it
-// can't be worked out. null for a lone letter or symbol.
+// A card's spelling in the chosen style. The school method and whole vowels both need the word's
+// syllables worked out, and fall back to letter names as written where they can't be. null for text
+// with nothing to name.
 function spellingFor(card) {
   if (!card || !isSpellable(card.thai)) return null;
-  const school = getSettings().spellingStyle === 'school' && schoolSpelling(card.thai, card.translit);
-  return school || letterSpelling(card.thai);
+  const style = getSettings().spellingStyle;
+  const read = style === 'school' ? schoolSpelling(card.thai, card.translit)
+    : style === 'vowels' ? vowelSpelling(card.thai, card.translit) : null;
+  return read || letterSpelling(card.thai);
 }
 
 // The current card's spell-aloud buttons. The spelling is only spoken, lighting each part of the Thai

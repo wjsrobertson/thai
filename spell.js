@@ -1,5 +1,8 @@
-// Spelling a Thai word aloud, two ways (see docs/implementation-notes.md → Spelling):
+// Spelling a Thai word aloud, three ways (see docs/implementation-notes.md → Spelling):
 //
+// - vowelSpelling: letter names, but a vowel written in several parts is named once, as a whole,
+//   and each syllable goes consonant(s), vowel, final, tone mark: เรียน → ร เรือ · สระเอีย · น หนู.
+//   Needs the school method's reading of the word, so it falls back to letterSpelling the same way.
 // - letterSpelling: dictation. Every symbol in written (typing) order by its name:
 //   ข้าว → ข ไข่ · ไม้โท · สระอา · ว แหวน.
 // - schoolSpelling: the school method (สะกดคำ). Each syllable is built up from its sounds, then
@@ -203,7 +206,7 @@ function finals(text, i, { allowNone, onlyR }) {
 function syllables(text, i, link) {
   // A reused final (ผลไม้, วิทยา, จักรยาน, อัตรา) starts this syllable without being written again:
   // read the syllable as if it were, then don't count it.
-  if (link) return syllables(link + text.slice(i), 0, null).map((s) => ({ ...s, len: s.len - 1 })).filter((s) => s.len >= 0);
+  if (link) return syllables(link + text.slice(i), 0, null).map((s) => ({ ...s, len: s.len - 1, linked: true })).filter((s) => s.len >= 0);
   const out = [];
   if (text[i] === 'ก' && text[i + 1] === '็' && (i + 2 === text.length || !/[ะ-ฺ็-๎]/.test(text[i + 2] || ''))) {
     out.push({ len: 2, onset: { sounds: ['g'], parts: ['กอ'], letters: 'ก' }, vowel: 'awaw', text: 'ก็', tone: '', final: null, special: true });
@@ -239,13 +242,15 @@ function syllables(text, i, link) {
       if (t.rr) finalOpts = finalOpts.map((f) => (f.letter ? f : { len: 0, sound: 'n', letter: 'ร' }));
       for (const f of finalOpts) {
         const len = k - i + f.len;
-        out.push({ len, onset: on, vowel: t.v, lead, text: text.slice(i, i + len), tone, final: f.letter ? f : null, hidden: t.hidden, rr: t.rr });
+        // onAt, vAt: where the onset and the vowel's match (with any tone mark) are, from i.
+        out.push({ len, onset: on, vowel: t.v, lead, text: text.slice(i, i + len), tone, final: f.letter ? f : null, hidden: t.hidden, rr: t.rr,
+          onAt: [start - i, j - i], vAt: [j - i, k - i] });
       }
     }
     // Hidden อะ (สบาย → สะ) or ออ (บริษัท → บอ) on a bare onset.
     if (!lead) {
-      out.push({ len: j - i, onset: on, vowel: 'a', hiddenA: true, text: text.slice(i, j), tone: '', final: null });
-      out.push({ len: j - i, onset: on, vowel: 'awaw', hiddenAw: true, text: text.slice(i, j), tone: '', final: null });
+      out.push({ len: j - i, onset: on, vowel: 'a', hiddenA: true, text: text.slice(i, j), tone: '', final: null, onAt: [0, j - i] });
+      out.push({ len: j - i, onset: on, vowel: 'awaw', hiddenAw: true, text: text.slice(i, j), tone: '', final: null, onAt: [0, j - i] });
     }
   }
   // A silent letter (or two) with ์ may follow any syllable: เบอร์, สัปดาห์, เสาร์.
@@ -339,10 +344,12 @@ function syllableSteps(syl) {
   return { steps, said: syl.tone ? syl.text : base };
 }
 
-// School-method spelling of `thai`, guided by `translit`; null when no reading fits.
-// Returns a list of groups (one per word in a phrase), each a list of syllables' steps, plus the
-// whole word for words of several syllables.
-export function schoolSpelling(thai, translit) {
+// The reading of `thai` whose sounds match `translit`, for the school method and vowelSpelling:
+// { text, read, orig, tl, syls }, or null when none fits. `text` is `thai` without spaces and ๆ;
+// `read` is text as read, a leading vowel moved after its consonant where that was needed (เสมอ:
+// สเมอ); `orig` is the index in `thai` of each of read's characters; `syls` are the syllables, with
+// `start` in read.
+function reading(thai, translit) {
   if (!translit) return null;
   // Thai doesn't space the words of a phrase but the transliteration does, so match the syllables
   // as one run. ๆ repeats the word before it, so drop it and its repeated transliteration.
@@ -367,18 +374,30 @@ export function schoolSpelling(thai, translit) {
   const tl = [];
   tlWords.forEach((w, n) => w.split('-').filter(Boolean).forEach((syl) => tl.push({ syl, word: n })));
   let found = readings(text, tl.map((t) => t.syl));
+  let read = text;
   // A leading vowel can belong to the second of two consonants, the first taking a hidden อะ:
   // เสมอ = สะ-เมอ, แสดง = สะ-แดง. Try moving it after the first consonant.
   for (let p = 0; found.length === 0 && p < text.length - 2; p++) {
     if ('เแโใไ'.includes(text[p]) && isConsonant(text[p + 1]) && isConsonant(text[p + 2])) {
-      found = readings(text.slice(0, p) + text[p + 1] + text[p] + text.slice(p + 2), tl.map((t) => t.syl));
+      read = text.slice(0, p) + text[p + 1] + text[p] + text.slice(p + 2);
+      found = readings(read, tl.map((t) => t.syl));
       if (found.length && orig) [orig[p], orig[p + 1]] = [orig[p + 1], orig[p]];
     }
   }
   if (found.length === 0) return null;
+  return { text, read, orig, tl, syls: found[0] };
+}
+
+// School-method spelling of `thai`, guided by `translit`; null when no reading fits.
+// Returns a list of groups (one per word in a phrase), each a list of syllables' steps, plus the
+// whole word for words of several syllables.
+export function schoolSpelling(thai, translit) {
+  const r = reading(thai, translit);
+  if (!r) return null;
+  const { text, orig, tl, syls: found0 } = r;
   // One group per transliterated word: its syllables, then the word itself if it has several.
   const groups = [];
-  found[0].forEach((syl, n) => {
+  found0.forEach((syl, n) => {
     const w = tl[n].word;
     (groups[w] ||= []).push(syl);
   });
@@ -406,15 +425,82 @@ export function schoolSpelling(thai, translit) {
   // anything with ๆ (ใจเย็นๆ ends with ใจเย็นๆ, not ใจเย็น).
   const lastSteps = out[out.length - 1];
   if (out.length > 1 || /ๆ/.test(thai)) {
-    if (out.length === 1 && found[0].length > 1) {                    // replace the bare word
+    if (out.length === 1 && found0.length > 1) {                       // replace the bare word
       lastSteps.pop();
       if (lastSteps[lastSteps.length - 1]?.gap) lastSteps.pop();
     }
     out.push([{ show: thai, say: thai, word: true, at: [...thai].map((ch, i) => i).filter((i) => !/\s/.test(thai[i])) }]);
-  } else if (found[0].length > 1) {
+  } else if (found0.length > 1) {
     lastSteps[lastSteps.length - 1].word = true;
   }
   return out;
+}
+
+// ---------------------------------------------------------------- letter names, vowels whole
+
+// The names of vowels written in several parts (the consonant goes at '-'), said as one. A shape not
+// listed (a one-part vowel, ็อ, รร, ไ-ย) has its parts named one by one, as in letterSpelling.
+// เ-็, แ-็ and เ-ิ are the short forms of เอะ, แอะ and เออ before a final (เป็น, แข็ง, เดิน).
+const WHOLE_VOWELS = {
+  'เ-ะ': 'สระเอะ', 'เ-็': 'สระเอะ', 'แ-ะ': 'สระแอะ', 'แ-็': 'สระแอะ', 'โ-ะ': 'สระโอะ',
+  'เ-าะ': 'สระเอาะ', 'เ-า': 'สระเอา', 'เ-อะ': 'สระเออะ', 'เ-อ': 'สระเออ', 'เ-ิ': 'สระเออ',
+  'เ-ียะ': 'สระเอียะ', 'เ-ีย': 'สระเอีย', 'เ-ือะ': 'สระเอือะ', 'เ-ือ': 'สระเอือ',
+  '-ัวะ': 'สระอัวะ', '-ัว': 'สระอัว', '-ือ': 'สระอือ',
+};
+
+// One syllable's names, as { show, say, at } with `at` in text: its first consonant(s), its vowel
+// (whole), what follows it (the final and any silent letters, in written order), then its tone mark.
+function syllableNames(syl, text) {
+  // A syllable that reuses the letter before it (ผลไม้'s ละ) was read with that letter in front:
+  // its offsets count from that letter, which was named with the syllable before.
+  const base = syl.start - (syl.linked ? 1 : 0);
+  const from = syl.linked ? 1 : 0;
+  const end = syl.len + from;
+  const out = [];
+  const name = (p) => {
+    const step = letterStep(text[base + p]);
+    if (step && p >= from) out.push({ ...step, at: [base + p] });
+  };
+  const names = (a, b) => { for (let p = a; p < b; p++) name(p); };
+  if (!syl.vAt) {                                        // ก็, ฤ, a bare onset: as written
+    names(0, end);
+    return out;
+  }
+  names(...syl.onAt);
+  const [v0, v1] = syl.vAt;
+  const vowel = syl.lead ? [0] : [];
+  const tones = [];
+  for (let p = v0; p < v1; p++) (text[base + p] in TONE_MARKS ? tones : vowel).push(p);
+  const after = [];
+  if (syl.final?.inVowel) after.push(vowel.pop());       // เลย: เ-ย is เออ, with ย as its final
+  const shape = (syl.lead || '') + '-' + vowel.filter((p) => !(syl.lead && p === 0)).map((p) => text[base + p]).join('');
+  const whole = syl.final?.inVowel ? 'สระเออ' : WHOLE_VOWELS[shape];
+  if (whole) out.push({ show: whole, say: whole, at: vowel.map((p) => base + p) });
+  else vowel.forEach(name);
+  after.forEach(name);
+  names(v1, end);
+  tones.forEach(name);
+  return out;
+}
+
+// Letter names with whole vowels (see the top of this file), guided by `translit`; null when no
+// reading fits (callers then use letterSpelling). One group, with a pause between syllables.
+export function vowelSpelling(thai, translit) {
+  const r = reading(thai, translit);
+  if (!r?.orig) return null;
+  const { read, orig, syls } = r;
+  const units = syls.map((syl) => syllableNames(syl, read)
+    .map((step) => ({ ...step, at: step.at.map((i) => orig[i]).sort((a, b) => a - b) })))
+    .filter((u) => u.length);
+  // ๆ isn't in the reading: named after the syllable before it, as written.
+  [...thai].forEach((ch, i) => {
+    if (ch !== 'ๆ') return;
+    const n = units.findLastIndex((u) => u.every((step) => step.at.every((x) => x < i)));
+    units.splice(n + 1, 0, [{ ...letterStep(ch), at: [i] }]);
+  });
+  const steps = units.flatMap((u, n) => (n ? [{ gap: true }, ...u] : u));
+  steps.sep = ' · ';
+  return steps.length ? [steps] : null;
 }
 
 // What a spelling shows. School method: steps joined with " – ", syllables with " · ", words with

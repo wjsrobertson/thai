@@ -4,7 +4,7 @@
 //   node tools/spelling.mjs            # coverage + the words the school method can't spell
 //   node tools/spelling.mjs --write    # also write data/spelling-parts.json for tools/gen_audio.py
 //
-// The parts are every distinct spoken step of every card's spelling, both methods. Whole words
+// The parts are every distinct spoken step of every card's spelling, all three styles. Whole words
 // are left out: they use the card's own recording.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -13,7 +13,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 // spell.js is an ES module without a package.json "type", so load it from source.
 const src = readFileSync(join(ROOT, 'spell.js'), 'utf8');
-const { letterSpelling, schoolSpelling, spellingText, spellingSteps, isSpellable } = await import(
+const { letterSpelling, schoolSpelling, vowelSpelling, spellingText, spellingSteps, isSpellable } = await import(
   'data:text/javascript;base64,' + Buffer.from(src).toString('base64'));
 
 const decks = JSON.parse(readFileSync(join(ROOT, 'data', 'decks.json'), 'utf8')).decks;
@@ -22,18 +22,21 @@ for (const d of decks) for (const c of d.cards) if (!cards.has(c.thai) && isSpel
 
 const parts = new Set();
 let school = 0;
+let vowels = 0;
 const failed = [];
 for (const c of cards.values()) {
   const s = schoolSpelling(c.thai, c.translit);
+  const v = vowelSpelling(c.thai, c.translit);
   const l = letterSpelling(c.thai);
   if (s) school += 1; else failed.push(c);
-  for (const g of [s, l]) {
+  if (v) vowels += 1;
+  for (const g of [s, v, l]) {
     if (!g) continue;
     for (const step of spellingSteps(g)) if (!step.word) parts.add(step.say);
   }
 }
 const pct = (n) => `${((100 * n) / cards.size).toFixed(1)}%`;
-console.log(`${cards.size} cards with a spelling; school method spells ${school} (${pct(school)}), letter names the rest`);
+console.log(`${cards.size} cards with a spelling; school method spells ${school} (${pct(school)}), whole vowels ${vowels} (${pct(vowels)}), letter names as written the rest`);
 console.log(`${parts.size} distinct spoken parts`);
 if (process.argv.includes('--samples')) {
   const extra = process.argv.includes('--random') ? [...cards.keys()].sort(() => Math.random() - 0.5).slice(0, 25) : [];

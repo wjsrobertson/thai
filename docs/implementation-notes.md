@@ -2245,16 +2245,43 @@ that line went.
   - **The old rule was a bug:** it needed two or more consonants, meant to skip lone letters. That
     also skipped 235 one-consonant words, including ค่ะ, ไม่, ได้, ดี, ไป, แม่, น้ำ and นะ.
   - The school method covers 98.1% of cards; the rest use letter names.
-- **Two styles** (Settings → Audio → Spelling since 2026-10-07, was Display; `settings.spellingStyle`):
+- **Three styles** (Settings → Audio → Spelling since 2026-10-07, was Display; `settings.spellingStyle`):
   - **School method (`school`):** สะกดคำ. Each syllable is built up: consonant sound +
     vowel name (+ final sound) → syllable, then the tone mark's name and the toned syllable.
     Words of several syllables end with the whole word; a phrase spells word by word and ends with
     the whole phrase.
     - บ้าน: บอ – อา – นอ – บาน – ไม้โท – บ้าน
     - สบาย: สอ – อะ – สะ · บอ – อา – ยอ – บาย · สบาย
-  - **Letter names (`letters`, the default since 2026-10-06; the `spelling-letters` migration moved
-    saves on the old default):** dictation. Every symbol in written (typing) order by its name,
-    so leading vowels come first. ข้าว: ข ไข่ · ไม้โท · สระอา · ว แหวน.
+  - **Letter names, as written (`letters`; the default from 2026-10-06 to 2026-10-09, when the
+    `spelling-letters` migration moved saves off the school method):** dictation. Every symbol in
+    written (typing) order by its name, so leading vowels come first.
+    ข้าว: ข ไข่ · ไม้โท · สระอา · ว แหวน.
+  - **Letter names, vowels whole (`vowels`, `vowelSpelling`; added and made the default on
+    2026-10-09, the user's request; the `spelling-vowels` migration moves saves on `letters`):**
+    - **Why:** as written, a vowel in several parts was named piece by piece. เรียน was
+      สระเอ · ร เรือ · สระอี · ย ยักษ์ · น หนู, which hides that เ-ีย is one vowel, and the ย ยักษ์
+      sounds like a consonant.
+    - **Each syllable:** its consonant(s), its vowel named once (all its parts light up together),
+      the final and any silent letters in written order, then the tone mark, with a syllable pause
+      between syllables. เรียน: ร เรือ · สระเอีย · น หนู. เพื่อน: พ พาน · สระเอือ · น หนู · ไม้เอก.
+    - **Which vowels are named whole:** `WHOLE_VOWELS`, the vowels written in several parts: เ-ะ,
+      แ-ะ, โ-ะ, เ-าะ, เ-า, เ-อะ, เ-อ, เ-ียะ, เ-ีย, เ-ือะ, เ-ือ, -ัวะ, -ัว and -ือ. It also covers
+      the short forms before a final: เ-็ (เป็น, สระเอะ), แ-็ (แข็ง, สระแอะ) and เ-ิ (เดิน, สระเออ).
+      เลย is ล ลิง · สระเออ · ย ยักษ์, because เ-ย is เออ with ย as its final.
+    - **Named part by part, as before:** a one-part vowel (สระอา, ไม้หันอากาศ, and อ อ่าง in ก่อน
+      or ว แหวน in สวน, as Thais name them), ็อ (ล็อก), รร and ไ-ย.
+    - **How:** it uses the school method's reading of the word (`reading()`, split out of
+      `schoolSpelling`). Each syllable records where its onset (`onAt`) and its vowel's part of
+      the word (`vAt`) are. So it covers the same 98.1% of cards and falls back to as-written for
+      the rest. A hidden vowel (คน, สบาย's สะ) has nothing written, so nothing is named for it. A
+      reused letter (ผลไม้'s ล) is named once. ๆ is named where it's written.
+    - **Audio:** 13 new parts (the whole-vowel names, such as สระเอีย), so 4446 became 4459.
+    - **Lighting:** a step whose characters aren't all neighbours (a vowel written round its
+      consonant) gets a box on each part (`lightParts`), so the consonant between them stays
+      unlit. One box round ีย would have covered the ร under the ี.
+    - **Checked** in the reader's pop-up on โรงเรียน and เพื่อนบ้าน, in headless Chromium. With no
+      saved setting it used the new style, and a saved school-method setting was kept.
+      Flashcards and Recall still light each step.
 - **How the school method is worked out (`schoolSpelling`):** Thai doesn't mark syllables or every
   vowel, so the parser tries every reading the spelling allows and keeps the one whose sounds match
   the card's transliteration, syllable for syllable.
