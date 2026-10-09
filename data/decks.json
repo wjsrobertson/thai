@@ -6291,7 +6291,7 @@
         { "thai": "ไหน", "translit": "nǎi", "english": "where / which" },
         { "thai": "ตั้ลล๊าก", "translit": "tân-láak", "english": "so cute (baby talk)", "note": "Cutesy น่ารัก." },
         { "thai": "มาก", "translit": "mâak", "english": "very / a lot" },
-        { "thai": "บุย", "translit": "bui", "english": "bye" }
+        { "thai": "บุย", "translit": "bui", "english": "bye", "note": "Usually doubled: บุยบุย = bye-bye." }
       ]
     },
     {
@@ -6422,7 +6422,7 @@
         { "thai": "ห้อง", "translit": "hɔ̂ng", "english": "room" },
         { "thai": "กรี๊ด", "translit": "gríit", "english": "eeek! (scream)" },
         { "thai": "ตอนจบ", "translit": "tɔɔn-jòp", "english": "finale" },
-        { "thai": "บ้ง", "translit": "bông", "english": "a flop / cringe" },
+        { "thai": "บ้ง", "translit": "bông", "english": "a fail / it fell apart" },
         { "thai": "นิดหน่อย", "translit": "nít-nɔ̀i", "english": "a little bit" },
         { "thai": "แต่", "translit": "tɛ̀ɛ", "english": "but" },
         { "thai": "นักแสดง", "translit": "nák-sà-dɛɛng", "english": "actor", "note": "แสดง = to perform." },
@@ -21612,7 +21612,7 @@
       "group": "Easy",
       "name": "Busted",
       "description": "A big spender, and a photo online.",
-      "passage": [{"th": "แฟน|บอก|ว่า|ไป|ทำงาน", "en": "My boyfriend says he's at work."}, {"th": "แต่|โป๊ะ|เพราะ|เพื่อน|ลง|รูป", "en": "But he's busted: a friend posted a photo."}, {"th": "เขา|เป็น|สายเปย์|ซื้อ|ของ|ให้|สาว|อื่น", "en": "He's a big spender, buying things for another girl."}, {"th": "ฉัน|นอยด์|มาก เพื่อน|บอก|ว่า|อย่า|โลกสวย", "en": "I'm so upset. My friend says, \"Don't be naive.\""}, {"th": "เขา|เม็ดเยอะ|มา|นาน ฉัน|ไฟลุก", "en": "He's been cagey for ages. I'm fired up."}, {"th": "แม่|บอก|ว่า เอาที่สบายใจ", "en": "Mum says, \"Whatever makes you happy.\""}, {"th": "เพื่อน|ส่ง|ข้อความ|มา|ว่า อัลไล 555", "en": "A friend texts, \"Wha? Hahaha.\""}, {"th": "พวก|เกรียน|ใน|คอมเมนต์|ก็|หัวเราะ|กัน|ใหญ่", "en": "The trolls in the comments are laughing their heads off."}],
+      "passage": [{"th": "แฟน|บอก|ว่า|ไป|ทำงาน", "en": "My boyfriend says he's at work."}, {"th": "แต่|โป๊ะ|เพราะ|เพื่อน|ลง|รูป", "en": "But he's busted: a friend posted a photo."}, {"th": "เขา|เป็น|สายเปย์|ซื้อ|ของ|ให้|สาว|อื่น", "en": "He's a big spender, buying things for another girl."}, {"th": "ฉัน|นอยด์|มาก เพื่อน|บอก|ว่า|อย่า|โลกสวย", "en": "I'm so upset. My friend says, \"Don't be naive.\""}, {"th": "เขา|เม็ดเยอะ|มา|นาน ฉัน|ไฟลุก", "en": "He's been full of tricks for ages. I'm fired up."}, {"th": "แม่|บอก|ว่า เอาที่สบายใจ", "en": "Mum says, \"Whatever makes you happy.\""}, {"th": "เพื่อน|ส่ง|ข้อความ|มา|ว่า อัลไล 555", "en": "A friend texts, \"Wha? Hahaha.\""}, {"th": "พวก|เกรียน|ใน|คอมเมนต์|ก็|หัวเราะ|กัน|ใหญ่", "en": "The trolls in the comments are laughing their heads off."}],
       "cards": [
         { "thai": "แฟน", "translit": "fɛɛn", "english": "boyfriend / girlfriend" },
         { "thai": "บอก", "translit": "bɔ̀ɔk", "english": "to tell / say" },
@@ -21638,7 +21638,7 @@
         { "thai": "มาก", "translit": "mâak", "english": "very / a lot" },
         { "thai": "อย่า", "translit": "yàa", "english": "don't", "note": "อย่า + verb: อย่าลืม = don't forget." },
         { "thai": "โลกสวย", "translit": "lôok-sǔai", "english": "naive optimist (lit. beautiful world)" },
-        { "thai": "เม็ดเยอะ", "translit": "mét-yə́", "english": "cagey / secretive (lit. lots of seeds)" },
+        { "thai": "เม็ดเยอะ", "translit": "mét-yə́", "english": "full of tricks / too clever (lit. lots of seeds)", "note": "Also \"high-maintenance, makes a fuss\" (= เรื่องเยอะ). อย่าเม็ดเยอะ = stop being so clever." },
         { "thai": "มา", "translit": "maa", "english": "to come", "note": "Mid tone. Compare ม้า (high) horse, หมา (rising) dog." },
         { "thai": "นาน", "translit": "naan", "english": "for a long time" },
         { "thai": "ไฟลุก", "translit": "fai-lúk", "english": "fired up / hyped" },
@@ -21663,7 +21663,7 @@
       "group": "Easy",
       "name": "Fired Up",
       "description": "Mum cooks; I burn it.",
-      "passage": [{"th": "ขุ่นแม่|ทำ|อาหาร|อร่อย", "en": "Mother's cooking is delicious."}, {"th": "ฉัน|ไฟลุก|อยาก|ทำ|ตาม", "en": "I'm fired up and want to copy her."}, {"th": "แต่|ไหม้|หมด อัลไล|เนี่ย", "en": "But it all burns. What on earth?"}, {"th": "ฉัน|กะโหลก|จริง_ๆ หมั่นไส้|ตัวเอง", "en": "I'm so dumb. I'm annoyed with myself."}, {"th": "แต่|ก็|ห้าว ลอง|ใหม่|อีก|รอบ", "en": "But I'm gutsy, so I try again."}, {"th": "ลูกพี่ลูกน้อง|ไป|เป็น|ผีน้อย|ที่|เกาหลี ยัง|ทำ|อาหาร|เก่ง|กว่า|ฉัน|อีก", "en": "Even my cousin, who went to work illegally in Korea, cooks better than me."}, {"th": "แมว|ตะมุตะมิ|นั่ง|ดู", "en": "The squishy-cute cat sits and watches."}],
+      "passage": [{"th": "ขุ่นแม่|ทำ|อาหาร|อร่อย", "en": "Mother's cooking is delicious."}, {"th": "ฉัน|ไฟลุก|อยาก|ทำ|ตาม", "en": "I'm fired up and want to copy her."}, {"th": "แต่|ไหม้|หมด อัลไล|เนี่ย", "en": "But it all burns. What on earth?"}, {"th": "ทำ|อาหาร|อ่อม|จริง_ๆ หมั่นไส้|ตัวเอง", "en": "My cooking is so lame. I'm annoyed with myself."}, {"th": "แต่|ก็|ห้าว ลอง|ใหม่|อีก|รอบ", "en": "But I'm gutsy, so I try again."}, {"th": "ลูกพี่ลูกน้อง|ไป|เป็น|ผีน้อย|ที่|เกาหลี ยัง|ทำ|อาหาร|เก่ง|กว่า|ฉัน|อีก", "en": "Even my cousin, who went to work illegally in Korea, cooks better than me."}, {"th": "แมว|ตะมุตะมิ|นั่ง|ดู", "en": "The squishy-cute cat sits and watches."}],
       "cards": [
         { "thai": "ขุ่นแม่", "translit": "khùn-mɛ̂ɛ", "english": "mother", "note": "Ironic, cutesy คุณแม่." },
         { "thai": "ทำ", "translit": "tham", "english": "to do / to make" },
@@ -21678,7 +21678,7 @@
         { "thai": "หมด", "translit": "mòt", "english": "all gone / used up" },
         { "thai": "อัลไล", "translit": "an-lai", "english": "what?", "note": "Cutesy อะไร." },
         { "thai": "เนี่ย", "translit": "nîa", "english": "(this here — emphasis)", "note": "Spoken นี่: อันเนี่ย = this one here." },
-        { "thai": "กะโหลก", "translit": "gà-lòok", "english": "dumb (lit. skull)" },
+        { "thai": "อ่อม", "translit": "ɔ̀ɔm", "english": "drained / meh" },
         { "thai": "จริง ๆ", "translit": "jing jing", "english": "really / truly" },
         { "thai": "หมั่นไส้", "translit": "màn-sâi", "english": "annoyed by someone showing off" },
         { "thai": "ตัวเอง", "translit": "tua-eeng", "english": "oneself / you (cute, between couples)" },
@@ -26094,7 +26094,7 @@
         { "thai": "จ่ายค่าปรับ", "translit": "jàai khâa-pràp", "english": "to pay the fine" },
         { "thai": "บาง", "translit": "baang", "english": "some" },
         { "thai": "ด่า", "translit": "dàa", "english": "to scold harshly, swear at" },
-        { "thai": "หมาต๋า", "translit": "mǎa-tǎa", "english": "cops (offensive)" }
+        { "thai": "หมาต๋า", "translit": "mǎa-tǎa", "english": "cops (offensive)", "note": "Offensive. Probably from Hokkien má-tâ, \"police\"." }
       ]
     },
     {
@@ -31779,17 +31779,17 @@
         { "thai": "ตัว", "translit": "tua", "english": "body / self / (classifier for animals)" },
         { "thai": "สุดท้าย", "translit": "sùt-tháai", "english": "last / final" },
         { "thai": "โดน", "translit": "doon", "english": "to get (hit) — bad-news passive", "note": "โดนด่า = got told off." },
-        { "thai": "ล้ม", "translit": "lóm", "english": "to take down / kill (lit. topple)" },
+        { "thai": "ล้ม", "translit": "lóm", "english": "to topple / take down (a rival)" },
         { "thai": "ก่อน", "translit": "gɔ̀ɔn", "english": "before" },
         { "thai": "เขา", "translit": "kháo", "english": "he / she / they" },
         { "thai": "เพื่อน", "translit": "phʉ̂an", "english": "friend" },
-        { "thai": "แกง", "translit": "gɛɛng", "english": "to kill / set up (lit. curry)" },
+        { "thai": "แกง", "translit": "gɛɛng", "english": "to set up / stitch up (lit. curry)", "note": "โดนแกง = got set up. To kill is ฆ่าแกง." },
         { "thai": "นักเลง", "translit": "nák-leeng", "english": "gangster / tough guy" },
         { "thai": "ใน", "translit": "nai", "english": "in / inside" },
         { "thai": "ซอย", "translit": "sɔɔi", "english": "side street / lane", "note": "Bangkok addresses use these — \"Sukhumvit Soi 11\" = side street 11 off Sukhumvit." },
         { "thai": "เรียก", "translit": "rîak", "english": "to call (a name / summon)", "note": "เรียกว่าอะไร = what is it called?" },
         { "thai": "ตำรวจ", "translit": "tam-rùat", "english": "police" },
-        { "thai": "หมาต๋า", "translit": "mǎa-tǎa", "english": "cops (offensive)" }
+        { "thai": "หมาต๋า", "translit": "mǎa-tǎa", "english": "cops (offensive)", "note": "Offensive. Probably from Hokkien má-tâ, \"police\"." }
       ]
     },
     {
@@ -31856,12 +31856,12 @@
         { "thai": "กัน", "translit": "gan", "english": "together / each other", "note": "g. Compare คัน (kh) itchy." },
         { "thai": "เอง", "translit": "eeng", "english": "self / just / only", "note": "ผมเอง = it's me / myself." },
         { "thai": "มี", "translit": "mii", "english": "to have / there is" },
-        { "thai": "เจาะยาง", "translit": "jɔ̀-yaang", "english": "to take out the legs (lit. puncture the tyre)" },
+        { "thai": "เจาะยาง", "translit": "jɔ̀-yaang", "english": "to puncture a tyre / (slang) a dead-leg kick", "note": "Slang: a kick to the thigh that numbs the leg, in Muay Thai or a street fight." },
         { "thai": "รถ", "translit": "rót", "english": "car / vehicle" },
         { "thai": "ตำรวจ", "translit": "tam-rùat", "english": "police" },
         { "thai": "ข่าว", "translit": "khàao", "english": "news", "note": "Low tone. Compare ขาว (rising) white, ข้าว (falling) rice." },
         { "thai": "บอก", "translit": "bɔ̀ɔk", "english": "to tell / say" },
-        { "thai": "มือที่สาม", "translit": "mʉʉ-thîi-sǎam", "english": "a third hand (hidden instigator)" },
+        { "thai": "มือที่สาม", "translit": "mʉʉ-thîi-sǎam", "english": "a third hand (hidden instigator)", "note": "Also, very commonly, the third party in an affair." },
         { "thai": "นักศึกษา", "translit": "nák-sʉ̀k-sǎa", "english": "university student" },
         { "thai": "หนึ่ง", "translit": "nʉ̀ng", "english": "one" },
         { "thai": "โดน", "translit": "doon", "english": "to get (hit) — bad-news passive", "note": "โดนด่า = got told off." },
@@ -33464,7 +33464,7 @@
         { "thai": "คน", "translit": "khon", "english": "person / people" },
         { "thai": "หนึ่ง", "translit": "nʉ̀ng", "english": "one" },
         { "thai": "เป็น", "translit": "pen", "english": "to be (identity / role)" },
-        { "thai": "เก้ง", "translit": "gêng", "english": "closeted gay man (lit. barking deer)" },
+        { "thai": "เก้ง", "translit": "gêng", "english": "gay man, often straight-acting or closeted (lit. barking deer)", "note": "A play on เกย์. เก้งกวาง = gay men in general." },
         { "thai": "อีก", "translit": "ìik", "english": "again / more / another" },
         { "thai": "กะเทย", "translit": "gà-thəəi", "english": "katoey / trans woman", "note": "Common and often self-used, but can be derogatory depending on tone." },
         { "thai": "แรก", "translit": "rɛ̂ɛk", "english": "first" },
@@ -33662,7 +33662,7 @@
         { "thai": "เรียก", "translit": "rîak", "english": "to call (a name / summon)", "note": "เรียกว่าอะไร = what is it called?" },
         { "thai": "ผู้หญิง", "translit": "phûu-yǐng", "english": "woman" },
         { "thai": "ว่า", "translit": "wâa", "english": "that (reporting) / to say", "note": "รู้ว่า… = know that…; บอกว่า… = said that…" },
-        { "thai": "ดอกทอง", "translit": "dɔ̀ɔk-thɔɔng", "english": "slut (lit. golden flower)", "note": "Very strong slur for women; teasing among close female friends. Ruled unlawful as an insult." },
+        { "thai": "ดอกทอง", "translit": "dɔ̀ɔk-thɔɔng", "english": "slut (lit. golden flower)", "note": "Very strong slur for women; teasing among close female friends." },
         { "thai": "แฟน", "translit": "fɛɛn", "english": "boyfriend / girlfriend" },
         { "thai": "เธอ", "translit": "thəə", "english": "you (intimate) / she", "note": "Between lovers and friends, or \"she\". Subtitles use it constantly." },
         { "thai": "ด่า", "translit": "dàa", "english": "to scold harshly, swear at" },
@@ -38002,7 +38002,7 @@
         { "thai": "อัลไล", "translit": "an-lai", "english": "what?", "note": "Cutesy อะไร." },
         { "thai": "จร้า", "translit": "jâa", "english": "yes / OK", "note": "Cutesy จ้า." },
         { "thai": "นาจา", "translit": "naa-jaa", "english": "OK? / pretty please", "note": "Cutesy นะจ๊ะ." },
-        { "thai": "บุย", "translit": "bui", "english": "bye" },
+        { "thai": "บุย", "translit": "bui", "english": "bye", "note": "Usually doubled: บุยบุย = bye-bye." },
         { "thai": "คับ", "translit": "kháp", "english": "yeah (male polite, chat spelling)", "note": "Chat spelling of ครับ." },
         { "thai": "จิง", "translit": "jing", "english": "true", "note": "Casual spelling of จริง." },
         { "thai": "ขุ่นแม่", "translit": "khùn-mɛ̂ɛ", "english": "mother", "note": "Ironic, cutesy คุณแม่." },
@@ -38031,8 +38031,7 @@
         { "thai": "แม่ก็คือแม่", "translit": "mɛ̂ɛ-gɔ̂-khʉʉ-mɛ̂ɛ", "english": "mother is mother (= she's untouchable)" },
         { "thai": "ยืนหนึ่ง", "translit": "yʉʉn-nʉ̀ng", "english": "number one / the best" },
         { "thai": "แซะ", "translit": "sɛ́", "english": "to snipe at / take digs" },
-        { "thai": "กะโหลก", "translit": "gà-lòok", "english": "dumb (lit. skull)" },
-        { "thai": "เม็ดเยอะ", "translit": "mét-yə́", "english": "cagey / secretive (lit. lots of seeds)" },
+        { "thai": "เม็ดเยอะ", "translit": "mét-yə́", "english": "full of tricks / too clever (lit. lots of seeds)", "note": "Also \"high-maintenance, makes a fuss\" (= เรื่องเยอะ). อย่าเม็ดเยอะ = stop being so clever." },
         { "thai": "หวาน", "translit": "wǎan", "english": "lying (lit. sweet)", "note": "Gen-Z sense; normally just \"sweet\"." },
         { "thai": "จริงหรือเค้ก", "translit": "jing-rʉ̌ʉ-khéek", "english": "real or fake? (lit. real or cake)" },
         { "thai": "ใกล้ฉัน", "translit": "glâi-chǎn", "english": "…near me (meme)", "note": "Wishful meme: แฟนใกล้ฉัน = boyfriend near me." },
@@ -38057,7 +38056,7 @@
         { "thai": "กะเทย", "translit": "gà-thəəi", "english": "katoey / trans woman", "note": "Common and often self-used, but can be derogatory depending on tone." },
         { "thai": "เทย", "translit": "thəəi", "english": "katoey (short, in-group)" },
         { "thai": "ชะนี", "translit": "chá-nii", "english": "straight woman (lit. gibbon)", "note": "Teasing; the gibbon's call is said to sound like ผัว (husband)." },
-        { "thai": "เก้ง", "translit": "gêng", "english": "closeted gay man (lit. barking deer)" },
+        { "thai": "เก้ง", "translit": "gêng", "english": "gay man, often straight-acting or closeted (lit. barking deer)", "note": "A play on เกย์. เก้งกวาง = gay men in general." },
         { "thai": "กวาง", "translit": "gwaang", "english": "gay man (lit. deer)", "note": "Dated; pairs with เก้ง." },
         { "thai": "แต๋ว", "translit": "tɛ̌o", "english": "camp / effeminate (gay man)" },
         { "thai": "ทอม", "translit": "thɔm", "english": "tom (masculine lesbian)" },
@@ -38065,7 +38064,7 @@
         { "thai": "สาววาย", "translit": "sǎao-waai", "english": "BL fangirl (Y = boys' love)" },
         { "thai": "ต๊าช", "translit": "táat", "english": "fierce / slay" },
         { "thai": "ตุย", "translit": "tui", "english": "dead (tired) / I'm done" },
-        { "thai": "บ้ง", "translit": "bông", "english": "a flop / cringe" },
+        { "thai": "บ้ง", "translit": "bông", "english": "a fail / it fell apart" },
         { "thai": "ตุ้บ", "translit": "tûp", "english": "to bomb / get cut" },
         { "thai": "จึ้ง", "translit": "jʉ̂ng", "english": "stunning" },
         { "thai": "เยี่ยว", "translit": "yîao", "english": "fire / outstanding", "note": "Literally \"piss\" — a pun on เยี่ยม (excellent)." },
@@ -38281,7 +38280,7 @@
       "name": "Slurs",
       "description": "Slurs against women, LGBTQ+ people and ethnic groups. Here so you recognise them — several are the most hurtful words in the language.",
       "cards": [
-        { "thai": "ดอกทอง", "translit": "dɔ̀ɔk-thɔɔng", "english": "slut (lit. golden flower)", "note": "Very strong slur for women; teasing among close female friends. Ruled unlawful as an insult." },
+        { "thai": "ดอกทอง", "translit": "dɔ̀ɔk-thɔɔng", "english": "slut (lit. golden flower)", "note": "Very strong slur for women; teasing among close female friends." },
         { "thai": "อีดอก", "translit": "ii-dɔ̀ɔk", "english": "bitch / slut", "note": "Strong. Ruled unlawful as an insult." },
         { "thai": "อีร้อยควย", "translit": "ii-rɔ́ɔi-khuai", "english": "slut (lit. hundred dicks)", "note": "Very strong. Ruled unlawful as an insult." },
         { "thai": "กะหรี่", "translit": "gà-rìi", "english": "whore", "note": "Very strong. Also the curry (แกงกะหรี่) — context!" },
@@ -38291,7 +38290,7 @@
         { "thai": "หยำฉ่า", "translit": "yǎm-chàa", "english": "hooker / brothel", "note": "Strong, old slang." },
         { "thai": "ตุ๊ด", "translit": "tút", "english": "fag (effeminate gay man)", "note": "Strong slur, though sometimes reclaimed among friends." },
         { "thai": "ไอ้ตุ๊ด", "translit": "âi-tút", "english": "you fag", "note": "Very strong." },
-        { "thai": "ประเทือง", "translit": "prà-thʉang", "english": "queen (derogatory, gay man)", "note": "Strong, dated." },
+        { "thai": "ประเทือง", "translit": "prà-thʉang", "english": "trans woman / effeminate man (derogatory)", "note": "Strong, dated. From an old song; used to mock." },
         { "thai": "สายเหลือง", "translit": "sǎai-lʉ̌ang", "english": "gay man (crude, lit. yellow line)", "note": "Strong — an anal-sex reference." },
         { "thai": "ขุดทอง", "translit": "khùt-thɔɔng", "english": "gay man (crude, lit. digging for gold)", "note": "Strong — same reference." },
         { "thai": "ไส้เดือน", "translit": "sâi-dʉan", "english": "gay man (derogatory, lit. earthworm)", "note": "Strong; on lists of terms to avoid." },
@@ -38302,7 +38301,6 @@
         { "thai": "ยุ่น", "translit": "yûn", "english": "Jap (Japanese)", "note": "Derogatory." },
         { "thai": "เกาหี", "translit": "gao-hǐi", "english": "Korean (derogatory)", "note": "Strong — a pun on เกาหลี + หี." },
         { "thai": "ลาว", "translit": "laao", "english": "Lao, used as \"hick\"", "note": "Insulting when aimed at an unsophisticated Thai person." },
-        { "thai": "ราหู", "translit": "raa-hǔu", "english": "dark-skinned person (lit. eclipse demon)", "note": "Derogatory." },
         { "thai": "เงาะ", "translit": "ngɔ́", "english": "Negrito / curly-haired dark person (lit. rambutan)", "note": "Strong ethnic slur." },
         { "thai": "ฝรั่งขี้นก", "translit": "fà-ràng-khîi-nók", "english": "trashy westerner / wannabe (lit. bird-shit guava)", "note": "Derogatory." },
         { "thai": "ต่างด้าว", "translit": "tàang-dâao", "english": "alien (said of migrant workers)", "note": "Derogatory in this use." }
@@ -45342,9 +45340,9 @@
         { "thai": "ซิว", "translit": "siu", "english": "to nab / arrest" },
         { "thai": "รวบ", "translit": "rûap", "english": "to round up / bust" },
         { "thai": "เป่า", "translit": "pào", "english": "to shoot (lit. blow)" },
-        { "thai": "ล้ม", "translit": "lóm", "english": "to take down / kill (lit. topple)" },
+        { "thai": "ล้ม", "translit": "lóm", "english": "to topple / take down (a rival)" },
         { "thai": "เก็บ", "translit": "gèp", "english": "to take out / kill (lit. tidy away)" },
-        { "thai": "แกง", "translit": "gɛɛng", "english": "to kill / set up (lit. curry)" },
+        { "thai": "แกง", "translit": "gɛɛng", "english": "to set up / stitch up (lit. curry)", "note": "โดนแกง = got set up. To kill is ฆ่าแกง." },
         { "thai": "ฆ่าแกง", "translit": "khâa-gɛɛng", "english": "to bump off" },
         { "thai": "อุ้ม", "translit": "ûm", "english": "to \"disappear\" someone (lit. carry off)", "note": "อุ้มหาย = enforced disappearance." },
         { "thai": "ตบทรัพย์", "translit": "tòp-sáp", "english": "extortion (lit. slap the assets)" },
@@ -45352,7 +45350,7 @@
         { "thai": "ไอ้โม่ง", "translit": "âi-mông", "english": "masked robber (lit. hood guy)" },
         { "thai": "แพะ", "translit": "phɛ́", "english": "fall guy / scapegoat (lit. goat)", "note": "จับแพะ = to arrest an innocent scapegoat." },
         { "thai": "คนมีสี", "translit": "khon-mii-sǐi", "english": "people in uniform (cops, soldiers)" },
-        { "thai": "หมาต๋า", "translit": "mǎa-tǎa", "english": "cops (offensive)" },
+        { "thai": "หมาต๋า", "translit": "mǎa-tǎa", "english": "cops (offensive)", "note": "Offensive. Probably from Hokkien má-tâ, \"police\"." },
         { "thai": "กินข้าวแดง", "translit": "gin khâao-dɛɛng", "english": "to do time (lit. eat red rice)" },
         { "thai": "บัญชีหนังหมา", "translit": "ban-chii nǎng-mǎa", "english": "criminal record / blacklist (lit. dogskin ledger)" }
       ]
@@ -45374,11 +45372,11 @@
         { "thai": "ตีกัน", "translit": "tii-gan", "english": "to fight / brawl" },
         { "thai": "ยกพวก", "translit": "yók-phûak", "english": "to bring a gang (for a fight)" },
         { "thai": "ใส่เดี่ยว", "translit": "sài-dìao", "english": "to go one-on-one" },
-        { "thai": "เจาะยาง", "translit": "jɔ̀-yaang", "english": "to take out the legs (lit. puncture the tyre)" },
+        { "thai": "เจาะยาง", "translit": "jɔ̀-yaang", "english": "to puncture a tyre / (slang) a dead-leg kick", "note": "Slang: a kick to the thigh that numbs the leg, in Muay Thai or a street fight." },
         { "thai": "ก๊อป", "translit": "gɔ́p", "english": "knock-off / counterfeit (from \"copy\")" },
         { "thai": "แหกตา", "translit": "hɛ̀ɛk-taa", "english": "to con (lit. pry open the eyes)" },
         { "thai": "ศาลเตี้ย", "translit": "sǎan-tîa", "english": "kangaroo court (lit. short court)" },
-        { "thai": "มือที่สาม", "translit": "mʉʉ-thîi-sǎam", "english": "a third hand (hidden instigator)" }
+        { "thai": "มือที่สาม", "translit": "mʉʉ-thîi-sǎam", "english": "a third hand (hidden instigator)", "note": "Also, very commonly, the third party in an affair." }
       ]
     },
     {

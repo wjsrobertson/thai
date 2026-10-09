@@ -1439,6 +1439,24 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
         "to perch".
       - `PICKS` holds the reviewers' meaning picks.
     - **Typography:** a space now follows ๆ (ค่อย ๆ เดิน, not ค่อย ๆเดิน), as in standard Thai.
+  - **Slang & Swearing card check** (2026-10-09). The deck's 286 cards plus the two crime-slang
+    topics were read in full.
+    - **Method:** about 50 doubtful cards were checked against Thai sources: the Longdo dict blog
+      and Wongnai kathoey-slang lists, Wiktionary (หมาต๋า, from Hokkien), iLaw (พิซซ่า = Article
+      112 cases), and the Supreme Court insult rulings.
+    - **Almost all were real.** That includes the whole LGBTQ+ "Moods, Drama & Sayings" topic,
+      which looked the most invented.
+    - **Removed:** กะโหลก "dumb" and ราหู as a slur, which no source supports.
+    - **Re-glossed:**
+      - เม็ดเยอะ: full of tricks / too clever, not "cagey".
+      - บ้ง: a fail.
+      - เจาะยาง: a dead-leg kick, not shooting someone's legs.
+      - ประเทือง: aimed at trans women.
+      - Crime-slang แกง: to set up. ล้ม: to topple. Neither means "kill".
+    - **Notes:** the "ruled unlawful" note was dropped from ดอกทอง; หมาต๋า, เก้ง, มือที่สาม and
+      บุย gained notes.
+    - The edits are in scratchpad `decks/slang_fix.py`, and decks.json is the source for
+      non-Reading cards. rs-fired-up and rs-busted were adjusted to match.
     - Audit: 0 errors. All 404 batch 1–3 stories opened from a matching topic in the browser
       test, each sentence with its sample.
 
