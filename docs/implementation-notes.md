@@ -1327,12 +1327,60 @@ The other ten passages:
   - each word is a tap target (`.rw`). It plays the word, lights it, and shows a pop-up
     (`#reader-pop`) with its transliteration and meaning, centred under it and kept inside the
     box. A tap elsewhere, a resize, or a toggle closes it.
+    - **On the Topics page too** (2026-10-09, the user's request): tapping a row's Thai (`td.col-thai`,
+      focusable, Enter/Space too) opens the same pop-up under it.
+      - **One shared pop-up:** `#reader-pop` moves into its host, `#reader` or `#wordlist-section`
+        (now `position: relative`). It's placed and clamped there (`showWordPop`, `placeWordPop`,
+        `hideWordPop`, formerly `showReaderWord` and friends).
+      - **Table redraws:** adding the word to Flashcards from the pop-up redraws the table
+        (`setInReview` → `renderWordlist`). `reanchorWordPop` then moves the pop-up to the word's
+        new row, or closes it if the row has gone.
+      - **Tested** at phone and desktop sizes: it opens under the row, tapping parts names them,
+        adding works and it stays open, tapping another row's Thai switches it, tapping outside
+        closes it, and the reader's pop-up still works.
+    - **Buttons** (2026-10-09, the user's request): under the big word, centred, the Topics rows' three
+      buttons (`.pop-actions`): add to or remove from Flashcards (✓ once added), spell aloud, play.
+      The spell button used to sit beside the meaning.
+      - **Bug fixed on the way:** the add button redraws itself (its icon becomes ✓). By the time
+        the click reached the document's "tap elsewhere closes the pop-up" listener, its target
+        had left the page, so `closest('.reader-pop')` found nothing and the pop-up closed. The
+        listener now checks the click's `composedPath()`.
     - **Spelling** (2026-10-09, the user's request): the pop-up has the cards' กข spell-aloud
-      button (`.pop-spell`, `speakSpelling`). It reads the word's spelling in the chosen style,
-      and the first press also writes the spelling out under the meaning (`.pop-spelling`). In
-      that line a letter stays on the same line as its name (ง งู); breaks fall only at the
-      separators. Pressing it again stops it. Words with no spelling, such as a lone letter,
-      get no button.
+      button (`.pop-spell`, `speakSpelling`). It reads the word's spelling in the chosen style.
+      Pressing it again stops it. Words with no spelling, such as a lone letter, get no button.
+      - **No written spelling:** at first the button also wrote the spelling out under the
+        meaning. The user found hearing it enough, so that went the same day.
+      - **Highlighting instead:** each part of the big word lights up as it's read
+        (`lightParts`, `.pop-reading`, lit from behind the text).
+        - **Letter names:** the letter, the tone mark or the vowel being named.
+        - **School method:** the syllable being built, just the tone mark for its step, then
+          the whole word.
+        - **How:** each spelling step carries `at`, the indexes of its characters (spell.js),
+          and `speakSpelling` calls `onStep` as it reads each one.
+        - **Tested** on ข้าว in both styles: ข, ้, า, ว; then the syllable, ้, the word. The
+          highlight clears at the end.
+    - **The word, large** (2026-10-09, the user's request): under the meaning, the pop-up shows the
+      word big (`.pop-word`, 56 px; smaller if it would overflow, `fitPopWord`). Tapping any part of
+      it says that part's name, the same clip as the spelling uses, e.g. ค gives คอ ควาย and ่
+      gives ไม้เอก (`letterStep`, spell.js), and the part lights up briefly (`flashPart`). The name
+      was also written underneath in yellow at first (`.pop-part`); the user found hearing it and
+      the highlight enough, so that went the same day. Taps and the spelling highlight share one layout
+      of the word's parts (`partBoxes`).
+      - **Why one piece of text:** a vowel or tone mark in an element of its own isn't drawn on
+        its letter in every browser (Safari), so the word is a single text node. `partAt` finds
+        the part from its geometry.
+      - **How `partAt` works:**
+        - The letter cluster under the tap: a base character with the marks above and below it,
+          plus ำ. It comes from a Range.
+        - The baseline: an empty inline-block at the word's end (`.pop-baseline`) sits on it.
+        - The letter's own top: canvas `measureText` in the same font.
+        - Below the baseline is a vowel below (ุ ู). Above the letter's top is a mark above;
+          with two (ที่), the higher one is the tone mark, split at the top of the lower one.
+          Anything else is the letter itself. The right part of a cluster with ำ is ำ.
+      - **Width:** the pop-up's width is held once it's laid out. A changing caption line made it
+        narrower and re-centred the word, so the next tap missed. The headless test caught this.
+      - **Tested:** headless Chromium at 390 px, tapping every part of ที่, ปู่, น้ำ, เป็น and
+        ข้าว. All 17 parts were named right, each with one play. It's untested on a real iPhone.
   - **Show:** Transliteration and English toggles add those lines under each sentence.
   - **Word gaps** (2026-10-08, the user's request) puts a space between the Thai words, as
     written ones have none.
@@ -1488,6 +1536,24 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
         "to perch".
       - `PICKS` holds the reviewers' meaning picks.
     - **Typography:** a space now follows ๆ (ค่อย ๆ เดิน, not ค่อย ๆเดิน), as in standard Thai.
+  - **Every story word is in a topic** (2026-10-09, the user's request).
+    - **Before:** 321 words, and 23 senses of words that were in topics, existed only as story
+      cards. Among them were basics such as แดง, ฟ้า, ครัว, แกง, ตะโกน, ทันที and เพื่อนบ้าน. You
+      could study them in Flashcards, but they weren't on the Topics page.
+    - **What `decks/story_words.py` did:** it put all of them into themed topics with room (about
+      100 topics), staying under the 25-card limit. Words that would duplicate an English answer
+      within a topic went elsewhere: แดง, already there as สีแดง 'red', went to Adjectives, not
+      Colors.
+    - **New topics:**
+      - Adverbs: When, How & How Often (Grammar);
+      - Adjectives: Senses & Qualities (Basics);
+      - Everyday Actions: Handling Things, and Moving About (Grammar › Verbs);
+      - Letter-Name Words: ก–ณ and ด–ฮ (Thai Script › Consonants), the 44 words that name the
+        consonants. 18 of the story-only words were name words (ระฆัง, ฐาน, ปฏัก, มณโฑ, ฤๅษี…).
+    - **Coverage:** five new stories (`decks/stories_b6_storywords.py`, 1,010 in all) bring the
+      new topics to 5 stories each. They use only words that already had cards.
+    - **The rule from now on:** a story uses only words that have a topic card. A new word gets a
+      topic card as well (`plan5.py` and a story-only check, as in `story_words.py`).
   - **Slang & Swearing card check** (2026-10-09). The deck's 286 cards plus the two crime-slang
     topics were read in full.
     - **Method:** about 50 doubtful cards were checked against Thai sources: the Longdo dict blog

@@ -11,8 +11,10 @@
 // sounds match the card's transliteration. If none matches it returns null, and callers use the
 // letter names instead: a wrong school spelling is worse than none.
 //
-// Each step is { show, say }: `show` is displayed, `say` is spoken and keys the step's recording
-// (manifest section `sp`, made by tools/spelling.mjs + tools/gen_audio.py).
+// Each step is { show, say, at }: `show` is displayed, `say` is spoken and keys the step's recording
+// (manifest section `sp`, made by tools/spelling.mjs + tools/gen_audio.py), and `at` lists the
+// indexes in the word of the characters the step is about, so the reader's pop-up can light them
+// up as it's read (a letter name: its letter; a school step: its syllable, or its tone mark).
 
 // Consonant: [class, initial sound, final sound, name word]. Sounds follow the app's transliteration.
 const CONSONANTS = {
@@ -54,13 +56,22 @@ export function isSpellable(thai) {
 
 // ---------------------------------------------------------------- letter names (dictation)
 
+// One symbol's name: { show, say } (ค → ค ควาย, said คอ ควาย; ่ → ไม้เอก), or null for a space,
+// a Latin letter or punctuation. The reader's pop-up says it for a tapped part of a word.
+export function letterStep(ch) {
+  if (isConsonant(ch)) return { show: `${ch} ${CONSONANTS[ch][3]}`, say: `${ch}อ ${CONSONANTS[ch][3]}` };
+  if (ch in SYMBOL_NAMES) return { show: SYMBOL_NAMES[ch], say: SYMBOL_SAY[ch] || SYMBOL_NAMES[ch] };
+  if (/[๐-๙]/.test(ch)) return { show: `${ch} ${DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50]}`, say: DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50] };
+  if (/[0-9]/.test(ch)) return { show: `${ch} ${DIGIT_NAMES[Number(ch)]}`, say: DIGIT_NAMES[Number(ch)] };
+  return null;
+}
+
 export function letterSpelling(thai) {
   const steps = [];
-  for (const ch of thai) {
-    if (isConsonant(ch)) steps.push({ show: `${ch} ${CONSONANTS[ch][3]}`, say: `${ch}อ ${CONSONANTS[ch][3]}` });
-    else if (ch in SYMBOL_NAMES) steps.push({ show: SYMBOL_NAMES[ch], say: SYMBOL_SAY[ch] || SYMBOL_NAMES[ch] });
-    else if (/[๐-๙]/.test(ch)) steps.push({ show: `${ch} ${DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50]}`, say: DIGIT_NAMES[ch.charCodeAt(0) - 0x0e50] });
-    else if (/[0-9]/.test(ch)) steps.push({ show: `${ch} ${DIGIT_NAMES[Number(ch)]}`, say: DIGIT_NAMES[Number(ch)] });
+  for (let i = 0; i < thai.length; i++) { // Thai is all in the BMP: one index per character
+    const ch = thai[i];
+    const step = letterStep(ch);
+    if (step) steps.push({ ...step, at: [i] });
     else if (/\s/.test(ch)) { if (steps.length && !steps[steps.length - 1].gap) steps.push({ gap: true }); }
     // Latin letters and punctuation are left out.
   }
@@ -350,6 +361,9 @@ export function schoolSpelling(thai, translit) {
   }
   const text = thai.replace(/ๆ/g, '').replace(/\.\.\.|…/g, '').replace(/\s+/g, '');
   if (!/^[ก-๎]+$/.test(text) || /ฯ/.test(text)) return null;
+  // Where each of text's characters is in `thai` (the steps' `at`).
+  let orig = [...thai].map((ch, i) => i).filter((i) => !/[ๆ…\s.]/.test(thai[i]));
+  if (orig.length !== text.length) orig = null; // not expected; then the steps just have no `at`
   const tl = [];
   tlWords.forEach((w, n) => w.split('-').filter(Boolean).forEach((syl) => tl.push({ syl, word: n })));
   let found = readings(text, tl.map((t) => t.syl));
@@ -358,6 +372,7 @@ export function schoolSpelling(thai, translit) {
   for (let p = 0; found.length === 0 && p < text.length - 2; p++) {
     if ('เแโใไ'.includes(text[p]) && isConsonant(text[p + 1]) && isConsonant(text[p + 2])) {
       found = readings(text.slice(0, p) + text[p + 1] + text[p] + text.slice(p + 2), tl.map((t) => t.syl));
+      if (found.length && orig) [orig[p], orig[p + 1]] = [orig[p + 1], orig[p]];
     }
   }
   if (found.length === 0) return null;
@@ -367,13 +382,24 @@ export function schoolSpelling(thai, translit) {
     const w = tl[n].word;
     (groups[w] ||= []).push(syl);
   });
+  const at = (from, to) => (orig ? orig.slice(from, to).sort((a, b) => a - b) : undefined);
   const out = groups.map((syls) => {
-    const parts = syls.map(syllableSteps);
+    const parts = syls.map((syl) => {
+      const p = syllableSteps(syl);
+      // Each step is about its syllable, except the tone mark's, which is about the mark.
+      // (A syllable that only reuses the letter before it, ผลไม้'s ละ, is about that letter.)
+      const mine = syl.len ? at(syl.start, syl.start + syl.len) : at(syl.start - 1, syl.start);
+      for (const step of p.steps) {
+        step.at = mine;
+        if (syl.tone && step.say === TONE_MARKS[syl.tone] && mine) step.at = mine.filter((i) => thai[i] === syl.tone);
+      }
+      return p;
+    });
     const steps = parts.flatMap((p, n) => (n ? [{ gap: true }, ...p.steps] : p.steps));
     // The word as written (a reused final belongs to both syllables, so slice, don't join).
     const last = syls[syls.length - 1];
     const word = text.slice(syls[0].start, last.start + last.len);
-    if (syls.length > 1) steps.push({ gap: true }, { show: word, say: word });
+    if (syls.length > 1) steps.push({ gap: true }, { show: word, say: word, at: at(syls[0].start, last.start + last.len) });
     return steps;
   });
   // The whole card last, spoken with its own recording: a phrase, a word of several syllables, or
@@ -384,7 +410,7 @@ export function schoolSpelling(thai, translit) {
       lastSteps.pop();
       if (lastSteps[lastSteps.length - 1]?.gap) lastSteps.pop();
     }
-    out.push([{ show: thai, say: thai, word: true }]);
+    out.push([{ show: thai, say: thai, word: true, at: [...thai].map((ch, i) => i).filter((i) => !/\s/.test(thai[i])) }]);
   } else if (found[0].length > 1) {
     lastSteps[lastSteps.length - 1].word = true;
   }

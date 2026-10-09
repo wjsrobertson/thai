@@ -1,4 +1,4 @@
-import { letterSpelling, schoolSpelling, spellingText, isSpellable } from './spell.js';
+import { letterSpelling, letterStep, schoolSpelling, spellingText, isSpellable } from './spell.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -1424,7 +1424,7 @@ function setView(view) {
   els.wordlistSection.hidden = view !== 'wordlist';
   els.readingSection.hidden = view !== 'reading';
   if (view === 'reading') renderReading();
-  else hideReaderWord();
+  else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
   // Leaving Flashcards: Recall's audio stops, and a Recognition card's pending move waits for the
   // return (below).
@@ -1871,6 +1871,18 @@ function renderWordlist() {
         const td = document.createElement('td');
         td.className = COL_META[key].cls;
         td.textContent = c[key];
+        // The Thai opens the word pop-up, as a word in the reader does (2026-10-09, the user's request).
+        if (key === 'thai') {
+          td.tabIndex = 0;
+          td.setAttribute('role', 'button');
+          td.title = 'Show the word';
+          const open = (e) => {
+            e.preventDefault();
+            showWordPop(td, c, els.wordlistSection);
+          };
+          td.addEventListener('click', open);
+          td.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+        }
         // English column gets the note appended below.
         if (key === 'english' && c.note) {
           const span = document.createElement('span');
@@ -1916,6 +1928,7 @@ function renderWordlist() {
     }
     els.wordtableBody.appendChild(frag);
   }
+  reanchorWordPop();
 
   const allIn = state.listCards.every((c) => c.key in words);
   // With the whole deck in Review, the button reads "✓ All in Review" and removes them all.
@@ -2668,7 +2681,7 @@ function sentenceText(th) {
 const isPassage = (id) => !!state.decks.find((d) => d.id === id)?.passage;
 
 function renderReading() {
-  hideReaderWord();
+  hideWordPop();
   const topic = state.readingId ? state.decks.find((d) => d.id === state.readingId && d.passage) : null;
   els.readingLibrary.hidden = !!topic;
   els.readingPassage.hidden = !topic;
@@ -2759,7 +2772,7 @@ function openReading(id, word = null) {
 }
 
 function renderReader(topic) {
-  hideReaderWord();
+  hideWordPop();
   const own = new Map(topic.cards.map((c) => [c.thai, c]));
   els.readerLines.replaceChildren(...topic.passage.map((line) => {
     const row = document.createElement('div');
@@ -2794,7 +2807,7 @@ function renderReader(topic) {
           const pick = (e) => {
             e.stopPropagation();
             e.preventDefault();
-            showReaderWord(span, card);
+            showWordPop(span, card);
           };
           span.addEventListener('click', pick);
           span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') pick(e); });
@@ -2834,18 +2847,24 @@ function applyReaderToggles() {
 }
 
 // A tapped word: say it, light it, and show its transliteration and meaning in a pop-up under it.
-// The pop-up's กข button spells the word aloud, as on the cards, and writes the spelling out under
-// the meaning.
-let readerWord = null;
+// One pop-up (#reader-pop) serves the reader's words and, since 2026-10-09 (the user's request), the
+// Thai of a Topics row: it moves into `host` (#reader, or the Topics section), which it's placed in
+// and kept inside.
+let popAnchor = null; // the word or cell it's under (lit: .on)
+let popHost = null;
+let popKey = null;    // its card's key, to find its row again after the Topics table is redrawn
 
-function showReaderWord(span, card) {
+function showWordPop(anchor, card, host = els.reader) {
   speak(card.thai);
-  if (readerWord !== span) {
-    readerWord?.classList.remove('on');
-    readerWord = span;
-    span.classList.add('on');
+  if (popAnchor !== anchor) {
+    popAnchor?.classList.remove('on');
+    popAnchor = anchor;
+    anchor.classList.add('on');
   }
   const pop = els.readerPop;
+  if (pop.parentElement !== host) host.append(pop);
+  popHost = host;
+  popKey = cardKey(card);
   const text = document.createElement('div');
   text.className = 'pop-text';
   text.append(
@@ -2855,47 +2874,216 @@ function showReaderWord(span, card) {
   const row = document.createElement('div');
   row.className = 'pop-row';
   row.append(text);
-  pop.replaceChildren(row);
-  const groups = spellingFor(card);
-  if (groups) {
-    // A letter and its name (ง งู) stay together: the line breaks only at the separators.
-    const said = spellingText(groups).replace(/([^\s·–/]) (?=[^\s·–/])/g, '$1 ');
-    const line = Object.assign(document.createElement('p'), { className: 'pop-spelling', textContent: said });
-    line.hidden = true;
+  // The word again, large: tapping a part of it (a letter, a vowel, a tone mark) says that part's
+  // name, as in the spelling (ค → คอ ควาย), and lights it briefly (partAt, 2026-10-09). Spelling it
+  // aloud lights up each part as it's read (lightParts).
+  const big = document.createElement('div');
+  big.className = 'pop-word';
+  big.lang = 'th';
+  // An empty inline-block at the end sits on the baseline: partAt measures from it.
+  big.append(card.thai, Object.assign(document.createElement('span'), { className: 'pop-baseline' }));
+  big.addEventListener('click', (e) => {
+    const hit = partAt(big, e.clientX, e.clientY);
+    if (!hit) return;
+    big.closest('.reader-pop').querySelector('.pop-reading')?.remove(); // speaking stops any spelling
+    speak(hit.step.say, 'sp');
+    flashPart(pop, hit.box);
+  });
+  // Under the big word, the Topics rows' three buttons (2026-10-09, the user's request): add to or
+  // remove from Flashcards, spell it aloud (lighting each part as it's read), and play it.
+  const actions = document.createElement('div');
+  actions.className = 'pop-actions';
+  const key = cardKey(card);
+  let added = key in reviewWords();
+  const rv = document.createElement('button');
+  rv.type = 'button';
+  const paintReview = () => {
+    rv.className = 'row-review' + (added ? ' added' : '');
+    rv.replaceChildren(added ? '✓' : reviewIcon());
+    rv.title = added ? `Remove ${card.thai} from Flashcards` : `Add ${card.thai} to Flashcards`;
+    rv.setAttribute('aria-label', rv.title);
+  };
+  paintReview();
+  rv.addEventListener('click', () => {
+    added = !added;
+    setInReview([key], added);
+    toast(added ? `✓ Added ${card.thai} to Flashcards` : `Removed ${card.thai} from Flashcards`, { tone: added ? 'good' : '' });
+    paintReview();
+  });
+  actions.append(rv);
+  if (spellingFor(card)) {
     const sp = document.createElement('button');
     sp.type = 'button';
     sp.className = 'pop-spell';
     sp.append(spellIcon());
     sp.title = `Spell ${card.thai} aloud`;
     sp.setAttribute('aria-label', sp.title);
-    sp.addEventListener('click', () => {
-      if (line.hidden) {
-        line.hidden = false;
-        placeReaderPop(span); // wider now, perhaps
-      }
-      speakSpelling(card, [sp]);
-    });
-    row.append(sp);
-    pop.append(line);
+    sp.addEventListener('click', () => speakSpelling(card, [sp], { onStep: (step) => lightParts(big, step?.at) }));
+    actions.append(sp);
   }
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'row-speak' + (sayingNow(card.thai) ? ' playing' : ''); // lit while it plays (markSpeakers)
+  play.dataset.say = card.thai;
+  play.title = `Play ${card.thai}`;
+  play.setAttribute('aria-label', play.title);
+  play.append(speakerIcon());
+  play.addEventListener('click', () => speakerPress(play, card.thai));
+  actions.append(play);
+  pop.style.width = ''; // sized afresh for each word, then held (below)
+  pop.replaceChildren(row, big, actions);
   pop.hidden = false;
-  placeReaderPop(span);
+  fitPopWord(big);
+  // Hold the width: a narrower pop-up (a button redrawn, say) would re-centre the word, moving it
+  // out from under the next tap and its highlights.
+  pop.style.width = getComputedStyle(pop).width;
+  placeWordPop(anchor);
 }
 
-// The pop-up under its word, kept inside the reader.
-function placeReaderPop(span) {
+// The big word fits the pop-up: a long word or phrase gets smaller rather than overflowing.
+function fitPopWord(el) {
+  el.style.fontSize = '';
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  while (el.scrollWidth > el.clientWidth + 1 && size > 22) {
+    size -= 4;
+    el.style.fontSize = `${size}px`;
+  }
+}
+
+// The parts of the big word and where each is: [{ i (its index in the word), step (letterStep's
+// { show, say }), box }]. Thai stacks vowels and tone marks above and below a letter, and a mark in an
+// element of its own isn't drawn on its letter in every browser, so the word stays one piece of text
+// and this works from its geometry. Each letter cluster (a letter with the marks above and below
+// it) is measured with a Range; then heights split it: under the baseline, a vowel below (ุ ู); above
+// the letter's own top, a mark above (with two, ที่, the tone mark on top of the vowel); the letter in
+// between. ำ is half beside its letter, so it takes the cluster's right part.
+const MARK_ABOVE = /[ัิีึื็่้๊๋์ํ]/;
+const MARK_BELOW = /[ฺุู]/;
+let glyphCanvas = null;
+
+function partBoxes(el) {
+  const node = el.firstChild;
+  const text = node.data;
+  const clusters = [];
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    const joins = MARK_ABOVE.test(ch) || MARK_BELOW.test(ch) || ch === 'ำ';
+    if (joins && clusters.length) clusters[clusters.length - 1].push(i);
+    else clusters.push([i]);
+  }
+  const baseline = el.querySelector('.pop-baseline').getBoundingClientRect().bottom;
+  const ascent = (t) => measureGlyphs(el, t).actualBoundingBoxAscent;
+  const range = document.createRange();
+  const parts = [];
+  for (const c of clusters) {
+    range.setStart(node, c[0]);
+    range.setEnd(node, c[c.length - 1] + 1);
+    const r = range.getBoundingClientRect();
+    const [base, ...marks] = c;
+    const above = marks.filter((i) => MARK_ABOVE.test(text[i]));
+    const below = marks.filter((i) => MARK_BELOW.test(text[i]));
+    const am = marks.find((i) => text[i] === 'ำ');
+    const top = baseline - ascent(text[base]); // the top of the letter itself
+    const right = am === undefined ? r.right : r.left + r.width * 0.55;
+    const add = (i, top, bottom, left = r.left, rgt = right) => {
+      const step = letterStep(text[i]);
+      if (step) parts.push({ i, step, box: { left, right: rgt, top, bottom } });
+    };
+    add(base, above.length ? top : r.top, below.length ? baseline : r.bottom);
+    if (above.length === 1) add(above[0], r.top, top);
+    if (above.length > 1) {
+      const split = baseline - ascent(text[base] + text[above[0]]); // the top of the lower mark
+      add(above[0], split, top);
+      add(above[above.length - 1], r.top, split);
+    }
+    if (below.length) add(below[0], baseline, r.bottom);
+    if (am !== undefined) add(am, r.top, r.bottom, right, r.right);
+  }
+  return parts;
+}
+
+// The part of the big word at (x, y), or the nearest within a short way of it; null if none.
+function partAt(el, x, y) {
+  let best = null;
+  let bestDist = Infinity;
+  for (const p of partBoxes(el)) {
+    const b = p.box;
+    const dx = x < b.left ? b.left - x : x > b.right ? x - b.right : 0;
+    const dy = y < b.top ? b.top - y : y > b.bottom ? y - b.bottom : 0;
+    if (dx * 3 + dy < bestDist) {
+      bestDist = dx * 3 + dy;
+      best = p;
+    }
+  }
+  return bestDist <= 30 ? best : null;
+}
+
+// While the word is spelt aloud, the part being read stays lit (a letter name: its letter; the
+// school method: its syllable, or its tone mark; at the end, the whole word). `at` lists the
+// characters' indexes (the spelling steps' `at`); none clears it.
+function lightParts(el, at) {
+  const pop = el.closest('.reader-pop');
+  pop.querySelector('.pop-reading')?.remove();
+  if (!at?.length || !el.isConnected) return;
+  const boxes = partBoxes(el).filter((p) => at.includes(p.i)).map((p) => p.box);
+  if (!boxes.length) return;
+  const b = {
+    left: Math.min(...boxes.map((x) => x.left)), right: Math.max(...boxes.map((x) => x.right)),
+    top: Math.min(...boxes.map((x) => x.top)), bottom: Math.max(...boxes.map((x) => x.bottom)),
+  };
+  pop.append(partHighlight(pop, b, 'pop-reading'));
+}
+
+// Text metrics in the big word's own font (canvas), for the height of a letter or a letter + mark.
+function measureGlyphs(el, text) {
+  glyphCanvas ||= document.createElement('canvas').getContext('2d');
+  const cs = getComputedStyle(el);
+  glyphCanvas.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+  return glyphCanvas.measureText(text);
+}
+
+// A brief highlight over the part that was tapped, so it's clear what the tap found.
+function flashPart(pop, b) {
+  const hl = partHighlight(pop, b, 'pop-hit');
+  pop.querySelector('.pop-hit')?.remove();
+  pop.append(hl);
+  setTimeout(() => hl.remove(), 900);
+}
+
+// A highlight over box b (page coordinates), placed in the pop-up.
+function partHighlight(pop, b, className) {
+  const p = pop.getBoundingClientRect();
+  const hl = Object.assign(document.createElement('span'), { className });
+  Object.assign(hl.style, { left: `${b.left - p.left - pop.clientLeft}px`, top: `${b.top - p.top - pop.clientTop}px`, width: `${b.right - b.left}px`, height: `${b.bottom - b.top}px` });
+  return hl;
+}
+
+// The pop-up under its word, kept inside its host.
+function placeWordPop(anchor) {
   const pop = els.readerPop;
-  const box = els.reader.getBoundingClientRect();
-  const r = span.getBoundingClientRect();
+  const box = popHost.getBoundingClientRect();
+  const r = anchor.getBoundingClientRect();
   const left = clamp(r.left - box.left + r.width / 2 - pop.offsetWidth / 2, 8, box.width - pop.offsetWidth - 8);
   pop.style.left = `${left}px`;
   pop.style.top = `${r.bottom - box.top + 6}px`;
 }
 
-function hideReaderWord() {
+function hideWordPop() {
   els.readerPop.hidden = true;
-  readerWord?.classList.remove('on');
-  readerWord = null;
+  popAnchor?.classList.remove('on');
+  popAnchor = null;
+  popKey = null;
+}
+
+// The Topics table was redrawn (adding the word to Flashcards from the pop-up does that): the pop-up
+// follows its word's new row, or closes if the row has gone.
+function reanchorWordPop() {
+  if (!popAnchor || popHost !== els.wordlistSection || popAnchor.isConnected) return;
+  const cell = [...els.wordtableBody.querySelectorAll('tr')].find((tr) => tr.dataset.key === popKey)?.querySelector('.col-thai');
+  if (!cell) { hideWordPop(); return; }
+  popAnchor = cell;
+  cell.classList.add('on');
+  placeWordPop(cell);
 }
 
 // ---------- wordlist read-aloud ----------
@@ -3293,7 +3481,7 @@ function markSpelling(buttons, on) {
 
 // Read a card's spelling out, lighting up `buttons` meanwhile. Pressing a button for the word
 // already being spelled stops it instead. Any other sound (stopAudio) stops it too.
-async function speakSpelling(card, buttons = []) {
+async function speakSpelling(card, buttons = [], { onStep } = {}) {
   if (!card) return;
   const key = cardKey(card);
   if (spelling?.key === key) {
@@ -3318,6 +3506,7 @@ async function speakSpelling(card, buttons = []) {
         if (wait) await pause(wait);
         const part = step.word ? null : await parts.get(sampleUrl(step.say, 'sp'));
         if (run !== spellRun) return;
+        onStep?.(step); // e.g. the reader's pop-up lights up the part being read
         if (step.word) await speakAndWait(card.thai, 'th');
         else if (!part || !(await playSample(part, speedFor('sp')))) await speakAndWait(step.say, 'sp');
         wait = SPELL_STEP_PAUSE;
@@ -3325,6 +3514,7 @@ async function speakSpelling(card, buttons = []) {
       wait = SPELL_SYLLABLE_PAUSE; // groups are syllables (school method) or words
     }
   } finally {
+    onStep?.(null);
     if (spelling?.run === run) {
       markSpelling(buttons, false);
       spelling = null;
@@ -3514,15 +3704,17 @@ function bindEvents() {
   [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish'], [els.readerSpaces, 'readerSpaces']].forEach(([btn, key]) => {
     btn.addEventListener('click', () => {
       setPreferences({ [key]: !getPreferences()[key] });
-      hideReaderWord(); // the lines move
+      hideWordPop(); // the lines move
       applyReaderToggles();
     });
   });
   // A tap anywhere else closes a word's pop-up.
+  // (By the path the click took: a button that redraws itself when pressed, like the pop-up's add to
+  // Flashcards, has left the page by now, so e.target.closest would find no pop-up and close it.)
   document.addEventListener('click', (e) => {
-    if (readerWord && !e.target.closest('.rw, .reader-pop')) hideReaderWord();
+    if (popAnchor && !e.composedPath().some((n) => n === els.readerPop || n === popAnchor || n.classList?.contains('rw'))) hideWordPop();
   });
-  window.addEventListener('resize', () => { if (readerWord) hideReaderWord(); });
+  window.addEventListener('resize', () => { if (popAnchor) hideWordPop(); });
 
   els.deckPickerSearch.addEventListener('input', (e) => {
     state.pickerFilter = e.target.value;

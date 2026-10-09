@@ -1268,9 +1268,14 @@ body { display: flex; flex-direction: column; }
 }
 
 .wordlist {
+  position: relative; /* the word pop-up (#reader-pop) is placed in it, under a row's Thai */
   max-width: 1000px;
   margin: 0 auto;
 }
+/* A row's Thai opens the word pop-up (showWordPop); it's lit while its pop-up is open. */
+.wordtable td.col-thai { cursor: pointer; }
+.wordtable td.col-thai:hover, .wordtable td.col-thai:focus-visible { color: var(--accent); outline: none; }
+.wordtable td.col-thai.on { color: var(--accent); }
 
 .wordlist-deck-name {
   color: var(--ink);
@@ -1408,30 +1413,64 @@ body { display: flex; flex-direction: column; }
 .reader-pop[hidden] { display: none; }
 .pop-tr { color: var(--accent); font-style: italic; margin-right: 8px; }
 .pop-en { color: var(--ink); }
-/* The meaning, then the กข spell-aloud button at the right; the written spelling under both once
-   it's pressed. */
+/* The meaning, on one line. */
 .pop-row { display: flex; align-items: center; gap: 8px; }
 .pop-text { flex: 1; min-width: 0; }
-.pop-spell {
-  flex: none;
+/* Under the big word: add to Flashcards, spell aloud and play, as on a Topics row. */
+.pop-actions { display: flex; justify-content: center; gap: 8px; margin: -2px 0 2px; }
+.pop-actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 34px;
-  height: 34px;
-  margin: -4px -6px -4px 0;
+  min-width: 38px;
+  height: 38px;
   padding: 0 6px;
   background: transparent;
   border: 0;
   border-radius: 50%;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 18px;
+  font-weight: 600;
   cursor: pointer;
 }
-.pop-spell:hover { color: var(--accent); background: var(--panel); }
-.pop-spell.playing { color: var(--accent); }
-.pop-spelling { margin: 6px 0 0; padding-top: 6px; border-top: 1px solid var(--border); color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-.pop-spelling[hidden] { display: none; }
+.pop-actions button:hover { color: var(--accent); background: var(--panel); }
+.pop-actions .review-icon { width: 18px; height: 18px; margin: 0; }
+.pop-actions .speaker-icon { width: 21px; height: 21px; }
+.pop-actions .pop-spell { font-size: 17px; }
+.pop-actions .row-review.added { color: var(--good); }
+.pop-actions .playing { color: var(--accent); }
+/* The word again, large, under the meaning: tap a letter, vowel or tone mark to hear its name
+   (partAt), which then shows below it and lights up briefly. */
+.pop-word {
+  position: relative; /* above its highlights (.pop-hit, .pop-reading), so they light it from behind */
+  z-index: 1;
+  margin: 6px 0 0;
+  color: var(--ink);
+  font-size: calc(56px * var(--fs, 1));
+  line-height: 1.7;
+  text-align: center;
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.pop-baseline { display: inline-block; width: 0; height: 0; }
+.pop-hit {
+  position: absolute;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 45%, transparent);
+  pointer-events: none;
+  animation: popHit .9s ease-out forwards;
+}
+@keyframes popHit { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
+/* While the word is spelt aloud: the part being read, lit until the next one. */
+.pop-reading {
+  position: absolute;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  pointer-events: none;
+  transition: none;
+}
 @media (max-width: 600px) {
   .reader { padding: 12px 12px 4px; }
   .reader-th { font-size: calc(24px * var(--fs, 1)); }
