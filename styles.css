@@ -785,17 +785,19 @@ button {
   pointer-events: none;
 }
 
+/* The card's circled buttons were made 50% larger on 2026-10-09 (the user's request): 72 → 108 px
+   here, 48 → 72 px on the phone (mobile.css). */
 .flip-btn {
   position: absolute;
   bottom: 18px;
   right: 18px;
-  width: 72px;
-  height: 72px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   background: var(--panel-2);
   color: var(--muted);
   border: 1px solid var(--border);
-  font-size: 36px;
+  font-size: 54px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -820,13 +822,13 @@ button {
   position: absolute;
   bottom: 18px;
   left: 18px; /* bottom left (was bottom centre until 2026-10-07) */
-  width: 72px;
-  height: 72px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   background: var(--panel-2);
   color: var(--muted);
   border: 1px solid var(--border);
-  font-size: 30px;
+  font-size: 45px;
   line-height: 1;
   z-index: 3;
   transition: color .15s, border-color .15s;
@@ -1093,13 +1095,13 @@ body { display: flex; flex-direction: column; }
   position: absolute;
   top: 18px;
   right: 18px;
-  width: 72px;
-  height: 72px;
+  width: 108px;
+  height: 108px;
   border-radius: 50%;
   background: var(--panel-2);
   color: var(--muted);
   border: 1px solid var(--border);
-  font-size: 30px;
+  font-size: 45px;
   line-height: 1;
   display: flex;
   align-items: center;
@@ -1116,20 +1118,20 @@ body { display: flex; flex-direction: column; }
    the speaker, and an invisible margin makes it an easier tap. */
 .auto-badge {
   position: absolute;
-  top: 70px;
-  right: 70px;
+  top: 92px;
+  right: 92px;
   z-index: 4;
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: var(--accent);
   color: var(--on-accent);
   box-shadow: 0 0 0 2px var(--panel);
-  font-size: 12px;
+  font-size: 18px;
   font-weight: 700;
-  line-height: 24px;
+  line-height: 36px;
   cursor: pointer;
 }
 .back .auto-badge { box-shadow: 0 0 0 2px var(--panel-2); }

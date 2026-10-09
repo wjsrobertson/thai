@@ -67,22 +67,22 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
   grid-area: card;
   max-width: none;
   aspect-ratio: auto;
-  height: clamp(240px, calc(42vh + (var(--fs, 1) - 1) * 50vh), calc(380px * var(--fs, 1))); /* taller with larger text */
+  height: clamp(270px, calc(46vh + (var(--fs, 1) - 1) * 50vh), calc(420px * var(--fs, 1))); /* taller with larger text, and room for the 72 px corner buttons */
 }
 .learn-pills { grid-area: pills; gap: 8px; }
 #prev-btn { grid-area: prev; justify-self: start; }
 #next-btn { grid-area: next; justify-self: end; }
 .nav-btn { width: 56px; height: 56px; font-size: 26px; }
 
-/* Corner controls shrink so they no longer cover the word. */
-.card .face { padding: 56px 16px; }
+/* Corner controls shrink so they no longer cover the word (72 px since 2026-10-09, from 48). */
+.card .face { padding: 84px 16px; }
 .pos-badge { top: 10px; left: 10px; height: 28px; min-width: 56px; padding: 0 10px; font-size: 13px; }
-.speak, .flip-btn, .spell-btn { width: 48px; height: 48px; }
+.speak, .flip-btn, .spell-btn { width: 72px; height: 72px; }
 .flip-btn, .spell-btn { bottom: 10px; }
-.spell-btn { left: 10px; font-size: 21px; }
-.speak { top: 10px; right: 10px; font-size: 22px; }
-.auto-badge { top: 40px; right: 40px; width: 20px; height: 20px; font-size: 11px; line-height: 20px; }
-.flip-btn { right: 10px; font-size: 26px; }
+.spell-btn { left: 10px; font-size: 32px; }
+.speak { top: 10px; right: 10px; font-size: 33px; }
+.auto-badge { top: 52px; right: 56px; width: 30px; height: 30px; font-size: 16px; line-height: 30px; } /* above the 84 px padding */
+.flip-btn { right: 10px; font-size: 39px; }
 
 /* 36px at 320px wide (where long phrases only just fit), rising faster than plain vw: about 49px
    on a 390px iPhone, 56px at 430px. */

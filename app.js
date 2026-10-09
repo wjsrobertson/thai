@@ -3034,9 +3034,11 @@ function partAt(el, x, y, reach = 30) {
   return bestDist <= reach ? best : null;
 }
 
-// A tap on a card's large Thai (2026-10-09, the user's request): a letter, vowel or tone mark says
-// its name and lights up, as in the word pop-up, instead of turning the card. `el` is the large Thai
-// showing (the Thai → English front, the English → Thai back), or null. True if a part was hit.
+// A tap on a card's Thai (2026-10-09, the user's request): a letter, vowel or tone mark says its name
+// and lights up, as in the word pop-up, instead of turning the card. `el` is the Thai showing: the
+// large Thai (the Thai → English front, the English → Thai back) or, since the same day, the smaller
+// Thai repeated on the Thai → English and Listen backs (cardThaiShown, recallThaiShown); or null.
+// True if a part was hit.
 const CARD_TAP_REACH = 8;
 function tapCardThai(el, e) {
   if (!el || !el.contains(e.target)) return false;
@@ -3046,16 +3048,7 @@ function tapCardThai(el, e) {
   flashPart(el.closest('.face'), hit.box);
   return true;
 }
-function cardLargeThai() {
-  if (!state.showingBack) return state.direction === 'th-en' ? els.thai : null;
-  return state.direction === 'en-th' ? els.english : null;
-}
-function recallLargeThai() {
-  const r = state.review;
-  if (!r?.current) return null;
-  if (!r.flipped) return r.current.dir === 'th-en' ? els.reviewPrompt : null;
-  return r.current.dir === 'en-th' ? els.reviewMain : null;
-}
+
 
 // While the word is spelt aloud, the part being read stays lit (a letter name: its letter; the
 // school method: its syllable, or its tone mark; at the end, the whole word). `at` lists the
@@ -3800,7 +3793,7 @@ function bindEvents() {
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     if (e.target.closest('.listen-btn')) return;
-    if (tapCardThai(cardLargeThai(), e)) return; // a letter of the large Thai: named, not a turn
+    if (tapCardThai(cardThaiShown(), e)) return; // a letter of the Thai: named, not a turn
     flipCard();
   });
 
@@ -3913,7 +3906,7 @@ function bindEvents() {
   els.reviewCard.addEventListener('click', (e) => {
     const r = state.review;
     if (!r || e.target.closest('button')) return;
-    if (tapCardThai(recallLargeThai(), e)) return; // a letter of the large Thai: named, not a turn
+    if (tapCardThai(recallThaiShown(), e)) return; // a letter of the Thai: named, not a turn
     if (!r.revealed) revealAnswer();
     else turnReviewCard();
   });

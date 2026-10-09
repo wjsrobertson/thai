@@ -1611,6 +1611,16 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
 - **Unchanged:** the card's circled buttons (speaker, ⟳, ก), which were already large.
 - **Checked:** at 390 px a Topics row's Thai keeps 172 px beside the three icons, and nothing
   overflows.
+- **The card's circled buttons, 50% larger as well** (same day): 72 → 108 px on desktop and 48 → 72 px
+  on the phone. The A badge moved to sit on the new speaker's edge.
+  - **Phone room:** the face's padding went from 56 to 84 px, and the card from 42vh to 46vh
+    (240–380 px to 270–420 px), so the word keeps clear of the buttons.
+  - **Checked:** 216 faces each on phone and desktop (idioms, doctor phrases and dishes, both
+    directions, front and back), testing text lines against the buttons' boxes. The first run was
+    void: no words were in Flashcards, so no card showed. The rerun found two phone overlaps, where
+    a long idiom's transliteration met the badge, so the badge moved up 4 px.
+- **The smaller Thai on a Thai → English or Listen back is tappable too** (same day): letters name
+  themselves, as on the large Thai (`tapCardThai` with `cardThaiShown` and `recallThaiShown`).
 
 The 🔊 emoji came in each device's own colours (blue on some), while every other icon is a line in
 the text colour. The user asked for it to match. It's now `speakerIcon()` (via `lineIcon`, class
