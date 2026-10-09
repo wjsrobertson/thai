@@ -1,4 +1,4 @@
-import { letterSpelling, letterStep, schoolSpelling, spellingText, isSpellable } from './spell.js';
+import { letterSpelling, letterStep, schoolSpelling, isSpellable } from './spell.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -22,7 +22,6 @@ const els = {
   backThai: document.getElementById('card-back-thai'),
   english: document.getElementById('card-english'),
   note: document.getElementById('card-note'),
-  cardSpelling: document.getElementById('card-spelling'),
   cardSpell: document.getElementById('card-spell'),
   cardSpellFront: document.getElementById('card-spell-front'), // Thai → English only: the front is Thai
   speakButtons: document.querySelectorAll('.speak-btn'),
@@ -71,7 +70,6 @@ const els = {
   reviewSpell: document.getElementById('review-spell'),
   reviewSpellBack: document.getElementById('review-spell-back'),
   reviewBackThai: document.getElementById('review-back-thai'),
-  reviewSpelling: document.getElementById('review-spelling'),
   reviewPrompt: document.getElementById('review-prompt'),
   reviewSpeak: document.getElementById('review-speak'),
   reviewFlip: document.getElementById('review-flip'),
@@ -643,7 +641,6 @@ function renderCard() {
       els.english.textContent = 'No cards available.';
       els.note.textContent = '';
     }
-    els.cardSpelling.hidden = true;
     els.cardSpell.hidden = true;
     els.cardSpellFront.hidden = true;
     setFlipped(false);
@@ -2461,9 +2458,8 @@ function presentEntry() {
   els.reviewMain.className = 'english' + (thaiFirst ? '' : ' back-th');
   els.reviewTranslit.textContent = card.translit;
   noteText(els.reviewNote, card.note || '');
+  // The spelling is only spoken (its written line on the back went on 2026-10-09, the user's call).
   const groups = spellingFor(card);
-  els.reviewSpelling.textContent = groups ? spellingText(groups) : '';
-  els.reviewSpelling.hidden = !groups;
   // Spell it aloud: on the front only when it shows the Thai (as on Flashcards' card).
   els.reviewSpell.hidden = !thaiFirst || !groups;
   els.reviewSpellBack.hidden = !groups;
@@ -2880,8 +2876,7 @@ function showWordPop(anchor, card, host = els.reader) {
   const big = document.createElement('div');
   big.className = 'pop-word';
   big.lang = 'th';
-  // An empty inline-block at the end sits on the baseline: partAt measures from it.
-  big.append(card.thai, Object.assign(document.createElement('span'), { className: 'pop-baseline' }));
+  big.textContent = card.thai;
   big.addEventListener('click', (e) => {
     const hit = partAt(big, e.clientX, e.clientY);
     if (!hit) return;
@@ -2963,6 +2958,7 @@ let glyphCanvas = null;
 
 function partBoxes(el) {
   const node = el.firstChild;
+  if (node?.nodeType !== Node.TEXT_NODE) return []; // e.g. Listen's sound button in place of the Thai
   const text = node.data;
   const clusters = [];
   for (let i = 0; i < text.length; i++) {
@@ -2971,14 +2967,25 @@ function partBoxes(el) {
     if (joins && clusters.length) clusters[clusters.length - 1].push(i);
     else clusters.push([i]);
   }
-  const baseline = el.querySelector('.pop-baseline').getBoundingClientRect().bottom;
-  const ascent = (t) => measureGlyphs(el, t).actualBoundingBoxAscent;
   const range = document.createRange();
-  const parts = [];
-  for (const c of clusters) {
+  const rects = clusters.map((c) => {
     range.setStart(node, c[0]);
     range.setEnd(node, c[c.length - 1] + 1);
-    const r = range.getBoundingClientRect();
+    return range.getBoundingClientRect();
+  });
+  if (!rects.length) return [];
+  // The baseline: an empty inline-block put after the text sits on it (on the last line). Every line's
+  // box is the same height, so each cluster's baseline is the same distance below its line's top: a
+  // phrase that wraps on a card works too.
+  const marker = Object.assign(document.createElement('span'), { style: 'display:inline-block;width:0;height:0' });
+  el.append(marker);
+  const below0 = marker.getBoundingClientRect().bottom - rects[rects.length - 1].top;
+  marker.remove();
+  const ascent = (t) => measureGlyphs(el, t).actualBoundingBoxAscent;
+  const parts = [];
+  clusters.forEach((c, n) => {
+    const r = rects[n];
+    const baseline = r.top + below0;
     const [base, ...marks] = c;
     const above = marks.filter((i) => MARK_ABOVE.test(text[i]));
     const below = marks.filter((i) => MARK_BELOW.test(text[i]));
@@ -2998,12 +3005,13 @@ function partBoxes(el) {
     }
     if (below.length) add(below[0], baseline, r.bottom);
     if (am !== undefined) add(am, r.top, r.bottom, right, r.right);
-  }
+  });
   return parts;
 }
 
-// The part of the big word at (x, y), or the nearest within a short way of it; null if none.
-function partAt(el, x, y) {
+// The part of the big word at (x, y), or the nearest within `reach` of it; null if none. (On a card,
+// where a tap anywhere else turns it, the reach is short.)
+function partAt(el, x, y, reach = 30) {
   let best = null;
   let bestDist = Infinity;
   for (const p of partBoxes(el)) {
@@ -3015,16 +3023,40 @@ function partAt(el, x, y) {
       best = p;
     }
   }
-  return bestDist <= 30 ? best : null;
+  return bestDist <= reach ? best : null;
+}
+
+// A tap on a card's large Thai (2026-10-09, the user's request): a letter, vowel or tone mark says
+// its name and lights up, as in the word pop-up, instead of turning the card. `el` is the large Thai
+// showing (the Thai → English front, the English → Thai back), or null. True if a part was hit.
+const CARD_TAP_REACH = 8;
+function tapCardThai(el, e) {
+  if (!el || !el.contains(e.target)) return false;
+  const hit = partAt(el, e.clientX, e.clientY, CARD_TAP_REACH);
+  if (!hit) return false;
+  speak(hit.step.say, 'sp');
+  flashPart(el.closest('.face'), hit.box);
+  return true;
+}
+function cardLargeThai() {
+  if (!state.showingBack) return state.direction === 'th-en' ? els.thai : null;
+  return state.direction === 'en-th' ? els.english : null;
+}
+function recallLargeThai() {
+  const r = state.review;
+  if (!r?.current) return null;
+  if (!r.flipped) return r.current.dir === 'th-en' ? els.reviewPrompt : null;
+  return r.current.dir === 'en-th' ? els.reviewMain : null;
 }
 
 // While the word is spelt aloud, the part being read stays lit (a letter name: its letter; the
 // school method: its syllable, or its tone mark; at the end, the whole word). `at` lists the
-// characters' indexes (the spelling steps' `at`); none clears it.
+// characters' indexes (the spelling steps' `at`); none clears it. `el` holds the word: the pop-up's
+// big word, or the Thai on a Flashcards or Recall card (the light goes on the card's face).
 function lightParts(el, at) {
-  const pop = el.closest('.reader-pop');
-  pop.querySelector('.pop-reading')?.remove();
-  if (!at?.length || !el.isConnected) return;
+  const pop = el.closest('.reader-pop, .face');
+  pop?.querySelector('.pop-reading')?.remove();
+  if (!pop || !at?.length || !el.isConnected) return;
   const boxes = partBoxes(el).filter((p) => at.includes(p.i)).map((p) => p.box);
   if (!boxes.length) return;
   const b = {
@@ -3032,6 +3064,24 @@ function lightParts(el, at) {
     top: Math.min(...boxes.map((x) => x.top)), bottom: Math.max(...boxes.map((x) => x.bottom)),
   };
   pop.append(partHighlight(pop, b, 'pop-reading'));
+}
+
+// The element showing the card's Thai as text right now, for lighting it up as it's spelt (null when
+// that side has none: English → Thai's front, Listen's sound button). Flashcards and Recall alike:
+// Thai → English shows it on the front and again on the back; the other two on the back only.
+function cardThaiShown() {
+  if (!state.showingBack) return state.direction === 'th-en' ? els.thai : null;
+  return state.direction === 'en-th' ? els.english : els.backThai;
+}
+function recallThaiShown() {
+  const r = state.review;
+  if (!r?.current) return null;
+  if (!r.flipped) return r.current.dir === 'th-en' ? els.reviewPrompt : null;
+  return r.current.dir === 'en-th' ? els.reviewMain : els.reviewBackThai;
+}
+// speakSpelling's onStep for a card: light each part on the side showing when the spelling began.
+function lightOnCard(el) {
+  return el ? (step) => lightParts(el, step?.at) : undefined;
 }
 
 // Text metrics in the big word's own font (canvas), for the height of a letter or a letter + mark.
@@ -3449,11 +3499,10 @@ function spellingFor(card) {
   return school || letterSpelling(card.thai);
 }
 
-// The spelling line on the current card's back.
+// The current card's spell-aloud buttons. The spelling is only spoken, lighting each part of the Thai
+// as it's read; its written line on the back went on 2026-10-09 (the user's call).
 function renderSpelling() {
   const groups = spellingFor(currentCard());
-  els.cardSpelling.textContent = groups ? spellingText(groups) : '';
-  els.cardSpelling.hidden = !groups;
   els.cardSpell.hidden = !groups;
   // On the front only when it shows the Thai: in English → Thai it would give the answer away.
   els.cardSpellFront.hidden = !groups || state.direction === 'en-th'; // Thai → English and Listen
@@ -3734,7 +3783,7 @@ function bindEvents() {
 
   [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a flip
-    speakSpelling(currentCard(), [els.cardSpell, els.cardSpellFront]);
+    speakSpelling(currentCard(), [els.cardSpell, els.cardSpellFront], { onStep: lightOnCard(cardThaiShown()) });
   }));
   els.card.addEventListener('click', (e) => {
     // Don't flip if clicking the speak or flip button (flip-btn calls flipCard itself).
@@ -3743,6 +3792,7 @@ function bindEvents() {
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     if (e.target.closest('.listen-btn')) return;
+    if (tapCardThai(cardLargeThai(), e)) return; // a letter of the large Thai: named, not a turn
     flipCard();
   });
 
@@ -3849,12 +3899,13 @@ function bindEvents() {
   [els.reviewSpell, els.reviewSpellBack].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a tap on the card
     const entry = state.review?.current;
-    if (entry) speakSpelling(state.cardIndex.get(entry.key).card, [els.reviewSpell, els.reviewSpellBack]);
+    if (entry) speakSpelling(state.cardIndex.get(entry.key).card, [els.reviewSpell, els.reviewSpellBack], { onStep: lightOnCard(recallThaiShown()) });
   }));
   // Tapping the card turns it, as on Flashcards: to the answer first (as Show does), then either way.
   els.reviewCard.addEventListener('click', (e) => {
     const r = state.review;
     if (!r || e.target.closest('button')) return;
+    if (tapCardThai(recallLargeThai(), e)) return; // a letter of the large Thai: named, not a turn
     if (!r.revealed) revealAnswer();
     else turnReviewCard();
   });

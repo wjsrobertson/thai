@@ -875,7 +875,7 @@ make it a Flashcards mode. Where older notes below say "Review" for the page, it
   - **The front** has the prompt (large, fitted by `fitText`, which `fitCardText` now runs for both
     cards), the eye button, the hint, and the 🔊 and spelling buttons (Thai → English only).
   - **The back** is laid out as Flashcards' (`renderCard`): for Thai → English, the Thai at the
-    English's size, then the transliteration, English, note and spelling line. English → Thai
+    English's size, then the transliteration, English and note (the spelling line went on 2026-10-09). English → Thai
     leads with the transliteration, then the large Thai.
   - **Turning it:** Show, Enter or a tap turns it to the back (`setReviewFlipped`). After that a
     tap turns it either way.
@@ -1359,6 +1359,27 @@ The other ten passages:
           and `speakSpelling` calls `onStep` as it reads each one.
         - **Tested** on ข้าว in both styles: ข, ้, า, ว; then the syllable, ้, the word. The
           highlight clears at the end.
+        - **Tapping a card's large Thai** (2026-10-09, the user's request) names the tapped part and
+          lights it, as in the pop-up (`tapCardThai`), instead of turning the card.
+          - **Where:** the Thai → English front and the English → Thai back, on Flashcards and
+            Recall (`cardLargeThai`, `recallLargeThai`).
+          - **Turning still works:** a tap counts only on or within 8 px of a part
+            (`CARD_TAP_REACH`). Anywhere else on the card turns it as before, or on Recall reveals
+            the answer.
+          - **Tested** on ดินพอกหางหมู: all 12 parts on each of the three sides were named and lit,
+            with one sound each, and the card didn't turn. A tap below the word still turned it.
+        - **On Flashcards and Recall too** (2026-10-09, the user's request): the card's กข button
+          lights each part of the card's Thai as it's read (`lightOnCard`). The highlight goes on the
+          card face, behind the text, which is `z-index: 1`.
+          - **Where the Thai is** (`cardThaiShown`, `recallThaiShown`): Thai → English, the front word
+            and the back's repeat; English → Thai and Listen, the back only. A side with no Thai
+            text gets no highlight.
+          - **Wrapped phrases:** `partBoxes` works on any element whose only child is the word's text
+            node. It finds the baseline from a temporary empty inline-block at the end, applied per
+            line (every line box is the same height), so phrases that wrap on a card work.
+          - **Tested** on ดินพอกหางหมู in five cases: Browse Thai → English front and back, Browse
+            English → Thai back, Recall Thai → English front, and Recall English → Thai after reveal.
+            Each lit 12 parts in turn, all inside the text, then cleared.
     - **The word, large** (2026-10-09, the user's request): under the meaning, the pop-up shows the
       word big (`.pop-word`, 56 px; smaller if it would overflow, `fitPopWord`). Tapping any part of
       it says that part's name, the same clip as the spelling uses, e.g. ค gives คอ ควาย and ่
@@ -2180,8 +2201,10 @@ character, which some fonts draw noticeably low.
 
 ## Spelling (2026-10-06), `spell.js`
 
-Every word and phrase card shows its spelling on the card back. A spell-aloud button (ก with sound
-waves, `spellIcon()`) reads it aloud.
+Every word and phrase card has a spell-aloud button (ก with sound waves, `spellIcon()`) that reads its
+spelling aloud, lighting each part of the Thai as it's read. The spelling was also written out on the
+card back (`#card-spelling`, `#review-spelling`) until 2026-10-09; the user found hearing it enough, so
+that line went.
 - **On the card:** bottom left (since 2026-10-07, at the user's request; it was bottom centre).
   🔊 moved to the top right, ⟳ stays bottom right, and the "1 / 24" badge is top left.
   - It's always on the back.

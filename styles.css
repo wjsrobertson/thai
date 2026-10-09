@@ -1087,16 +1087,6 @@ body { display: flex; flex-direction: column; }
 .card .face-body::before,
 .card .face-body::after { content: ''; flex: 1 0 0; }
 
-/* The word's spelling (spell.js), under the note on the card back. */
-.spelling {
-  margin-top: 10px;
-  max-width: 92%;
-  font-size: calc(14px * var(--fs, 1));
-  line-height: 1.5;
-  color: var(--muted);
-  opacity: .9;
-}
-.spelling[hidden] { display: none; }
 
 /* The card's sound button, top right (moved from bottom left on 2026-10-07). */
 .speak {
@@ -1454,7 +1444,6 @@ body { display: flex; flex-direction: column; }
   -webkit-user-select: none;
   user-select: none;
 }
-.pop-baseline { display: inline-block; width: 0; height: 0; }
 .pop-hit {
   position: absolute;
   border-radius: 6px;
@@ -1463,7 +1452,9 @@ body { display: flex; flex-direction: column; }
   animation: popHit .9s ease-out forwards;
 }
 @keyframes popHit { 0%, 40% { opacity: 1; } 100% { opacity: 0; } }
-/* While the word is spelt aloud: the part being read, lit until the next one. */
+/* While the word is spelt aloud: the part being read, lit until the next one (in the pop-up, or on a
+   Flashcards or Recall card's face, behind its text). */
+.card .face > .thai, .card .face-body { position: relative; z-index: 1; }
 .pop-reading {
   position: absolute;
   border-radius: 6px;
