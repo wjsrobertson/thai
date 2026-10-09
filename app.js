@@ -50,6 +50,12 @@ const els = {
   reviewByHelp: document.getElementById('review-by-help'),
   reviewBySwitch: document.querySelector('#review-by .segmented'),
   reviewOnlyEmptyHint: document.getElementById('review-only-empty-hint'),
+  reviewOnlyAddAll: document.getElementById('review-only-add-all'),
+  reviewOnlyAddName: document.getElementById('review-only-add-name'),
+  reviewOnlyYes: document.getElementById('review-only-yes'),
+  reviewOnlyIndividually: document.getElementById('review-only-individually'),
+  reviewOnlyTopics: document.getElementById('review-only-topics'),
+  reviewOnlyEverything: document.getElementById('review-only-everything'),
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
@@ -543,8 +549,14 @@ function renderReviewOnly() {
     const scope = flashScope();
     els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Flashcards yet'
       : !scope || scope.kind === 'topic' ? "None of this topic's words are in Flashcards yet" : `None of the words in ${scope.name} are in Flashcards yet`;
-    // "Switch to Everything" (as on Review), when that would show something.
-    els.reviewOnlyEmptyHint.hidden = scope?.kind === 'all' || !Object.keys(reviewWords()).length;
+    // Three ways out (2026-10-10, the user's wording): add the whole topic (or group) here; add words
+    // one by one in Topics; or switch to Everything, when that would show something. Each
+    // has a button in its line. On Everything there's no topic to add, so the second line stands alone.
+    const all = scope?.kind === 'all';
+    els.reviewOnlyAddAll.hidden = all || !state.cards.length;
+    els.reviewOnlyAddName.textContent = `'${scope?.name || 'this topic'}'`;
+    els.reviewOnlyIndividually.textContent = els.reviewOnlyAddAll.hidden ? 'Add words' : 'Or add words individually';
+    els.reviewOnlyEmptyHint.hidden = all || !Object.keys(reviewWords()).length;
   }
 }
 
@@ -3907,6 +3919,17 @@ function bindEvents() {
       toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Flashcards`, { tone: 'good' });
     }
   });
+  // Flashcards with none of the topic's words in yet: "Add all words from '…'? Yes" (the question is
+  // the confirmation), or the Topics page to pick them.
+  els.reviewOnlyYes.addEventListener('click', () => {
+    const words = reviewWords();
+    const keys = state.cards.map((c) => c.key).filter((key) => !(key in words));
+    if (!keys.length) return;
+    setInReview(keys, true);
+    toast(`✓ Added ${keys.length} ${keys.length === 1 ? 'word' : 'words'} to Flashcards`, { tone: 'good' });
+  });
+  els.reviewOnlyTopics.addEventListener('click', () => setView('wordlist'));
+  els.reviewOnlyEverything.addEventListener('click', () => setFlashcardsBy('all'));
   els.confirmOk.addEventListener('click', () => closeConfirm(true));
   els.confirmCancel.addEventListener('click', () => closeConfirm(false));
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));

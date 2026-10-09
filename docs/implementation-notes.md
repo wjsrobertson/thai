@@ -1144,6 +1144,19 @@ a category alone, on every page).
   - **Empty message:** on Everything with nothing in Review, "No words in Review yet". By topic,
     the message gains Review's "Or switch to Everything…" line (`#review-only-empty-hint`), hidden
     when Review is empty.
+    - **Reworded 2026-10-10 (the user's text):** under the title, three ways out:
+      1. "Add all words from 'Time of Day'? [Yes]". The question is the confirmation, so Yes adds
+         the topic's (or group's) words at once, with a toast.
+      2. "Or add words individually in [Topics] using the 🔁 button and they'll show up here". The
+         Topics button goes to the Topics page, and there's no full stop (the user's call).
+      3. "Or switch to [Everything] to see all your added words". It was "…with the button above…"; now
+         the word is a button that switches Flashcards to Everything (`setFlashcardsBy('all')`).
+      - **All three are small accent buttons in their line** (`.review-only-btn`). Topics and
+        Everything were links at first; the user asked for them to match Yes.
+    - **On Everything:** there's no topic to add, so line 1 is hidden and line 2 starts "Add words
+      in Topics…".
+    - **Tested in Chromium:** Yes added Time of Day's 24 words and its first card showed; the link
+      opened the topic's Topics page; Everything showed the words added elsewhere.
   - **Tested in Chromium:**
     - All 7 Review words from two topics showed on Everything.
     - Changing the Topics page's topic left the round on the same card.
