@@ -1603,6 +1603,15 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
 
 ## Speaker icon (2026-10-08)
 
+**Plain icons 50% larger** (2026-10-09, the user's request).
+- **Which icons:** the ones with no circle round them: Topics rows and search results (add to
+  Flashcards, spell, play), the reader's sentence speakers, and the word pop-up's three buttons.
+- **Sizes:** icons went from 18–21 px to 27–31 px, and the ก spell icon from 17 to 26 px. Their
+  buttons went from 34 to 50 px (48 px for the reader's speakers, 54 px in the pop-up).
+- **Unchanged:** the card's circled buttons (speaker, ⟳, ก), which were already large.
+- **Checked:** at 390 px a Topics row's Thai keeps 172 px beside the three icons, and nothing
+  overflows.
+
 The 🔊 emoji came in each device's own colours (blue on some), while every other icon is a line in
 the text colour. The user asked for it to match. It's now `speakerIcon()` (via `lineIcon`, class
 `.speaker-icon`), and the same SVG is inline in index.html. It appears on:
