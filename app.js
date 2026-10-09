@@ -709,7 +709,14 @@ function updateStats() {
 }
 
 // `instant` skips the flip animation (.no-anim).
+// Turning a card stops a spelling being read out (2026-10-09, the user's request): it's lighting the
+// side being turned away. (While one is read, any sound playing is the spelling's own.)
+function stopSpellingOnTurn(turning) {
+  if (turning && spelling) stopAudio();
+}
+
 function setFlipped(flipped, { instant = false } = {}) {
+  stopSpellingOnTurn(state.showingBack !== flipped);
   state.showingBack = flipped;
   if (instant) els.card.classList.add('no-anim');
   els.card.classList.toggle('flipped', flipped);
@@ -2478,6 +2485,7 @@ function presentEntry() {
 // (revealAnswer); after, a tap turns it either way.
 function setReviewFlipped(flipped, { instant = false } = {}) {
   const r = state.review;
+  stopSpellingOnTurn(!!r && r.flipped !== flipped);
   if (r) r.flipped = flipped;
   if (instant) els.reviewCard.classList.add('no-anim');
   els.reviewCard.classList.toggle('flipped', flipped);

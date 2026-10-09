@@ -1377,6 +1377,11 @@ The other ten passages:
           - **Wrapped phrases:** `partBoxes` works on any element whose only child is the word's text
             node. It finds the baseline from a temporary empty inline-block at the end, applied per
             line (every line box is the same height), so phrases that wrap on a card work.
+          - **Turning the card stops it** (2026-10-09, the user's request). Before, only a turn that
+            spoke the word stopped it. `setFlipped` and `setReviewFlipped` now call `stopAudio` when a
+            spelling is running and the side changes (`stopSpellingOnTurn`). Tested with ⟳ and with a
+            tap on Flashcards, and with reveal and turn on Recall: the button is released, the
+            highlight goes, and nothing more plays.
           - **Tested** on ดินพอกหางหมู in five cases: Browse Thai → English front and back, Browse
             English → Thai back, Recall Thai → English front, and Recall English → Thai after reveal.
             Each lit 12 parts in turn, all inside the text, then cleared.
