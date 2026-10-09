@@ -1401,6 +1401,44 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
       - The automatic meanings needed picks again: ต่อย 'to punch' (not 'to sting'),
         หนัง 'film', รอบ 'round', ลูก as the classifier for dice, and ฝรั่ง 'Westerner'.
       - Audio: 24,597 samples (+713).
+  - **Thai naturalness review** (2026-10-09). The user asked for every story to read as a Thai
+    person would write or say it, so the learner doesn't pick up bad habits. All 1,005 stories
+    were written by the AI, none by native speakers.
+    - **How:** 8 parallel review agents each took about 125 stories, working from a brief and a
+      validator (scratchpad `review/`: `BRIEF.md`, `validate.py`, `check.py`, `apply_review.py`).
+      Each proposal was read before it was applied.
+    - **What changed:** 614 stories; 1,132 Thai lines rewritten or added, plus 13 English-only
+      fixes.
+    - **Problems fixed:**
+      - Missing links: ก็, เลย, จน, พอ…ก็, or a missing space before "so" เลย.
+      - Speech particles missing in dialogue, or wrong for the speaker.
+      - English calques: หัวปวด, ไปทำงานด้วยรถเมล์, มีน้ำตา.
+      - Wrong collocations: ดูกระจก → ส่องกระจก, เล่นซอ → สีซอ.
+      - Classifier order.
+      - Royal and news register.
+      - Crammed vocabulary-list lines.
+      - Nonsense slang lines.
+      - About 40 wrong facts, among them:
+        - women may never touch monks (not "in some places");
+        - a first driving licence is a 2-year temporary one;
+        - ranks that skipped a level;
+        - sums that didn't add up;
+        - ASEAN now has 11 members.
+    - **Rules kept:**
+      - Every story keeps at least 2 words from each of its topics. That held every topic at 5+.
+        Errands › Massage dipped to 4 when a story that only matched by accident was fixed, and
+        rs-traditional-clinic was given two real massage words.
+      - Phrase cards are kept verbatim even where they're unnatural, and flagged instead.
+      - Slang stays strong.
+      - Teaching devices (tone pairs, pronoun registers) stay.
+    - **`review_fixes.py`** (scratchpad `decks/`):
+      - `NEW` holds shared words the rewrites needed: ทราบ, เรียกร้อง, ที่ดิน, ขวา 'right'…
+      - `STORY_NEW` holds new senses of words that already have cards, scoped to one story: เกาะ
+        'to perch', เหรียญ 'medal', ordinal ที่, and เมื่อ 'when' outside the past. A shared NEW
+        would override the card meaning in every story; for example, every island would become
+        "to perch".
+      - `PICKS` holds the reviewers' meaning picks.
+    - **Typography:** a space now follows ๆ (ค่อย ๆ เดิน, not ค่อย ๆเดิน), as in standard Thai.
     - Audit: 0 errors. All 404 batch 1–3 stories opened from a matching topic in the browser
       test, each sentence with its sample.
 
