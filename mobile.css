@@ -81,6 +81,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .flip-btn, .spell-btn { bottom: 10px; }
 .spell-btn { left: 10px; font-size: 21px; }
 .speak { top: 10px; right: 10px; font-size: 22px; }
+.auto-badge { top: 40px; right: 40px; width: 20px; height: 20px; font-size: 11px; line-height: 20px; }
 .flip-btn { right: 10px; font-size: 26px; }
 
 /* 36px at 320px wide (where long phrases only just fit), rising faster than plain vw: about 49px
@@ -175,3 +176,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 /* Adding to Review */
 /* The Review button and speaker sit side by side, centred in the row's height. */
 .wordtable tbody td.col-audio { align-self: stretch; display: flex; align-items: center; justify-content: flex-end; }
+
+/* Reader: drop the "Show" label (screen readers keep the group's "Show under each line") so
+   Transliteration, English and Word gaps fit one row at the Larger text size. */
+.reader-show { display: none; }

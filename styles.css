@@ -1121,6 +1121,41 @@ body { display: flex; flex-direction: column; }
   color: var(--accent);
   border-color: var(--accent);
 }
+/* Auto-play's A, on the speaker's lower-left edge: filled when on; grey with a slash when off (the
+   card then keeps quiet until the speaker is pressed). A ring in the face's colour sets it off from
+   the speaker, and an invisible margin makes it an easier tap. */
+.auto-badge {
+  position: absolute;
+  top: 70px;
+  right: 70px;
+  z-index: 4;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 2px var(--panel);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 24px;
+  cursor: pointer;
+}
+.back .auto-badge { box-shadow: 0 0 0 2px var(--panel-2); }
+.auto-badge[hidden] { display: none; }
+.auto-badge::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; }
+.auto-badge[aria-pressed="false"] { background: var(--panel-2); color: var(--muted); box-shadow: 0 0 0 1px var(--border), 0 0 0 3px var(--panel); }
+.back .auto-badge[aria-pressed="false"] { box-shadow: 0 0 0 1px var(--border), 0 0 0 3px var(--panel-2); }
+.auto-badge[aria-pressed="false"]::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  top: 50%;
+  border-top: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+}
 
 .learn-pills {
   display: flex;
@@ -1311,7 +1346,10 @@ body { display: flex; flex-direction: column; }
   border-radius: 14px;
 }
 .reader[hidden] { display: none; }
-.reader-toggles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 4px; }
+.reader-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-bottom: 4px; }
+.reader-toggles { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+/* The word-spacing toggle sits at the row's right end. */
+.reader-spaces { margin-left: auto; }
 .reader-show { color: var(--muted); font-size: calc(13px * var(--fs, 1)); margin-right: 2px; }
 .reader-toggle {
   padding: 5px 12px;
@@ -1370,6 +1408,30 @@ body { display: flex; flex-direction: column; }
 .reader-pop[hidden] { display: none; }
 .pop-tr { color: var(--accent); font-style: italic; margin-right: 8px; }
 .pop-en { color: var(--ink); }
+/* The meaning, then the กข spell-aloud button at the right; the written spelling under both once
+   it's pressed. */
+.pop-row { display: flex; align-items: center; gap: 8px; }
+.pop-text { flex: 1; min-width: 0; }
+.pop-spell {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  margin: -4px -6px -4px 0;
+  padding: 0 6px;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 17px;
+  cursor: pointer;
+}
+.pop-spell:hover { color: var(--accent); background: var(--panel); }
+.pop-spell.playing { color: var(--accent); }
+.pop-spelling { margin: 6px 0 0; padding-top: 6px; border-top: 1px solid var(--border); color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.pop-spelling[hidden] { display: none; }
 @media (max-width: 600px) {
   .reader { padding: 12px 12px 4px; }
   .reader-th { font-size: calc(24px * var(--fs, 1)); }

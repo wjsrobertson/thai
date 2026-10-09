@@ -151,11 +151,15 @@
         <h2 class="reading-name" id="reading-name"></h2>
         <p class="reading-desc" id="reading-desc"></p>
         <section class="reader" id="reader">
-          <div class="reader-toggles" role="group" aria-label="Show under each line">
-            <span class="reader-show">Show</span>
-            <button type="button" class="reader-toggle" id="reader-translit" aria-pressed="false">Transliteration</button>
-            <button type="button" class="reader-toggle" id="reader-english" aria-pressed="false">English</button>
-            <button type="button" class="reader-toggle" id="reader-spaces" aria-pressed="false">Spaces between words</button>
+          <div class="reader-tools">
+            <div class="reader-toggles" role="group" aria-label="Show under each line">
+              <span class="reader-show">Show</span>
+              <button type="button" class="reader-toggle" id="reader-translit" aria-pressed="false">Transliteration</button>
+              <button type="button" class="reader-toggle" id="reader-english" aria-pressed="false">English</button>
+            </div>
+            <!-- Spacing changes the Thai line itself, so it isn't one of the "Show" options. -->
+            <button type="button" class="reader-toggle reader-spaces" id="reader-spaces" aria-pressed="false"
+              aria-label="Spaces between words" title="Spaces between words">Word gaps</button>
           </div>
           <div class="reader-lines" id="reader-lines"></div>
           <div class="reader-pop" id="reader-pop" role="status" hidden></div>
@@ -170,6 +174,9 @@
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <!-- Auto-play on/off (renderAutoBadges): A on the speaker's edge. Off, the card keeps quiet
+                   until its speaker is pressed, so the sound doesn't give the answer away. -->
+              <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="spell-btn" id="card-spell-front" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
@@ -179,6 +186,9 @@
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
               <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <!-- Auto-play on/off (renderAutoBadges): A on the speaker's edge. Off, the card keeps quiet
+                   until its speaker is pressed, so the sound doesn't give the answer away. -->
+              <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="spell-btn" id="card-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>
@@ -213,6 +223,7 @@
           <div class="face front">
             <div class="face-overlay">
               <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <!-- In place of Show (2026-10-08): yellow until the card's been turned, then Learn's grey ⟳. -->
               <button type="button" class="flip-btn review-flip reveal" id="review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
               <button type="button" class="spell-btn review-spell" id="review-spell" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
@@ -222,6 +233,7 @@
           <div class="face back">
             <div class="face-overlay">
               <button type="button" class="speak review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <button type="button" class="flip-btn review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
               <button type="button" class="spell-btn review-spell" id="review-spell-back" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
             </div>

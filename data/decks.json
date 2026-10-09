@@ -898,7 +898,7 @@
       "group": "Consonants",
       "name": "Mid Class",
       "description": "The 9 mid-class consonants. A letter's class decides its syllable's tone. The back gives the letter's name (the letter + a word starting with it), which the audio says.",
-      "about": "Remember them: on the ground, a dancing child (ด เด็ก) wearing a headdress (ฎ ชฎา) pokes a fish (ป ปลา) in a basin (อ อ่าง) with an ox goad (ฏ ปฏัก), feeds a leaf (บ ใบไม้) to a turtle (ต เต่า), and puts a chicken (ก ไก่) on a plate (จ จาน).\n\nThai schoolchildren learn them as ไก่จิกเด็กตายบนปากโอ่ง, \"a chicken pecked a child to death on the rim of a jar\".",
+      "about": "Remember them: on the ground, a dancing child (ด เด็ก) wearing a headdress (ฎ ชฎา) pokes a fish (ป ปลา) in a basin (อ อ่าง) with an ox goad (ฏ ปฏัก), feeds a leaf (บ ใบไม้) to a turtle (ต เต่า), and puts a chicken (ก ไก่) on a plate (จ จาน).\n\nThai schoolchildren learn them as ไก่จิกเด็กตายบนปากโอ่ง, \"a chicken pecked a child to death on the rim of a jar\". Its เด็ก and ตาย also stand for ฎ and ฏ, which have the same sounds, and the full form names them: ไก่จิก เด็กตาย เฎ็กฏาย บนปากโอ่ง.",
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "จ", "translit": "jɔɔ jaan", "english": "j — plate", "note": "Mid class. Final: -t. Unaspirated, a soft j.", "say": "จอ จาน" },
@@ -909,7 +909,7 @@
         { "thai": "บ", "translit": "bɔɔ bai-máai", "english": "b — leaf", "note": "Mid class. Final: -p. The everyday b.", "say": "บอ ใบไม้" },
         { "thai": "ป", "translit": "pɔɔ plaa", "english": "p — fish", "note": "Mid class. Final: -p. Unaspirated p, halfway to b.", "say": "ปอ ปลา" },
         { "thai": "อ", "translit": "ɔɔ àang", "english": "silent carrier — basin", "note": "Mid class. Silent at the start of a syllable that begins with a vowel (อาหาร aa-hǎan); also the vowel ɔɔ (พอ phɔɔ).", "say": "ออ อ่าง" },
-        { "thai": "ไก่จิกเด็กตายบนปากโอ่ง", "translit": "gài jìk dèk taai bon pàak òong", "english": "a chicken pecked a child to death on the rim of a jar", "note": "Thai children's rhyme for the mid class: ก จ ด ต บ ป อ, plus ฎ ฏ." }
+        { "thai": "ไก่จิกเด็กตายบนปากโอ่ง", "translit": "gài jìk dèk taai bon pàak òong", "english": "a chicken pecked a child to death on the rim of a jar", "note": "Thai children's rhyme for the mid class: ก จ ด ต บ ป อ. เด็ก and ตาย also stand for ฎ and ฏ, which share their sounds; the full form says so: ไก่จิก เด็กตาย เฎ็กฏาย บนปากโอ่ง." }
       ]
     },
     {
@@ -918,7 +918,7 @@
       "group": "Consonants",
       "name": "High Class",
       "description": "The 11 high-class consonants, all aspirated or hissing sounds. An unmarked live syllable with one is rising.",
-      "about": "Remember them: up on a mountain-top pavilion (ศ ศาลา), a hermit (ษ ฤๅษี) sits on a stone pedestal (ฐ ฐาน), clashing tiny cymbals (ฉ ฉิ่ง). A tiger (ส เสือ) sneaks up and noses into his sack (ถ ถุง) for eggs (ข ไข่) and a bottle (ฃ ขวด), but a bee (ผ ผึ้ง) buzzes out of a wooden chest (ห หีบ), so the hermit slams the lid (ฝ ฝา) shut on it.\n\nThai schoolchildren learn them as ผีฝากถุงข้าวสารให้ฉัน, \"a ghost left a bag of rice with me\".",
+      "about": "Remember them: a tiger (ส เสือ) wants breakfast. It sniffs out a bag (ถ ถุง) of eggs (ข ไข่) and a bottle (ฃ ขวด) hidden in a chest (ห หีบ) under a pavilion (ศ ศาลา). It noses the lid (ฝ ฝา) open, and a bee (ผ ผึ้ง) stings it on the nose. Up on his stone seat (ฐ ฐาน), a hermit (ษ ฤๅษี) laughs and clashes his cymbals (ฉ ฉิ่ง).\n\nThai schoolchildren learn them as ผีฝากถุงข้าวสารให้ฉัน, \"a ghost left a bag of rice with me\". The other letters join the word with their sound: ฐ with ถุง, ศ ษ with สาร, and the obsolete ฃ with ข้าว.",
       "cards": [
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
         { "thai": "ฃ", "translit": "khɔ̌ɔ khùat", "english": "kh — bottle (obsolete)", "note": "High class. No longer used (ข replaced it), but still recited in the alphabet.", "say": "ขอ ขวด" },
@@ -931,7 +931,7 @@
         { "thai": "ษ", "translit": "sɔ̌ɔ rʉʉ-sǐi", "english": "s — hermit", "note": "High class. Final: -t. Sanskrit words: ภาษา (language), พิเศษ (special).", "say": "สอ ฤๅษี" },
         { "thai": "ส", "translit": "sɔ̌ɔ sʉ̌a", "english": "s — tiger", "note": "High class. Final: -t. The everyday high-class s: สวย sǔai (pretty).", "say": "สอ เสือ" },
         { "thai": "ห", "translit": "hɔ̌ɔ hìip", "english": "h — chest (box)", "note": "High class. Never a final. A silent ห in front of a low sonorant makes it high: หมา mǎa (dog).", "say": "หอ หีบ" },
-        { "thai": "ผีฝากถุงข้าวสารให้ฉัน", "translit": "phǐi fàak thǔng khâao-sǎan hâi chǎn", "english": "a ghost left a bag of rice with me", "note": "Thai children's rhyme for the high class: ผ ฝ ถ ข ส ห ฉ, plus ศ ษ ฐ (and the obsolete ฃ)." }
+        { "thai": "ผีฝากถุงข้าวสารให้ฉัน", "translit": "phǐi fàak thǔng khâao-sǎan hâi chǎn", "english": "a ghost left a bag of rice with me", "note": "Thai children's rhyme for the high class: ผ ฝ ถ ข ส ห ฉ. The others join the word with their sound: ฐ with ถุง, ศ ษ with สาร (and the obsolete ฃ with ข้าว)." }
       ]
     },
     {
@@ -940,7 +940,7 @@
       "group": "Consonants",
       "name": "Low Class — Paired",
       "description": "14 low-class consonants that share a sound with a high-class letter (ค and ข, ท and ถ, พ and ผ…). Having both lets Thai spell every tone.",
-      "about": "Remember them: down on the riverbank, a soldier (ท ทหาร) waves a flag (ธ ธง) as a Chinese junk (ภ สำเภา) docks. Queen Montho (ฑ มณโฑ) steps off carrying an offering tray (พ พาน), where an owl (ฮ นกฮูก) bares its teeth (ฟ ฟัน). An old man (ฒ ผู้เฒ่า) rings a bell (ฆ ระฆัง) and a crowd of people (ฅ คน) cheers, while an elephant (ช ช้าง) and a buffalo (ค ควาย), chained (ซ โซ่) to a tree (ฌ เฌอ), stamp along.",
+      "about": "Thai schoolchildren learn them as พ่อค้าฟันทองซื้อช้างฮ่อ, \"a gold-toothed merchant buys a Haw elephant\" (the Haw were Yunnanese caravan traders). Each word gives one sound, and the rarer letters with that sound join it: พ่อ for พ ภ, ค้า for ค ฅ ฆ, ฟัน for ฟ, ทอง for ท ธ ฑ ฒ, ซื้อ for ซ, ช้าง for ช ฌ, ฮ่อ for ฮ. Some schools use โชคภูโซ พุทโธ ไฮไฟ instead, which names ช ค ภ ซ พ ท ธ ฮ ฟ and leaves ฅ ฆ ฌ ฑ ฒ to learn by rote.\n\nEach of them is the low twin of a high-class letter with the same sound. The high rhyme ผีฝากถุงข้าวสารให้ฉัน gives ผ ฝ ถ ข ส ห ฉ, and their twins are พ ฟ ท ค ซ ฮ ช: the merchant's rhyme again, in another order. And a shortcut for any letter: if it isn't in the mid rhyme or the high rhyme, it's low.",
       "cards": [
         { "thai": "ค", "translit": "khɔɔ khwaai", "english": "kh — buffalo", "note": "Low class. Final: -k. The everyday low-class kh: คน khon (person).", "say": "คอ ควาย" },
         { "thai": "ฅ", "translit": "khɔɔ khon", "english": "kh — person (obsolete)", "note": "Low class. No longer used (ค replaced it), but still recited in the alphabet.", "say": "คอ คน" },
@@ -955,7 +955,9 @@
         { "thai": "พ", "translit": "phɔɔ phaan", "english": "ph — offering tray", "note": "Low class. Final: -p. The everyday ph: พ่อ phɔ̂ɔ (father).", "say": "พอ พาน" },
         { "thai": "ฟ", "translit": "fɔɔ fan", "english": "f — teeth", "note": "Low class. Final: -p. The everyday f: ไฟ fai (fire, light).", "say": "ฟอ ฟัน" },
         { "thai": "ภ", "translit": "phɔɔ sǎm-phao", "english": "ph — sailing junk", "note": "Low class. Final: -p. Pali/Sanskrit words: ภาษา (language), ภาพ (picture).", "say": "พอ สำเภา" },
-        { "thai": "ฮ", "translit": "hɔɔ nók-hûuk", "english": "h — owl", "note": "Low class. Never a final. Mostly sounds and loans: ฮา haa (funny).", "say": "ฮอ นกฮูก" }
+        { "thai": "ฮ", "translit": "hɔɔ nók-hûuk", "english": "h — owl", "note": "Low class. Never a final. Mostly sounds and loans: ฮา haa (funny).", "say": "ฮอ นกฮูก" },
+        { "thai": "พ่อค้าฟันทองซื้อช้างฮ่อ", "translit": "phɔ̂ɔ-kháa fan-thɔɔng sʉ́ʉ cháang hɔ̂ɔ", "english": "a gold-toothed merchant buys a Haw elephant", "note": "Thai children's rhyme for the paired low class: พ ค ฟ ท ซ ช ฮ, one word per sound. The rarer letters join the word with their sound: ภ with พ, ฅ ฆ with ค, ธ ฑ ฒ with ท, ฌ with ช." },
+        { "thai": "โชคภูโซ พุทโธ ไฮไฟ", "translit": "chôok-phuu-soo phút-thoo hai-fai", "english": "a sound-only rhyme (no real meaning)", "note": "Another Thai children's rhyme for the paired low class, used by some schools: ช ค ภ ซ พ ท ธ ฮ ฟ, with ฅ ฆ ฌ ฑ ฒ learnt by rote." }
       ]
     },
     {
@@ -983,9 +985,10 @@
       "id": "script-consonants-all",
       "category": "Thai Script",
       "group": "Consonants",
-      "name": "All Consonants ก–ถ",
-      "description": "The first half of the alphabet in order, for mixed review once the class topics are familiar. ฃ and ฅ are obsolete.",
-      "about": "Thai schoolchildren learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\".\n\nThe order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, and ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back.",
+      "name": "Alphabet in Order",
+      "description": "All 44 consonants in alphabet order, ก to ฮ. ฃ and ฅ are obsolete.",
+      "about": "Thai schoolchildren learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\".\n\nThe order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back, ด ต ถ ท ธ น at the teeth, and บ ป ผ ฝ พ ฟ ภ ม at the lips. The rest follow: ย ร ล ว, the three s letters ศ ษ ส, and ห ฬ อ ฮ.",
+      "formerIds": ["script-consonants-all-all-consonants"],
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
@@ -1008,17 +1011,7 @@
         { "thai": "ณ", "translit": "nɔɔ neen", "english": "n — novice monk", "note": "Low class. Final: -n. Pali/Sanskrit words: คุณ khun (you).", "say": "นอ เณร" },
         { "thai": "ด", "translit": "dɔɔ dèk", "english": "d — child", "note": "Mid class. Final: -t. The everyday d.", "say": "ดอ เด็ก" },
         { "thai": "ต", "translit": "tɔɔ tào", "english": "t — turtle", "note": "Mid class. Final: -t. Unaspirated t, halfway to d.", "say": "ตอ เต่า" },
-        { "thai": "ถ", "translit": "thɔ̌ɔ thǔng", "english": "th — bag", "note": "High class. Final: -t. The everyday high-class th: ถาม thǎam (ask).", "say": "ถอ ถุง" }
-      ]
-    },
-    {
-      "id": "script-consonants-all-all-consonants",
-      "category": "Thai Script",
-      "group": "Consonants",
-      "name": "All Consonants ท–ฮ",
-      "description": "The second half of the alphabet in order, for mixed review.",
-      "about": "The rows go on, each ending in a nasal: ด ต ถ ท ธ น at the teeth, then บ ป ผ ฝ พ ฟ ภ ม at the lips. The rest follow: ย ร ล ว, the three s letters ศ ษ ส, and ห ฬ อ ฮ.",
-      "cards": [
+        { "thai": "ถ", "translit": "thɔ̌ɔ thǔng", "english": "th — bag", "note": "High class. Final: -t. The everyday high-class th: ถาม thǎam (ask).", "say": "ถอ ถุง" },
         { "thai": "ท", "translit": "thɔɔ thá-hǎan", "english": "th — soldier", "note": "Low class. Final: -t. The everyday low-class th: ทำ tham (do).", "say": "ทอ ทหาร" },
         { "thai": "ธ", "translit": "thɔɔ thong", "english": "th — flag", "note": "Low class. Final: -t. ธง (flag), ธนาคาร (bank).", "say": "ทอ ธง" },
         { "thai": "น", "translit": "nɔɔ nǔu", "english": "n — mouse", "note": "Low class. Final: -n. The everyday n.", "say": "นอ หนู" },
@@ -4257,7 +4250,7 @@
         { "thai": "ทุกคน", "translit": "thúk-khon", "english": "everyone", "note": "สวัสดีทุกคน = hi everyone." },
         { "thai": "ก็", "translit": "gɔ̂", "english": "then / also / (also softener)", "note": "Multi-purpose linker. ก็ได้ = that's OK." },
         { "thai": "ท่อง", "translit": "thɔ̂ng", "english": "to memorise, recite" },
-        { "thai": "ไก่จิกเด็กตายบนปากโอ่ง", "translit": "gài jìk dèk taai bon pàak òong", "english": "a chicken pecked a child to death on the rim of a jar", "note": "Thai children's rhyme for the mid class: ก จ ด ต บ ป อ, plus ฎ ฏ." },
+        { "thai": "ไก่จิกเด็กตายบนปากโอ่ง", "translit": "gài jìk dèk taai bon pàak òong", "english": "a chicken pecked a child to death on the rim of a jar", "note": "Thai children's rhyme for the mid class: ก จ ด ต บ ป อ. เด็ก and ตาย also stand for ฎ and ฏ, which share their sounds; the full form says so: ไก่จิก เด็กตาย เฎ็กฏาย บนปากโอ่ง." },
         { "thai": "หัวเราะ", "translit": "hǔa-rɔ́", "english": "to laugh" },
         { "thai": "ใจร้าย", "translit": "jai-ráai", "english": "mean / cruel-hearted" },
         { "thai": "จัง", "translit": "jang", "english": "so / really (casual)", "note": "น่ารักจัง = so cute!" }
@@ -4291,7 +4284,7 @@
         { "thai": "จำ", "translit": "jam", "english": "to remember", "note": "จำได้ = can remember. จำไม่ได้ = can't remember." },
         { "thai": "ง่าย ๆ", "translit": "ngâai ngâai", "english": "simple / easily" },
         { "thai": "ว่า", "translit": "wâa", "english": "that (reporting) / to say", "note": "รู้ว่า… = know that…; บอกว่า… = said that…" },
-        { "thai": "ผีฝากถุงข้าวสารให้ฉัน", "translit": "phǐi fàak thǔng khâao-sǎan hâi chǎn", "english": "a ghost left a bag of rice with me", "note": "Thai children's rhyme for the high class: ผ ฝ ถ ข ส ห ฉ, plus ศ ษ ฐ (and the obsolete ฃ)." },
+        { "thai": "ผีฝากถุงข้าวสารให้ฉัน", "translit": "phǐi fàak thǔng khâao-sǎan hâi chǎn", "english": "a ghost left a bag of rice with me", "note": "Thai children's rhyme for the high class: ผ ฝ ถ ข ส ห ฉ. The others join the word with their sound: ฐ with ถุง, ศ ษ with สาร (and the obsolete ฃ with ข้าว)." },
         { "thai": "เด็ก", "translit": "dèk", "english": "child / kid" },
         { "thai": "ทุกคน", "translit": "thúk-khon", "english": "everyone", "note": "สวัสดีทุกคน = hi everyone." },
         { "thai": "หัวเราะ", "translit": "hǔa-rɔ́", "english": "to laugh" },

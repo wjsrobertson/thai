@@ -5,7 +5,8 @@
     python3 -u tools/audit_decks.py --errors   # errors only
 
 Errors (exit status 1) are things that should always be fixed:
-  structure (topic sizes, missing fields, split categories/groups), duplicate thai/english within
+  structure (topic sizes, including word topics over 25 cards except Alphabet in Order, missing
+  fields, split categories/groups), duplicate thai/english within
   a topic, Thai typing slips (ำ typed as ํ + า, doubled or misordered marks), stray whitespace or
   invisible characters, Thai script in `english` (the English voice reads it), odd translit
   characters, "a/b" slashes without spaces, and the same word with the same meaning glossed in
@@ -25,6 +26,11 @@ TRANSLIT_OK = re.compile(r"^[a-zà-ǿɔɛəʉ̀-ͯ .\-]+$")
 THAI = re.compile(r'[฀-๿]')
 # Known and intentional.
 SAME_THAI_TRANSLIT_OK = {'เขา'}   # kháo (pronoun, as said) vs khǎo (horn, mountain)
+# Word topics hold at most 25 cards (the user's rule, 2026-10-06: longer ones were split by sub-theme).
+# The one exception, the user's call on 2026-10-09: Alphabet in Order, all 44 consonants ก to ฮ,
+# where the unbroken order is the point. Reading stories' word lists aren't topics in this sense.
+TOPIC_MAX = 25
+OVER_MAX_OK = {'script-consonants-all'}
 
 
 def words(e, keep_parens=True):
@@ -42,6 +48,8 @@ def audit(decks):
     for dk in decks:
         if not 3 <= len(dk['cards']) <= 50:
             errors['topic size outside 3–50'].append(f"{dk['name']}: {len(dk['cards'])}")
+        if dk.get('category') != 'Reading' and len(dk['cards']) > TOPIC_MAX and dk['id'] not in OVER_MAX_OK:
+            errors[f'word topic over {TOPIC_MAX} cards (split it by sub-theme)'].append(f"{dk['name']}: {len(dk['cards'])}")
         for k in ('id', 'category', 'name', 'description'):
             if not dk.get(k):
                 errors['topic missing a field'].append(f"{dk.get('name')}: {k}")

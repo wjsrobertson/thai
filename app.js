@@ -26,6 +26,7 @@ const els = {
   cardSpell: document.getElementById('card-spell'),
   cardSpellFront: document.getElementById('card-spell-front'), // Thai → English only: the front is Thai
   speakButtons: document.querySelectorAll('.speak-btn'),
+  autoBadges: document.querySelectorAll('.auto-badge'),
   flipButtons: document.querySelectorAll('#card .flip-btn'), // not Recall's, which share the look (.review-flip)
   posBadges: document.querySelectorAll('.stat-pos'),
   learnPills: document.getElementById('learn-pills'),
@@ -682,8 +683,9 @@ function renderCard() {
   // showing: English → Thai keeps quiet until the card is flipped (flipCard, handleLearnPick), or the
   // sound would give the answer away. An answered Test card opens on its Thai back.
   fitCardText();
+  renderAutoBadges();
   if (state.view === 'flashcards' && state.orderMode !== 'review' && !state.reading.active) { // Review mode hides this card
-    if (state.direction !== 'en-th' || state.showingBack) speak(c.thai);
+    if ((state.direction !== 'en-th' || state.showingBack) && autoPlayOn()) speak(c.thai);
     else stopAudio(); // nothing to say yet, but don't carry on with the last card's word or spelling
   }
 }
@@ -729,15 +731,34 @@ function flipCard() {
   // answered it, in which case they can freely flip to review.
   if (state.orderMode === 'test' && !state.learnAnswers.has(c.key)) return;
   setFlipped(!state.showingBack);
-  // Turning to the side with the Thai script says it: English → Thai's back, as since it began, and
-  // since 2026-10-08 (the user's request) Thai → English's front and Listen → English's back too.
-  if (thaiScriptSide(state.direction, state.showingBack)) speak(c.thai);
+  // Turning to the side that speaks says the word (speakingSide).
+  if (speakingSide(state.direction, state.showingBack) && autoPlayOn()) speak(c.thai);
 }
 
-// Whether a card's side shows the Thai script as its question or answer: Thai → English's front,
-// English → Thai's and Listen → English's back.
-function thaiScriptSide(dir, back) {
-  return back !== (dir === 'th-en');
+// The side of a card that says its Thai when turned to (or shown): Thai → English's front (the
+// script) and English → Thai's back (the answer), since 2026-10-08 (the user's request). Listen →
+// English's front, the sound side, since 2026-10-09: it was the script-bearing back until then, so
+// the sound played on turning to the answer and not on turning back to the question (the user's
+// bug report). Each side's speaker plays on demand.
+function speakingSide(dir, back) {
+  return dir === 'en-th' ? back : !back;
+}
+
+// Auto-play (2026-10-09, the user's request): the card says its Thai by itself when it shows it,
+// unless turned off with the A on the speaker (pref autoPlay). Off, it keeps quiet until the
+// speaker is pressed: learning to recognise letters, the sound would give the answer away. Listen
+// always plays, as there the sound is the question (and its A is hidden).
+function autoPlayOn() {
+  return state.direction === 'listen' || getPreferences().autoPlay !== false;
+}
+
+function renderAutoBadges() {
+  const on = getPreferences().autoPlay !== false;
+  els.autoBadges.forEach((b) => {
+    b.hidden = state.direction === 'listen' || !!b.previousElementSibling?.hidden; // with its speaker
+    b.setAttribute('aria-pressed', String(on));
+    b.title = on ? 'Auto-play is on: tap to turn it off' : 'Auto-play is off: tap to turn it on';
+  });
 }
 
 // Recognition answers ('good' or 'again') update the same items as Recall: right counts as Hard,
@@ -2094,7 +2115,7 @@ function handleLearnPick(btn, isCorrect) {
 
   // Flip the card to reveal the back face; in English → Thai that's the Thai, so say it now.
   setFlipped(true);
-  if (state.direction === 'en-th') speak(c.thai);
+  if (state.direction === 'en-th' && autoPlayOn()) speak(c.thai);
 
   // Saved now, so leaving during the pause loses nothing; then on to the next card, after Settings →
   // Flashcards' pause for a right answer, or the longer one for a wrong answer (to take in the right
@@ -2439,8 +2460,9 @@ function presentEntry() {
   els.reviewFlip.classList.add('reveal');
   // English → Thai: no audio until the answer is shown, or it would give the answer away.
   els.reviewSpeak.hidden = !thaiFirst;
+  renderAutoBadges();
   fitText(els.reviewPrompt);
-  if (thaiFirst) speak(card.thai);
+  if (thaiFirst && autoPlayOn()) speak(card.thai);
 }
 
 // Review's card turns like Flashcards' (.card.flipped). Before Show it only turns to the answer
@@ -2577,16 +2599,17 @@ function revealAnswer() {
   els.reviewFlip.classList.remove('reveal');
   els.reviewSpeak.hidden = false;
   els.reviewSpell.hidden = !spellingFor(state.cardIndex.get(e.key).card);
-  if (thaiScriptSide(e.dir, true)) speak(state.cardIndex.get(e.key).card.thai);
+  renderAutoBadges(); // the front's speaker (and its A) shows now
+  if (speakingSide(e.dir, true) && autoPlayOn()) speak(state.cardIndex.get(e.key).card.thai);
   els.reviewGrades.hidden = false;
 }
 
 // After the answer's been shown, ⟳ or a tap turns the card either way, saying the Thai when it
-// turns to the script (thaiScriptSide), as Flashcards' card does.
+// turns to the side that speaks (speakingSide), as Flashcards' card does.
 function turnReviewCard() {
   const r = state.review;
   setReviewFlipped(!r.flipped);
-  if (thaiScriptSide(r.current.dir, r.flipped)) speak(state.cardIndex.get(r.current.key).card.thai);
+  if (speakingSide(r.current.dir, r.flipped) && autoPlayOn()) speak(state.cardIndex.get(r.current.key).card.thai);
 }
 
 // Save the grade, and set when the card comes back in this visit: Again and Hard a few cards later
@@ -2811,6 +2834,8 @@ function applyReaderToggles() {
 }
 
 // A tapped word: say it, light it, and show its transliteration and meaning in a pop-up under it.
+// The pop-up's กข button spells the word aloud, as on the cards, and writes the spelling out under
+// the meaning.
 let readerWord = null;
 
 function showReaderWord(span, card) {
@@ -2821,11 +2846,45 @@ function showReaderWord(span, card) {
     span.classList.add('on');
   }
   const pop = els.readerPop;
-  pop.replaceChildren(
+  const text = document.createElement('div');
+  text.className = 'pop-text';
+  text.append(
     Object.assign(document.createElement('span'), { className: 'pop-tr', textContent: card.translit }),
     Object.assign(document.createElement('span'), { className: 'pop-en', textContent: card.english }),
   );
+  const row = document.createElement('div');
+  row.className = 'pop-row';
+  row.append(text);
+  pop.replaceChildren(row);
+  const groups = spellingFor(card);
+  if (groups) {
+    // A letter and its name (ง งู) stay together: the line breaks only at the separators.
+    const said = spellingText(groups).replace(/([^\s·–/]) (?=[^\s·–/])/g, '$1 ');
+    const line = Object.assign(document.createElement('p'), { className: 'pop-spelling', textContent: said });
+    line.hidden = true;
+    const sp = document.createElement('button');
+    sp.type = 'button';
+    sp.className = 'pop-spell';
+    sp.append(spellIcon());
+    sp.title = `Spell ${card.thai} aloud`;
+    sp.setAttribute('aria-label', sp.title);
+    sp.addEventListener('click', () => {
+      if (line.hidden) {
+        line.hidden = false;
+        placeReaderPop(span); // wider now, perhaps
+      }
+      speakSpelling(card, [sp]);
+    });
+    row.append(sp);
+    pop.append(line);
+  }
   pop.hidden = false;
+  placeReaderPop(span);
+}
+
+// The pop-up under its word, kept inside the reader.
+function placeReaderPop(span) {
+  const pop = els.readerPop;
   const box = els.reader.getBoundingClientRect();
   const r = span.getBoundingClientRect();
   const left = clamp(r.left - box.left + r.width / 2 - pop.offsetWidth / 2, 8, box.width - pop.offsetWidth - 8);
@@ -3488,6 +3547,7 @@ function bindEvents() {
   els.card.addEventListener('click', (e) => {
     // Don't flip if clicking the speak or flip button (flip-btn calls flipCard itself).
     if (e.target.closest('.speak-btn')) return;
+    if (e.target.closest('.auto-badge')) return;
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     if (e.target.closest('.listen-btn')) return;
@@ -3502,6 +3562,7 @@ function bindEvents() {
   });
 
   els.card.addEventListener('keydown', (e) => {
+    if (e.target !== els.card) return; // a button on the card (speaker, A, flip) does its own thing
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       flipCard();
@@ -3513,6 +3574,15 @@ function bindEvents() {
       e.stopPropagation();
       const c = currentCard();
       if (c) speakerPress(btn, c.thai);
+    });
+  });
+  els.autoBadges.forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation(); // not a flip
+      const on = getPreferences().autoPlay === false;
+      setPreferences({ autoPlay: on });
+      renderAutoBadges();
+      toast(on ? 'Auto-play on' : 'Auto-play off: press the speaker to hear a word');
     });
   });
 

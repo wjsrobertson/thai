@@ -387,8 +387,8 @@ backup `decks.backup28.json`).
     - Linking Ideas
   - Each card is a short sentence; the note gives the pattern. Five sentences reuse existing
     phrase cards, e.g. กินข้าวหรือยัง and ห้ามสูบบุหรี่.
-- **The alphabet order** (the user asked for a mnemonic): `about` paragraphs on All Consonants
-  ก–ถ and ท–ฮ.
+- **The alphabet order** (the user asked for a mnemonic): `about` paragraphs on Alphabet in Order
+  (All Consonants ก–ถ and ท–ฮ until 2026-10-09).
   - **The song ก เอ๋ย ก ไก่:** only its opening lines are quoted, as a pointer. Its modern words
     are copyrighted (by Mansiga Lewanich), so the full song isn't in the app.
   - **The rows:** the order is grouped by place in the mouth, each row ending in a nasal: ง ญ ณ น ม.
@@ -436,11 +436,36 @@ mnemonics, after our consonant-class memory scenes.
 - **`about` paragraphs** (2026-10-08, the user's request): a blank line (`\n\n`) in `about`
   starts a new paragraph. `#wordlist-about` is now a `<div>` of `<p>`s, 10 px apart. What Thai
   schools teach always gets its own paragraph, apart from our tricks and explanations:
-  - the class rhymes (Mid, High, Low Sonorants);
-  - the ก เอ๋ย ก ไก่ song (All Consonants ก–ถ);
+  - the class rhymes (Mid, High, Low Sonorants, and since 2026-10-09 Low Paired);
+  - the ก เอ๋ย ก ไก่ song (Alphabet in Order);
   - สระเกิน (Diphthongs & Special Vowels).
   
   The 20 ใ Words' `about` is only the school rhyme, so it stays one paragraph.
+- **School class mnemonics, complete** (2026-10-09, the user's request: "the low class mnemonic
+  isn't very good"; scratchpad `decks/class_rhymes.py`).
+  - **What changed:** Low Paired had only our scene, a long one in which an owl bared its
+    teeth. It now has both school rhymes as cards (16 cards):
+    - พ่อค้าฟันทองซื้อช้างฮ่อ, "a gold-toothed merchant buys a Haw elephant";
+    - โชคภูโซ พุทโธ ไฮไฟ, which some schools use.
+  - **Its `about`:** the school paragraph comes first. Then come our tricks: each letter is the
+    low twin of a letter in ผีฝากถุงข้าวสารให้ฉัน, and a letter in neither the mid rhyme nor the
+    high rhyme is low. The user preferred the school rhyme to a new story for the rarer
+    letters.
+  - **Rhymes as sound keys:** schools read each rhyme this way. Every word stands for its
+    sound, and the rarer letters with that sound join it.
+    - Low Paired: พ่อ for พ ภ, ค้า for ค ฅ ฆ, ทอง for ท ธ ฑ ฒ, ช้าง for ช ฌ.
+    - Mid: เด็ก for ด ฎ, ตาย for ต ฏ. The full form names them: ไก่จิก เด็กตาย เฎ็กฏาย บนปากโอ่ง.
+    - High: ถุง for ถ ฐ, สาร for ส ศ ษ, ข้าว for ข ฃ.
+    - Mid's and High's card notes and school paragraphs now say this.
+  - **Sources:** mthai.com/campus/55768, kawtung.com (อักษรต่ำ), tutor-vip.com
+    (thai-letters-and-tones), nectec schoolnet 10000-5244, and fonee85.wordpress.com (ไก่จิกเด็กตาย).
+    No school rhyme covers only the rarer seven.
+  - **Already present:** อย่าอยู่อย่างอยาก (Clusters & Odd Spellings), the ใ rhyme, สระเกิน, and
+    the alphabet song (as a pointer).
+  - **High Class's story** (same day, the user's pick of four drafts) is now a tiger after
+    breakfast: one character with a goal, an obstacle (a bee in the chest) and a punchline (the
+    hermit laughing). It replaced a busier scene of the hermit, the tiger and the bee
+    (scratchpad `decks/high_story.py`).
 - **Text cleanup** (2026-10-08, the user asked "any other cleanup to text needed?"):
   - **Topics page heading:** the name is bold (`.wordlist-title`) and the description sits under it
     in normal weight (`.wordlist-desc`). Before, both were one bold line, "Name — description",
@@ -637,6 +662,15 @@ for Talking About Language early and a review of the order and hierarchy.
 **Topic splits, 2026-10-06** (scratchpad `decks/splits.py`, applied by `decks/merge18.py`). The
 user found topics over ~20 cards a pain. Every topic over 25 cards was split, by hand, along real
 sub-themes, so nothing is now over 25.
+- **The one exception** (the user's call, 2026-10-09): **Alphabet in Order**
+  (`script-consonants-all`), all 44 consonants ก to ฮ, because the unbroken order is the point.
+  - It was two topics, All Consonants ก–ถ and ท–ฮ, which held the same cards as the four class
+    topics; the alphabet order was all they added. Mixed review of every consonant is the Thai
+    Script › Consonants group.
+  - The second topic's id is in `formerIds`, so a saved position still finds it. Three stories
+    that targeted it now target the merged topic (scratchpad `decks/alphabet_merge.py`).
+  - `tools/audit_decks.py` enforces the rule. Any word topic over 25 cards is an error unless its
+    id is in `OVER_MAX_OK`, which holds only this one.
 - **The numbers:** 130 topics became 272; there are 373 topics in all. Parts are 12–22 cards,
   averaging about 16.
 - **Naming:** parts are named for their content, prefixed with the old topic when needed, for
@@ -1293,10 +1327,25 @@ The other ten passages:
   - each word is a tap target (`.rw`). It plays the word, lights it, and shows a pop-up
     (`#reader-pop`) with its transliteration and meaning, centred under it and kept inside the
     box. A tap elsewhere, a resize, or a toggle closes it.
-  - **Show:** Transliteration and English toggles add those lines under each sentence. Spaces
-    between words (2026-10-08, the user's request) puts a space between the Thai words, as
-    written ones have none. They all start off (the point is to read the script as written) and
-    are remembered (prefs `readerTranslit`, `readerEnglish`, `readerSpaces`).
+    - **Spelling** (2026-10-09, the user's request): the pop-up has the cards' กข spell-aloud
+      button (`.pop-spell`, `speakSpelling`). It reads the word's spelling in the chosen style,
+      and the first press also writes the spelling out under the meaning (`.pop-spelling`). In
+      that line a letter stays on the same line as its name (ง งู); breaks fall only at the
+      separators. Pressing it again stops it. Words with no spelling, such as a lone letter,
+      get no button.
+  - **Show:** Transliteration and English toggles add those lines under each sentence.
+  - **Word gaps** (2026-10-08, the user's request) puts a space between the Thai words, as
+    written ones have none.
+    - It is a separate chip at the row's right end (`.reader-spaces`), not one of the "Show"
+      options, because it changes the Thai line rather than adding one.
+    - The label was "Spaces between words" until 2026-10-09. At the Larger text size on an
+      iPhone it wrapped onto a line of its own. A Thai label, ภาษา ไทย, was tried and found
+      confusing. "Word gaps" is the label now; the tooltip and accessible name still say
+      "Spaces between words".
+    - On phones the "Show" label is hidden (mobile.css), so all three chips fit one row at
+      Larger and Largest text on a 390 px screen. Only a 320 px screen at Largest wraps.
+  - All three start off (the point is to read the script as written) and are remembered (prefs
+    `readerTranslit`, `readerEnglish`, `readerSpaces`).
     - **How the spaces work:** `renderReader` puts a hidden `.rw-gap` space between the
       `|`-joined words of a run, and `.reader.show-spaces` shows them. A real space in the text is
       always there, and a word's own space (`_`, as in จริง ๆ) stays inside the word. An idiom
@@ -1544,11 +1593,18 @@ phone the row reads TH→EN | EN→TH | 🔊→EN. It works the same in all thre
   (`#review-script`, `showReviewScript`) was there at first, then removed at the user's request:
   Browse and Recognition have no such peek, and spell-it-aloud is the hint. A card turned back to
   its front still shows the waveform, as on Browse.
-- **Turning a card to its Thai script says the word** (the user's request, `thaiScriptSide`). That
-  means Thai → English's front, and English → Thai's and Listen → English's back. It applies on
-  Flashcards (⟳ or a tap, `flipCard`) and on Recall (the reveal, `revealAnswer`, then
-  `turnReviewCard`). Before this only English → Thai's reveal spoke. A test of every direction ×
-  Browse/Recall found one play per turn to the script and none otherwise.
+- **Turning a card to the side that speaks says the word** (the user's request; `speakingSide`, called
+  `thaiScriptSide` until 2026-10-09). The speaking sides are Thai → English's front, English → Thai's
+  back and Listen → English's front. It applies on Flashcards (⟳ or a tap, `flipCard`) and on Recall
+  (the reveal, `revealAnswer`, then `turnReviewCard`). Before this only English → Thai's reveal spoke.
+  - **2026-10-09, the user's bug report:** Listen's speaking side was its script-bearing back.
+    That meant the sound played on turning to the answer, and not on turning back to the sound side.
+    It is now the front (the sound) only, and the back's speaker plays on demand.
+  - **Tested:** every direction × Browse/Recall, counting plays on show, each turn and each turn
+    back. Browse expected (and got) Thai → English 1/0/1, English → Thai 0/1/0, Listen 1/0/1.
+    Recall's show/reveal/back/again expected (and got) 1/0/1/0, 0/1/0/1 and 1/0/1/0.
+  - **Test-harness trap:** once a card has turned, click the visible face's ⟳. The hidden face's
+    position can land on the other face's spell button.
   - **Bug found on the way:** `els.flipButtons` was `.flip-btn` everywhere, which included
     Recall's ⟳ (`.flip-btn.review-flip`). So every Recall turn also flipped the hidden Flashcards
     card, and in English → Thai it said the word twice. It's now `#card .flip-btn`.
@@ -2154,6 +2210,25 @@ waves, `spellIcon()`) reads it aloud.
   that fall back; `--samples --random` prints spellings to eyeball.
 
 ## Audio / TTS (2026-10-02)
+
+**Auto-play on/off** (2026-10-09, the user's request). Normally a card says its Thai by itself
+when it shows it. The user wanted that off when learning to recognise letters, because the sound
+gives the answer away: ก ไก่ says "chicken".
+- **The control:** a small **A** badge on the edge of each card's speaker (`.auto-badge`, on
+  Flashcards' card and Recall's, front and back). Filled means on; grey with a slash means off.
+  Tapping it toggles pref `autoPlay` (default on) and shows a toast. The speaker itself still plays
+  on demand.
+- **What it gates:** `autoPlayOn()` covers every auto-play call. On Flashcards' card that is
+  showing a card, flipping it, and answering in Recognition. On Recall it is presenting a card,
+  revealing the answer, and turning the card.
+- **Listen:** auto-play is always on, because the sound is the question, and its A is hidden.
+- **Hiding:** an A also hides with its speaker, as on Recall's English → Thai front
+  (`renderAutoBadges`).
+- **Keys:** the card's keydown now ignores keys aimed at buttons on it. Before this, Enter on the
+  speaker or the ⟳ also flipped the card.
+- **Tested:** headless Chromium at phone and desktop sizes. The test uses real clicks, because
+  auto-play needs a user gesture and scripted `.click()` doesn't count as one. It counted plays
+  in each mode and direction.
 
 Thai and English audio are **pre-generated neural-voice MP3s**, made with
 [edge-tts](https://pypi.org/project/edge-tts/) and stored in `data/audio/`. Browser
