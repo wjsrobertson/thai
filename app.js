@@ -2888,11 +2888,11 @@ function showWordPop(anchor, card, host = els.reader) {
   big.lang = 'th';
   big.textContent = card.thai;
   big.addEventListener('click', (e) => {
-    const hit = partAt(big, e.clientX, e.clientY);
+    const hit = tappedPart(big, card, e.clientX, e.clientY);
     if (!hit) return;
     big.closest('.reader-pop').querySelectorAll('.pop-reading').forEach((x) => x.remove()); // speaking stops any spelling
-    speak(hit.step.say, 'sp');
-    flashPart(pop, hit.box);
+    speak(hit.say, 'sp');
+    flashPart(pop, hit.boxes);
   });
   // Under the big word, the Topics rows' three buttons (2026-10-09, the user's request): add to or
   // remove from Flashcards, spell it aloud (lighting each part as it's read), and play it.
@@ -3021,6 +3021,19 @@ function partBoxes(el) {
 
 // The part of the big word at (x, y), or the nearest within `reach` of it; null if none. (On a card,
 // where a tap anywhere else turns it, the reach is short.)
+// The part of `card`'s Thai, shown as the text of `el`, at (x, y): { say, boxes }, or null. A tap on
+// any part of a vowel written in several parts (เ-ีย, เ-า) says the whole vowel and lights all its
+// parts, as its spelling does (2026-10-10, the user's request), unless spelling is set to letter names
+// as written; elsewhere, the part's own name.
+function tappedPart(el, card, x, y, reach) {
+  const hit = partAt(el, x, y, reach);
+  if (!hit) return null;
+  const vowel = getSettings().spellingStyle !== 'letters' && card && el.firstChild?.data === card.thai
+    && vowelSpelling(card.thai, card.translit)?.[0].find((step) => step.vowel && step.at.includes(hit.i));
+  if (!vowel) return { say: hit.step.say, boxes: [hit.box] };
+  return { say: vowel.say, boxes: partBoxes(el).filter((p) => vowel.at.includes(p.i)).map((p) => p.box) };
+}
+
 function partAt(el, x, y, reach = 30) {
   let best = null;
   let bestDist = Infinity;
@@ -3040,14 +3053,14 @@ function partAt(el, x, y, reach = 30) {
 // and lights up, as in the word pop-up, instead of turning the card. `el` is the Thai showing: the
 // large Thai (the Thai → English front, the English → Thai back) or, since the same day, the smaller
 // Thai repeated on the Thai → English and Listen backs (cardThaiShown, recallThaiShown); or null.
-// True if a part was hit.
+// `card` is the card it belongs to (for its whole vowels). True if a part was hit.
 const CARD_TAP_REACH = 8;
-function tapCardThai(el, e) {
+function tapCardThai(el, e, card) {
   if (!el || !el.contains(e.target)) return false;
-  const hit = partAt(el, e.clientX, e.clientY, CARD_TAP_REACH);
+  const hit = tappedPart(el, card, e.clientX, e.clientY, CARD_TAP_REACH);
   if (!hit) return false;
-  speak(hit.step.say, 'sp');
-  flashPart(el.closest('.face'), hit.box);
+  speak(hit.say, 'sp');
+  flashPart(el.closest('.face'), hit.boxes);
   return true;
 }
 
@@ -3103,12 +3116,15 @@ function measureGlyphs(el, text) {
   return glyphCanvas.measureText(text);
 }
 
-// A brief highlight over the part that was tapped, so it's clear what the tap found.
-function flashPart(pop, b) {
-  const hl = partHighlight(pop, b, 'pop-hit');
-  pop.querySelector('.pop-hit')?.remove();
-  pop.append(hl);
-  setTimeout(() => hl.remove(), 900);
+// A brief highlight over the part that was tapped (boxes: each of a whole vowel's parts), so it's
+// clear what the tap found.
+function flashPart(pop, boxes) {
+  pop.querySelectorAll('.pop-hit').forEach((x) => x.remove());
+  for (const b of boxes) {
+    const hl = partHighlight(pop, b, 'pop-hit');
+    pop.append(hl);
+    setTimeout(() => hl.remove(), 900);
+  }
 }
 
 // A highlight over box b (page coordinates), placed in the pop-up.
@@ -3806,7 +3822,7 @@ function bindEvents() {
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     if (e.target.closest('.listen-btn')) return;
-    if (tapCardThai(cardThaiShown(), e)) return; // a letter of the Thai: named, not a turn
+    if (tapCardThai(cardThaiShown(), e, currentCard())) return; // a letter of the Thai: named, not a turn
     flipCard();
   });
 
@@ -3919,7 +3935,7 @@ function bindEvents() {
   els.reviewCard.addEventListener('click', (e) => {
     const r = state.review;
     if (!r || e.target.closest('button')) return;
-    if (tapCardThai(recallThaiShown(), e)) return; // a letter of the Thai: named, not a turn
+    if (tapCardThai(recallThaiShown(), e, state.cardIndex.get(r.current?.key)?.card)) return; // a letter of the Thai: named, not a turn
     if (!r.revealed) revealAnswer();
     else turnReviewCard();
   });

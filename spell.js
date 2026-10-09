@@ -475,7 +475,7 @@ function syllableNames(syl, text) {
   if (syl.final?.inVowel) after.push(vowel.pop());       // เลย: เ-ย is เออ, with ย as its final
   const shape = (syl.lead || '') + '-' + vowel.filter((p) => !(syl.lead && p === 0)).map((p) => text[base + p]).join('');
   const whole = syl.final?.inVowel ? 'สระเออ' : WHOLE_VOWELS[shape];
-  if (whole) out.push({ show: whole, say: whole, at: vowel.map((p) => base + p) });
+  if (whole) out.push({ show: whole, say: whole, at: vowel.map((p) => base + p), vowel: true });
   else vowel.forEach(name);
   after.forEach(name);
   names(v1, end);
@@ -485,6 +485,7 @@ function syllableNames(syl, text) {
 
 // Letter names with whole vowels (see the top of this file), guided by `translit`; null when no
 // reading fits (callers then use letterSpelling). One group, with a pause between syllables.
+// A whole vowel's step is marked `vowel: true` (a tap on any of its parts says it whole).
 export function vowelSpelling(thai, translit) {
   const r = reading(thai, translit);
   if (!r?.orig) return null;

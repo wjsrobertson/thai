@@ -2282,6 +2282,11 @@ that line went.
     - **Checked** in the reader's pop-up on โรงเรียน and เพื่อนบ้าน, in headless Chromium. With no
       saved setting it used the new style, and a saved school-method setting was kept.
       Flashcards and Recall still light each step.
+    - **Tapping a part of a whole vowel** (2026-10-10, the user's request): it says the whole
+      vowel and lights all its parts. In เช้า, tapping เ or า says สระเอา; ช and the tone mark are
+      named as before. This works in the pop-up and on Flashcards and Recall (`tappedPart`). Whole
+      steps are marked `vowel: true` in spell.js. With spelling set to "Letter names, as written",
+      a tap still names just the part it hit.
 - **How the school method is worked out (`schoolSpelling`):** Thai doesn't mark syllables or every
   vowel, so the parser tries every reading the spelling allows and keeps the one whose sounds match
   the card's transliteration, syllable for syllable.
