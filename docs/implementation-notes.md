@@ -1747,6 +1747,15 @@ phone the row reads TH→EN | EN→TH | 🔊→EN. It works the same in all thre
 
 ## Test mode
 
+**No hover on phones for the answers and grades (2026-10-10, the user's report from the iPhone).**
+- **The bug:** after an answer, the next question's answer in the same place showed grey, as if
+  already chosen. A phone keeps `:hover` on the spot last tapped, and the new button drawn there
+  took `.learn-pill:hover`.
+- **The fix:** that rule, and Recall's `.grade:hover` (the same problem from card to card), now
+  apply only under `@media (hover: hover)`, i.e. with a mouse.
+- **Checked:** in Chromium emulating a touch screen, the answer under the pointer on the next
+  question was grey (#eeece6) with the old styles and white like the others with the new.
+
 **Recognition (Test mode's new name) is a continuous stream (2026-10-08, the user's request).**
 - **Removed:** the round with a score, the end-of-round summary (`showRoundSummary`, `#round-summary`,
   `fillMissedList`), the "3 / 24" badge, ‹ ›, and the arrow keys. Answering is the only way on.
