@@ -52,6 +52,7 @@ const els = {
   reviewOnlyEmptyHint: document.getElementById('review-only-empty-hint'),
   reviewOnlyAddAll: document.getElementById('review-only-add-all'),
   reviewOnlyAddName: document.getElementById('review-only-add-name'),
+  reviewOnlyPickFrom: document.getElementById('review-only-pick-from'),
   reviewOnlyYes: document.getElementById('review-only-yes'),
   reviewOnlyTopics: document.getElementById('review-only-topics'),
   reviewOnlyEverything: document.getElementById('review-only-everything'),
@@ -554,6 +555,8 @@ function renderReviewOnly() {
     const all = scope?.kind === 'all';
     els.reviewOnlyAddAll.hidden = all || !state.cards.length;
     els.reviewOnlyAddName.textContent = `'${scope?.name || 'this topic'}'`;
+    // "Add words from '…' individually", or on Everything (no topic) "Add words in Topics…".
+    els.reviewOnlyPickFrom.textContent = all ? 'in Topics' : `from ${els.reviewOnlyAddName.textContent}`;
     els.reviewOnlyEmptyHint.hidden = all || !Object.keys(reviewWords()).length;
   }
 }

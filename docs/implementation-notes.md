@@ -1147,11 +1147,11 @@ a category alone, on every page).
     - **Reworded 2026-10-10 (the user's text, then their layout):** under the title, three ways
       out, each a button on the left with what it does on the right (`.review-only-actions`, one
       grid, so the buttons share a width):
-      1. **Add all words:** "Put every word from 'Time of Day' in Flashcards". It adds them at once,
-         with a toast.
-      2. **Choose words:** "Pick words one by one in Topics with the 🔁 button, and they'll show up
-         here". It opens the Topics page.
-      3. **View all topics:** "Switch to Everything to see all your added words"
+      1. **Add all words:** "Add every word from 'Time of Day' to Flashcards". It adds them at
+         once, with a toast.
+      2. **Choose words:** "Add words from 'Time of Day' individually with the 🔁 button" ("Add
+         words in Topics individually…" on Everything). It opens the Topics page.
+      3. **View all topics:** "Switch to Everything to see all your added words from all topics"
          (`setFlashcardsBy('all')`). It's hidden when nothing is in Flashcards at all.
       - **History:** first it was sentences with the buttons inside them ("Add all words from
         '…'? [Yes]", "…individually in [Topics]…", "Or switch to [Everything]…"). The user then
@@ -2142,6 +2142,14 @@ and in the inline script.
   theme never flashes dark on load.
 - **Contrast:** text is at least 5:1 against its panel in every theme (checked: ink 10–16:1;
   muted, accent and the rating colours 5–10:1).
+- **Round icon buttons** (2026-10-10, the user's report from the iPhone): in Dark and Night the card's
+  speaker, ⟳ and ก buttons and the ‹ › arrows were hard to see. They were `--panel-2` or `--panel`
+  on the card with a `--border` outline, all within a shade of the card. They now use their own
+  tokens: `--control` (fill, a step lighter than the card), `--control-line` (a visible outline)
+  and `--control-ink` (brighter icons than `--muted`). Light keeps its old values. The arrows' hover
+  now matches the card buttons (accent icon and outline).
+- **Next (›) is filled with the accent** in every theme, like Recall's ⟳ before the answer, so it's
+  clear what to press. It's plain again when disabled at the end of the list.
 - **Rationale given to the user:**
   - No colour scheme is shown to improve memory directly.
   - Dark text on a light page reads more accurately (positive-polarity studies, e.g. Piepenbrock

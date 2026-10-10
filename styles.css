@@ -20,6 +20,12 @@
   --danger-soft: rgba(248, 113, 113, .1);
   --border: #262b36;
   --border-strong: #3a4150;                 /* hovered borders */
+  /* Round icon buttons (the card's speaker, ⟳ and ก, and ‹ ›): a step lighter than the card, with a
+     clear outline and brighter icons. In the dark themes the panel colours and --border were too
+     close to the card to see (2026-10-10, the user's report); light keeps its old look. */
+  --control: #262c38;
+  --control-line: #4b5568;
+  --control-ink: #b9c3d2;
   --hover: rgba(255, 255, 255, .02);        /* hovered table rows */
   --topbar: rgba(15, 17, 21, .7);
   --backdrop: rgba(0, 0, 0, .6);
@@ -36,6 +42,7 @@
   --good: #17784a; --hard: #9a5b00; --again: #c0392b; --easy: #2457c5;
   --danger-line: rgba(192, 57, 43, .35); --danger-soft: rgba(192, 57, 43, .07);
   --border: #dedad1; --border-strong: #bdb7aa; --hover: rgba(0, 0, 0, .025);
+  --control: #eeece6; --control-line: #dedad1; --control-ink: #5b6471;
   --topbar: rgba(245, 244, 240, .85); --backdrop: rgba(20, 20, 20, .35); --shadow: 0 8px 24px rgba(40, 35, 20, .1);
 }
 /* Night: very dark and warm, amber text and little blue, for studying in bed. */
@@ -46,6 +53,7 @@
   --good: #9fba69; --hard: #d9a440; --again: #d9755f; --easy: #a6b59d;
   --danger-line: rgba(217, 117, 95, .35); --danger-soft: rgba(217, 117, 95, .1);
   --border: #2d2720; --border-strong: #463c31; --hover: rgba(255, 230, 190, .03);
+  --control: #2c251d; --control-line: #5c4d3b; --control-ink: #c9b08a;
   --topbar: rgba(19, 16, 13, .82); --backdrop: rgba(0, 0, 0, .6); --shadow: 0 10px 30px rgba(0,0,0,.4);
 }
 
@@ -794,9 +802,9 @@ button {
   width: 108px;
   height: 108px;
   border-radius: 50%;
-  background: var(--panel-2);
-  color: var(--muted);
-  border: 1px solid var(--border);
+  background: var(--control);
+  color: var(--control-ink);
+  border: 1px solid var(--control-line);
   font-size: 54px;
   line-height: 1;
   display: flex;
@@ -825,9 +833,9 @@ button {
   width: 108px;
   height: 108px;
   border-radius: 50%;
-  background: var(--panel-2);
-  color: var(--muted);
-  border: 1px solid var(--border);
+  background: var(--control);
+  color: var(--control-ink);
+  border: 1px solid var(--control-line);
   font-size: 45px;
   line-height: 1;
   z-index: 3;
@@ -975,9 +983,9 @@ body { display: flex; flex-direction: column; }
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: var(--panel);
-  color: var(--muted);
-  border: 1px solid var(--border);
+  background: var(--control);
+  color: var(--control-ink);
+  border: 1px solid var(--control-line);
   font-size: 22px;
   line-height: 1;
   display: flex;
@@ -985,14 +993,17 @@ body { display: flex; flex-direction: column; }
   justify-content: center;
 }
 .nav-btn:hover:not(:disabled) {
-  color: var(--ink);
-  border-color: var(--border-strong);
-  background: var(--panel-2);
+  color: var(--accent);
+  border-color: var(--accent);
 }
 .nav-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }
+/* Next is filled with the accent, like Recall's ⟳ before the answer, so it's clear what to press
+   (2026-10-10, the user's request). At the end of the list it's disabled and plain again. */
+#next-btn:not(:disabled) { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+#next-btn:hover:not(:disabled) { filter: brightness(1.08); }
 .nav-btn.pulse {
   color: var(--accent);
   border-color: var(--accent);
@@ -1110,9 +1121,9 @@ body { display: flex; flex-direction: column; }
   width: 108px;
   height: 108px;
   border-radius: 50%;
-  background: var(--panel-2);
-  color: var(--muted);
-  border: 1px solid var(--border);
+  background: var(--control);
+  color: var(--control-ink);
+  border: 1px solid var(--control-line);
   font-size: 45px;
   line-height: 1;
   display: flex;
