@@ -1595,6 +1595,30 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
       new topics to 5 stories each. They use only words that already had cards.
     - **The rule from now on:** a story uses only words that have a topic card. A new word gets a
       topic card as well (`plan5.py` and a story-only check, as in `story_words.py`).
+  - **Batch 7: stories for words no story used** (2026-10-10, the user's request: at least 98% of
+    cards outside Thai Script in some story, by card, i.e. word and meaning).
+    - **Before:** 92.67% (6,968 of 7,519), with 551 cards in 168 topics in no story. Most were
+      Spoken Top-500 second glosses, Shopping, TV, Economy, Medical Staff and Beach words.
+    - **How:** four agents, one share of categories each, wrote 136 stories (1,010 → 1,146) in
+      `decks/stories_b7_1.py` to `_4.py`.
+      - Each had a brief with the natural-Thai checklist (scratchpad `b7/brief.md`) and a target
+        list (`b7/targets_N.md`, from `targets.py`).
+      - `b7/check_batch.py` builds a trial with a draft (`build_reading.py --extra`) and shows
+        errors, name clashes and the target cards covered.
+      - I read every share as Thai before it went in. `b7/integrate.py` registers a share, rebuilds,
+        and checks plan5, the audit and coverage.
+      - Each share was committed and pushed with its audio.
+    - **After: 99.97%** (7,517 of 7,519). Still in no story:
+      - **555 "hahaha":** no Thai letters, so the builder can't read it as a word.
+      - **หวาน "lying (Gen-Z)":** left out as a doubtful slang sense.
+    - **Fixes on the way:** Southern จังหู้ became "very, really (Southern)" so it doesn't share an
+      answer with มาก in a story. A space was added after ๆ in seven lines.
+    - **Worth a native check:**
+      - the Southern stories (Grandma's Orchard, The Deckhand and the Storm, Showing Off in the
+        Village) and the Isan one (Koi with Grandma);
+      - lines that quote a pattern card with its "…" (ขอ … หน่อย, ถ้า…ก็, ที่อื่นขาย…บาท).
+    - **Cards worth adding someday:** the agents met common words with no card, which forced
+      plainer wording: ครั้งแรก, ดีขึ้น, เล็ก ๆ, ดิบ, คั่ว, หมัก, ดำเนินการ, ลูกแกะ.
   - **Phrases in stories are split into their words** (2026-10-10, the user's report and call).
     - **The bug:** a phrase card such as คุณชื่ออะไร was one token in a story line. It was tapped as
       one "word", and Word gaps put no gaps inside it. This happened in 627 of the 1,010 stories:
