@@ -95,6 +95,7 @@ const els = {
   themeColorMeta: document.querySelector('meta[name="theme-color"]'),
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
+  setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
   installHelp: document.getElementById('install-help'),
   installActions: document.getElementById('install-actions'),
   installBtn: document.getElementById('install-btn'),
@@ -157,6 +158,7 @@ const DEFAULT_SETTINGS = {
   wrongPauseMs: 4000,             // Recognition: pause after a wrong one (its own setting since 2026-10-08; 3 s at first)
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → Topics)
+  topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → Topics)
 };
 
 const state = {
@@ -1518,6 +1520,7 @@ function renderSettings() {
   els.setThaiFont.value = s.thaiFont === 'loopless' ? 'loopless' : 'looped';
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
+  els.setTopicWordGaps.checked = !!s.topicWordGaps;
   renderInstall();
   renderOffline();
   els.launchHelp.textContent = launchTimingText();
@@ -1596,6 +1599,10 @@ function bindSettings() {
     rememberSavedCount();
     renderOffline();
     toast('Downloaded audio deleted');
+  });
+  els.setTopicWordGaps.addEventListener('change', () => {
+    setSettings({ topicWordGaps: els.setTopicWordGaps.checked });
+    els.wordtable.classList.toggle('show-spaces', els.setTopicWordGaps.checked);
   });
   els.setWordlistFirst.addEventListener('change', () => {
     setSettings({ wordlistFirst: els.setWordlistFirst.value === 'english' ? 'english' : 'thai' });
@@ -1793,6 +1800,9 @@ function renderWordlist() {
   if (!state.currentDeckId) return;
   const deck = currentScope();
   if (!deck) return;
+  // A phrase's words get gaps if Settings → Topics → "Word gaps in phrases" is on (off by default,
+  // since Thai is written without them; the user's call, 2026-10-10). The reader has its own button.
+  els.wordtable.classList.toggle('show-spaces', !!getSettings().topicWordGaps);
   // Several topics, in list order: a heading row before each topic's words.
   const topicHeadings = deck.decks.length > 1 && !state.sort.key;
   let lastTopic = null;
@@ -1891,10 +1901,33 @@ function renderWordlist() {
         td.className = COL_META[key].cls;
         td.textContent = c[key];
         // The Thai opens the word pop-up, as a word in the reader does (2026-10-09, the user's request).
-        if (key === 'thai') {
+        // A phrase is split into its words, each opening its own pop-up (2026-10-10, the user's
+        // request; phraseWords); the row's buttons still add, spell and play the whole phrase.
+        const parts = key === 'thai' && phraseWords(c);
+        if (parts) {
+          td.textContent = '';
+          td.classList.add('col-phrase');
+          parts.forEach((w, i) => {
+            // Between words (Thai writes none): a space that Settings → Topics → Word gaps shows.
+            if (i) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
+            const span = Object.assign(document.createElement('span'), { className: 'tw', textContent: w.thai });
+            span.tabIndex = 0;
+            span.setAttribute('role', 'button');
+            span.title = `Show ${w.thai}`;
+            span.dataset.pop = `${c.key}|${i}`;
+            const open = (e) => {
+              e.preventDefault();
+              showWordPop(span, w, els.wordlistSection);
+            };
+            span.addEventListener('click', open);
+            span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+            td.append(span);
+          });
+        } else if (key === 'thai') {
           td.tabIndex = 0;
           td.setAttribute('role', 'button');
           td.title = 'Show the word';
+          td.dataset.pop = c.key;
           const open = (e) => {
             e.preventDefault();
             showWordPop(td, c, els.wordlistSection);
@@ -3165,11 +3198,19 @@ function hideWordPop() {
   popKey = null;
 }
 
+// A phrase card's words (its `words`: card keys, from the story builder), or null for a single word.
+function phraseWords(card) {
+  if (!(card.words?.length > 1)) return null;
+  const words = card.words.map((k) => state.cardIndex.get(k)?.card);
+  return words.every(Boolean) ? words : null;
+}
+
 // The Topics table was redrawn (adding the word to Flashcards from the pop-up does that): the pop-up
-// follows its word's new row, or closes if the row has gone.
+// follows its word's new row (or the same word of a phrase), or closes if it has gone.
 function reanchorWordPop() {
   if (!popAnchor || popHost !== els.wordlistSection || popAnchor.isConnected) return;
-  const cell = [...els.wordtableBody.querySelectorAll('tr')].find((tr) => tr.dataset.key === popKey)?.querySelector('.col-thai');
+  const id = popAnchor.dataset.pop;
+  const cell = id ? els.wordtableBody.querySelector(`[data-pop="${CSS.escape(id)}"]`) : null;
   if (!cell) { hideWordPop(); return; }
   popAnchor = cell;
   cell.classList.add('on');

@@ -30,6 +30,9 @@ SAME_THAI_TRANSLIT_OK = {'เขา'}   # kháo (pronoun, as said) vs khǎo (hor
 # The one exception, the user's call on 2026-10-09: Alphabet in Order, all 44 consonants ก to ฮ,
 # where the unbroken order is the point. Reading stories' word lists aren't topics in this sense.
 TOPIC_MAX = 25
+# A story's word list holds each phrase it uses and, since 2026-10-10, the phrase's words too (the
+# reader splits phrases into words), so a story full of idioms runs past 50.
+STORY_MAX = 70
 OVER_MAX_OK = {'script-consonants-all'}
 
 
@@ -43,11 +46,13 @@ def words(e, keep_parens=True):
 def audit(decks):
     errors, review = defaultdict(list), defaultdict(list)
     cards = [(dk, c) for dk in decks for c in dk['cards']]
+    all_keys = {f"{c['thai']}::{c['english']}" for _, c in cards}
 
     # Structure
     for dk in decks:
-        if not 3 <= len(dk['cards']) <= 50:
-            errors['topic size outside 3–50'].append(f"{dk['name']}: {len(dk['cards'])}")
+        top = STORY_MAX if dk.get('category') == 'Reading' else 50
+        if not 3 <= len(dk['cards']) <= top:
+            errors[f'topic size outside 3–{top}'].append(f"{dk['name']}: {len(dk['cards'])}")
         if dk.get('category') != 'Reading' and len(dk['cards']) > TOPIC_MAX and dk['id'] not in OVER_MAX_OK:
             errors[f'word topic over {TOPIC_MAX} cards (split it by sub-theme)'].append(f"{dk['name']}: {len(dk['cards'])}")
         for k in ('id', 'category', 'name', 'description'):
@@ -78,9 +83,15 @@ def audit(decks):
         for k in ('thai', 'translit', 'english'):
             if not c.get(k):
                 errors['card missing a field'].append(f'{where} ({k})')
-        fields = {'thai', 'translit', 'english', 'note', 'say', 'partners'}
+        fields = {'thai', 'translit', 'english', 'note', 'say', 'partners', 'words'}
         if set(c) - fields:
             errors['unknown card field'].append(f'{where} {set(c) - fields}')
+        # A phrase's words (2026-10-10): card keys that exist somewhere and spell the phrase.
+        if 'words' in c:
+            if ''.join(k.split('::')[0] for k in c['words']) != c['thai']:
+                errors["phrase words that don't spell it"].append(where)
+            missing = [k for k in c['words'] if k not in all_keys]
+            if missing: errors['phrase word with no card'].append(f'{where}: {missing}')
         # Tone / Sound Pairs: partners are card keys (thai::english) of other cards in the same topic.
         if 'partners' in c:
             own = {f"{x['thai']}::{x['english']}" for x in dk['cards']}

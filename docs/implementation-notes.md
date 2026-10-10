@@ -1595,6 +1595,64 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
       new topics to 5 stories each. They use only words that already had cards.
     - **The rule from now on:** a story uses only words that have a topic card. A new word gets a
       topic card as well (`plan5.py` and a story-only check, as in `story_words.py`).
+  - **Phrases in stories are split into their words** (2026-10-10, the user's report and call).
+    - **The bug:** a phrase card such as คุณชื่ออะไร was one token in a story line. It was tapped as
+      one "word", and Word gaps put no gaps inside it. This happened in 627 of the 1,010 stories:
+      1,248 phrases, from questions to idioms and compounds such as พนักงานเสิร์ฟ.
+    - **The rule:** a phrase splits at its card's transliteration spaces, one piece per
+      transliterated word. For example, khun chʉ̂ʉ a-rai gives คุณ|ชื่อ|อะไร, and a hyphenated word
+      such as mʉang-thai stays whole. Splitting applies to every phrase, compounds included (the
+      user chose "everything" over "sentences only"). A piece that is itself a phrase card splits
+      in turn (ออกเสียง).
+    - **How (the builder, scratchpad `decks/build_reading.py`):**
+      - `phrase_splits.json` lists the pieces for each phrase. It was made by scratchpad
+        `split/align.mjs`: a piece is a card whose transliteration matches, or a new word whose
+        syllables match (spell.js's reading). Five loanword phrases were split by hand.
+      - `split_line` rewrites the passage's tokens.
+      - **The phrase's own card stays in the story's word list.** It still links the story to its
+        topic (`storiesFor`, the 5-stories check), and it can be learnt whole.
+      - **Which meaning a piece takes:** a card pronounced as in the phrase, then the usual picks.
+        `split_senses.py` overrides this: `GLOBAL` for words such as ที่, ของ, ผล, ใบ and ค่า, and
+        `BY_PHRASE` for 38 phrases. All 936 pieces with more than one card were reviewed by hand.
+        Examples: หนัง in ตัวอย่างหนัง is film, not leather; สี in สีซอ is to bow (a fiddle).
+    - **New cards:**
+      - **445 words** that had no card, glossed by hand (scratchpad `split/glosses.py`). Each went
+        into its phrase's topic, or the nearest topic with room when that one was full.
+      - **Three new topics:** Parcels: Shipping & Tracking, Documents: Certificates & Registration,
+        and Traffic Offences: Checks & Insurance. The parcels and traffic topics also got copies of
+        พัสดุ, ส่ง, ตำรวจ and ค่าปรับ, which bring them to 5 stories each.
+      - **20 new senses** where a piece meant something its cards didn't. For example, ข้าวสาร in
+        ผีฝากถุงข้าวสาร is uncooked rice, not Khao San Road; Northern ส้ม is sour and กา a
+        question particle; ปะ in หนีเสือปะจระเข้ is to run into.
+      - **Dialect and old words:** several dialect and idiom glosses are best guesses. These
+        include Southern แข็บ and ด็อง, and ควัด.
+    - **Clashes fixed:** nine cards were re-glossed where a phrase and its piece shared an English
+      answer within a story. For example, มือถือ and โทรศัพท์มือถือ were both "mobile phone"; the
+      latter is now "mobile phone (full name)".
+    - **Story size:** a story's word list can now pass 50 (up to 67), with each idiom's card plus
+      its words. The audit allows stories up to 70 (`STORY_MAX`); word topics keep 25.
+    - **Checked:**
+      - Every Thai token in every story has a card, and no phrase is left whole.
+      - The audit has 0 errors, and `plan5.py` needs no slots.
+      - In Chromium, The Nosy Auntie reads ป้า: คุณ ชื่อ อะไร with gaps, and tapping ชื่อ shows
+        "name / to be called".
+    - **The Topics page splits phrases too** (same day, the user's request).
+      - **Data:** each phrase card has `words`, the card keys of its words, written by the builder.
+        A phrase a story uses takes that story's (reviewed) card for each word; any other takes the
+        builder's usual choice for its topic. The audit checks that the keys exist and spell the
+        phrase.
+      - **Covers every phrase:** 1,401 topic phrase cards (all but tone-mark names like ◌่). This
+        needed 86 more splits for phrases no story uses (scratchpad `split/align_topics.mjs`) and
+        16 more cards, such as สองพัน, Isan จั่ง/ได๋/ซี่ and ตกต่ำ.
+      - **App:** `phraseWords` reads `words`. A phrase row's Thai cell is one `.tw` span per word,
+        and each opens its own pop-up; the row's buttons still add, spell and play the whole phrase.
+        Gaps between the words: Settings → Topics → "Word gaps in phrases" (`topicWordGaps`,
+        `.wordtable.show-spaces`), off by default; the user asked for its own setting the same day.
+        At first the gaps followed the reader's Word gaps button.
+        `reanchorWordPop` finds the pop-up's word again by `data-pop` (row key | word index) after
+        the table redraws.
+      - **Checked in Chromium:** Small Talk: Questions shows คุณ ชื่อ อะไร as three words. Tapping
+        ชื่อ opens its pop-up, and adding it from the pop-up keeps the pop-up on ชื่อ.
   - **Slang & Swearing card check** (2026-10-09). The deck's 286 cards plus the two crime-slang
     topics were read in full.
     - **Method:** about 50 doubtful cards were checked against Thai sources: the Longdo dict blog

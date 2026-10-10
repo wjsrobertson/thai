@@ -1295,6 +1295,14 @@ body { display: flex; flex-direction: column; }
 .wordtable td.col-thai { cursor: pointer; }
 .wordtable td.col-thai:hover, .wordtable td.col-thai:focus-visible { color: var(--accent); outline: none; }
 .wordtable td.col-thai.on { color: var(--accent); }
+/* A phrase is its words, each opening its own pop-up (2026-10-10): the word lights, not the cell. */
+.wordtable td.col-thai.col-phrase { cursor: default; }
+.wordtable td.col-thai.col-phrase:hover { color: inherit; }
+.tw { border-radius: 6px; cursor: pointer; transition: background-color .1s, color .1s; }
+.tw:hover, .tw:focus-visible { color: var(--accent); outline: none; }
+.tw.on { color: var(--accent); background: var(--panel-2); }
+.tw-gap { display: none; }
+.wordtable.show-spaces .tw-gap { display: inline; }
 
 .wordlist-deck-name {
   color: var(--ink);
