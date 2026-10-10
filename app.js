@@ -609,11 +609,25 @@ function currentCard() {
 // The card's front text on a fixed-size card: a long Thai phrase on a small screen (or a large Text
 // size) can overflow it, so shrink it a step at a time, down to 70%, until it fits. Ordinary words
 // keep the full size. Runs after renderCard, on coming to Flashcards, on resize and on a Text size
-// change. (The back scrolls, and Review's card grows, so they don't need it.)
-// The front's big text on Flashcards' card and Review's.
+// change. (Review's card grows, so it doesn't need it.)
+// The front's big text on Flashcards' card and Review's, and Flashcards' back.
 function fitCardText() {
   fitText(els.thai);
   if (els.reviewPrompt) fitText(els.reviewPrompt);
+  fitBack(els.english);
+}
+
+// The back scrolls when there's too much on it, but on a phone the longest idioms went just over
+// (6 px, 2026-10-10, once the corner buttons grew): shrink the back's main line (the Thai answer in
+// English → Thai) the same way, down to 70%, until the back fits. Backs that fit are untouched.
+function fitBack(el) {
+  el.style.fontSize = '';
+  const body = el.closest('.face-body');
+  if (!body?.offsetParent || !el.textContent) return;
+  const base = parseFloat(getComputedStyle(el).fontSize);
+  for (let k = 0.94; k > 0.69 && body.scrollHeight > body.clientHeight + 1; k -= 0.06) {
+    el.style.fontSize = `${base * k}px`;
+  }
 }
 
 function fitText(el) {

@@ -1692,6 +1692,11 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
     directions, front and back), testing text lines against the buttons' boxes. The first run was
     void: no words were in Flashcards, so no card showed. The rerun found two phone overlaps, where
     a long idiom's transliteration met the badge, so the badge moved up 4 px.
+- **No more 6 px scroll on long backs** (2026-10-10, the user's request): with the bigger buttons,
+  two English → Thai idiom backs on a 390 px phone ran 6 px past the back, which then scrolled.
+  `fitBack` shrinks the back's main line (`#card-english`, the Thai answer in English → Thai) a
+  step at a time, down to 70%, until the back fits, as `fitText` already does for the front.
+  - **Checked:** 108 phone backs. Only those two shrank (one step, about 6%), and none scrolls.
 - **The smaller Thai on a Thai → English or Listen back is tappable too** (same day): letters name
   themselves, as on the large Thai (`tapCardThai` with `cardThaiShown` and `recallThaiShown`).
 
