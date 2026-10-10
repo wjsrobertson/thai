@@ -937,12 +937,19 @@ body { display: flex; flex-direction: column; }
 /* The Review icon drawn in the text ("using the 🔁 button"), as it looks in Wordlists. */
 .review-only-empty .inline-icon { white-space: nowrap; color: var(--ink); }
 .review-only-empty .inline-icon .review-icon { margin: 0 1px; vertical-align: -0.18em; }
-.review-only-empty-small { margin-top: 14px !important; } /* an alternative, set apart (same size as the line above) */
-#review-only-add-all { margin-bottom: 14px; }
-/* Its buttons (Yes, Topics page, Everything): small, in the line (.round-again's colours, not its
-   size). */
-.round-again.review-only-btn { padding: 3px 14px; font-size: calc(15px * var(--fs, 1)); border-radius: 8px; margin: 2px 2px; white-space: nowrap; }
-#review-only-yes { margin-left: 4px; }
+/* Its ways out (2026-10-10): a button on the left, what it does on the right. The rows share one
+   grid, so the buttons are all as wide as the widest. */
+.review-only-actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px 14px;
+  align-items: center;
+  margin-top: 16px;
+  text-align: left;
+}
+.review-only-row { display: contents; }
+.review-only-row[hidden] { display: none; }
+.round-again.review-only-btn { padding: 8px 14px; font-size: calc(15px * var(--fs, 1)); border-radius: 8px; white-space: nowrap; }
 .stage[data-view="wordlist"] .pos-badge {
   display: none;
 }

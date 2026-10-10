@@ -53,7 +53,6 @@ const els = {
   reviewOnlyAddAll: document.getElementById('review-only-add-all'),
   reviewOnlyAddName: document.getElementById('review-only-add-name'),
   reviewOnlyYes: document.getElementById('review-only-yes'),
-  reviewOnlyIndividually: document.getElementById('review-only-individually'),
   reviewOnlyTopics: document.getElementById('review-only-topics'),
   reviewOnlyEverything: document.getElementById('review-only-everything'),
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
@@ -549,13 +548,12 @@ function renderReviewOnly() {
     const scope = flashScope();
     els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Flashcards yet'
       : !scope || scope.kind === 'topic' ? "None of this topic's words are in Flashcards yet" : `None of the words in ${scope.name} are in Flashcards yet`;
-    // Three ways out (2026-10-10, the user's wording): add the whole topic (or group) here; add words
-    // one by one in Topics; or switch to Everything, when that would show something. Each
-    // has a button in its line. On Everything there's no topic to add, so the second line stands alone.
+    // Three ways out (2026-10-10, the user's wording and layout), each a button with what it does
+    // beside it: add the whole topic (or group); choose words in Topics; or switch to Everything, when
+    // that would show something. On Everything there's no topic to add.
     const all = scope?.kind === 'all';
     els.reviewOnlyAddAll.hidden = all || !state.cards.length;
     els.reviewOnlyAddName.textContent = `'${scope?.name || 'this topic'}'`;
-    els.reviewOnlyIndividually.textContent = els.reviewOnlyAddAll.hidden ? 'Add words' : 'Or add words individually';
     els.reviewOnlyEmptyHint.hidden = all || !Object.keys(reviewWords()).length;
   }
 }

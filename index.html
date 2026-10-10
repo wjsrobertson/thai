@@ -210,9 +210,11 @@
 
     <div class="review-only-empty flashcards-only" id="review-only-empty" role="status" hidden>
       <p class="review-only-empty-title">None of this topic's words are in Flashcards yet</p>
-      <p id="review-only-add-all">Add all words from <span id="review-only-add-name"></span>? <button type="button" class="round-again review-only-btn" id="review-only-yes">Yes</button></p>
-      <p><span id="review-only-individually">Or add words individually</span> in <button type="button" class="round-again review-only-btn" id="review-only-topics">Topics</button> using the <span class="inline-icon" role="img" aria-label="Add to Flashcards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button and they'll show up here</p>
-      <p class="review-only-empty-small" id="review-only-empty-hint">Or switch to <button type="button" class="round-again review-only-btn" id="review-only-everything">Everything</button> to see all your added words</p>
+      <div class="review-only-actions">
+        <div class="review-only-row" id="review-only-add-all"><button type="button" class="round-again review-only-btn" id="review-only-yes">Add all words</button><span>Put every word from <span id="review-only-add-name"></span> in Flashcards</span></div>
+        <div class="review-only-row"><button type="button" class="round-again review-only-btn" id="review-only-topics">Choose words</button><span>Pick words one by one in Topics with the <span class="inline-icon" role="img" aria-label="Add to Flashcards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button, and they'll show up here</span></div>
+        <div class="review-only-row" id="review-only-empty-hint"><button type="button" class="round-again review-only-btn" id="review-only-everything">View all topics</button><span>Switch to Everything to see all your added words</span></div>
+      </div>
     </div>
 
     <section class="today today-only" id="today-section">

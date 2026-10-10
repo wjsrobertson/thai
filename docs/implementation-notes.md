@@ -1144,17 +1144,19 @@ a category alone, on every page).
   - **Empty message:** on Everything with nothing in Review, "No words in Review yet". By topic,
     the message gains Review's "Or switch to Everything…" line (`#review-only-empty-hint`), hidden
     when Review is empty.
-    - **Reworded 2026-10-10 (the user's text):** under the title, three ways out:
-      1. "Add all words from 'Time of Day'? [Yes]". The question is the confirmation, so Yes adds
-         the topic's (or group's) words at once, with a toast.
-      2. "Or add words individually in [Topics] using the 🔁 button and they'll show up here". The
-         Topics button goes to the Topics page, and there's no full stop (the user's call).
-      3. "Or switch to [Everything] to see all your added words". It was "…with the button above…"; now
-         the word is a button that switches Flashcards to Everything (`setFlashcardsBy('all')`).
-      - **All three are small accent buttons in their line** (`.review-only-btn`). Topics and
-        Everything were links at first; the user asked for them to match Yes.
-    - **On Everything:** there's no topic to add, so line 1 is hidden and line 2 starts "Add words
-      in Topics…".
+    - **Reworded 2026-10-10 (the user's text, then their layout):** under the title, three ways
+      out, each a button on the left with what it does on the right (`.review-only-actions`, one
+      grid, so the buttons share a width):
+      1. **Add all words:** "Put every word from 'Time of Day' in Flashcards". It adds them at once,
+         with a toast.
+      2. **Choose words:** "Pick words one by one in Topics with the 🔁 button, and they'll show up
+         here". It opens the Topics page.
+      3. **View all topics:** "Switch to Everything to see all your added words"
+         (`setFlashcardsBy('all')`). It's hidden when nothing is in Flashcards at all.
+      - **History:** first it was sentences with the buttons inside them ("Add all words from
+        '…'? [Yes]", "…individually in [Topics]…", "Or switch to [Everything]…"). The user then
+        asked for buttons on the left with longer names, and suggested these labels.
+    - **On Everything:** there's no topic to add, so row 1 is hidden.
     - **Tested in Chromium:** Yes added Time of Day's 24 words and its first card showed; the link
       opened the topic's Topics page; Everything showed the words added elsewhere.
   - **Tested in Chromium:**
