@@ -1136,13 +1136,15 @@ body { display: flex; flex-direction: column; }
   color: var(--accent);
   border-color: var(--accent);
 }
-/* Auto-play's A, on the speaker's lower-left edge: filled when on; grey with a slash when off (the
-   card then keeps quiet until the speaker is pressed). A ring in the face's colour sets it off from
-   the speaker, and an invisible margin makes it an easier tap. */
+/* Auto-play's A, to the left of the speaker, level with its middle: filled when on; grey with a
+   slash when off (the card then keeps quiet until the speaker is pressed). An invisible 10 px margin
+   makes it an easier tap. Until 2026-10-11 it sat on the speaker's lower-left edge; the user found
+   the overlap too fiddly on a phone, so now a 12 px gap keeps even the margin off the speaker.
+   Speaker: top 18, right 18, 108 across → A (36): top 18 + 54 − 18, right 18 + 108 + 12. */
 .auto-badge {
   position: absolute;
-  top: 92px;
-  right: 92px;
+  top: 54px;
+  right: 138px;
   z-index: 4;
   width: 36px;
   height: 36px;

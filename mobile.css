@@ -81,7 +81,8 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .flip-btn, .spell-btn { bottom: 10px; }
 .spell-btn { left: 10px; font-size: 32px; }
 .speak { top: 10px; right: 10px; font-size: 33px; }
-.auto-badge { top: 52px; right: 56px; width: 30px; height: 30px; font-size: 16px; line-height: 30px; } /* above the 84 px padding */
+/* Left of the speaker (top 10, right 10, 72 across), level with its middle, 12 px clear of it. */
+.auto-badge { top: 31px; right: 94px; width: 30px; height: 30px; font-size: 16px; line-height: 30px; }
 .flip-btn { right: 10px; font-size: 39px; }
 
 /* 36px at 320px wide (where long phrases only just fit), rising faster than plain vw: about 49px

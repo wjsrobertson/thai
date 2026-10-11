@@ -1716,6 +1716,11 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
     directions, front and back), testing text lines against the buttons' boxes. The first run was
     void: no words were in Flashcards, so no card showed. The rerun found two phone overlaps, where
     a long idiom's transliteration met the badge, so the badge moved up 4 px.
+- **The A badge moved beside the speaker** (2026-10-11, the user's request: the overlap was too fiddly
+  on a phone). It now sits to the speaker's left, level with its middle, 12 px clear of it, so even
+  its invisible 10 px tap margin stays off the speaker. Desktop: top 54, right 138. Phone: top 31,
+  right 94. Checked on Flashcards and Recall, phone and desktop: the centres line up, the speaker's
+  edge taps the speaker, and none of 432 faces has text under the badge.
 - **No more 6 px scroll on long backs** (2026-10-10, the user's request): with the bigger buttons,
   two English → Thai idiom backs on a 390 px phone ran 6 px past the back, which then scrolled.
   `fitBack` shrinks the back's main line (`#card-english`, the Thai answer in English → Thai) a
