@@ -126,6 +126,7 @@ const TEMPLATES = {
     { re: new RegExp(`^${T}า`), v: 'ao' },
     { re: new RegExp(`^${T}อะ`), v: 'er' },
     { re: new RegExp(`^${T}อ`), v: 'erer' },
+    { re: new RegExp(`^${T}อ(?=ว)`), v: 'erer', final: 'F' }, // เกอว (แม่เกอว): เออ + ว, as old spellings write it
     { re: new RegExp(`^ิ${T}`), v: 'erer', final: 'F' },    // เดิน
     { re: new RegExp(`^ี${T}ยะ`), v: 'iaS' },
     { re: new RegExp(`^ี${T}ย`), v: 'ia', final: 'F?' },

@@ -1404,11 +1404,22 @@ leave small diffs. Run the audit, then `node tools/spelling.mjs --write` and
 
 The user asked whether there's a canonical way to memorise the tone table. There is: Thai schools'
 ผันวรรณยุกต์, which runs one syllable through every tone mark, class by class, as a chant. The new
-topic Tone Chants (Thai Script → Tones & Reading, after Tone Rules) has 7 cards, each a whole chant
+topic Tone Chants (Thai Script → Tones & Reading, after Tone Rules) has 15 cards, each a whole chant or line
 with its recording. The tone check in the audit and the Tones panel both read them syllable by
 syllable.
 - **Live chants:** กา ก่า ก้า ก๊า ก๋า; ปา ป่า ป้า ป๊า ป๋า (five real words); ขา ข่า ข้า; คา ค่า ค้า.
-- **Dead examples:** จะ จ้ะ จ๊ะ; ขับ ผัก สุด; นก นาก.
+- **What schools teach with the chants** (the user asked how children learn live, dead, short and
+  long; added the same day):
+  - the line อักษรกลางผันได้ห้าเสียง อักษรสูงและอักษรต่ำผันได้สามเสียง;
+  - พื้นเสียง, the base tone, with one line per class: อักษรกลาง คำเป็นเสียงสามัญ คำตายเสียงเอก, and so on;
+  - the recited definitions of คำเป็น and คำตาย, by vowel length and the final-consonant families
+    (แม่ ก กา; แม่กง กม เกย เกอว กน; แม่กก กด กบ).
+  - `spell.js` learned เ-อ before a final ว (เกอว, as in แม่เกอว) so these read syllable by syllable.
+    Three more cards now have a school spelling, and none lost one.
+- **Dead, with marks:** จะ จ้ะ จ๊ะ.
+- **Down the columns** (the user's request, same day): one sound with a mid, a high and a low
+  letter. กา ขา คา is live, กัด ขัด คัด dead and short, ตาก ถาก ทาก dead and long; all are real
+  words. They replaced the dead examples ขับ ผัก สุด and นก นาก.
 - **Topic `about`:** the four rules learners add on top of the chants (mid class is the
   reference; high class rises unmarked; low class is one step higher; dead and unmarked is low,
   except low class), and that ข and ค fill each other's gaps.
