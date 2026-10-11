@@ -1,4 +1,5 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable } from './spell.js';
+import { toneBreakdown, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -2995,14 +2996,164 @@ function showWordPop(anchor, card, host = els.reader) {
   play.append(speakerIcon());
   play.addEventListener('click', () => speakerPress(play, card.thai));
   actions.append(play);
+  // Under them, the word's tones (tones.js), closed to a row until tapped.
+  const tones = toneSection(card, big);
   pop.style.width = ''; // sized afresh for each word, then held (below)
-  pop.replaceChildren(row, big, actions);
+  pop.replaceChildren(row, big, actions, ...(tones ? [tones.el] : []));
   pop.hidden = false;
   fitPopWord(big);
   // Hold the width: a narrower pop-up (a button redrawn, say) would re-centre the word, moving it
   // out from under the next tap and its highlights.
   pop.style.width = getComputedStyle(pop).width;
   placeWordPop(anchor);
+  tones?.shown();
+}
+
+// ---------- tones (tones.js) ----------
+
+// The word pop-up's Tones row (2026-10-11, the user's request; tried there first). Closed, it's
+// "Tones" and a small curve per syllable; open (the small curves hidden), each syllable's tone drawn, with its
+// transliteration and the tone's name, and under them the rule for the one picked (the first, to
+// start): the consonant's class, live or dead, the tone mark, and the tone they give. Picking a
+// syllable lights its letters in the big word and says it. Open or closed is remembered (prefs).
+// { el, shown } (call shown() once the pop-up is placed, to light the picked syllable), or null for
+// a word whose Thai can't be matched to its transliteration.
+function toneSection(card, big) {
+  const syls = toneBreakdown(card.thai, card.translit);
+  if (!syls?.length) return null;
+  const box = document.createElement('div');
+  box.className = 'pop-tones';
+  const span = (className, textContent) => Object.assign(document.createElement('span'), { className, textContent });
+  const newWord = (n) => n > 0 && syls[n].word !== syls[n - 1].word;
+
+  const toggle = document.createElement('button');
+  toggle.type = 'button';
+  toggle.className = 'tones-toggle';
+  const minis = span('tones-minis', '');
+  syls.forEach((s, n) => minis.append(toneCurve(s.tone, { staff: false, gap: newWord(n) })));
+  toggle.append(span('tones-label', 'Tones'), minis, span('tones-chevron', '›'));
+
+  const panel = document.createElement('div');
+  panel.className = 'tones-panel';
+  const strip = document.createElement('div');
+  strip.className = 'tones-strip';
+  const detail = document.createElement('div');
+  detail.className = 'tones-detail';
+  panel.append(strip, detail);
+  let picked = 0;
+  const pick = (n, { play = false } = {}) => {
+    picked = n;
+    strip.querySelectorAll('.tone-syl').forEach((b, k) => b.setAttribute('aria-pressed', String(k === n)));
+    detail.replaceChildren(...toneRule(syls[n]));
+    if (play) {
+      const say = syls[n].said;
+      speak(say, sampleUrl(say, 'sp') ? 'sp' : 'th');
+    }
+    lightParts(big, syls[n].at);
+  };
+  // The open panel makes the pop-up much taller: scroll it into view if it now runs off the screen.
+  // (Not smoothly: a smooth scroll begun as the word is tapped gets cut short.)
+  const reveal = () => box.closest('.reader-pop')?.scrollIntoView({ block: 'nearest' });
+  syls.forEach((s, n) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `tone-syl tone-${s.tone}` + (s.exception ? ' exception' : '') + (newWord(n) ? ' word-start' : '');
+    b.append(toneCurve(s.tone), span('tone-tl', s.tl), span('tone-name', s.tone));
+    b.title = `${s.said} ${s.tl}: ${s.tone} tone`;
+    b.addEventListener('click', () => {
+      pick(n, { play: true });
+      reveal(); // a syllable's rule may take more lines
+    });
+    strip.append(b);
+  });
+
+  const setOpen = (open) => {
+    box.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    panel.hidden = !open;
+  };
+  setOpen(!!getPreferences().popTones);
+  toggle.addEventListener('click', () => {
+    const open = panel.hidden;
+    setOpen(open);
+    setPreferences({ popTones: open });
+    // Size the pop-up afresh for the panel (or without it), and put it back under its word.
+    const pop = els.readerPop;
+    pop.style.width = '';
+    pop.style.width = getComputedStyle(pop).width;
+    if (popAnchor) placeWordPop(popAnchor);
+    if (open) {
+      pick(picked);
+      reveal();
+    } else {
+      lightParts(big, null);
+    }
+  });
+  box.append(toggle, panel);
+  return { el: box, shown: () => { if (!panel.hidden) { pick(picked); reveal(); } } };
+}
+
+// One syllable's rule, as rows: class, the tone mark, live or dead (only with no mark: a mark decides
+// on its own), and the tone; for an exception, the rules' tone and the one said. Then any note. (Which
+// syllable it is shows in the big word, lit, and the strip.)
+function toneRule(s) {
+  const rows = document.createElement('dl');
+  rows.className = 'tone-rows';
+  const row = (label, ...content) => {
+    const dd = document.createElement('dd');
+    dd.append(...content);
+    rows.append(Object.assign(document.createElement('dt'), { textContent: label }), dd);
+    return dd;
+  };
+  const thai = (text) => Object.assign(document.createElement('span'), { className: 'tone-th', textContent: text, lang: 'th' });
+  const why = (text) => Object.assign(document.createElement('span'), { className: 'tone-why', textContent: text });
+  const toneName = (tone) => {
+    const el = Object.assign(document.createElement('span'), { className: `tone-${tone}`, textContent: `${tone} · ` });
+    el.append(thai(TONE_THAI[tone]));
+    return el;
+  };
+  row('Class', thai(s.clsLetter), ` ${CLASS_NAMES[s.cls]}`, ...(s.clsWhy ? [why(s.clsWhy)] : []));
+  row('Mark', s.mark ? thai(`◌${s.mark} ${MARK_NAMES[s.mark]}`) : 'none');
+  if (!s.mark) row('Syllable', `${s.live ? 'live' : 'dead'}`, why(s.liveWhy)); // a mark decides on its own
+  if (s.exception) {
+    row('Rules give', toneName(s.rule));
+    row('Said', toneName(s.tone)).classList.add('tone-said');
+  } else {
+    row('Tone', toneName(s.tone)).classList.add('tone-said');
+  }
+  const out = [rows];
+  if (s.note) out.push(Object.assign(document.createElement('p'), { className: 'tone-note', textContent: s.note }));
+  return out;
+}
+
+// A tone's pitch, drawn: a curve on a faint three-line staff (the top, middle and bottom of the
+// voice), in the tone's colour (--tone-*). Without the staff, small, for the closed Tones row.
+const TONE_PATHS = {
+  mid: 'M3 10.5H33',
+  low: 'M3 14.5C13 15 23 16.5 33 17.5',
+  falling: 'M3 6.5C12 3 20 5 33 17.5',
+  high: 'M3 7C14 7 24 6 33 2.5',
+  rising: 'M3 13C11 18 21 18 33 4',
+};
+function toneCurve(tone, { staff = true, gap = false } = {}) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', `tone-curve tone-${tone}` + (gap ? ' word-start' : ''));
+  svg.setAttribute('viewBox', '0 0 36 20');
+  svg.setAttribute('aria-hidden', 'true');
+  if (staff) {
+    for (const y of [2.5, 10.5, 18]) {
+      const line = document.createElementNS(NS, 'path');
+      line.setAttribute('d', `M1 ${y}H35`);
+      line.setAttribute('class', 'tone-staff');
+      svg.append(line);
+    }
+  }
+  const path = document.createElementNS(NS, 'path');
+  path.setAttribute('d', TONE_PATHS[tone]);
+  path.setAttribute('class', 'tone-line');
+  svg.append(path);
+  return svg;
 }
 
 // The big word fits the pop-up: a long word or phrase gets smaller rather than overflowing.

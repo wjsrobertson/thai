@@ -517,3 +517,24 @@ export function spellingText(groups) {
 export function spellingSteps(groups) {
   return groups.flatMap((steps) => steps.filter((s) => !s.gap));
 }
+
+// ---------------------------------------------------------------- syllables, for tones.js
+
+// The word read syllable by syllable, as the school method reads it (null when no reading fits):
+// each syllable's parts as found above (onset, vowel, final, tone mark), plus its transliteration
+// (tl), which word of a phrase it's in (word), where its characters are in `thai` (at) and the
+// syllable as said (said: สะ for สบาย's ส, ละ for ผลไม้'s reused ล), which keys its recording.
+export function syllableReading(thai, translit) {
+  const r = reading(thai, translit);
+  if (!r?.orig) return null;
+  const at = (from, to) => r.orig.slice(from, to).sort((a, b) => a - b);
+  return r.syls.map((syl, n) => ({
+    ...syl, tl: r.tl[n].syl, word: r.tl[n].word, said: syllableSteps(syl).said,
+    at: syl.len ? at(syl.start, syl.start + syl.len) : at(syl.start - 1, syl.start),
+  }));
+}
+
+// A consonant's class: 'H', 'M' or 'L' (ฤ and ฦ count as ร and ล: low).
+export function consonantClass(ch) {
+  return ch === 'ฤ' || ch === 'ฦ' ? 'L' : CONSONANTS[ch]?.[0];
+}

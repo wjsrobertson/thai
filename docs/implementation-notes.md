@@ -1214,6 +1214,52 @@ Thai → English only.
 - **Checked in Chromium:** 20px on a 390px phone and 32px on desktop, the same as the English.
   Nothing overflowed, even on a card with a long note.
 
+## Tones (2026-10-11), the word pop-up
+
+**What:** a Tones row under the word pop-up's buttons, tried there first (the user's choice; the
+flashcard backs may follow). Closed, it shows "Tones" and a small curve per syllable. Tapped, it
+opens to:
+- a strip with each syllable's tone, drawn as a pitch curve on a faint three-line staff (the
+  user's pick over Chao tone letters, which don't join into one line in phone fonts, and The Five
+  Tones' arrows, which draw mid and low alike), with its transliteration and the tone's name;
+- the rule for the picked syllable: class (and why: ห or อ in front, a cluster, อักษรนำ), tone
+  mark, live or dead and why (only with no mark, which is when it matters), and the tone, with its
+  Thai name (เสียงสามัญ…). For an exception it
+  shows "Rules give" and "Said", and a note.
+
+Picking a syllable lights its letters in the big word and says it (its school-spelling recording,
+`sp`). The panel's open or closed state is remembered (`prefs.popTones`). Each tone has a colour
+token (`--tone-mid` …) per theme.
+
+**How:** `tones.js` `toneBreakdown(thai, translit)`, on `spell.js`'s new `syllableReading()` (the
+school method's syllable match, with `at` and the said form) and `consonantClass()`.
+- The tone said, and the vowel's length, come from the transliteration's marks. The rules give
+  their own tone, and the two are compared.
+- Where they differ, it tries อักษรนำ next: a lone low sonorant after a high or mid consonant
+  with a short open syllable or ำ (ตำรวจ, ประโยค, สนุก). That rule is applied only when the
+  transliteration agrees, since ขโมย and สมาชิก don't follow it. It also tries ฑ said d as mid
+  class (บัณฑิต).
+- What's left is an exception. Of 18,287 syllables, 264 (1.4%) are exceptions, nearly all
+  loanwords, plus ก็ and เขา kháo.
+
+**Live & Dead Syllables** (`script-live-dead`, Thai Script → Tones & Reading, between Tone Marks
+& Symbols and Tone Rules), added after the user asked what "live" meant:
+- 19 cards: คำเป็น and คำตาย; each way to be live (a long vowel; -m, -n, -ng; -i, -o; ไ ใ เ-า ำ)
+  and to be dead (a short vowel; -k, -t, -p);
+- the trap: ปาก is long but dead;
+- one pair per class: ดุ/ดี, ขับ/ขา, มาก/มา.
+
+The Five Tones and Tone Rules descriptions now point to it.
+
+**Data fixes on the way:** 33 cards' transliterations had wrong tone marks, found by comparing them
+with the rules:
+- sa-baai → sà-baai, a-rɔ̀i → à-rɔ̀i, a-rai → à-rai, khuk → khúk, muk → múk, phǒn-la-máai →
+  phǒn-lá-máai, naa-li-gaa → naa-lí-gaa;
+- phûu-lîi-phai → phûu-líi-phai, ôong → òong, hân → hàn, met-taa → mêet-taa;
+- -paa-raa-khaa → -pà-raa-khaa (eclipses), phǒk-phǎn → phòk-phǎn, sàn-phaa-gɔɔn → sǎn-phaa-gɔɔn;
+- sák phák → sàk phák, hàk-hee → hàk-hěe, phǎn-phuan → phǎn-phǔan, gaa-lá-thêe-sà →
+  gaa-lá-thee-sà, wí-sǎa-khá- → wí-sǎa-khà-.
+
 ## Core Words (2026-10-11), category `Core Words`
 
 **Why:** measured against three Thai corpora in `research/freq/`, the decks had a card for only

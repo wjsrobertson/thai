@@ -32,6 +32,8 @@
   --radius: 14px;
   --shadow: 0 10px 30px rgba(0,0,0,.35);
   --fs: 1; /* text scale from Settings → Display → Text size; set by applyTextSize() in app.js */
+  /* The five tones (the word pop-up's Tones, tones.js): a colour each, the same everywhere. */
+  --tone-mid: #a3afc0; --tone-low: #60a5fa; --tone-falling: #f87171; --tone-high: #c084fc; --tone-rising: #4ade80;
 }
 /* Light: dark text on an off-white page, which reads most accurately in daylight. */
 :root[data-theme="light"] {
@@ -44,6 +46,7 @@
   --border: #dedad1; --border-strong: #bdb7aa; --hover: rgba(0, 0, 0, .025);
   --control: #eeece6; --control-line: #dedad1; --control-ink: #5b6471;
   --topbar: rgba(245, 244, 240, .85); --backdrop: rgba(20, 20, 20, .35); --shadow: 0 8px 24px rgba(40, 35, 20, .1);
+  --tone-mid: #5b6471; --tone-low: #2457c5; --tone-falling: #c0392b; --tone-high: #8a3fd1; --tone-rising: #17784a;
 }
 /* Night: very dark and warm, amber text and little blue, for studying in bed. */
 :root[data-theme="night"] {
@@ -55,6 +58,7 @@
   --border: #2d2720; --border-strong: #463c31; --hover: rgba(255, 230, 190, .03);
   --control: #2c251d; --control-line: #5c4d3b; --control-ink: #c9b08a;
   --topbar: rgba(19, 16, 13, .82); --backdrop: rgba(0, 0, 0, .6); --shadow: 0 10px 30px rgba(0,0,0,.4);
+  --tone-mid: #b3a184; --tone-low: #8fabcc; --tone-falling: #e07a62; --tone-high: #c99bd8; --tone-rising: #a8c271;
 }
 
 * { box-sizing: border-box; }
@@ -1430,7 +1434,7 @@ body { display: flex; flex-direction: column; }
 .reader-pop {
   position: absolute;
   z-index: 5;
-  max-width: min(280px, calc(100% - 16px));
+  max-width: min(330px, calc(100% - 16px)); /* 280px until the Tones panel (2026-10-11, the user's call) */
   padding: 8px 12px;
   background: var(--panel-2);
   border: 1px solid var(--accent);
@@ -1501,6 +1505,67 @@ body { display: flex; flex-direction: column; }
   pointer-events: none;
   transition: none;
 }
+/* The pop-up's Tones (toneSection): a row of small tone curves that opens to each syllable's tone,
+   drawn on a three-line staff, and the rule that gives the one picked. */
+.pop-tones { margin: 2px -4px 0; border-top: 1px solid var(--border); }
+.tones-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 4px 4px;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+}
+.tones-label { font-size: .9em; font-weight: 600; }
+.tones-minis { display: flex; flex: 1; align-items: center; gap: 1px; min-width: 0; overflow: hidden; }
+.tones-minis .tone-curve { flex: none; width: 24px; height: 14px; }
+.tones-minis .word-start { margin-left: 7px; }
+.pop-tones.open .tones-minis { visibility: hidden; }
+.tones-chevron { font-size: 1.4em; line-height: 1; transition: transform .15s; }
+.pop-tones.open .tones-chevron { transform: rotate(90deg); }
+.tone-curve { overflow: visible; }
+.tone-curve .tone-line { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.tone-curve .tone-staff { fill: none; stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 2 2.5; }
+.tone-mid { color: var(--tone-mid); }
+.tone-low { color: var(--tone-low); }
+.tone-falling { color: var(--tone-falling); }
+.tone-high { color: var(--tone-high); }
+.tone-rising { color: var(--tone-rising); }
+.tones-panel { min-width: 300px; padding: 2px 4px 6px; }
+.tones-panel[hidden] { display: none; }
+.tones-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+.tone-syl {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 58px;
+  padding: 5px 6px 3px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font: inherit;
+  line-height: 1.25;
+  cursor: pointer;
+}
+.tone-syl.word-start { margin-left: 10px; }
+.tone-syl .tone-curve { width: 40px; height: 22px; margin-bottom: 3px; }
+.tone-syl[aria-pressed="true"] { border-color: currentColor; background: color-mix(in srgb, currentColor 12%, transparent); }
+.tone-tl { color: var(--ink); font-size: 1.1em; font-style: italic; }
+.tone-name { font-size: .9em; }
+.tone-syl.exception .tone-name::after { content: " *"; }
+.tones-detail { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
+.tone-rows { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; margin: 0; font-size: 1.1em; }
+.tone-rows dt { color: var(--muted); }
+.tone-rows dd { margin: 0; color: var(--ink); }
+.tone-rows .tone-said { font-weight: 600; }
+/* Thai looks smaller than Latin at the same size, so a step up (the user asked for larger text). */
+.tone-th { font-size: 1.3em; line-height: 1.2; white-space: nowrap; }
+.tone-why { display: block; color: var(--muted); font-size: .9em; }
+.tone-note { margin: 6px 0 0; color: var(--muted); font-size: 1em; }
 @media (max-width: 600px) {
   .reader { padding: 12px 12px 4px; }
   .reader-th { font-size: calc(24px * var(--fs, 1)); }

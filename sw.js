@@ -14,12 +14,12 @@
 
 importScripts('audio-store.js'); // self.ClipStore
 
-const SHELL_CACHE = 'learnthai-shell-v15';  // bump if SHELL changes, so stale entries are dropped
+const SHELL_CACHE = 'learnthai-shell-v16';  // bump if SHELL changes, so stale entries are dropped
 const OLD_AUDIO_CACHE = 'learnthai-audio'; // where clips were kept until 2026-10-07: deleted on activate
 const NETWORK_TIMEOUT_MS = 4000;
 // Paths relative to the service worker's scope ('' is the app's root URL).
 const SHELL = [
-  '', 'index.html', 'app.js', 'spell.js', 'styles.css', 'mobile.css', 'app.webmanifest',
+  '', 'index.html', 'app.js', 'spell.js', 'tones.js', 'styles.css', 'mobile.css', 'app.webmanifest',
   'data/decks.json', 'data/audio/manifest.json', 'audio-store.js',
   'fonts/NotoLoopedThai-Regular.woff2', 'fonts/NotoLoopedThai-Bold.woff2',
   'fonts/NotoSansThai-Regular.woff2', 'fonts/NotoSansThai-Bold.woff2',
