@@ -1,0 +1,148 @@
+# Syllables whose tone isn't the one the spelling rules give, and that are right as they are:
+# mostly loanwords (English stress becomes high or falling), letter names (เอส ét), and a few
+# everyday words said otherwise than spelt (เขา kháo, ก็ gɔ̂). tools/audit_decks.py reports any other
+# such syllable as an error (tools/tones_check.mjs, tones.js), since it's usually a missing or
+# wrong tone mark in a transliteration. If a new one is right, add it here: the syllable as said,
+# a space, its transliteration; after # an example word.
+
+ไลก์ lái         # กดไลก์ gòt-lái: rules mid, said high
+ทัล thân         # กระเป๋าเงินดิจิทัล grà-pǎo-ngən dì-jì-thân: rules mid, said falling
+กราฟ gráap       # กราฟ gráap: rules low, said high
+กอล์ฟ gɔ́ɔp      # กอล์ฟ gɔ́ɔp: rules low, said high
+การ์ด gáat       # การ์ด gáat: rules low, said high
+ซี sîi           # กาแล็กซี gaa-lɛ́k-sîi: rules mid, said falling
+กิ้ด gít         # กิ้ดเหล้ง gít-lêng: rules falling, said high
+ก็ gɔ̂           # ก็ได้ gɔ̂-dâai: rules low, said falling
+เน็ต nèt         # คลาริเน็ต khlaa-rí-nèt: rules high, said low
+ด็อง dɔ̂ng       # ควัดด็องเปล่า khwát dɔ̂ng plàao: rules mid, said falling
+เบอร์ bə̂ə       # ความปลอดภัยไซเบอร์ khwaam-plɔ̀ɔt-phai sai-bə̂ə: rules mid, said falling
+พิว phíu         # คอมพิวเตอร์ khɔm-phíu-tə̂ə: rules mid, said high
+เมนต์ mên        # คอมเมนต์ khɔm-mên: rules mid, said falling
+ลอส lɔ́ɔt        # คัทลอส khát-lɔ́ɔt: rules falling, said high
+บอน bɔ̂n         # คาร์บอน khaa-bɔ̂n: rules mid, said falling
+การ์ด káat       # คีย์การ์ด khii-káat: rules low, said high
+คอร์ด khɔ́ɔt     # จับคอร์ด jàp-khɔ́ɔt: rules falling, said high
+ชาร์ป cháap      # ชาร์ป cháap: rules falling, said high
+ซอฟต์ sɔ́ɔp      # ซอฟต์แวร์ sɔ́ɔp-wɛɛ: rules falling, said high
+รูฟ rúup         # ซันรูฟ san-rúup: rules falling, said high
+เกิล gə̂n        # ซิงเกิล sing-gə̂n: rules mid, said falling
+ไรต์ rái         # ซีไรต์ sii-rái: rules mid, said high
+คลาส khláat      # ดนตรีคลาสสิก don-trii khláat-sìk: rules falling, said high
+ดิฟ díp          # ดิฟ díp: rules low, said high
+รีส์ rîi         # ดูซีรีส์ duu sii-rîi: rules mid, said falling
+เมตร méet        # ตลับเมตร tà-làp-méet: rules falling, said high
+ชาร์ต cháat      # ติดชาร์ต tìt-cháat: rules falling, said high
+ติสต์ tít        # ติสต์ tít: rules low, said high
+ต็อก tɔ́k        # ติ๊กต็อก tík-tɔ́k: rules low, said high
+กอล์ฟ gɔ́p       # ตีกอล์ฟ tii-gɔ́p: rules low, said high
+เซฟ séep         # ตู้เซฟ tûu-séep: rules falling, said high
+เฮาส์ háo        # ทาวน์เฮาส์ thaao-háo: rules mid, said high
+ชาร์จ cháat      # ที่ชาร์จ thîi-cháat: rules falling, said high
+บล็อก blɔ́k      # บล็อก blɔ́k: rules low, said high
+บอส bɔ́ɔt        # บอส bɔ́ɔt: rules low, said high
+เลต์ lêe         # บัลเลต์ ban-lêe: rules mid, said falling
+บาส báat         # บาสเกตบอล báat-gèt-bɔɔn: rules low, said high
+มอน mɔ̂n         # ปลาแซลมอน plaa-sɛɛn-mɔ̂n: rules mid, said falling
+เฟิล fə̂n        # ปืนไรเฟิล pʉʉn-rai-fə̂n: rules mid, said falling
+เซนต์ sén        # พรีเซนต์ phrii-sén: rules mid, said high
+ลีก lìik         # พรีเมียร์ลีก phrii-mia-lìik: rules falling, said low
+พลาส phláat      # พลาสติก phláat-sà-tìk: rules falling, said high
+เวอร์ wə̂ə       # พาวเวอร์แบงก์ phaao-wə̂ə-bɛ́ng: rules mid, said falling
+แบงก์ bɛ́ng      # พาวเวอร์แบงก์ phaao-wə̂ə-bɛ́ng: rules mid, said high
+พาส pháat        # พาสปอร์ต pháat-sà-pɔ̀ɔt: rules falling, said high
+ฟลูต fluut       # ฟลูต fluut: rules falling, said mid
+โลว์ lôo         # ฟอลโลว์ fɔɔn-lôo: rules mid, said falling
+มูฟ múup         # มูฟออน múup-ɔɔn: rules falling, said high
+ราฟ ráap         # ยีราฟ yii-ráap: rules falling, said high
+โรป ròop         # ยุโรป yú-ròop: rules falling, said low
+ทูบ thúup        # ยูทูบ yuu-thúup: rules falling, said high
+บัส bát          # รถบัส rót-bát: rules low, said high
+โมท móot         # รีโมท rii-móot: rules falling, said high
+ทูธ thúut        # ลำโพงบลูทูธ lam-phoong bluu-thúut: rules falling, said high
+ลิฟต์ líf        # ลิฟต์ líf: rules mid, said high
+เกอร์ kə̂ə       # ล็อกเกอร์ lɔ́k-kə̂ə: rules mid, said falling
+วอร์ม wɔ̂ɔm      # วอร์มอัพ wɔ̂ɔm-àp: rules mid, said falling
+เลย์ lêe         # วอลเลย์บอล wɔɔn-lêe-bɔɔn: rules mid, said falling
+ควอท khwɔ́ɔt     # สควอท sà-khwɔ́ɔt: rules falling, said high
+ตาร์ท táat       # สตาร์ทไม่ติด sà-táat mâi tìt: rules low, said high
+เปก pék          # สเปก sà-pék: rules low, said high
+ตรัม trâm        # สเปกตรัม sà-pèk-trâm: rules mid, said falling
+เลส lèt          # สแตนเลส sà-tɛɛn-lèt: rules high, said low
+แอ็ก ɛ́k         # หนังแอ็กชัน nǎng-ɛ́k-chân: rules low, said high
+ชัน chân         # หนังแอ็กชัน nǎng-ɛ́k-chân: rules mid, said falling
+ออก ɔ́k          # หน้ากากออกซิเจน nâa-gàak ɔ́k-sí-jen: rules low, said high
+ฮอส hɔ́ɔt        # หมากฮอส màak-hɔ́ɔt: rules falling, said high
+หม่า mâa         # หม่า…แหม่ะ mâa...mɛ̀: rules low, said falling
+พาร์ต pháat      # อพาร์ตเมนต์ à-pháat-mén: rules falling, said high
+เมนต์ mén        # อพาร์ตเมนต์ à-pháat-mén: rules mid, said high
+เจน jên          # ออกซิเจน ɔ́k-sí-jên: rules mid, said falling
+ออฟ ɔ́f          # ออฟฟิศ ɔ́f-fít: rules mid, said high
+แกน gɛ̂n         # ออร์แกน ɔɔ-gɛ̂n: rules mid, said falling
+ออส ɔ́ɔt         # ออสเตรเลีย ɔ́ɔt-sà-tree-lia: rules low, said high
+อาฟ áap          # อาฟเตอร์ช็อก áap-tə̂ə-chɔ́k: rules low, said high
+เกรต greet       # อินทิเกรต in-thí-greet: rules low, said mid
+เซก sèk          # อินเตอร์เซกชัน in-təə-sèk-chân: rules high, said low
+อิ i             # อิเล็กตรอน i-lék-trɔɔn: rules low, said mid
+เอส ét           # อีเอ็มเอส ii-em-ét: rules low, said high
+ฮาร์ด háat       # ฮาร์ดแวร์ háat-wɛɛ: rules falling, said high
+ฮาร์ป háap       # ฮาร์ป háap: rules falling, said high
+กา gâa           # ฮาร์โมนิกา haa-moo-ní-gâa: rules mid, said falling
+เกรด greet       # เกรด greet: rules low, said mid
+เขา kháo         # เขา kháo: rules rising, said high
+เจ็ต jét         # เครื่องบินเจ็ต khrʉ̂ang-bin jét: rules low, said high
+เคส khéet        # เคส khéet: rules falling, said high
+เชฟ chéf         # เชฟ chéf: rules mid, said high
+โล lôo           # เชลโล chen-lôo: rules mid, said falling
+เอาท์ áo         # เช็คเอาท์ chék-áo: rules mid, said high
+เซอร์ sə̂ə       # เซอร์ไพรส์ sə̂ə-phrái: rules mid, said falling
+ไพรส์ phrái      # เซอร์ไพรส์ sə̂ə-phrái: rules mid, said high
+เซิร์ฟ sə́əf     # เซิร์ฟ sə́əf: rules mid, said high
+เซิร์ฟ sə́əp     # เซิร์ฟเวอร์ sə́əp-wə̂ə: rules falling, said high
+เซิ้ง sə̂əng     # เซิ้ง sə̂əng: rules high, said falling
+บิวต์ bìu        # เดบิวต์ dee-bìu: rules mid, said low
+เดอะ də          # เดอะเฟส də-féet: rules low, said mid
+เฟส féet         # เดอะเฟส də-féet: rules falling, said high
+เทป théep        # เทปพันสายไฟ théep phan sǎai-fai: rules falling, said high
+เทรด threet      # เทรด threet: rules falling, said mid
+เนอร์ nə̂ə       # เทรนเนอร์ threen-nə̂ə: rules mid, said falling
+เซอ sə           # เนิร์สเซอรี่ nə̂ət-sə-rîi: rules high, said mid
+เฟซ féet         # เฟซบุ๊ก féet-búk: rules falling, said high
+เมาส์ máo        # เมาส์ máo: rules mid, said high
+เจอร์ jə̂ə       # เมเจอร์ mee-jə̂ə: rules mid, said falling
+นอม nɔ̂m         # เมโทรนอม mee-throo-nɔ̂m: rules mid, said falling
+เตอร์ tə̂ə       # เราเตอร์ rao-tə̂ə: rules mid, said falling
+ยอชต์ yɔ́ɔt      # เรือยอชต์ rʉa-yɔ́ɔt: rules falling, said high
+เรจ rèet         # เลเวอเรจ lee-wəə-rèet: rules falling, said low
+เวก wéek         # เวกเตอร์ wéek-tə̂ə: rules falling, said high
+ไซต์ sái         # เว็บไซต์ wép-sái: rules mid, said high
+ซะ sà            # เอกซเรย์ èk-sà-ree: rules high, said low
+เอช éet          # เอชไอวี éet-ai-wii: rules low, said high
+เอส éet          # เอสยูวี éet-yuu-wii: rules low, said high
+แพด phɛ̀t        # เฮลิแพด hee-lí-phɛ̀t: rules high, said low
+เฮ้อ hə̂ə        # เฮ้อ hə̂ə: rules high, said falling
+แกร็บ grɛ́p      # แกร็บ grɛ́p: rules low, said high
+รอท rɔ̂t         # แครอท khɛɛ-rɔ̂t: rules high, said falling
+แต็ด tɛ́t        # แต็ด tɛ́t: rules low, said high
+ตัน tân          # แบดมินตัน bɛ̀t-min-tân: rules mid, said falling
+นิก nìk          # แพนิก phɛɛ-nìk: rules high, said low
+แฟลต flɛ̀t       # แฟลต flɛ̀t: rules high, said low
+แอค ɛ́k          # แอคคอร์เดียน ɛ́k-khɔɔ-dîan: rules low, said high
+เดียน dîan       # แอคคอร์เดียน ɛ́k-khɔɔ-dîan: rules mid, said falling
+แอป ɛ́p          # แอปหาคู่ ɛ́p hǎa khûu: rules low, said high
+แอมป์ ɛ̀m        # แอมป์ ɛ̀m: rules mid, said low
+ลิงก์ líng       # แอร์พอร์ตลิงก์ ɛɛ-phɔ̂ɔt-líng: rules mid, said high
+โฮส hóot         # แอร์โฮสเตส ɛɛ-hóot-tèet: rules falling, said high
+โบรก brook       # โบรกเกอร์ brook-gə̂ə: rules low, said mid
+เกอร์ gə̂ə       # โบรกเกอร์ brook-gə̂ə: rules mid, said falling
+โบลท์ bóon       # โบลท์ bóon: rules mid, said high
+เมอร์ mə̂ə       # โปรแกรมเมอร์ proo-grɛɛm-mə̂ə: rules mid, said falling
+โพสต์ póot       # โพสต์ póot: rules falling, said high
+ตัม tâm          # โมเมนตัม moo-men-tâm: rules mid, said falling
+ไกด์ gái         # ไกด์ gái: rules mid, said high
+ลาร์ lâa         # ไบโพลาร์ bai-phoo-lâa: rules mid, said falling
+เวฟ wéef         # ไมโครเวฟ mai-khroo-wéef: rules mid, said high
+เดอร์ də̂ə       # ไรเดอร์ rai-də̂ə: rules mid, said falling
+อัพ áp           # ไลน์อัพ lai-áp: rules low, said high
+ไลฟ์ lái         # ไลฟ์ lái: rules mid, said high
+รัล rân          # ไวรัล wai-rân: rules mid, said falling
+ดอล dɔ̂n         # ไอดอล ai-dɔ̂n: rules mid, said falling

@@ -36,6 +36,7 @@ styles.css            all styles
 mobile.css            phone overrides (see Phone layout)
 app.js                all JS (ES module); imports spell.js
 spell.js              spelling a Thai word aloud: school method and letter names (see Spelling)
+tones.js              each syllable's tone and the rule that gives it (see Tones)
 sw.js                 service worker (see Offline & install)
 app.webmanifest       web app manifest; icons/ holds its icons
 data/decks.json       all vocabulary
@@ -44,6 +45,9 @@ tools/gen_audio.py    audio generator (dev-time only)
 tools/phone_shots.py  phone-size screenshots via headless Chromium (dev-time only)
 tools/audit_decks.py  content audit of decks.json; exits 1 on errors (dev-time only)
 tools/spelling.mjs    spelling coverage report; writes data/spelling-parts.json (dev-time only)
+tools/stories.py      Reading stories: check, sync, add, export, coverage (see Story tools)
+tools/decks_io.py     reads and writes decks.json in its own layout (for the Python tools)
+tools/tones_check.mjs the audit's tone check; tools/tone_exceptions.txt lists the known exceptions
 docs/                 these notes
 ```
 
@@ -1268,6 +1272,13 @@ the Thai on the back of a Flashcards or Recall card.
 - `tones.js` gives each syllable's vowel and final as separate facts, and its table column;
   `tableTone()` fills the table.
 
+**Audit check:** `tools/audit_decks.py` runs `tools/tones_check.mjs` (tones.js over every topic
+card). It reports any syllable whose transliterated tone isn't the rules' as an error, unless the
+syllable is listed in `tools/tone_exceptions.txt`. There are 141 listed, as said form and
+transliteration (เตอร์ tə̂ə): loanwords, letter names, เขา, ก็ and a few exclamations and dialect
+words. The check found four more typos when it was added: คราด khrâat, เป่ายิ้งฉุบ yíng,
+ซาเล้ง saa-léeng and ก็ต่อเมื่อ gɔ̂.
+
 **How:** `tones.js` `toneBreakdown(thai, translit)`, on `spell.js`'s new `syllableReading()` (the
 school method's syllable match, with `at` and the said form) and `consonantClass()`.
 - The tone said, and the vowel's length, come from the transliteration's marks. The rules give
@@ -1344,6 +1355,78 @@ for about 90%.
   - pipe, pump, placenta;
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
+
+## Story tools (2026-10-11), `tools/stories.py`
+
+**Why:** until 2026-10-11 the stories were built by `build_reading.py` and its source modules
+(`stories_*.py`, `review_fixes.py`, `phrase_splits.json`, `split_senses.py`) in a session scratchpad,
+which was lost. The scratchpad tools named in the sections below are gone. `decks.json` already held
+every story in full, so the replacement works on it alone, and lives in the repo.
+
+**Data:**
+- A story is a topic with a `passage` (category Reading; group Little Stories, Easy, Medium or
+  Harder). A line's `th` splits its words with `|`; spaces separate runs; `word:` is a speaker
+  label; `_` is a space inside a word.
+- Every Thai word is a card in the story's `cards`, a copy of a topic card without `partners`.
+  Digits and symbols need none. One card per word in a story, since the reader looks them up by
+  their Thai.
+- A phrase card (with `words`) is split into its words in the passage, and the story keeps the
+  phrase card and each word's card.
+- A word's sense in a story is just the card the story holds.
+
+**Commands** (`python3 -u tools/stories.py …`):
+- **`check`**: every Thai word has a card, every card is in the passage (a phrase through its
+  words), every card matches its topic card, and sizes and groups are right.
+- **`sync`**: story copies are refreshed from topic cards after topic edits. A card whose
+  English changed is matched by its Thai when that's unambiguous.
+- **`add FILE`**: adds or replaces stories from a JSON list (`id`, `group`, `name`,
+  `description`, `lines: [[th, en]…]`, `picks: {thai: english}`).
+  - A word with several cards takes its pick, else the one it already has in this story, else the
+    sense other stories use most. It says which, so you can pin another. Thai Script spelling
+    examples are used only when there's nothing else.
+  - A word with no card is an error: add it to a topic first.
+  - New stories go at the end of their group.
+- **`export ID…`**: stories as `add` source, phrases joined up again and every word pinned. To
+  edit a story, export it, change the lines, and add it back. All 1,307 stories round-trip
+  through export and add unchanged.
+- **`coverage [--list N]`**: the share of topic cards (outside Thai Script) in a story (99.68%),
+  and topics with fewer than 5 stories by the app's rule (`storiesFor`; 0).
+- **`show ID`**: a story's lines and its cards.
+
+`tools/decks_io.py` writes decks.json in the hand-written layout, byte for byte, so small changes
+leave small diffs. Run the audit, then `node tools/spelling.mjs --write` and
+`python3 -u tools/gen_audio.py` after adding stories (each line gets a recording).
+
+## Missing cards and card fixes (2026-10-11)
+
+The user asked for the cards the Core Words agents had found missing, and the card issues the
+2026-10-09 story review had left open (the user's memory note).
+
+**Added** (each used in a story, eight new ones written with `stories.py add`):
+- เวทมนตร์ "magic, sorcery", ความเชื่อ "belief; superstition", มิตรภาพ, ลุกลาม;
+- แต่ "nothing but, only", คำ as the classifier for mouthfuls, ตน for giants, ghosts and holy beings;
+- ท่อ "pipe", ปั๊มน้ำ, สูบ "to pump", รก "placenta", ของโปรด, พวงกุญแจ, ขน "to carry, haul";
+- ตอบโต้, สวน "to counter (a punch)", คู่ต่อสู้, พลเรือเอก (phon-lá-rʉa-èek), พริกน้ำส้ม, นะคะ;
+- ล้ม "to fall over" in Everyday Actions: Moving About. Before, it was only a Tone Pairs card, in
+  Thai Script.
+
+The new stories are The Burst Pipe, Ten Years Later, The Giant's Spell, Grandma's Noodles, The
+Keyring Stall, The Placenta Tree, Fire at the Navy Building and The Counter-Punch.
+
+**Fixed:**
+- **Glosses:**
+  - เมื่อ is now "when, at the time (past or future)" and "when (past or future)".
+  - จ๊ะ is now "soft, sweet particle (women; anyone to a child)".
+  - จ่าย has a note for งดจ่ายน้ำ.
+- **ฉัน phrase cards** now note what a man says (ผมต้องการติดต่อสถานทูต…). The Tourist Robbed's
+  tourist, who said them with ครับ, is now a woman.
+- **ตรงไหนเจ็บ** became เจ็บตรงไหน, the usual order, in its two stories as well.
+- **Story lines:**
+  - Bargaining at the Market: shirts are หลายตัว, not หลายอัน.
+  - The New Neighbour: no longer asks a stranger สบายดีไหม.
+  - I'm Not Angry: the line is now hers, so the woman says ไม่ใช่ของฉัน.
+- **Already fixed by earlier work:** ใจง่าย's and ร่าน's notes, เจาะยาง's literal sense, ขวา
+  "right", ประจำ, สำรอง.
 
 ## Reading practice (2026-10-08)
 
@@ -1576,6 +1659,8 @@ The other ten passages:
   recording, and the tap, pop-up, toggles, play and press-to-stop all work, with no errors.
 
 ## Stories for every topic (2026-10-08)
+
+(The scratchpad tools this section names are gone; see Story tools for their replacement.)
 
 The user asked for two or three stories for every topic ("don't hold back with the slang topics… we
 want real use"; letter topics creatively, e.g. the letter names). Written by me in batches of about

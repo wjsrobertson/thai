@@ -9,15 +9,18 @@ Errors (exit status 1) are things that should always be fixed:
   fields, split categories/groups), duplicate thai/english within
   a topic, Thai typing slips (ำ typed as ํ + า, doubled or misordered marks), stray whitespace or
   invisible characters, Thai script in `english` (the English voice reads it), odd translit
-  characters, "a/b" slashes without spaces, and the same word with the same meaning glossed in
-  different words (order, punctuation, plural), which splits it into separate cards.
+  characters, "a/b" slashes without spaces, the same word with the same meaning glossed in
+  different words (order, punctuation, plural), which splits it into separate cards, and a
+  syllable whose transliterated tone isn't the one the spelling rules give (tools/tones_check.mjs,
+  tones.js) unless it's listed in tools/tone_exceptions.txt (loanwords and the like): usually a
+  missing or wrong tone mark (sa-baai for sà-baai).
 
 "Worth a look" lists judgement calls that are often fine: one gloss broader than another (e.g. a
 multi-sense Spoken Top-500 card beside a topic card), the same card with different notes per
 topic, the same Thai transliterated differently, and notes with no final punctuation.
 See docs/implementation-notes.md → Content → Writing cards.
 """
-import json, re, sys, unicodedata
+import json, re, subprocess, sys, unicodedata
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -185,6 +188,24 @@ def audit(decks):
     return cards, errors, review
 
 
+def tone_errors():
+    """Syllables whose tone, as transliterated, isn't the rules' and isn't a known exception: [line].
+    Needs node; without it, the check is skipped with a note."""
+    root = DECKS_JSON.parent.parent
+    try:
+        out = subprocess.run(['node', str(root / 'tools' / 'tones_check.mjs')], capture_output=True, text=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError) as e:
+        print(f'(tone check skipped: {e})')
+        return []
+    ok = set()
+    for line in (root / 'tools' / 'tone_exceptions.txt').read_text().splitlines():
+        line = line.split('#', 1)[0].strip()
+        if line:
+            ok.add(' '.join(line.split()))
+    return [f"{r['topic']}: {r['thai']} {r['translit']} [{r['said']} {r['tl']}: rules give {r['rule']}, marked {r['tone']}]"
+            for r in json.loads(out) if f"{r['said']} {r['tl']}" not in ok]
+
+
 def show(title, found, limit):
     found = {k: v for k, v in found.items() if v}
     print(f'\n{title}: {sum(len(v) for v in found.values())}')
@@ -199,6 +220,7 @@ def show(title, found, limit):
 def main():
     decks = json.loads(DECKS_JSON.read_text())['decks']
     cards, errors, review = audit(decks)
+    errors['tone differs from the rules (fix the translit, or list the syllable in tools/tone_exceptions.txt)'] += tone_errors()
     print(f"{len(decks)} topics, {len(cards)} cards, {len({(c['thai'], c['english']) for _, c in cards})} distinct")
     show('Errors', errors, 20)
     if '--errors' not in sys.argv:
