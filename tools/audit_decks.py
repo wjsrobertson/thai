@@ -31,8 +31,9 @@ SAME_THAI_TRANSLIT_OK = {'เขา'}   # kháo (pronoun, as said) vs khǎo (hor
 # where the unbroken order is the point. Reading stories' word lists aren't topics in this sense.
 TOPIC_MAX = 25
 # A story's word list holds each phrase it uses and, since 2026-10-10, the phrase's words too (the
-# reader splits phrases into words), so a story full of idioms runs past 50.
-STORY_MAX = 70
+# reader splits phrases into words), so a story full of idioms runs past 50; the longer Core Words
+# stories (2026-10-11), eight full sentences each, reach about 80.
+STORY_MAX = 90
 OVER_MAX_OK = {'script-consonants-all'}
 
 
