@@ -1426,6 +1426,39 @@ syllable.
 
 Tone Rules' description points to the new topic.
 
+## Film & TV Talk (2026-10-11), Spoken Thai
+
+**Why:** the user met กังวลใจ in a film and found it missing ("it doesn't seem like complicated
+vocab"). Core Words had ranked missing words by frequency across subtitle, written and textbook
+Thai at once, which ranked words common mainly in speech low. Ranked by the film-subtitle list
+alone (`research/freq/subs_words.tsv`, OpenSubtitles), the 600 commonest missing words were mostly
+foreign-name fragments, plus about 120 everyday words.
+
+**Added:**
+- กังวลใจ, in ใจ Words: Feelings.
+- 119 cards in five new topics, group Film & TV Talk (category Spoken Thai):
+  - **Everyday Lines:** สุดยอด, อรุณสวัสดิ์, ยินดีต้อนรับ, เอาเลย, ไม่เชิง, เข้าท่า, ชะมัด, เถอะน่า…
+  - **Feelings & Trust:** เชื่อใจ, เปลี่ยนใจ, ให้อภัย, ความหวัง, โดดเดี่ยว, เหลือเชื่อ…
+  - **Crime & Danger:** แก้แค้น, หักหลัง, ข่าวลือ, สายลับ, เบาะแส, รอดชีวิต…
+  - **Magic, Heroes & Legends:** แม่มด, คาถา, อัศวิน, นางฟ้า, โชคชะตา, หุ่นยนต์…
+  - **People, Work & Life:** คู่หู, ขับรถ, งานแต่ง, ผู้เชี่ยวชาญ, หม่อมฉัน, เพคะ…
+- Six more in Core topics: แม้กระทั่ง, ตราบใด, เยอะแยะ, อย่างเช่น, ย้อนกลับ, มุ่งหน้า.
+
+**Stories:** 17 new ones, written with `tools/stories.py add`, so every new card is in a story. They
+include a spy thriller, a hostage siege, a fairy tale, a movie night, a first day at work, a
+reunion, a palace drama, a driving lesson and a vampire in the village. The two topics that fell
+short of 5 stories got one more each that uses both. Coverage stayed at 99.68%, and every topic
+has at least 5 stories.
+
+**Left out:**
+- foreign names and their fragments (ซา, จอห์น…);
+- misspellings (มั๊ย, เป้น, งัย);
+- words already carded in a longer phrase, which deserve their own cards later: ยินดีต้อนรับ,
+  ขอตัว and ลองดู were added, but more remain;
+- place names.
+
+The next 300 or so missing subtitle words, down to rank about 6,000, are still to check.
+
 ## Missing cards and card fixes (2026-10-11)
 
 The user asked for the cards the Core Words agents had found missing, and the card issues the
