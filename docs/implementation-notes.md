@@ -1595,6 +1595,17 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
       new topics to 5 stories each. They use only words that already had cards.
     - **The rule from now on:** a story uses only words that have a topic card. A new word gets a
       topic card as well (`plan5.py` and a story-only check, as in `story_words.py`).
+  - **Common words the story agents found missing** (2026-10-11, the user's request; a background agent,
+    scratchpad `newcards/add_cards.py`): 34 cards.
+    - **24 new words:** ดำเนินการ, หมัก, ลำบาก, เดือดร้อน, ต่อแถว, เซ, ดัน, เล็ก ๆ, ไถ่โทษ, ล้น, ลูกแกะ,
+      ขึ้นเครื่อง, คดเคี้ยว, แข็งค่า, รวดเดียว, หนุ่ม ๆ, คั่ว, ครั้งแรก, ดีขึ้น, ได้ไหม, ดิบ, ขมับ, ใช้หนี้, แปลว่า.
+    - **10 new senses:** สุก cooked, แข็ง hard, ฟัน to slash, ร้อง to cry out / sing, ทรง shape, ชม to view,
+      แถว around, ค้าง to stay overnight, เลย past, ปั๊ม petrol station. Each went into a fitting topic
+      with room.
+    - **Stories:** rebuilt, and 31 meaning changes reviewed. แถว, ชม, ค้าง, แข็ง and the human ร้อง
+      were fixes. Ten animal stories (ร้อง "to call, cry (any animal)") and two royal ones (ทรง, the
+      verb prefix) are pinned back in `review_fixes.PICKS`. ดีขึ้น, ได้ไหม and แปลว่า were split into
+      words like any phrase.
   - **Batch 7: stories for words no story used** (2026-10-10, the user's request: at least 98% of
     cards outside Thai Script in some story, by card, i.e. word and meaning).
     - **Before:** 92.67% (6,968 of 7,519), with 551 cards in 168 topics in no story. Most were

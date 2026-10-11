@@ -314,7 +314,8 @@
         { "thai": "อก", "translit": "òk", "english": "chest" },
         { "thai": "แก้ม", "translit": "gɛ̂ɛm", "english": "cheek" },
         { "thai": "ข้อมือ", "translit": "khɔ̂ɔ-mʉʉ", "english": "wrist" },
-        { "thai": "คอบ่าไหล่", "translit": "khɔɔ-bàa-lài", "english": "neck and shoulders" }
+        { "thai": "คอบ่าไหล่", "translit": "khɔɔ-bàa-lài", "english": "neck and shoulders" },
+        { "thai": "ขมับ", "translit": "khà-màp", "english": "temple (side of the head)", "note": "ปวดขมับ = a pain in the temples (also: stressed out)." }
       ]
     },
     {
@@ -432,7 +433,8 @@
         { "thai": "ต่างกัน", "translit": "tàang gan", "english": "different", "words": ["ต่าง::different / various", "กัน::together / each other"] },
         { "thai": "ร้าย", "translit": "ráai", "english": "bad / evil" },
         { "thai": "ชั่ว", "translit": "chûa", "english": "evil / wicked" },
-        { "thai": "รวย", "translit": "ruai", "english": "rich" }
+        { "thai": "รวย", "translit": "ruai", "english": "rich" },
+        { "thai": "ลำบาก", "translit": "lam-bàak", "english": "hard / tough (of life, a situation)", "note": "ชีวิตลำบาก = a hard life. ไม่ต้องลำบากหรอก = don't go to any trouble." }
       ]
     },
     {
@@ -459,7 +461,8 @@
         { "thai": "สดใส", "translit": "sòt-sǎi", "english": "bright / cheerful" },
         { "thai": "เดี่ยว", "translit": "dìao", "english": "single / alone" },
         { "thai": "เอียง", "translit": "iang", "english": "tilted / to lean" },
-        { "thai": "โบราณ", "translit": "boo-raan", "english": "ancient" }
+        { "thai": "โบราณ", "translit": "boo-raan", "english": "ancient" },
+        { "thai": "แข็ง", "translit": "khɛ̌ng", "english": "hard / stiff / solid", "note": "ข้าวแข็ง = the rice is hard (undercooked). น้ำแข็ง = ice." }
       ]
     },
     {
@@ -481,7 +484,7 @@
         { "thai": "พลาสติก", "translit": "phláat-sà-tìk", "english": "plastic" },
         { "thai": "แก้ว", "translit": "gɛ̂ɛo", "english": "glass (the material)", "note": "Also a drinking glass." },
         { "thai": "กระดาษ", "translit": "grà-dàat", "english": "paper" },
-        { "thai": "กระดาษแข็ง", "translit": "grà-dàat khɛ̌ng", "english": "cardboard", "words": ["กระดาษ::paper", "แข็ง::short ɛ before a final — the shortener mark"] },
+        { "thai": "กระดาษแข็ง", "translit": "grà-dàat khɛ̌ng", "english": "cardboard", "words": ["กระดาษ::paper", "แข็ง::hard / stiff / solid"] },
         { "thai": "ผ้า", "translit": "phâa", "english": "cloth / fabric" },
         { "thai": "ผ้าฝ้าย", "translit": "phâa-fâai", "english": "cotton" },
         { "thai": "ผ้าไหม", "translit": "phâa-mǎi", "english": "silk", "note": "Thai silk is a famous product of Isan." },
@@ -712,7 +715,7 @@
         { "thai": "มีลูกสองคน", "translit": "mii lûuk sɔ̌ɔng khon", "english": "I have two children", "words": ["มี::to have / there is", "ลูก::child / kid (one's own)", "สอง::two", "คน::person / people"] },
         { "thai": "ยังไม่มีลูก", "translit": "yang mâi mii lûuk", "english": "I don't have children (yet)", "words": ["ยัง::still / yet / not yet", "ไม่::not / no", "มี::to have / there is", "ลูก::child / kid (one's own)"] },
         { "thai": "อายุสามสิบ", "translit": "aa-yú sǎam-sìp", "english": "I'm thirty", "note": "อายุ + number. ปี (years) is optional.", "words": ["อายุ::age", "สามสิบ::30 — thirty"] },
-        { "thai": "พักอยู่แถวสุขุมวิท", "translit": "phák yùu thɛ̌ɛo sù-khǔm-wít", "english": "I'm staying near Sukhumvit", "note": "แถว = around, in the area of.", "words": ["พัก::to rest / stay", "อยู่::to be at / stay / live", "แถว::row", "สุขุมวิท::Sukhumvit"] },
+        { "thai": "พักอยู่แถวสุขุมวิท", "translit": "phák yùu thɛ̌ɛo sù-khǔm-wít", "english": "I'm staying near Sukhumvit", "note": "แถว = around, in the area of.", "words": ["พัก::to rest / stay", "อยู่::to be at / stay / live", "แถว::around / in the area of", "สุขุมวิท::Sukhumvit"] },
         { "thai": "ชอบเมืองไทยมาก", "translit": "chɔ̂ɔp mʉang-thai mâak", "english": "I really like Thailand", "words": ["ชอบ::to like", "เมืองไทย::Thailand", "มาก::very / a lot"] },
         { "thai": "กินเผ็ดได้นิดหน่อย", "translit": "gin phèt dâai nít-nɔ̀i", "english": "I can eat a little spicy food", "words": ["กิน::to eat", "เผ็ด::spicy", "ได้::can / get / did", "นิดหน่อย::a little bit"] },
         { "thai": "สนิท", "translit": "sà-nìt", "english": "close (friends)" }
@@ -945,7 +948,8 @@
         { "thai": "ขีด", "translit": "khìit", "english": "line / stroke / mark" },
         { "thai": "หมู่", "translit": "mùu", "english": "group / class" },
         { "thai": "อักษร", "translit": "àk-sɔ̌ɔn", "english": "letter / script" },
-        { "thai": "หวัด", "translit": "wàt", "english": "scrawled, untidy (of handwriting)" }
+        { "thai": "หวัด", "translit": "wàt", "english": "scrawled, untidy (of handwriting)" },
+        { "thai": "แปลว่า", "translit": "plɛɛ wâa", "english": "it means / translates as", "note": "แมวแปลว่า cat = แมว means cat.", "words": ["แปล::to translate", "ว่า::that (introducing a clause)"] }
       ]
     },
     {
@@ -1830,7 +1834,9 @@
         { "thai": "อยู่ดี", "translit": "yùu dii", "english": "anyway / all the same", "words": ["อยู่::to be at / stay / live", "ดี::good"] },
         { "thai": "เด็ดขาด", "translit": "dèt-khàat", "english": "absolutely / at all costs" },
         { "thai": "แท้", "translit": "thɛ́ɛ", "english": "really / genuine" },
-        { "thai": "โดยเฉพาะ", "translit": "dooi-chà-phɔ́", "english": "especially" }
+        { "thai": "โดยเฉพาะ", "translit": "dooi-chà-phɔ́", "english": "especially" },
+        { "thai": "รวดเดียว", "translit": "rûat-diao", "english": "in one go", "note": "อ่านรวดเดียวจบ = read it in one sitting." },
+        { "thai": "ครั้งแรก", "translit": "khráng-rɛ̂ɛk", "english": "the first time", "note": "มาเมืองไทยครั้งแรกเหรอ = is this your first time in Thailand?" }
       ]
     },
     {
@@ -1858,7 +1864,8 @@
         { "thai": "ล่าง", "translit": "lâang", "english": "bottom / lower" },
         { "thai": "ต่อหน้า", "translit": "tɔ̀ɔ nâa", "english": "in front of (people)", "words": ["ต่อ::to continue / connect / per", "หน้า::face / front"] },
         { "thai": "เหนือ", "translit": "nʉ̌a", "english": "north / above" },
-        { "thai": "กลาง", "translit": "glaang", "english": "middle, centre" }
+        { "thai": "กลาง", "translit": "glaang", "english": "middle, centre" },
+        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "around / in the area of", "note": "แถวนี้มีร้านกาแฟไหม = is there a café around here?" }
       ]
     },
     {
@@ -1997,7 +2004,8 @@
         { "thai": "ร้องไห้", "translit": "rɔ́ɔng-hâi", "english": "to cry" },
         { "thai": "ยิ้ม", "translit": "yím", "english": "to smile" },
         { "thai": "ตื่นนอน", "translit": "tʉ̀ʉn-nɔɔn", "english": "to wake up / get up" },
-        { "thai": "เคี้ยว", "translit": "khíao", "english": "to chew" }
+        { "thai": "เคี้ยว", "translit": "khíao", "english": "to chew" },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." }
       ]
     },
     {
@@ -2028,7 +2036,8 @@
         { "thai": "หยุด", "translit": "yùt", "english": "to stop" },
         { "thai": "เริ่ม", "translit": "rə̂əm", "english": "to start" },
         { "thai": "ซ่อม", "translit": "sɔ̂m", "english": "to repair" },
-        { "thai": "เตรียม", "translit": "triam", "english": "to prepare" }
+        { "thai": "เตรียม", "translit": "triam", "english": "to prepare" },
+        { "thai": "ต่อแถว", "translit": "tɔ̀ɔ-thɛ̌ɛo", "english": "to queue / line up", "note": "Also ต่อคิว. ต้องต่อแถวนานมาก = we had to queue for ages." }
       ]
     },
     {
@@ -2119,7 +2128,9 @@
         { "thai": "หก", "translit": "hòk", "english": "to spill" },
         { "thai": "แบก", "translit": "bɛ̀ɛk", "english": "to carry (on the shoulder)" },
         { "thai": "ก่อ", "translit": "gɔ̀ɔ", "english": "to build; to cause, start" },
-        { "thai": "สาว", "translit": "sǎao", "english": "to pull in, hand over hand" }
+        { "thai": "สาว", "translit": "sǎao", "english": "to pull in, hand over hand" },
+        { "thai": "ดัน", "translit": "dan", "english": "to push (steadily) / press", "note": "ช่วยดันรถหน่อย = help me push the car. A sharp shove is ผลัก." },
+        { "thai": "ล้น", "translit": "lón", "english": "to overflow", "note": "น้ำล้นตลิ่ง = the river has burst its banks. งานล้นมือ = up to my ears in work." }
       ]
     },
     {
@@ -2138,7 +2149,8 @@
         { "thai": "ล้อม", "translit": "lɔ́ɔm", "english": "to surround / enclose" },
         { "thai": "สั่น", "translit": "sàn", "english": "to shake / tremble" },
         { "thai": "หงาย", "translit": "ngǎai", "english": "face up / on its back" },
-        { "thai": "โผล่", "translit": "phlòo", "english": "to pop out / appear" }
+        { "thai": "โผล่", "translit": "phlòo", "english": "to pop out / appear" },
+        { "thai": "เซ", "translit": "see", "english": "to stagger / sway", "note": "เดินเซ = to walk unsteadily (drunk or dizzy)." }
       ]
     },
     {
@@ -2159,7 +2171,8 @@
         { "thai": "ไหม", "translit": "mǎi", "english": "yes/no question particle" },
         { "thai": "หรือเปล่า", "translit": "rʉ̌ʉ-plàao", "english": "…or not? (question tag)" },
         { "thai": "ใช่ไหม", "translit": "châi mǎi", "english": "…right? / isn't it?", "words": ["ใช่::yes / that's right", "ไหม::yes/no question particle"] },
-        { "thai": "แค่ไหน", "translit": "khɛ̂ɛ nǎi", "english": "how much / to what extent", "words": ["แค่::only / just", "ไหน::where / which"] }
+        { "thai": "แค่ไหน", "translit": "khɛ̂ɛ nǎi", "english": "how much / to what extent", "words": ["แค่::only / just", "ไหน::where / which"] },
+        { "thai": "ได้ไหม", "translit": "dâai mǎi", "english": "…can I? / can you? / is that OK?", "note": "ช่วยหน่อยได้ไหม = can you help me? ขอดูหน่อยได้ไหม = can I have a look?", "words": ["ได้::can / get / did", "ไหม::yes/no question particle"] }
       ]
     },
     {
@@ -2593,7 +2606,9 @@
         { "thai": "ต่าง ๆ", "translit": "tàang tàang", "english": "various" },
         { "thai": "นาน ๆ", "translit": "naan naan", "english": "for a long while" },
         { "thai": "น้อง ๆ", "translit": "nɔ́ɔng nɔ́ɔng", "english": "the juniors / the younger ones" },
-        { "thai": "เผ็ด ๆ", "translit": "phèt phèt", "english": "nice and spicy" }
+        { "thai": "เผ็ด ๆ", "translit": "phèt phèt", "english": "nice and spicy" },
+        { "thai": "เล็ก ๆ", "translit": "lék lék", "english": "little / smallish", "note": "บ้านเล็ก ๆ = a little house." },
+        { "thai": "หนุ่ม ๆ", "translit": "nùm nùm", "english": "the young men / the lads", "note": "สาว ๆ = the girls." }
       ]
     },
     {
@@ -3878,9 +3893,9 @@
         { "thai": "ถุง", "translit": "thǔng", "english": "bag", "note": "The name word of ถ: ถ ถุง." },
         { "thai": "พลาสติก", "translit": "phláat-sà-tìk", "english": "plastic" },
         { "thai": "กล่อง", "translit": "glɔ̀ng", "english": "box" },
-        { "thai": "กระดาษแข็ง", "translit": "grà-dàat khɛ̌ng", "english": "cardboard", "words": ["กระดาษ::paper", "แข็ง::short ɛ before a final — the shortener mark"] },
+        { "thai": "กระดาษแข็ง", "translit": "grà-dàat khɛ̌ng", "english": "cardboard", "words": ["กระดาษ::paper", "แข็ง::hard / stiff / solid"] },
         { "thai": "กระดาษ", "translit": "grà-dàat", "english": "paper" },
-        { "thai": "แข็ง", "translit": "khɛ̌ng", "english": "short ɛ before a final — the shortener mark", "note": "hard, strong. แ–ะ becomes แ–็." },
+        { "thai": "แข็ง", "translit": "khɛ̌ng", "english": "hard / stiff / solid", "note": "ข้าวแข็ง = the rice is hard (undercooked). น้ำแข็ง = ice." },
         { "thai": "แหวน", "translit": "wɛ̌ɛn", "english": "ring", "note": "The name word of ว: ว แหวน." },
         { "thai": "ทอง", "translit": "thɔɔng", "english": "gold" },
         { "thai": "แล้ว", "translit": "lɛ́ɛo", "english": "already / and then" },
@@ -5690,7 +5705,7 @@
       "passage": [{"th": "นักร้อง|ร้อง|เพลง|เศร้า", "en": "The singer sings a sad song."}, {"th": "น้ำเสียง|ของ|เธอ|ไพเราะ|มาก", "en": "Her voice is beautiful."}, {"th": "คน|ฟัง|น้ำตา|ไหล", "en": "The listeners are in tears."}, {"th": "บาง|คน|ร้องไห้|จน|น้ำมูก|ไหล", "en": "Some cry so hard their noses run."}, {"th": "พอ|เพลง|จบ ทุกคน|ก็|ตบมือ", "en": "When the song ends, everyone claps."}, {"th": "นักร้อง|มี|น้ำใจ ร้อง|ให้|ฟัง|อีก|เพลง", "en": "The kind singer sings them another song."}],
       "cards": [
         { "thai": "นักร้อง", "translit": "nák-rɔ́ɔng", "english": "singer", "note": "ร้อง = to sing." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เพลง", "translit": "phleeng", "english": "song" },
         { "thai": "เศร้า", "translit": "sâo", "english": "sad" },
         { "thai": "น้ำเสียง", "translit": "nám-sǐang", "english": "tone of voice", "note": "Lit. \"sound water\"." },
@@ -8491,7 +8506,7 @@
       "passage": [{"th": "ทารก|ร้อง|ทั้ง|คืน", "en": "The baby cries all night."}, {"th": "แม่|อุ้ม|และ|กล่อม", "en": "Mum holds her and rocks her."}, {"th": "พ่อ|เปลี่ยน|ผ้าอ้อม", "en": "Dad changes the nappy,"}, {"th": "ชง|นมผง|ใส่|ขวดนม", "en": "and makes up a bottle of formula."}, {"th": "หนู|ฟัน|ขึ้น|เลย|งอแง", "en": "She's teething, so she's grizzly."}, {"th": "พอ|ได้|จุกหลอก|ก็|หลับ|ใน|เปล", "en": "Once she has her dummy, she falls asleep in her cot."}],
       "cards": [
         { "thai": "ทารก", "translit": "thaa-rók", "english": "baby / newborn" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "ทั้ง", "translit": "tháng", "english": "both / all / entire" },
         { "thai": "คืน", "translit": "khʉʉn", "english": "night / to give back" },
         { "thai": "แม่", "translit": "mɛ̂ɛ", "english": "mother / mum" },
@@ -12689,9 +12704,9 @@
         { "thai": "เที่ยว", "translit": "thîao", "english": "to go out / travel for fun", "note": "Catch-all for any leisure outing." },
         { "thai": "ต่อ", "translit": "tɔ̀ɔ", "english": "to continue / connect / per" },
         { "thai": "ที่", "translit": "thîi", "english": "at", "note": "ที่บ้าน = at home." },
-        { "thai": "จุดชมวิว", "translit": "jùt chom wiu", "english": "viewpoint", "words": ["จุด::point / spot / to light", "ชม::to compliment, praise", "วิว::view"] },
+        { "thai": "จุดชมวิว", "translit": "jùt chom wiu", "english": "viewpoint", "words": ["จุด::point / spot / to light", "ชม::to admire / view (scenery, a show)", "วิว::view"] },
         { "thai": "จุด", "translit": "jùt", "english": "point / spot / to light", "note": "j. Compare ฉุด (ch) to drag." },
-        { "thai": "ชม", "translit": "chom", "english": "to compliment, praise" },
+        { "thai": "ชม", "translit": "chom", "english": "to admire / view (scenery, a show)", "note": "ชมวิว = to enjoy the view. ชมการแสดง = to watch a show." },
         { "thai": "วิว", "translit": "wiu", "english": "view" }
       ]
     },
@@ -17004,7 +17019,7 @@
         { "thai": "ครีบ", "translit": "khrîip", "english": "fin" },
         { "thai": "เหงือก", "translit": "ngʉ̀ak", "english": "gills", "note": "Also = gums (in your mouth)." },
         { "thai": "กระดอง", "translit": "grà-dɔɔng", "english": "shell (a turtle's or crab's)", "note": "กระดองเต่า = turtle shell." },
-        { "thai": "แข็ง", "translit": "khɛ̌ng", "english": "short ɛ before a final — the shortener mark", "note": "hard, strong. แ–ะ becomes แ–็." },
+        { "thai": "แข็ง", "translit": "khɛ̌ng", "english": "hard / stiff / solid", "note": "ข้าวแข็ง = the rice is hard (undercooked). น้ำแข็ง = ice." },
         { "thai": "นอ", "translit": "nɔɔ", "english": "rhino horn" },
         { "thai": "บน", "translit": "bon", "english": "on / on top of" },
         { "thai": "จมูก", "translit": "jà-mùuk", "english": "nose" },
@@ -18580,13 +18595,13 @@
         { "thai": "ป้า", "translit": "pâa", "english": "aunt (older than your parent)", "note": "Either side, older than your mother/father." },
         { "thai": "อัลโต", "translit": "an-too", "english": "alto" },
         { "thai": "พ่อ", "translit": "phɔ̂ɔ", "english": "father / dad" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เสียงเบส", "translit": "sǐang-bèet", "english": "bass (voice)" },
         { "thai": "ก่อน", "translit": "gɔ̀ɔn", "english": "before" },
         { "thai": "ต้อง", "translit": "tɔ̂ng", "english": "must / have to", "note": "ต้อง + verb: ต้องไป = have to go." },
         { "thai": "วอร์มเสียง", "translit": "wɔɔm-sǐang", "english": "to warm up your voice" },
         { "thai": "ทุกคน", "translit": "thúk-khon", "english": "everyone", "note": "สวัสดีทุกคน = hi everyone." },
-        { "thai": "ร้องประสานเสียง", "translit": "rɔ́ɔng prà-sǎan sǐang", "english": "to sing in harmony", "words": ["ร้อง::to call, cry (any animal)", "ประสาน::to join, harmonise", "เสียง::sound / voice"] },
+        { "thai": "ร้องประสานเสียง", "translit": "rɔ́ɔng prà-sǎan sǐang", "english": "to sing in harmony", "words": ["ร้อง::to cry out, shout; to sing (a song)", "ประสาน::to join, harmonise", "เสียง::sound / voice"] },
         { "thai": "เพราะ", "translit": "phrɔ́", "english": "lovely to listen to", "note": "เพลงนี้เพราะ = this song is lovely." },
         { "thai": "มาก", "translit": "mâak", "english": "very / a lot" },
         { "thai": "แต่", "translit": "tɛ̀ɛ", "english": "but" },
@@ -18960,7 +18975,7 @@
         { "thai": "หลัง", "translit": "lǎng", "english": "behind / after", "note": "หลังบ้าน = behind the house. หลังเลิกงาน = after work." },
         { "thai": "โชว์", "translit": "choo", "english": "show" },
         { "thai": "ไป", "translit": "pai", "english": "to go", "note": "p. Compare ใบ (b) leaf." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "คาราโอเกะ", "translit": "khaa-raa-oo-gè", "english": "karaoke" }
       ]
     },
@@ -19188,7 +19203,7 @@
         { "thai": "เพลงฉ่อย", "translit": "phleeng-chɔ̀i", "english": "pleng choi", "note": "Central folk: witty, often bawdy repartee between men and women." },
         { "thai": "กลางคืน", "translit": "glaang-khʉʉn", "english": "night" },
         { "thai": "แม่", "translit": "mɛ̂ɛ", "english": "mother / mum" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เพลงกล่อมเด็ก", "translit": "phleeng-glɔ̀m-dèk", "english": "lullaby" }
       ]
     },
@@ -19705,7 +19720,7 @@
         { "thai": "ขโมย", "translit": "khà-mooi", "english": "thief!", "note": "Shout it. Also the verb \"to steal\"." },
         { "thai": "ผู้หญิง", "translit": "phûu-yǐng", "english": "woman" },
         { "thai": "หนึ่ง", "translit": "nʉ̀ng", "english": "one" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "ฉันโดนปล้น", "translit": "chǎn doon plôn", "english": "I've been robbed", "words": ["ฉัน::I / me", "โดน::to get (hit) — bad-news passive", "ปล้น::to rob (by force)"] },
         { "thai": "ฉัน", "translit": "chǎn", "english": "I / me", "note": "Subtitles use it for almost every \"I\"; in real life men usually say ผม." },
         { "thai": "โดน", "translit": "doon", "english": "to get (hit) — bad-news passive", "note": "โดนด่า = got told off." },
@@ -22186,8 +22201,8 @@
         { "thai": "ที่ไหน", "translit": "thîi-nǎi", "english": "where" },
         { "thai": "ฉัน", "translit": "chǎn", "english": "I / me", "note": "Subtitles use it for almost every \"I\"; in real life men usually say ผม." },
         { "thai": "ตอบ", "translit": "tɔ̀ɔp", "english": "to answer" },
-        { "thai": "พักอยู่แถวสุขุมวิท", "translit": "phák yùu thɛ̌ɛo sù-khǔm-wít", "english": "I'm staying near Sukhumvit", "note": "แถว = around, in the area of.", "words": ["พัก::to rest / stay", "อยู่::to be at / stay / live", "แถว::row", "สุขุมวิท::Sukhumvit"] },
-        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "row", "note": "Also \"row / line / area\" in everyday use: แถวนี้ = around here." },
+        { "thai": "พักอยู่แถวสุขุมวิท", "translit": "phák yùu thɛ̌ɛo sù-khǔm-wít", "english": "I'm staying near Sukhumvit", "note": "แถว = around, in the area of.", "words": ["พัก::to rest / stay", "อยู่::to be at / stay / live", "แถว::around / in the area of", "สุขุมวิท::Sukhumvit"] },
+        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "around / in the area of", "note": "แถวนี้มีร้านกาแฟไหม = is there a café around here?" },
         { "thai": "สุขุมวิท", "translit": "sù-khǔm-wít", "english": "Sukhumvit" },
         { "thai": "อยู่เมืองไทยนานแค่ไหนแล้ว", "translit": "yùu mʉang-thai naan khɛ̂ɛ-nǎi lɛ́ɛo", "english": "how long have you been in Thailand?", "words": ["อยู่::to be at / stay / live", "เมืองไทย::Thailand", "นาน::for a long time", "แค่::only / just", "ไหน::where / which", "แล้ว::already / and then"] },
         { "thai": "เมืองไทย", "translit": "mʉang-thai", "english": "Thailand" },
@@ -25858,9 +25873,9 @@
         { "thai": "ไกด์", "translit": "gái", "english": "tour guide" },
         { "thai": "พา", "translit": "phaa", "english": "to take (someone) / lead", "note": "ph, a puff of air. Compare ปา (p) to throw." },
         { "thai": "ไป", "translit": "pai", "english": "to go", "note": "p. Compare ใบ (b) leaf." },
-        { "thai": "จุดชมวิว", "translit": "jùt chom wiu", "english": "viewpoint", "words": ["จุด::point / spot / to light", "ชม::to compliment, praise", "วิว::view"] },
+        { "thai": "จุดชมวิว", "translit": "jùt chom wiu", "english": "viewpoint", "words": ["จุด::point / spot / to light", "ชม::to admire / view (scenery, a show)", "วิว::view"] },
         { "thai": "จุด", "translit": "jùt", "english": "point / spot / to light", "note": "j. Compare ฉุด (ch) to drag." },
-        { "thai": "ชม", "translit": "chom", "english": "to compliment, praise" },
+        { "thai": "ชม", "translit": "chom", "english": "to admire / view (scenery, a show)", "note": "ชมวิว = to enjoy the view. ชมการแสดง = to watch a show." },
         { "thai": "ซื้อ", "translit": "sʉ́ʉ", "english": "to buy", "note": "High tone. Compare สื่อ (low) media, ซื่อ (falling) straightforward." },
         { "thai": "ของที่ระลึก", "translit": "khɔ̌ɔng-thîi-rá-lʉ́k", "english": "souvenir" },
         { "thai": "ให้", "translit": "hâi", "english": "to give / let / for", "note": "ให้ฉันไป = let me go. ซื้อให้ = buy for (someone)." },
@@ -28147,7 +28162,7 @@
         { "thai": "เพลงเศร้า", "translit": "phleeng-sâo", "english": "sad song" },
         { "thai": "เรื่อง", "translit": "rʉ̂ang", "english": "story / matter / about", "note": "เรื่องอะไร = what's it about?" },
         { "thai": "รักแรกพบ", "translit": "rák-rɛ̂ɛk-phóp", "english": "love at first sight" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "ว่า", "translit": "wâa", "english": "that (reporting) / to say", "note": "รู้ว่า… = know that…; บอกว่า… = said that…" },
         { "thai": "คิดถึง", "translit": "khít-thʉ̌ng", "english": "to miss (someone)" },
         { "thai": "คนดี", "translit": "khon-dii", "english": "my dear", "note": "Lit. good person." },
@@ -28261,7 +28276,7 @@
         { "thai": "เต็ม", "translit": "tem", "english": "full" },
         { "thai": "ห้อง", "translit": "hɔ̂ng", "english": "room" },
         { "thai": "ไอดอล", "translit": "ai-dɔ̂n", "english": "idol (pop star)", "note": "Trained, managed pop stars, K-pop style." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "ว่า", "translit": "wâa", "english": "that (reporting) / to say", "note": "รู้ว่า… = know that…; บอกว่า… = said that…" },
         { "thai": "รักเธอ", "translit": "rák-thəə", "english": "I love you (in songs)" },
         { "thai": "ตลอดไป", "translit": "tà-lɔ̀ɔt-pai", "english": "forever" },
@@ -28308,7 +28323,7 @@
         { "thai": "ถึง", "translit": "thʉ̌ng", "english": "to arrive / reach / until" },
         { "thai": "บ้าน", "translit": "bâan", "english": "house / home" },
         { "thai": "ยาย", "translit": "yaai", "english": "grandmother (maternal)", "note": "Mother's mother." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เพลงกล่อมเด็ก", "translit": "phleeng-glɔ̀m-dèk", "english": "lullaby" },
         { "thai": "ให้", "translit": "hâi", "english": "for (someone)", "note": "ซื้อให้แม่ = buy for mum." },
         { "thai": "หลาน", "translit": "lǎan", "english": "nephew / niece / grandchild", "note": "Same word for all three. Context disambiguates." },
@@ -28340,7 +28355,7 @@
         { "thai": "เพิ่ง", "translit": "phə̂ng", "english": "just (recently)", "note": "เพิ่งมา = just arrived." },
         { "thai": "เลิกกัน", "translit": "lə̂ək-gan", "english": "to break up" },
         { "thai": "เธอ", "translit": "thəə", "english": "you (intimate) / she", "note": "Between lovers and friends, or \"she\". Subtitles use it constantly." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เพลง", "translit": "phleeng", "english": "song" },
         { "thai": "น้ำตา", "translit": "nám-taa", "english": "tears" },
         { "thai": "ไหล", "translit": "lǎi", "english": "to flow", "note": "Rising tone. Compare ไหล่ (low) shoulder, ไล่ (falling) to chase away." },
@@ -28495,7 +28510,7 @@
       "passage": [{"th": "นักท่องเที่ยว|ร้อง|ว่า ฉัน|โดน|ปล้น", "en": "A tourist cries, \"I've been robbed!\""}, {"th": "หนังสือ|เดินทาง|หาย กระเป๋า|สตางค์|หาย|ด้วย", "en": "\"My passport's gone, and my wallet too.\""}, {"th": "กระเป๋า|ถูก|ขโมย โจร|หนี|ไป", "en": "The bag was stolen; the thief got away."}, {"th": "ที่|โรงพัก|เขา|บอก|ว่า ฉัน|พูด|ภาษา|ไทย|ไม่|เก่ง ขอ|ล่าม|ด้วย|ครับ", "en": "At the station he says, \"My Thai isn't good. I need an interpreter.\""}, {"th": "ฉัน|ต้องการ|ติดต่อ|สถานทูต|ครับ", "en": "\"I want to contact my embassy.\""}, {"th": "ตำรวจ|จับ|โจร|ได้ เก็บ|ทรัพย์สิน|ไว้|เป็น|ของกลาง แต่|คืน|โทรศัพท์|มือถือ|ให้|ก่อน", "en": "Police catch the thief and keep the property as evidence, but give his mobile back first."}],
       "cards": [
         { "thai": "นักท่องเที่ยว", "translit": "nák-thɔ̂ng-thîao", "english": "tourist", "note": "ท่องเที่ยว = to travel for pleasure." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "ว่า", "translit": "wâa", "english": "that (reporting) / to say", "note": "รู้ว่า… = know that…; บอกว่า… = said that…" },
         { "thai": "ฉันโดนปล้น", "translit": "chǎn doon plôn", "english": "I've been robbed", "words": ["ฉัน::I / me", "โดน::to get (hit) — bad-news passive", "ปล้น::to rob (by force)"] },
         { "thai": "ฉัน", "translit": "chǎn", "english": "I / me", "note": "Subtitles use it for almost every \"I\"; in real life men usually say ผม." },
@@ -30603,7 +30618,7 @@
         { "thai": "ต้อง", "translit": "tɔ̂ng", "english": "must / have to", "note": "ต้อง + verb: ต้องไป = have to go." },
         { "thai": "ที่", "translit": "thîi", "english": "at", "note": "ที่บ้าน = at home." },
         { "thai": "พัก", "translit": "phák", "english": "to rest / stay", "note": "พักที่โรงแรม = stay at a hotel." },
-        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "row", "note": "Also \"row / line / area\" in everyday use: แถวนี้ = around here." }
+        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "around / in the area of", "note": "แถวนี้มีร้านกาแฟไหม = is there a café around here?" }
       ]
     },
     {
@@ -30901,7 +30916,7 @@
         { "thai": "ไหว", "translit": "wǎi", "english": "able to cope / manage", "note": "Rising tone. Compare ไว (mid) quick, ไหว้ (falling) to wai. ไม่ไหว = I can't take any more." },
         { "thai": "เด็ก", "translit": "dèk", "english": "child / kid" },
         { "thai": "ผู้ชาย", "translit": "phûu-chaai", "english": "man" },
-        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "row", "note": "Also \"row / line / area\" in everyday use: แถวนี้ = around here." },
+        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "around / in the area of", "note": "แถวนี้มีร้านกาแฟไหม = is there a café around here?" },
         { "thai": "นั้น", "translit": "nán", "english": "that (after a noun)" },
         { "thai": "ช่วย", "translit": "chûai", "english": "to help / please (do)", "note": "ช่วย + verb = please: ช่วยพูดช้าๆ = please speak slowly." },
         { "thai": "ขอบใจ", "translit": "khɔ̀ɔp-jai", "english": "thanks (to a junior / friend)" },
@@ -35330,7 +35345,7 @@
         { "thai": "พระราชวัง", "translit": "phrá-râat-chá-wang", "english": "royal palace" },
         { "thai": "คน", "translit": "khon", "english": "person / people" },
         { "thai": "ยืน", "translit": "yʉʉn", "english": "to stand" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เพลงสรรเสริญพระบารมี", "translit": "phleeng sǎn-sə̌ən-phrá-baa-rá-mii", "english": "royal anthem", "note": "Played before films in cinemas — everyone stands.", "words": ["เพลง::song", "สรรเสริญพระบารมี::praising the King (the royal anthem)"] },
         { "thai": "เพลง", "translit": "phleeng", "english": "song" },
         { "thai": "สรรเสริญพระบารมี", "translit": "sǎn-sə̌ən-phrá-baa-rá-mii", "english": "praising the King (the royal anthem)" },
@@ -37140,7 +37155,7 @@
         { "thai": "เป็น", "translit": "pen", "english": "to be (identity / role)" },
         { "thai": "เสียงสูง", "translit": "sǐang-sǔung", "english": "high note" },
         { "thai": "นักร้อง", "translit": "nák-rɔ́ɔng", "english": "singer", "note": "ร้อง = to sing." },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "ไม่", "translit": "mâi", "english": "not / no", "note": "Falling tone. Compare ไม้ (high) wood, ใหม่ (low) new, ไหม (rising) question word, ไหม้ (falling too) to burn. ไม้ใหม่ไม่ไหม้ = new wood doesn't burn." },
         { "thai": "ถึง", "translit": "thʉ̌ng", "english": "to arrive / reach / until" },
         { "thai": "เลย", "translit": "ləəi", "english": "so / therefore (casual)", "note": "Different from เลย meaning \"really/at all\" — context decides." },
@@ -41147,7 +41162,7 @@
         { "thai": "ไว้ทุกข์", "translit": "wái-thúk", "english": "to be in mourning", "note": "Wear black, or black and white." },
         { "thai": "ทุกคน", "translit": "thúk-khon", "english": "everyone", "note": "สวัสดีทุกคน = hi everyone." },
         { "thai": "ยืน", "translit": "yʉʉn", "english": "to stand" },
-        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to call, cry (any animal)", "note": "Also: ร้องเพลง = to sing, ร้องไห้ = to cry." },
+        { "thai": "ร้อง", "translit": "rɔ́ɔng", "english": "to cry out, shout; to sing (a song)", "note": "ร้องเพลง = to sing. ร้องลั่น = to shout out loud." },
         { "thai": "เพลงสรรเสริญพระบารมี", "translit": "phleeng sǎn-sə̌ən-phrá-baa-rá-mii", "english": "royal anthem", "note": "Played before films in cinemas — everyone stands.", "words": ["เพลง::song", "สรรเสริญพระบารมี::praising the King (the royal anthem)"] },
         { "thai": "เพลง", "translit": "phleeng", "english": "song" },
         { "thai": "สรรเสริญพระบารมี", "translit": "sǎn-sə̌ən-phrá-baa-rá-mii", "english": "praising the King (the royal anthem)" },
@@ -45699,7 +45714,7 @@
         { "thai": "ไป", "translit": "pai", "english": "to go", "note": "p. Compare ใบ (b) leaf." },
         { "thai": "ก็", "translit": "gɔ̂", "english": "then / also / (also softener)", "note": "Multi-purpose linker. ก็ได้ = that's OK." },
         { "thai": "เดินทาง", "translit": "dəən-thaang", "english": "to travel", "note": "Literally \"walk-path\"." },
-        { "thai": "ค้าง", "translit": "kháang", "english": "frozen / hung" },
+        { "thai": "ค้าง", "translit": "kháang", "english": "to stay overnight / be left over", "note": "ค้างบ้านเพื่อน = to stay over at a friend's. งานค้าง = a backlog of work." },
         { "thai": "อื่น", "translit": "ʉ̀ʉn", "english": "other / else" },
         { "thai": "ได้", "translit": "dâai", "english": "can / get / did", "note": "After a verb = can: ไปได้. Before a verb = got to / did: ได้ไป." },
         { "thai": "แล้ว", "translit": "lɛ́ɛo", "english": "already / and then" },
@@ -46949,7 +46964,7 @@
       "cards": [
         { "thai": "ค่าย", "translit": "khâai", "english": "camp", "note": "Falling tone. Compare ขาย (rising) to sell, คาย (mid) to spit out. Also a record label or a TV channel's stable." },
         { "thai": "มวย", "translit": "muai", "english": "boxing" },
-        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "row", "note": "Also \"row / line / area\" in everyday use: แถวนี้ = around here." },
+        { "thai": "แถว", "translit": "thɛ̌ɛo", "english": "around / in the area of", "note": "แถวนี้มีร้านกาแฟไหม = is there a café around here?" },
         { "thai": "บ้าน", "translit": "bâan", "english": "house / home" },
         { "thai": "มี", "translit": "mii", "english": "to have / there is" },
         { "thai": "เด็ก", "translit": "dèk", "english": "child / kid" },
@@ -47186,7 +47201,7 @@
         { "thai": "ผู้หญิง", "translit": "phûu-yǐng", "english": "woman" },
         { "thai": "มา", "translit": "maa", "english": "to come", "note": "Mid tone. Compare ม้า (high) horse, หมา (rising) dog." },
         { "thai": "นอน", "translit": "nɔɔn", "english": "to sleep / lie down", "note": "Mid tone. Compare หนอน (rising) worm." },
-        { "thai": "ค้าง", "translit": "kháang", "english": "frozen / hung" },
+        { "thai": "ค้าง", "translit": "kháang", "english": "to stay overnight / be left over", "note": "ค้างบ้านเพื่อน = to stay over at a friend's. งานค้าง = a backlog of work." },
         { "thai": "ที่", "translit": "thîi", "english": "at", "note": "ที่บ้าน = at home." },
         { "thai": "ห้อง", "translit": "hɔ̂ng", "english": "room" },
         { "thai": "ฉัน", "translit": "chǎn", "english": "I / me", "note": "Subtitles use it for almost every \"I\"; in real life men usually say ผม." },
@@ -51000,7 +51015,8 @@
         { "thai": "ไม่สบาย", "translit": "mâi sà-baai", "english": "unwell / not feeling well", "words": ["ไม่::not / no", "สบาย::comfortable / well"] },
         { "thai": "สบาย ๆ", "translit": "sà-baai sà-baai", "english": "chill / easy / no worries" },
         { "thai": "เศร้า", "translit": "sâo", "english": "sad" },
-        { "thai": "สงบ", "translit": "sà-ngòp", "english": "calm / peaceful" }
+        { "thai": "สงบ", "translit": "sà-ngòp", "english": "calm / peaceful" },
+        { "thai": "เดือดร้อน", "translit": "dʉ̀at-rɔ́ɔn", "english": "in trouble / distressed", "note": "ไม่อยากให้ใครเดือดร้อน = I don't want to cause anyone trouble." }
       ]
     },
     {
@@ -51051,7 +51067,8 @@
         { "thai": "หนวดเครา", "translit": "nùat-khrao", "english": "beard and moustache" },
         { "thai": "ใส่แว่น", "translit": "sài-wɛ̂n", "english": "wears glasses" },
         { "thai": "เล็ม", "translit": "lem", "english": "to trim" },
-        { "thai": "ขนตา", "translit": "khǒn-taa", "english": "eyelash" }
+        { "thai": "ขนตา", "translit": "khǒn-taa", "english": "eyelash" },
+        { "thai": "ทรง", "translit": "song", "english": "shape / style (of hair, clothes, a car)", "note": "ทรงผม = hairstyle. รถทรงสปอร์ต = a sporty-looking car." }
       ]
     },
     {
@@ -51570,7 +51587,8 @@
         { "thai": "มุสลิม", "translit": "mút-sà-lim", "english": "Muslim" },
         { "thai": "ฮินดู", "translit": "hin-duu", "english": "Hindu" },
         { "thai": "คุณ", "translit": "khun", "english": "goodness, a kindness (owed back)" },
-        { "thai": "ปิด", "translit": "pìt", "english": "to stick on (gold leaf, a plaster)" }
+        { "thai": "ปิด", "translit": "pìt", "english": "to stick on (gold leaf, a plaster)" },
+        { "thai": "ไถ่โทษ", "translit": "thài-thôot", "english": "to atone / make amends", "note": "ทำความดีเพื่อไถ่โทษ = to do good to make up for a wrong." }
       ]
     },
     {
@@ -52014,7 +52032,9 @@
         { "thai": "กรอง", "translit": "grɔɔng", "english": "to filter" },
         { "thai": "จิ้ม", "translit": "jîm", "english": "to dip" },
         { "thai": "ปั่น", "translit": "pàn", "english": "to blend / spin / cycle" },
-        { "thai": "โรย", "translit": "rooi", "english": "to sprinkle" }
+        { "thai": "โรย", "translit": "rooi", "english": "to sprinkle" },
+        { "thai": "หมัก", "translit": "màk", "english": "to marinate / ferment", "note": "หมักทิ้งไว้ข้ามคืน = leave it to marinate overnight." },
+        { "thai": "คั่ว", "translit": "khûa", "english": "to dry-roast / toast (in a pan)", "note": "ข้าวคั่ว = toasted ground rice (for larb). ถั่วคั่ว = roasted peanuts." }
       ]
     },
     {
@@ -52252,7 +52272,9 @@
         { "thai": "ใส่ไข่ดาว", "translit": "sài khài-daao", "english": "add a fried egg", "words": ["ใส่::to wear / put on", "ไข่ดาว::fried egg (lit. star egg)"] },
         { "thai": "พิเศษ", "translit": "phí-sèet", "english": "large / extra portion" },
         { "thai": "ธรรมดา", "translit": "tham-má-daa", "english": "regular (size)" },
-        { "thai": "สด", "translit": "sòt", "english": "fresh" }
+        { "thai": "สด", "translit": "sòt", "english": "fresh" },
+        { "thai": "ดิบ", "translit": "dìp", "english": "raw / unripe", "note": "ปลาดิบ = raw fish. มะม่วงดิบ = unripe (green) mango." },
+        { "thai": "สุก", "translit": "sùk", "english": "cooked / done (of food)", "note": "หมูยังไม่สุก = the pork isn't cooked yet." }
       ]
     },
     {
@@ -53288,7 +53310,9 @@
         { "thai": "ประกัน", "translit": "prà-gan", "english": "insurance / guarantee" },
         { "thai": "เงินตรา", "translit": "ngən-traa", "english": "currency" },
         { "thai": "ดิจิทัล", "translit": "dì-jì-thân", "english": "digital" },
-        { "thai": "มูลค่าเพิ่ม", "translit": "muun-lá-khâa-phə̂əm", "english": "value added" }
+        { "thai": "มูลค่าเพิ่ม", "translit": "muun-lá-khâa-phə̂əm", "english": "value added" },
+        { "thai": "แข็งค่า", "translit": "khɛ̌ng-khâa", "english": "to strengthen (of a currency)", "note": "เงินบาทแข็งค่าขึ้น = the baht has strengthened. The opposite is อ่อนค่า." },
+        { "thai": "ใช้หนี้", "translit": "chái-nîi", "english": "to pay off a debt", "note": "ใช้หนี้หมดแล้ว = the debt is all paid off." }
       ]
     },
     {
@@ -53563,7 +53587,8 @@
         { "thai": "หลงทาง", "translit": "lǒng-thaang", "english": "lost (the way)", "note": "ผมหลงทาง = I'm lost." },
         { "thai": "ขวา", "translit": "khwǎa", "english": "right" },
         { "thai": "หลง", "translit": "lǒng", "english": "to be lost / infatuated" },
-        { "thai": "ตรงนั้น", "translit": "trong-nán", "english": "over there" }
+        { "thai": "ตรงนั้น", "translit": "trong-nán", "english": "over there" },
+        { "thai": "เลย", "translit": "ləəi", "english": "past / beyond (go past)", "note": "เลยไฟแดงไปนิดเดียว = just past the traffic lights. เลยมาแล้ว = we've gone past it." }
       ]
     },
     {
@@ -53653,7 +53678,8 @@
         { "thai": "รีสอร์ท", "translit": "rii-sɔ̀ɔt", "english": "resort" },
         { "thai": "โฮสเทล", "translit": "hoo-sà-teen", "english": "hostel" },
         { "thai": "เกสต์เฮาส์", "translit": "gèt-háo", "english": "guesthouse" },
-        { "thai": "อาหารเช้า", "translit": "aa-hǎan-cháo", "english": "breakfast" }
+        { "thai": "อาหารเช้า", "translit": "aa-hǎan-cháo", "english": "breakfast" },
+        { "thai": "ค้าง", "translit": "kháang", "english": "to stay overnight / be left over", "note": "ค้างบ้านเพื่อน = to stay over at a friend's. งานค้าง = a backlog of work." }
       ]
     },
     {
@@ -53701,7 +53727,7 @@
         { "thai": "ปิดกี่โมง", "translit": "pìt gìi moong", "english": "what time does it close?", "words": ["ปิด::to close / turn off", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)"] },
         { "thai": "ตลาดน้ำ", "translit": "tà-làat náam", "english": "floating market", "words": ["ตลาด::market", "น้ำ::water"] },
         { "thai": "พิพิธภัณฑ์", "translit": "phí-phít-thá-phan", "english": "museum" },
-        { "thai": "จุดชมวิว", "translit": "jùt chom wiu", "english": "viewpoint", "words": ["จุด::point / spot / to light", "ชม::to compliment, praise", "วิว::view"] },
+        { "thai": "จุดชมวิว", "translit": "jùt chom wiu", "english": "viewpoint", "words": ["จุด::point / spot / to light", "ชม::to admire / view (scenery, a show)", "วิว::view"] },
         { "thai": "ถ่ายรูปได้ไหม", "translit": "thàai-rûup dâai mǎi", "english": "can I take photos?", "words": ["ถ่ายรูป::to take photos", "ได้::can / get / did", "ไหม::yes/no question particle"] },
         { "thai": "แต่งกายสุภาพ", "translit": "tɛ̀ng-gaai sù-phâap", "english": "to dress modestly", "note": "Temples and palaces: shoulders and knees covered.", "words": ["แต่งกาย::to dress (formal)", "สุภาพ::polite"] },
         { "thai": "ถอดรองเท้า", "translit": "thɔ̀ɔt rɔɔng-tháao", "english": "take off your shoes", "note": "Required at every temple building.", "words": ["ถอด::to take off", "รองเท้า::shoes"] },
@@ -53709,7 +53735,8 @@
         { "thai": "เที่ยวต่อ", "translit": "thîao tɔ̀ɔ", "english": "to go on to the next place", "words": ["เที่ยว::to go out / travel for fun", "ต่อ::to continue / connect / per"] },
         { "thai": "เข้าชม", "translit": "khâo-chom", "english": "to visit, go in to see" },
         { "thai": "สถานที่", "translit": "sà-thǎan-thîi", "english": "place, site" },
-        { "thai": "ท่องเที่ยว", "translit": "thɔ̂ng-thîao", "english": "to travel; tourism" }
+        { "thai": "ท่องเที่ยว", "translit": "thɔ̂ng-thîao", "english": "to travel; tourism" },
+        { "thai": "ชม", "translit": "chom", "english": "to admire / view (scenery, a show)", "note": "ชมวิว = to enjoy the view. ชมการแสดง = to watch a show." }
       ]
     },
     {
@@ -53887,7 +53914,8 @@
         { "thai": "แบตหมด", "translit": "bɛ̀ɛt mòt", "english": "flat battery", "words": ["แบต::battery (casual)", "หมด::all gone / used up"] },
         { "thai": "สตาร์ทไม่ติด", "translit": "sà-táat mâi tìt", "english": "won't start", "words": ["สตาร์ท::to start (an engine)", "ไม่::not / no", "ติด::to stick / be stuck / hooked"] },
         { "thai": "สตาร์ท", "translit": "sà-táat", "english": "to start (an engine)" },
-        { "thai": "เอสยูวี", "translit": "éet-yuu-wii", "english": "SUV (the letters)" }
+        { "thai": "เอสยูวี", "translit": "éet-yuu-wii", "english": "SUV (the letters)" },
+        { "thai": "ปั๊ม", "translit": "pám", "english": "petrol station (casual)", "note": "Short for ปั๊มน้ำมัน. แวะปั๊มก่อนนะ = let's stop at the petrol station first." }
       ]
     },
     {
@@ -53919,7 +53947,8 @@
         { "thai": "เหยียบ", "translit": "yìap", "english": "to step on / press (a pedal)" },
         { "thai": "นิรภัย", "translit": "ní-rá-phai", "english": "safety (in names of safety gear)" },
         { "thai": "มองข้าง", "translit": "mɔɔng-khâang", "english": "side-view (mirror)" },
-        { "thai": "ช้าๆ", "translit": "cháa-cháa", "english": "slowly" }
+        { "thai": "ช้าๆ", "translit": "cháa-cháa", "english": "slowly" },
+        { "thai": "คดเคี้ยว", "translit": "khót-khíao", "english": "winding (road, river)", "note": "ทางขึ้นดอยคดเคี้ยวมาก = the road up the mountain is very winding." }
       ]
     },
     {
@@ -54096,7 +54125,8 @@
         { "thai": "ช่องเก็บ", "translit": "chɔ̂ng-gèp", "english": "storage compartment" },
         { "thai": "สัมภาระ", "translit": "sǎm-phaa-rá", "english": "luggage, baggage (formal)" },
         { "thai": "รัด", "translit": "rát", "english": "to fasten, tie tight" },
-        { "thai": "ทางเดิน", "translit": "thaang-dəən", "english": "aisle, walkway" }
+        { "thai": "ทางเดิน", "translit": "thaang-dəən", "english": "aisle, walkway" },
+        { "thai": "ขึ้นเครื่อง", "translit": "khʉ̂n-khrʉ̂ang", "english": "to board (a plane)", "note": "บัตรขึ้นเครื่อง = boarding pass." }
       ]
     },
     {
@@ -54571,7 +54601,8 @@
         { "thai": "ขอบคุณที่ใช้บริการ", "translit": "khɔ̀ɔp-khun thîi chái bɔɔ-rí-gaan", "english": "thank you for using our service", "words": ["ขอบคุณ::thank you", "ที่::at", "ใช้::to use", "บริการ::service; to serve"] },
         { "thai": "ขออภัยในความไม่สะดวก", "translit": "khɔ̌ɔ à-phai nai khwaam mâi sà-dùak", "english": "sorry for the inconvenience", "words": ["ขอ::to ask for / may I", "อภัย::forgiveness, pardon", "ใน::in / inside", "ความ::(noun-maker for states)", "ไม่::not / no", "สะดวก::convenient"] },
         { "thai": "สินค้า", "translit": "sǐn-kháa", "english": "goods, product" },
-        { "thai": "พึงพอใจ", "translit": "phʉng-phɔɔ-jai", "english": "satisfied (formal)" }
+        { "thai": "พึงพอใจ", "translit": "phʉng-phɔɔ-jai", "english": "satisfied (formal)" },
+        { "thai": "ดำเนินการ", "translit": "dam-nəən-gaan", "english": "to proceed / carry out (formal)", "note": "กำลังดำเนินการ = it's being processed." }
       ]
     },
     {
@@ -54898,7 +54929,8 @@
         { "thai": "ท้องเสีย", "translit": "thɔ́ɔng-sǐa", "english": "diarrhea", "note": "Literally \"stomach spoiled\". Common from spicy/new food." },
         { "thai": "แพ้", "translit": "phɛ́ɛ", "english": "allergic to / lose", "note": "Same word as \"to lose\"." },
         { "thai": "แพ้อาหาร", "translit": "phɛ́ɛ aa-hǎan", "english": "food allergy", "words": ["แพ้::allergic to / lose", "อาหาร::food"] },
-        { "thai": "ไข้", "translit": "khâi", "english": "fever" }
+        { "thai": "ไข้", "translit": "khâi", "english": "fever" },
+        { "thai": "ดีขึ้น", "translit": "dii khʉ̂n", "english": "to get better / improve", "note": "รู้สึกดีขึ้นไหม = are you feeling better?", "words": ["ดี::good", "ขึ้น::to go up / get on"] }
       ]
     },
     {
@@ -55608,7 +55640,8 @@
         { "thai": "หญ้า", "translit": "yâa", "english": "grass" },
         { "thai": "รีดนม", "translit": "rîit-nom", "english": "to milk (a cow)" },
         { "thai": "เลี้ยงสัตว์", "translit": "líang-sàt", "english": "to raise livestock" },
-        { "thai": "ปศุสัตว์", "translit": "pà-sù-sàt", "english": "livestock (formal)" }
+        { "thai": "ปศุสัตว์", "translit": "pà-sù-sàt", "english": "livestock (formal)" },
+        { "thai": "ลูกแกะ", "translit": "lûuk-gɛ̀", "english": "lamb" }
       ]
     },
     {
@@ -56350,7 +56383,8 @@
         { "thai": "ปล้ำ", "translit": "plâm", "english": "to clinch / grapple" },
         { "thai": "ตั้งการ์ด", "translit": "tâng gáat", "english": "to put up your guard", "note": "ตั้ง = set up, การ์ด = guard (from English).", "words": ["ตั้ง::to set up / place / a whole lot of", "การ์ด::card (greeting)"] },
         { "thai": "หลบ", "translit": "lòp", "english": "to dodge / evade" },
-        { "thai": "บล็อก", "translit": "blɔ́k", "english": "to block" }
+        { "thai": "บล็อก", "translit": "blɔ́k", "english": "to block" },
+        { "thai": "ฟัน", "translit": "fan", "english": "to slash, hack (with a blade or elbow)", "note": "ฟันศอก = to slash with an elbow. ใช้มีดฟัน = to hack with a knife." }
       ]
     },
     {
@@ -56884,7 +56918,7 @@
         { "thai": "เทเนอร์", "translit": "thee-nə̂ə", "english": "tenor" },
         { "thai": "เสียงเบส", "translit": "sǐang-bèet", "english": "bass (voice)" },
         { "thai": "คณะประสานเสียง", "translit": "khá-ná prà-sǎan sǐang", "english": "choir", "words": ["คณะ::faculty", "ประสาน::to join, harmonise", "เสียง::sound / voice"] },
-        { "thai": "ร้องประสานเสียง", "translit": "rɔ́ɔng prà-sǎan sǐang", "english": "to sing in harmony", "words": ["ร้อง::to call, cry (any animal)", "ประสาน::to join, harmonise", "เสียง::sound / voice"] },
+        { "thai": "ร้องประสานเสียง", "translit": "rɔ́ɔng prà-sǎan sǐang", "english": "to sing in harmony", "words": ["ร้อง::to cry out, shout; to sing (a song)", "ประสาน::to join, harmonise", "เสียง::sound / voice"] },
         { "thai": "ร้องคู่", "translit": "rɔ́ɔng-khûu", "english": "to sing a duet" },
         { "thai": "ร้องตาม", "translit": "rɔ́ɔng-taam", "english": "to sing along" },
         { "thai": "ฮัมเพลง", "translit": "ham-phleeng", "english": "to hum" },
