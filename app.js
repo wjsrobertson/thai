@@ -1,5 +1,5 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable } from './spell.js';
-import { toneBreakdown, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
+import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -60,6 +60,11 @@ const els = {
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
+  wordModal: document.getElementById('word-modal'),
+  wordModalTr: document.getElementById('word-modal-tr'),
+  wordModalEn: document.getElementById('word-modal-en'),
+  wordModalBody: document.getElementById('word-modal-body'),
+  wordModalClose: document.getElementById('word-modal-close'),
   confirmTitle: document.getElementById('confirm-title'),
   confirmMessage: document.getElementById('confirm-message'),
   confirmDontAskRow: document.getElementById('confirm-dont-ask-row'),
@@ -112,7 +117,6 @@ const els = {
   readingDesc: document.getElementById('reading-desc'),
   reader: document.getElementById('reader'),
   readerLines: document.getElementById('reader-lines'),
-  readerPop: document.getElementById('reader-pop'),
   readerTranslit: document.getElementById('reader-translit'),
   readerEnglish: document.getElementById('reader-english'),
   readerSpaces: document.getElementById('reader-spaces'),
@@ -1929,10 +1933,9 @@ function renderWordlist() {
             span.tabIndex = 0;
             span.setAttribute('role', 'button');
             span.title = `Show ${w.thai}`;
-            span.dataset.pop = `${c.key}|${i}`;
             const open = (e) => {
               e.preventDefault();
-              showWordPop(span, w, els.wordlistSection);
+              showWordPop(span, w);
             };
             span.addEventListener('click', open);
             span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
@@ -1942,10 +1945,9 @@ function renderWordlist() {
           td.tabIndex = 0;
           td.setAttribute('role', 'button');
           td.title = 'Show the word';
-          td.dataset.pop = c.key;
           const open = (e) => {
             e.preventDefault();
-            showWordPop(td, c, els.wordlistSection);
+            showWordPop(td, c);
           };
           td.addEventListener('click', open);
           td.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
@@ -1995,7 +1997,6 @@ function renderWordlist() {
     }
     els.wordtableBody.appendChild(frag);
   }
-  reanchorWordPop();
 
   const allIn = state.listCards.every((c) => c.key in words);
   // With the whole deck in Review, the button reads "✓ All in Review" and removes them all.
@@ -2913,47 +2914,37 @@ function applyReaderToggles() {
   els.readerSpaces.setAttribute('aria-pressed', String(sp));
 }
 
-// A tapped word: say it, light it, and show its transliteration and meaning in a pop-up under it.
-// One pop-up (#reader-pop) serves the reader's words and, since 2026-10-09 (the user's request), the
-// Thai of a Topics row: it moves into `host` (#reader, or the Topics section), which it's placed in
-// and kept inside.
-let popAnchor = null; // the word or cell it's under (lit: .on)
-let popHost = null;
-let popKey = null;    // its card's key, to find its row again after the Topics table is redrawn
+// A tapped word (a story's, a Topics row's Thai, or a card back's Thai): say it, light it (`anchor`:
+// the story's word or the row's cell; none for a card), and show it in a dialog
+// (#word-modal): its transliteration and meaning, the word large, the Topics rows' buttons, and its
+// tones. Until 2026-10-11 it was a pop-up under the word; the user wanted more room, for the tones
+// above all. Tapping outside it, ✕ or Escape closes it.
+let popAnchor = null; // the word or cell it's for (lit: .on)
+let wordPop = null;   // while it's open: { lastFocus }
 
-function showWordPop(anchor, card, host = els.reader) {
+function showWordPop(anchor, card) {
   speak(card.thai);
-  if (popAnchor !== anchor) {
-    popAnchor?.classList.remove('on');
-    popAnchor = anchor;
-    anchor.classList.add('on');
-  }
-  const pop = els.readerPop;
-  if (pop.parentElement !== host) host.append(pop);
-  popHost = host;
-  popKey = cardKey(card);
-  const text = document.createElement('div');
-  text.className = 'pop-text';
-  text.append(
-    Object.assign(document.createElement('span'), { className: 'pop-tr', textContent: card.translit }),
-    Object.assign(document.createElement('span'), { className: 'pop-en', textContent: card.english }),
-  );
-  const row = document.createElement('div');
-  row.className = 'pop-row';
-  row.append(text);
+  popAnchor?.classList.remove('on');
+  popAnchor = anchor;
+  anchor?.classList.add('on');
+  els.wordModalTr.textContent = card.translit;
+  els.wordModalEn.textContent = card.english;
   // The word again, large: tapping a part of it (a letter, a vowel, a tone mark) says that part's
   // name, as in the spelling (ค → คอ ควาย), and lights it briefly (partAt, 2026-10-09). Spelling it
   // aloud lights up each part as it's read (lightParts).
+  const wordBox = document.createElement('div');
+  wordBox.className = 'word-box'; // holds the highlights (lightParts, flashPart)
   const big = document.createElement('div');
   big.className = 'pop-word';
   big.lang = 'th';
   big.textContent = card.thai;
+  wordBox.append(big);
   big.addEventListener('click', (e) => {
     const hit = tappedPart(big, card, e.clientX, e.clientY);
     if (!hit) return;
-    big.closest('.reader-pop').querySelectorAll('.pop-reading').forEach((x) => x.remove()); // speaking stops any spelling
+    wordBox.querySelectorAll('.pop-reading').forEach((x) => x.remove()); // speaking stops any spelling
     speak(hit.say, 'sp');
-    flashPart(pop, hit.boxes);
+    flashPart(wordBox, hit.boxes);
   });
   // Under the big word, the Topics rows' three buttons (2026-10-09, the user's request): add to or
   // remove from Flashcards, spell it aloud (lighting each part as it's read), and play it.
@@ -2998,74 +2989,71 @@ function showWordPop(anchor, card, host = els.reader) {
   actions.append(play);
   // Under them, the word's tones (tones.js), closed to a row until tapped.
   const tones = toneSection(card, big);
-  pop.style.width = ''; // sized afresh for each word, then held (below)
-  pop.replaceChildren(row, big, actions, ...(tones ? [tones.el] : []));
-  pop.hidden = false;
+  els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []));
+  if (!wordPop) wordPop = { lastFocus: document.activeElement };
+  els.wordModal.hidden = false;
+  setModalOpen(true);
+  els.wordModalBody.scrollTop = 0;
   fitPopWord(big);
-  // Hold the width: a narrower pop-up (a button redrawn, say) would re-centre the word, moving it
-  // out from under the next tap and its highlights.
-  pop.style.width = getComputedStyle(pop).width;
-  placeWordPop(anchor);
   tones?.shown();
+  els.wordModalClose.focus({ preventScroll: true });
+}
+
+function hideWordPop() {
+  popAnchor?.classList.remove('on');
+  popAnchor = null;
+  if (!wordPop) return;
+  const { lastFocus } = wordPop;
+  wordPop = null;
+  els.wordModal.hidden = true;
+  setModalOpen(!!document.querySelector('.modal:not([hidden])'));
+  if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true });
 }
 
 // ---------- tones (tones.js) ----------
 
-// The word pop-up's Tones row (2026-10-11, the user's request; tried there first). Closed, it's
-// "Tones" and a small curve per syllable; open (the small curves hidden), each syllable's tone drawn, with its
-// transliteration and the tone's name, and under them the rule for the one picked (the first, to
-// start): the consonant's class, live or dead, the tone mark, and the tone they give. Picking a
-// syllable lights its letters in the big word and says it. Open or closed is remembered (prefs).
-// { el, shown } (call shown() once the pop-up is placed, to light the picked syllable), or null for
+// The word dialog's Tones (2026-10-11, the user's request). Closed, it's "Tones" and a small curve
+// per syllable; open (the small curves hidden): a strip with each syllable's tone drawn, its
+// transliteration and the tone's name; the rule for the syllable picked (the first, to start), row
+// by row (toneRule); and its cell in the tone table (toneTable). Picking a syllable lights its
+// letters in the big word and says it. Open or closed is remembered (prefs.popTones).
+// { el, shown } (call shown() once the dialog is showing, to light the picked syllable), or null for
 // a word whose Thai can't be matched to its transliteration.
 function toneSection(card, big) {
   const syls = toneBreakdown(card.thai, card.translit);
   if (!syls?.length) return null;
-  const box = document.createElement('div');
-  box.className = 'pop-tones';
-  const span = (className, textContent) => Object.assign(document.createElement('span'), { className, textContent });
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const newWord = (n) => n > 0 && syls[n].word !== syls[n - 1].word;
-
-  const toggle = document.createElement('button');
+  const box = el('div', 'pop-tones');
+  const toggle = el('button', 'tones-toggle');
   toggle.type = 'button';
-  toggle.className = 'tones-toggle';
-  const minis = span('tones-minis', '');
+  const minis = el('span', 'tones-minis');
   syls.forEach((s, n) => minis.append(toneCurve(s.tone, { staff: false, gap: newWord(n) })));
-  toggle.append(span('tones-label', 'Tones'), minis, span('tones-chevron', '›'));
+  toggle.append(el('span', 'tones-label', 'Tones'), minis, el('span', 'tones-chevron', '›'));
 
-  const panel = document.createElement('div');
-  panel.className = 'tones-panel';
-  const strip = document.createElement('div');
-  strip.className = 'tones-strip';
-  const detail = document.createElement('div');
-  detail.className = 'tones-detail';
-  panel.append(strip, detail);
+  const panel = el('div', 'tones-panel');
+  const strip = el('div', 'tones-strip');
+  const detail = el('div', 'tones-detail');
+  const table = el('div', 'tones-table-box');
   let picked = 0;
-  const pick = (n, { play = false } = {}) => {
+  const pick = (n, { say = false } = {}) => {
     picked = n;
+    const syl = syls[n];
     strip.querySelectorAll('.tone-syl').forEach((b, k) => b.setAttribute('aria-pressed', String(k === n)));
-    detail.replaceChildren(...toneRule(syls[n]));
-    if (play) {
-      const say = syls[n].said;
-      speak(say, sampleUrl(say, 'sp') ? 'sp' : 'th');
-    }
-    lightParts(big, syls[n].at);
+    detail.replaceChildren(...toneRule(syl));
+    table.replaceChildren(...toneTable(syl));
+    if (say) speak(syl.said, sampleUrl(syl.said, 'sp') ? 'sp' : 'th');
+    lightParts(big, syl.at);
   };
-  // The open panel makes the pop-up much taller: scroll it into view if it now runs off the screen.
-  // (Not smoothly: a smooth scroll begun as the word is tapped gets cut short.)
-  const reveal = () => box.closest('.reader-pop')?.scrollIntoView({ block: 'nearest' });
-  syls.forEach((s, n) => {
-    const b = document.createElement('button');
+  syls.forEach((syl, n) => {
+    const b = el('button', `tone-syl tone-${syl.tone}` + (syl.exception ? ' exception' : '') + (newWord(n) ? ' word-start' : ''));
     b.type = 'button';
-    b.className = `tone-syl tone-${s.tone}` + (s.exception ? ' exception' : '') + (newWord(n) ? ' word-start' : '');
-    b.append(toneCurve(s.tone), span('tone-tl', s.tl), span('tone-name', s.tone));
-    b.title = `${s.said} ${s.tl}: ${s.tone} tone`;
-    b.addEventListener('click', () => {
-      pick(n, { play: true });
-      reveal(); // a syllable's rule may take more lines
-    });
+    b.append(toneCurve(syl.tone), el('span', 'tone-tl', syl.tl), el('span', 'tone-name', syl.tone));
+    b.title = `${syl.said} ${syl.tl}: ${syl.tone} tone`;
+    b.addEventListener('click', () => pick(n, { say: true }));
     strip.append(b);
   });
+  panel.append(strip, ...(syls.length > 1 ? [el('p', 'tones-hint', 'Tap a syllable to see its rule.')] : []), detail, table);
 
   const setOpen = (open) => {
     box.classList.toggle('open', open);
@@ -3077,53 +3065,102 @@ function toneSection(card, big) {
     const open = panel.hidden;
     setOpen(open);
     setPreferences({ popTones: open });
-    // Size the pop-up afresh for the panel (or without it), and put it back under its word.
-    const pop = els.readerPop;
-    pop.style.width = '';
-    pop.style.width = getComputedStyle(pop).width;
-    if (popAnchor) placeWordPop(popAnchor);
-    if (open) {
-      pick(picked);
-      reveal();
-    } else {
-      lightParts(big, null);
-    }
+    if (open) pick(picked);
+    else lightParts(big, null);
   });
   box.append(toggle, panel);
-  return { el: box, shown: () => { if (!panel.hidden) { pick(picked); reveal(); } } };
+  return { el: box, shown: () => { if (!panel.hidden) pick(picked); } };
 }
 
-// One syllable's rule, as rows: class, the tone mark, live or dead (only with no mark: a mark decides
-// on its own), and the tone; for an exception, the rules' tone and the one said. Then any note. (Which
-// syllable it is shows in the big word, lit, and the strip.)
+// One syllable's rule, as rows: the consonant's class, the tone mark, then what makes the syllable
+// live or dead (its vowel's length and its final) and which it is, and the tone. With a tone mark,
+// the mark decides on its own, so the middle three are dimmed. For an exception: the rules' tone
+// and the one said. Then any note.
 function toneRule(s) {
   const rows = document.createElement('dl');
   rows.className = 'tone-rows';
   const row = (label, ...content) => {
+    const dt = Object.assign(document.createElement('dt'), { textContent: label });
     const dd = document.createElement('dd');
     dd.append(...content);
-    rows.append(Object.assign(document.createElement('dt'), { textContent: label }), dd);
-    return dd;
+    rows.append(dt, dd);
+    return [dt, dd];
   };
   const thai = (text) => Object.assign(document.createElement('span'), { className: 'tone-th', textContent: text, lang: 'th' });
   const why = (text) => Object.assign(document.createElement('span'), { className: 'tone-why', textContent: text });
   const toneName = (tone) => {
-    const el = Object.assign(document.createElement('span'), { className: `tone-${tone}`, textContent: `${tone} · ` });
-    el.append(thai(TONE_THAI[tone]));
-    return el;
+    const out = Object.assign(document.createElement('span'), { className: `tone-${tone}`, textContent: `${tone} · ` });
+    out.append(thai(TONE_THAI[tone]));
+    return out;
   };
   row('Class', thai(s.clsLetter), ` ${CLASS_NAMES[s.cls]}`, ...(s.clsWhy ? [why(s.clsWhy)] : []));
   row('Mark', s.mark ? thai(`◌${s.mark} ${MARK_NAMES[s.mark]}`) : 'none');
-  if (!s.mark) row('Syllable', `${s.live ? 'live' : 'dead'}`, why(s.liveWhy)); // a mark decides on its own
+  const vowelNote = s.writtenLong !== s.long ? [why(`written ${s.writtenLong ? 'long' : 'short'}, said ${s.long ? 'long' : 'short'}`)] : [];
+  const f = s.final;
+  const middle = [
+    row('Vowel', `${s.long ? 'long' : 'short'} `, thai(s.vowelName), ...(s.vowelHidden ? [' unwritten'] : []), ...vowelNote),
+    row('Final', ...(f ? [`-${f.sound} `, ...(f.letter ? [thai(f.letter)] : [' in ', thai(f.part)]), why(f.stop ? 'stops the sound' : 'can be held')] : ['none'])),
+    // Why, unless the final row has said it.
+    row('Syllable', `${s.live ? 'live' : 'dead'} `, thai(s.live ? 'คำเป็น' : 'คำตาย'),
+      ...(s.mark ? [why("With a tone mark this doesn't matter: the mark decides.")]
+        : f ? [] : [why(s.long ? 'a long vowel can be held' : 'a short vowel stops short')])),
+  ];
+  if (s.mark) middle.flat().forEach((x) => x.classList.add('tone-moot'));
   if (s.exception) {
     row('Rules give', toneName(s.rule));
-    row('Said', toneName(s.tone)).classList.add('tone-said');
+    row('Said', toneName(s.tone))[1].classList.add('tone-said');
   } else {
-    row('Tone', toneName(s.tone)).classList.add('tone-said');
+    row('Tone', toneName(s.tone))[1].classList.add('tone-said');
   }
   const out = [rows];
   if (s.note) out.push(Object.assign(document.createElement('p'), { className: 'tone-note', textContent: s.note }));
   return out;
+}
+
+// The whole tone table, every class against live, dead and the four marks, each cell a tone's curve,
+// with the cell the syllable's rule uses picked out (for an exception, the tone the rules give).
+// Then the five tones as a key.
+const TABLE_HEADS = { live: 'live', deadShort: 'dead, short', deadLong: 'dead, long' };
+function toneTable(s) {
+  const table = document.createElement('table');
+  table.className = 'tone-table';
+  const th = (text, attrs = {}) => Object.assign(document.createElement('th'), { textContent: text, ...attrs });
+  const head1 = document.createElement('tr');
+  head1.append(th(''), th('no mark', { colSpan: 3 }), th('tone mark', { colSpan: 4 }));
+  const head2 = document.createElement('tr');
+  head2.append(th(''), ...TABLE_COLUMNS.map((c) => {
+    const cell = th(TABLE_HEADS[c] || `◌${c}`);
+    if (!TABLE_HEADS[c]) cell.lang = 'th';
+    return cell;
+  }));
+  const thead = document.createElement('thead');
+  thead.append(head1, head2);
+  const tbody = document.createElement('tbody');
+  for (const cls of ['M', 'H', 'L']) {
+    const tr = document.createElement('tr');
+    tr.append(th(CLASS_NAMES[cls], { scope: 'row' }));
+    for (const col of TABLE_COLUMNS) {
+      const td = document.createElement('td');
+      const tone = tableTone(cls, col);
+      if (tone) {
+        td.className = `tone-${tone}`;
+        td.title = tone;
+        td.append(toneCurve(tone, { staff: false }));
+        if (cls === s.cls && col === s.column) td.classList.add('on');
+      }
+      tr.append(td);
+    }
+    tbody.append(tr);
+  }
+  table.append(thead, tbody);
+  const key = document.createElement('div');
+  key.className = 'tone-key';
+  for (const tone of ['mid', 'low', 'falling', 'high', 'rising']) {
+    const k = Object.assign(document.createElement('span'), { className: `tone-${tone}` });
+    k.append(toneCurve(tone, { staff: false }), tone);
+    key.append(k);
+  }
+  return [Object.assign(document.createElement('h3'), { className: 'tones-table-title', textContent: 'The tone table' }), table, key];
 }
 
 // A tone's pitch, drawn: a curve on a faint three-line staff (the top, middle and bottom of the
@@ -3260,16 +3297,22 @@ function partAt(el, x, y, reach = 30) {
   return bestDist <= reach ? best : null;
 }
 
-// A tap on a card's Thai (2026-10-09, the user's request): a letter, vowel or tone mark says its name
-// and lights up, as in the word pop-up, instead of turning the card. `el` is the Thai showing: the
-// large Thai (the Thai → English front, the English → Thai back) or, since the same day, the smaller
-// Thai repeated on the Thai → English and Listen backs (cardThaiShown, recallThaiShown); or null.
-// `card` is the card it belongs to (for its whole vowels). True if a part was hit.
+// A tap on a card's Thai (2026-10-09, the user's request), instead of turning the card. `el` is the
+// Thai showing (cardThaiShown, recallThaiShown): the large Thai of the Thai → English front, or on
+// the back (`back`) the English → Thai answer or the smaller Thai repeated on the Thai → English and
+// Listen backs; or null. `card` is the card it belongs to. On the front, a letter, vowel or tone mark
+// says its name and lights up, as in the word dialog. On the back, the Thai opens the word dialog
+// (showWordPop; 2026-10-11, the user's request), where its letters can be tapped too. True if the tap
+// was on the Thai.
 const CARD_TAP_REACH = 8;
-function tapCardThai(el, e, card) {
+function tapCardThai(el, e, card, { back = false } = {}) {
   if (!el || !el.contains(e.target)) return false;
   const hit = tappedPart(el, card, e.clientX, e.clientY, CARD_TAP_REACH);
   if (!hit) return false;
+  if (back && card) {
+    showWordPop(null, card);
+    return true;
+  }
   speak(hit.say, 'sp');
   flashPart(el.closest('.face'), hit.boxes);
   return true;
@@ -3284,7 +3327,7 @@ function tapCardThai(el, e, card) {
 // round its consonant (เ-ีย in เรียน) gets a box on each of its parts, so the consonant between them
 // isn't lit: ี sits above ร, and one box round ีย would cover ร too.
 function lightParts(el, at) {
-  const pop = el.closest('.reader-pop, .face');
+  const pop = el.closest('.word-box, .face');
   pop?.querySelectorAll('.pop-reading').forEach((x) => x.remove());
   if (!pop || !at?.length || !el.isConnected) return;
   const parts = partBoxes(el);
@@ -3346,40 +3389,11 @@ function partHighlight(pop, b, className) {
   return hl;
 }
 
-// The pop-up under its word, kept inside its host.
-function placeWordPop(anchor) {
-  const pop = els.readerPop;
-  const box = popHost.getBoundingClientRect();
-  const r = anchor.getBoundingClientRect();
-  const left = clamp(r.left - box.left + r.width / 2 - pop.offsetWidth / 2, 8, box.width - pop.offsetWidth - 8);
-  pop.style.left = `${left}px`;
-  pop.style.top = `${r.bottom - box.top + 6}px`;
-}
-
-function hideWordPop() {
-  els.readerPop.hidden = true;
-  popAnchor?.classList.remove('on');
-  popAnchor = null;
-  popKey = null;
-}
-
 // A phrase card's words (its `words`: card keys, from the story builder), or null for a single word.
 function phraseWords(card) {
   if (!(card.words?.length > 1)) return null;
   const words = card.words.map((k) => state.cardIndex.get(k)?.card);
   return words.every(Boolean) ? words : null;
-}
-
-// The Topics table was redrawn (adding the word to Flashcards from the pop-up does that): the pop-up
-// follows its word's new row (or the same word of a phrase), or closes if it has gone.
-function reanchorWordPop() {
-  if (!popAnchor || popHost !== els.wordlistSection || popAnchor.isConnected) return;
-  const id = popAnchor.dataset.pop;
-  const cell = id ? els.wordtableBody.querySelector(`[data-pop="${CSS.escape(id)}"]`) : null;
-  if (!cell) { hideWordPop(); return; }
-  popAnchor = cell;
-  cell.classList.add('on');
-  placeWordPop(cell);
 }
 
 // ---------- wordlist read-aloud ----------
@@ -4006,13 +4020,6 @@ function bindEvents() {
       applyReaderToggles();
     });
   });
-  // A tap anywhere else closes a word's pop-up.
-  // (By the path the click took: a button that redraws itself when pressed, like the pop-up's add to
-  // Flashcards, has left the page by now, so e.target.closest would find no pop-up and close it.)
-  document.addEventListener('click', (e) => {
-    if (popAnchor && !e.composedPath().some((n) => n === els.readerPop || n === popAnchor || n.classList?.contains('rw'))) hideWordPop();
-  });
-  window.addEventListener('resize', () => { if (popAnchor) hideWordPop(); });
 
   els.deckPickerSearch.addEventListener('input', (e) => {
     state.pickerFilter = e.target.value;
@@ -4041,7 +4048,7 @@ function bindEvents() {
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     if (e.target.closest('.listen-btn')) return;
-    if (tapCardThai(cardThaiShown(), e, currentCard())) return; // a letter of the Thai: named, not a turn
+    if (tapCardThai(cardThaiShown(), e, currentCard(), { back: state.showingBack })) return; // the Thai: not a turn
     flipCard();
   });
 
@@ -4140,6 +4147,7 @@ function bindEvents() {
   els.confirmOk.addEventListener('click', () => closeConfirm(true));
   els.confirmCancel.addEventListener('click', () => closeConfirm(false));
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
+  els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
 
   // ⟳ turns the card: to the answer first, then either way (as a tap on the card does).
   els.reviewCard.querySelectorAll('.review-flip').forEach((btn) => btn.addEventListener('click', () => {
@@ -4165,7 +4173,7 @@ function bindEvents() {
   els.reviewCard.addEventListener('click', (e) => {
     const r = state.review;
     if (!r || e.target.closest('button')) return;
-    if (tapCardThai(recallThaiShown(), e, state.cardIndex.get(r.current?.key)?.card)) return; // a letter of the Thai: named, not a turn
+    if (tapCardThai(recallThaiShown(), e, state.cardIndex.get(r.current?.key)?.card, { back: r.flipped })) return; // the Thai: not a turn
     if (!r.revealed) revealAnswer();
     else turnReviewCard();
   });
@@ -4189,6 +4197,13 @@ function bindEvents() {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeSettings();
+      }
+      return;
+    }
+    if (wordPop) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        hideWordPop();
       }
       return;
     }

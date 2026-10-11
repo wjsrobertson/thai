@@ -32,7 +32,8 @@ export const CLASS_NAMES = { H: 'high', M: 'mid', L: 'low' };
 export const MARK_NAMES = { '่': 'ไม้เอก', '้': 'ไม้โท', '๊': 'ไม้ตรี', '๋': 'ไม้จัตวา' };
 // spell.js's short vowels (its V codes), for "written long, said short".
 const SHORT_VOWELS = new Set(['a', 'i', 'v', 'u', 'e', 'ae', 'o', 'aw', 'er', 'iaS', 'vaS', 'uaS']);
-const LIVE_VOWELS = { am: 'ำ ends in -m', aiM: 'ใ ends in -i', aiL: 'ไ ends in -i', ao: 'เ-า ends in -o' };
+// Vowels with a final sound in them, always live, and short as written: ำ -m, ใ ไ -i, เ-า -o.
+const LIVE_VOWELS = { am: ['m', 'ำ'], aiM: ['i', 'ใ'], aiL: ['i', 'ไ'], ao: ['o', 'เ-า'] };
 const SONORANTS = 'งญณนมยรลวฬ';
 // Words said otherwise than spelt, and why.
 const SPOKEN = { เขา: 'Everyday speech says เขา with a high tone. Careful speech keeps the rising tone of its spelling.' };
@@ -44,6 +45,14 @@ const saidTone = (tl) => TL_TONES[tl.normalize('NFD').match(/[̀́̂̌]/)?.[0]] 
 const DIPHTHONGS = new Set(['ia', 'iaS', 'va', 'vaS', 'ua', 'uaS']);
 const saidLong = (s) => (DIPHTHONGS.has(s.vowel) ? !s.vowel.endsWith('S') : /aa|ii|uu|ee|oo|ɔɔ|əə|ɛɛ|ʉʉ/.test(plain(s.tl)));
 
+// The tone table's columns, and the tone in each cell (null: no such spelling; ๊ and ๋ go on mid
+// class only).
+export const TABLE_COLUMNS = ['live', 'deadShort', 'deadLong', '่', '้', '๊', '๋'];
+export function tableTone(cls, column) {
+  if ('๊๋'.includes(column) && cls !== 'M') return null;
+  return ruleTone(cls, column === 'live', column === 'deadLong', TABLE_COLUMNS.indexOf(column) > 2 ? column : '');
+}
+
 function ruleTone(cls, live, long, mark) {
   if (mark === '่') return cls === 'L' ? 'falling' : 'low';
   if (mark === '้') return cls === 'L' ? 'high' : 'falling';
@@ -53,18 +62,16 @@ function ruleTone(cls, live, long, mark) {
   return cls === 'L' ? (long ? 'falling' : 'high') : 'low';
 }
 
-// Live or dead, and why: { live, why }.
-function liveness(s, long) {
-  const len = long ? 'long vowel' : 'short vowel';
+// The final sound: { sound (as the transliteration has it: -y and -w as -i, -o or -u, หิว hǐu),
+// letter, part (the vowel it's part of: ำ, ใ, ไ, เ-า), stop (-k, -t, -p: the syllable is dead) },
+// or null for none.
+function finalOf(s) {
   if (s.final) {
-    const live = !'ktp'.includes(s.final.sound);
-    // -y and -w as the transliteration has them: -i, or -o or -u (หิว hǐu).
     const sound = 'yw'.includes(s.final.sound) ? plain(s.tl).slice(-1) : s.final.sound;
-    const ends = `ends in -${sound}`;
-    return { live, why: live ? ends : `${len}, ${ends}` };
+    return { sound, letter: s.final.letter, part: '', stop: 'ktp'.includes(s.final.sound) };
   }
-  if (LIVE_VOWELS[s.vowel]) return { live: true, why: LIVE_VOWELS[s.vowel] };
-  return { live: long, why: `${len}, no final` };
+  const v = LIVE_VOWELS[s.vowel];
+  return v ? { sound: v[0], letter: '', part: v[1], stop: false } : null;
 }
 
 // The class of the syllable's first consonant: { cls, letter (the letter or letters it's about), why }.
@@ -86,29 +93,33 @@ function leadClass(s, prev) {
   return cls === 'L' ? null : { cls, letter: L, why: `${prev.onset.letters[0]} in the syllable before lends ${L} its class (อักษรนำ)` };
 }
 
-// Each syllable of `thai`: { said, tl, word, at, tone (as said), cls, clsLetter, clsWhy, live, liveWhy, mark,
-// rule (the rules' tone), exception (they differ), note }, or null when the Thai can't be matched to
-// its transliteration.
+// Each syllable of `thai`: { said, tl, word, at, tone (as said), cls, clsLetter, clsWhy, mark,
+// long (the vowel as said), vowelName, vowelHidden, writtenLong, final (finalOf), live, column (its
+// column in the tone table: TABLE_COLUMNS), rule (the rules' tone), exception (they differ), note },
+// or null when the Thai can't be matched to its transliteration.
 export function toneBreakdown(thai, translit) {
   const syls = syllableReading(thai, translit);
   if (!syls) return null;
   return syls.map((s, n) => {
     const tone = saidTone(s.tl);
     const long = saidLong(s);
-    const { live, why: liveWhy } = liveness(s, long);
+    const final = finalOf(s);
+    const live = final ? !final.stop : long;
     let cls = ownClass(s);
     let rule = ruleTone(cls.cls, live, long, s.tone);
     if (rule !== tone) {
       const lead = leadClass(s, syls[n - 1]);
       if (lead && ruleTone(lead.cls, live, long, s.tone) === tone) [cls, rule] = [lead, tone];
     }
+    const writtenLong = !SHORT_VOWELS.has(s.vowel) && !LIVE_VOWELS[s.vowel];
     let note = '';
     if (s.special) note = 'ก็ is a spelling of its own: always said gɔ̂, with a falling tone.';
     else if (rule !== tone) note = SPOKEN[s.text] || 'An exception: said differently from the rules. Loanwords and a few common words do this.';
-    else if (!live && !s.tone && cls.cls === 'L' && long !== !SHORT_VOWELS.has(s.vowel)) {
+    else if (!live && !s.tone && cls.cls === 'L' && long !== writtenLong) {
       note = `The vowel is written ${long ? 'short' : 'long'} but said ${long ? 'long' : 'short'}, which decides the tone here.`;
     }
-    return { said: s.said, tl: s.tl, word: s.word, at: s.at, tone, cls: cls.cls, clsLetter: cls.letter, clsWhy: cls.why, live, liveWhy,
-      mark: s.tone, rule, exception: rule !== tone || !!s.special, note };
+    return { said: s.said, tl: s.tl, word: s.word, at: s.at, tone, cls: cls.cls, clsLetter: cls.letter, clsWhy: cls.why,
+      mark: s.tone, long, vowelName: s.vowelName, vowelHidden: !!(s.hiddenA || s.hiddenAw || s.hidden), writtenLong, final, live,
+      column: s.tone || (live ? 'live' : long ? 'deadLong' : 'deadShort'), rule, exception: rule !== tone || !!s.special, note };
   });
 }

@@ -1216,8 +1216,8 @@ Thai → English only.
 
 ## Tones (2026-10-11), the word pop-up
 
-**What:** a Tones row under the word pop-up's buttons, tried there first (the user's choice; the
-flashcard backs may follow). Closed, it shows "Tones" and a small curve per syllable. Tapped, it
+**What:** a Tones row under the word pop-up's buttons (now the word dialog, below), tried there
+first (the user's choice; the flashcard backs may follow). Closed, it shows "Tones" and a small curve per syllable. Tapped, it
 opens to:
 - a strip with each syllable's tone, drawn as a pitch curve on a faint three-line staff (the
   user's pick over Chao tone letters, which don't join into one line in phone fonts, and The Five
@@ -1230,6 +1230,38 @@ opens to:
 Picking a syllable lights its letters in the big word and says it (its school-spelling recording,
 `sp`). The panel's open or closed state is remembered (`prefs.popTones`). Each tone has a colour
 token (`--tone-mid` …) per theme.
+
+**The word dialog (2026-10-11, experiment, branch `2026-10-11-tones-modal`):** the word pop-up had
+too little room, so it became a dialog (`showWordPop` / `hideWordPop`, `#word-modal`; the
+`#reader-pop` pop-up is gone). The same dialog opens for a story's word, a Topics row's Thai, and
+the Thai on the back of a Flashcards or Recall card.
+- **Card backs** (the user's request, same day): a tap on the back's Thai opens the dialog instead
+  of saying the tapped letter's name (`tapCardThai` with `back`). The letters can be tapped inside
+  the dialog. This covers the English → Thai answer and the smaller Thai on the Thai → English and
+  Listen backs. On the front, tapping a letter still says its name, and a tap off the Thai still
+  turns the card.
+- **Layout:** a centred card on every screen size, sized to its content; a long one scrolls inside.
+  The transliteration and meaning are in its head, with ✕.
+- **Body:** the word, large (tap a letter to hear it), the Topics rows' three buttons, and Tones.
+- **Tones:** expands in place, and whether it's open is remembered. Open, it shows:
+  - the syllable strip;
+  - the picked syllable's rule, one fact per row:
+    - Class, and why (ห or อ in front, อักษรนำ, ฑ said d);
+    - Mark;
+    - Vowel: long or short, its name, whether it's unwritten, and whether it's written one length
+      but said the other;
+    - Final: its sound and letter, or the vowel it's part of (ำ ใ ไ เ-า), and whether it stops
+      the sound or can be held;
+    - Syllable: live คำเป็น or dead คำตาย;
+    - Tone; for an exception, "Rules give" and "Said".
+  - Vowel, Final and Syllable are dimmed under a tone mark, which decides on its own.
+  - The whole tone table: class against live, dead short, dead long and the four marks. Each cell
+    is a tone curve, the rule's cell is picked out, and a key follows.
+- **Closing:** the backdrop, ✕ or Escape.
+- **Removed:** the old pop-up's placing code (`placeWordPop`), its following a redrawn Topics row
+  (`reanchorWordPop`, `data-pop`), and its close-on-outside-tap and close-on-resize handlers.
+- `tones.js` gives each syllable's vowel and final as separate facts, and its table column;
+  `tableTone()` fills the table.
 
 **How:** `tones.js` `toneBreakdown(thai, translit)`, on `spell.js`'s new `syllableReading()` (the
 school method's syllable match, with `at` and the said form) and `consonantClass()`.

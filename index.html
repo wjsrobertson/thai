@@ -85,6 +85,18 @@
     </div>
   </div>
 
+  <!-- A tapped word (showWordPop in app.js): a story's word, or a Topics row's Thai. -->
+  <div id="word-modal" class="modal word-modal" hidden role="dialog" aria-modal="true" aria-labelledby="word-modal-en">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel word-panel" role="document">
+      <div class="modal-head word-head">
+        <div class="pop-text"><span class="pop-tr" id="word-modal-tr"></span><span class="pop-en" id="word-modal-en"></span></div>
+        <button type="button" class="modal-close" id="word-modal-close" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body word-body" id="word-modal-body" tabindex="-1"></div>
+    </div>
+  </div>
+
   <main class="stage" data-view="home">
     <section class="home home-only" id="home-section">
       <!-- Each card: a title and its text (Topics: plain sentences; Flashcards: a row per mode, a
@@ -162,7 +174,6 @@
               aria-label="Spaces between words" title="Spaces between words">Word gaps</button>
           </div>
           <div class="reader-lines" id="reader-lines"></div>
-          <div class="reader-pop" id="reader-pop" role="status" hidden></div>
         </section>
       </div>
     </section>

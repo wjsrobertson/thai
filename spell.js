@@ -522,14 +522,15 @@ export function spellingSteps(groups) {
 
 // The word read syllable by syllable, as the school method reads it (null when no reading fits):
 // each syllable's parts as found above (onset, vowel, final, tone mark), plus its transliteration
-// (tl), which word of a phrase it's in (word), where its characters are in `thai` (at) and the
-// syllable as said (said: สะ for สบาย's ส, ละ for ผลไม้'s reused ล), which keys its recording.
+// (tl), which word of a phrase it's in (word), where its characters are in `thai` (at), the
+// syllable as said (said: สะ for สบาย's ส, ละ for ผลไม้'s reused ล), which keys its recording, and its
+// vowel's name (vowelName: อา, เอีย).
 export function syllableReading(thai, translit) {
   const r = reading(thai, translit);
   if (!r?.orig) return null;
   const at = (from, to) => r.orig.slice(from, to).sort((a, b) => a - b);
   return r.syls.map((syl, n) => ({
-    ...syl, tl: r.tl[n].syl, word: r.tl[n].word, said: syllableSteps(syl).said,
+    ...syl, tl: r.tl[n].syl, word: r.tl[n].word, said: syllableSteps(syl).said, vowelName: V[syl.vowel][1],
     at: syl.len ? at(syl.start, syl.start + syl.len) : at(syl.start - 1, syl.start),
   }));
 }

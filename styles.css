@@ -1293,7 +1293,6 @@ body { display: flex; flex-direction: column; }
 }
 
 .wordlist {
-  position: relative; /* the word pop-up (#reader-pop) is placed in it, under a row's Thai */
   max-width: 1000px;
   margin: 0 auto;
 }
@@ -1431,24 +1430,8 @@ body { display: flex; flex-direction: column; }
 }
 .reader-play:hover { color: var(--accent); background: var(--panel-2); }
 .reader-play .speaker-icon { width: 30px; height: 30px; }
-.reader-pop {
-  position: absolute;
-  z-index: 5;
-  max-width: min(330px, calc(100% - 16px)); /* 280px until the Tones panel (2026-10-11, the user's call) */
-  padding: 8px 12px;
-  background: var(--panel-2);
-  border: 1px solid var(--accent);
-  border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, .35);
-  font-size: calc(15px * var(--fs, 1));
-  line-height: 1.35;
-}
-.reader-pop[hidden] { display: none; }
 .pop-tr { color: var(--accent); font-style: italic; margin-right: 8px; }
 .pop-en { color: var(--ink); }
-/* The meaning, on one line. */
-.pop-row { display: flex; align-items: center; gap: 8px; }
-.pop-text { flex: 1; min-width: 0; }
 /* Under the big word: add to Flashcards, spell aloud and play, as on a Topics row. */
 .pop-actions { display: flex; justify-content: center; gap: 10px; margin: -2px 0 2px; }
 .pop-actions button {
@@ -1466,7 +1449,7 @@ body { display: flex; flex-direction: column; }
   font-weight: 600;
   cursor: pointer;
 }
-.pop-actions button:hover { color: var(--accent); background: var(--panel); }
+.pop-actions button:hover { color: var(--accent); background: var(--panel-2); }
 .pop-actions .review-icon { width: 27px; height: 27px; margin: 0; }
 .pop-actions .speaker-icon { width: 31px; height: 31px; }
 .pop-actions .pop-spell { font-size: 26px; }
@@ -1505,28 +1488,50 @@ body { display: flex; flex-direction: column; }
   pointer-events: none;
   transition: none;
 }
-/* The pop-up's Tones (toneSection): a row of small tone curves that opens to each syllable's tone,
-   drawn on a three-line staff, and the rule that gives the one picked. */
-.pop-tones { margin: 2px -4px 0; border-top: 1px solid var(--border); }
+/* ---------- the word dialog (showWordPop) ---------- */
+/* A card sized to its content, centred on every screen size (mobile.css makes other dialogs
+   full-screen sheets); a long one (the Tones open) scrolls inside. */
+.modal.word-modal { padding: 12px; align-items: center; }
+.modal-panel.word-panel {
+  width: min(520px, 100%);
+  height: auto;
+  max-height: 100%;
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+}
+.word-head { gap: 10px; padding: 12px 12px 10px 20px; font-size: calc(17px * var(--fs, 1)); }
+.word-head .pop-text { flex: 1; min-width: 0; line-height: 1.35; }
+.word-modal .word-body { flex: 0 1 auto; padding: 0 20px 14px; font-size: calc(16px * var(--fs, 1)); line-height: 1.4; } /* beats mobile.css's .modal-body */
+/* The word: tap a letter to hear its name; what's being spelt, or the picked syllable, is lit behind it. */
+.word-box { position: relative; }
+.word-modal .pop-word { font-size: calc(64px * var(--fs, 1)); }
+
+/* Tones (toneSection): a row of small tone curves that opens to each syllable's tone and its rule. */
+.pop-tones { margin: 4px 0 0; border-top: 1px solid var(--border); }
 .tones-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   width: 100%;
-  padding: 8px 4px 4px;
+  padding: 12px 2px 4px;
   background: none;
   border: 0;
   color: var(--muted);
   font: inherit;
   cursor: pointer;
 }
-.tones-label { font-size: .9em; font-weight: 600; }
-.tones-minis { display: flex; flex: 1; align-items: center; gap: 1px; min-width: 0; overflow: hidden; }
-.tones-minis .tone-curve { flex: none; width: 24px; height: 14px; }
-.tones-minis .word-start { margin-left: 7px; }
+.tones-toggle:hover { color: var(--accent); }
+.tones-label { font-weight: 600; }
+.tones-minis { display: flex; flex: 1; align-items: center; gap: 2px; min-width: 0; overflow: hidden; }
+.tones-minis .tone-curve { flex: none; width: 26px; height: 15px; }
+.tones-minis .word-start { margin-left: 8px; }
 .pop-tones.open .tones-minis { visibility: hidden; }
-.tones-chevron { font-size: 1.4em; line-height: 1; transition: transform .15s; }
+.tones-chevron { font-size: 1.5em; line-height: 1; transition: transform .15s; }
 .pop-tones.open .tones-chevron { transform: rotate(90deg); }
+.tones-panel { padding-top: 8px; }
+.tones-panel[hidden] { display: none; }
+
+/* A tone's curve (toneCurve), in its colour; the staff is three faint lines. */
 .tone-curve { overflow: visible; }
 .tone-curve .tone-line { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
 .tone-curve .tone-staff { fill: none; stroke: var(--border-strong); stroke-width: 1; stroke-dasharray: 2 2.5; }
@@ -1535,37 +1540,53 @@ body { display: flex; flex-direction: column; }
 .tone-falling { color: var(--tone-falling); }
 .tone-high { color: var(--tone-high); }
 .tone-rising { color: var(--tone-rising); }
-.tones-panel { min-width: 300px; padding: 2px 4px 6px; }
-.tones-panel[hidden] { display: none; }
-.tones-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+
+.tones-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .tone-syl {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 58px;
-  padding: 5px 6px 3px;
+  min-width: 76px;
+  padding: 6px 8px 4px;
   background: none;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 10px;
   font: inherit;
   line-height: 1.25;
   cursor: pointer;
 }
-.tone-syl.word-start { margin-left: 10px; }
-.tone-syl .tone-curve { width: 40px; height: 22px; margin-bottom: 3px; }
+.tone-syl.word-start { margin-left: 12px; }
+.tone-syl .tone-curve { width: 56px; height: 30px; margin-bottom: 4px; }
 .tone-syl[aria-pressed="true"] { border-color: currentColor; background: color-mix(in srgb, currentColor 12%, transparent); }
 .tone-tl { color: var(--ink); font-size: 1.1em; font-style: italic; }
-.tone-name { font-size: .9em; }
+.tone-name { font-size: .85em; }
 .tone-syl.exception .tone-name::after { content: " *"; }
-.tones-detail { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--border); }
-.tone-rows { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 4px 10px; margin: 0; font-size: 1.1em; }
+.tones-hint { margin: 6px 0 0; color: var(--muted); font-size: .85em; text-align: center; }
+.tones-detail { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+.tone-rows { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 6px 14px; margin: 0; font-size: 1.05em; }
 .tone-rows dt { color: var(--muted); }
 .tone-rows dd { margin: 0; color: var(--ink); }
 .tone-rows .tone-said { font-weight: 600; }
+/* With a tone mark: vowel, final and live or dead don't decide the tone. */
+.tone-rows .tone-moot { opacity: .5; }
 /* Thai looks smaller than Latin at the same size, so a step up (the user asked for larger text). */
 .tone-th { font-size: 1.3em; line-height: 1.2; white-space: nowrap; }
-.tone-why { display: block; color: var(--muted); font-size: .9em; }
-.tone-note { margin: 6px 0 0; color: var(--muted); font-size: 1em; }
+.tone-why { display: block; color: var(--muted); font-size: .88em; }
+.tone-note { margin: 10px 0 0; color: var(--muted); }
+/* The tone table, the syllable's cell picked out. */
+.tones-table-box { margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); }
+.tones-table-title { margin: 0 0 8px; color: var(--muted); font-size: .85em; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+.tone-table { width: 100%; border-collapse: separate; border-spacing: 2px; table-layout: fixed; }
+.tone-table th { color: var(--muted); font-size: .72em; font-weight: 600; line-height: 1.15; text-align: center; vertical-align: bottom; }
+.tone-table thead tr:first-child th { padding-bottom: 2px; border-bottom: 1px solid var(--border); }
+.tone-table th[lang="th"] { font-size: 1.6em; font-weight: 400; line-height: 1.6; } /* the marks sit high above ◌ */
+.tone-table tbody th { width: 3.2em; text-align: left; vertical-align: middle; }
+.tone-table td { height: 30px; padding: 0; border: 2px solid transparent; border-radius: 6px; background: var(--panel-2); text-align: center; vertical-align: middle; }
+.tone-table td .tone-curve { width: 26px; height: 15px; }
+.tone-table td.on { border-color: currentColor; background: color-mix(in srgb, currentColor 18%, var(--panel-2)); }
+.tone-key { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 14px; margin-top: 10px; font-size: .85em; }
+.tone-key span { display: inline-flex; align-items: center; gap: 4px; }
+.tone-key .tone-curve { width: 22px; height: 13px; }
 @media (max-width: 600px) {
   .reader { padding: 12px 12px 4px; }
   .reader-th { font-size: calc(24px * var(--fs, 1)); }
