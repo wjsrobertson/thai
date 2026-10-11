@@ -1400,6 +1400,21 @@ every story in full, so the replacement works on it alone, and lives in the repo
 leave small diffs. Run the audit, then `node tools/spelling.mjs --write` and
 `python3 -u tools/gen_audio.py` after adding stories (each line gets a recording).
 
+## Tone Chants (2026-10-11), `script-tone-chants`
+
+The user asked whether there's a canonical way to memorise the tone table. There is: Thai schools'
+ผันวรรณยุกต์, which runs one syllable through every tone mark, class by class, as a chant. The new
+topic Tone Chants (Thai Script → Tones & Reading, after Tone Rules) has 7 cards, each a whole chant
+with its recording. The tone check in the audit and the Tones panel both read them syllable by
+syllable.
+- **Live chants:** กา ก่า ก้า ก๊า ก๋า; ปา ป่า ป้า ป๊า ป๋า (five real words); ขา ข่า ข้า; คา ค่า ค้า.
+- **Dead examples:** จะ จ้ะ จ๊ะ; ขับ ผัก สุด; นก นาก.
+- **Topic `about`:** the four rules learners add on top of the chants (mid class is the
+  reference; high class rises unmarked; low class is one step higher; dead and unmarked is low,
+  except low class), and that ข and ค fill each other's gaps.
+
+Tone Rules' description points to the new topic.
+
 ## Missing cards and card fixes (2026-10-11)
 
 The user asked for the cards the Core Words agents had found missing, and the card issues the

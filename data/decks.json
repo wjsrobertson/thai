@@ -1380,7 +1380,7 @@
       "category": "Thai Script",
       "group": "Tones & Reading",
       "name": "Tone Rules",
-      "description": "Tone = consonant class + live or dead syllable (see Live & Dead Syllables) + tone mark. One example word per rule; its meaning is in the note.",
+      "description": "Tone = consonant class + live or dead syllable (see Live & Dead Syllables) + tone mark. One example word per rule; its meaning is in the note. To learn them by heart, see Tone Chants.",
       "about": "Live or dead? Try to hum the end. A syllable ending in a long vowel or in m, n, ng, y or w can be held, so it's live; one that stops short, on a short vowel or a k, p or t, is dead. Then two defaults: high-class letters with no mark rise (ขา, สี, หู), and dead syllables on mid- and high-class letters are low (กัด, ขับ).\n\nA shortcut for low-class letters: a tone mark gives the tone one step higher than on a mid-class letter. With ่ they're falling, not low; with ้ they're high, not falling. So ไม่ (not) is falling and ไม้ (wood) high, while ป่า (forest) is low and ป้า (aunt) falling.",
       "cards": [
         { "thai": "ตา", "translit": "taa", "english": "mid class, live syllable, no mark: mid tone", "note": "eye. Live = ends in a long vowel or in -m, -n, -ng, -i, -o." },
@@ -1402,6 +1402,23 @@
         { "thai": "หมา", "translit": "mǎa", "english": "silent h in front makes a low letter high", "note": "dog. Works with ง ญ น ม ย ร ล ว: หนู nǔu, หวาน wǎan." },
         { "thai": "อยู่", "translit": "yùu", "english": "silent ɔɔ letter in front makes y mid class", "note": "to be (somewhere). Only four words: อยู่, อย่า, อย่าง, อยาก." },
         { "thai": "ตลาด", "translit": "tà-làat", "english": "unwritten a: the second syllable takes the first letter's class", "note": "market. ลาด alone would be lâat; after mid-class ต it is làat." }
+      ]
+    },
+    {
+      "id": "script-tone-chants",
+      "category": "Thai Script",
+      "group": "Tones & Reading",
+      "name": "Tone Chants",
+      "description": "ผันวรรณยุกต์: one syllable run through every tone mark, class by class, as Thai children chant it. Say each until it's automatic.",
+      "about": "Thai schools teach the tone rules as ผันวรรณยุกต์: take one syllable and run it through every tone mark, class by class, out loud. Chant the three live ones (กา…, ขา…, คา…) until they're automatic, and you have the whole table for live syllables.\n\nThen four rules. Mid class is the reference: the mark's name is the tone's name (ไม้เอก gives เสียงเอก, low). High class takes the marks as mid does, but unmarked it rises. Low class is one step higher: ่ gives falling, ้ gives high, and unmarked it's mid. A dead syllable with no mark is low, except on low class: high if the vowel is short, falling if it's long.\n\nA high and a low letter fill each other's gaps: คา ข่า ค่า ค้า ขา (The Five Tones) gets all five tones from ข and ค.",
+      "cards": [
+        { "thai": "กา ก่า ก้า ก๊า ก๋า", "translit": "gaa gàa gâa gáa gǎa", "english": "mid class: all five tones (mid, low, falling, high, rising)", "note": "The only class that takes all four marks, and the mark names the tone: ไม้เอก low, ไม้โท falling, ไม้ตรี high, ไม้จัตวา rising." },
+        { "thai": "ปา ป่า ป้า ป๊า ป๋า", "translit": "paa pàa pâa páa pǎa", "english": "mid class again: five real words", "note": "ปา = to throw, ป่า = forest, ป้า = aunt, ป๊า = dad (Chinese-Thai families), ป๋า = \"daddy\" (a rich patron)." },
+        { "thai": "ขา ข่า ข้า", "translit": "khǎa khàa khâa", "english": "high class: three tones (rising, low, falling)", "note": "Unmarked it rises; the marks work as on mid class. ขา = leg, ข่า = galangal, ข้า = I (old, rough)." },
+        { "thai": "คา ค่า ค้า", "translit": "khaa khâa kháa", "english": "low class: three tones (mid, falling, high)", "note": "One step higher than mid class: ่ gives falling, ้ gives high. คา = stuck, ค่า = value, ค้า = to trade." },
+        { "thai": "จะ จ้ะ จ๊ะ", "translit": "jà jâ já", "english": "mid class, dead: low, then the marks (falling, high)", "note": "จะ = will, จ้ะ = yes (soft), จ๊ะ = (soft question). With a tone mark, live or dead doesn't matter." },
+        { "thai": "ขับ ผัก สุด", "translit": "khàp phàk sùt", "english": "high class, dead: always low", "note": "ขับ = to drive, ผัก = vegetable, สุด = most. Unmarked, a dead high-class syllable is low, like mid class." },
+        { "thai": "นก นาก", "translit": "nók nâak", "english": "low class, dead: short is high, long is falling", "note": "นก = bird, นาก = otter. The same goes for รัก (love, high) and มาก (very, falling)." }
       ]
     },
     {
