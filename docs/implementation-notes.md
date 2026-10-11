@@ -1603,9 +1603,12 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
       name, a description with an English comparison, a shape (→ ↘ ↗ ↘↗), the word's meaning and
       three more examples.
     - **The five words:** ปลา mid, ไก่ low, ข้าว falling, ม้า high, หมา rising.
-    - **Two extra cards:** the set คา ข่า ค่า ค้า ขา (one recording, all five in a row) and the
-      tongue-twister ไม้ใหม่ไม่ไหม้ไหม. The twister is split into words like any phrase; the set has
-      spaces, so it stays whole.
+    - **Three extra cards:**
+      - Two five-tone sets in the standard order (mid, low, falling, high, rising): คา ข่า ค่า ค้า ขา,
+        and ไมล์ ใหม่ ไม่ ไม้ ไหม (mile, new, not, wood, silk), added the same day at the user's request.
+        Each is one recording; with spaces in them, they stay whole.
+      - The tongue-twister ไม้ใหม่ไม่ไหม้ไหม, split into words like any phrase. Its note says it isn't
+        in tone order: high, low, falling, falling, rising, with no mid.
     - **Checked:** no story's meanings changed. A Thai Script card loses to a word's everyday
       meaning in stories, as with Tone Rules. The topic already has 5+ stories, and the audit is
       clean.
