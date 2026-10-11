@@ -1952,6 +1952,12 @@ function renderWordlist() {
           td.addEventListener('click', open);
           td.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
         }
+        // The transliteration and English open the word dialog too, for the whole card (a phrase's
+        // too; 2026-10-11, the user's request). Not tab stops: the Thai is the row's.
+        if (key === 'translit' || key === 'english') {
+          td.classList.add('opens-word');
+          td.addEventListener('click', () => showWordPop(td, c));
+        }
         // English column gets the note appended below.
         if (key === 'english' && c.note) {
           const span = document.createElement('span');
@@ -3305,6 +3311,23 @@ function partAt(el, x, y, reach = 30) {
 // (showWordPop; 2026-10-11, the user's request), where its letters can be tapped too. True if the tap
 // was on the Thai.
 const CARD_TAP_REACH = 8;
+
+// A tap on a card back's transliteration or English (`els`; on an English → Thai back, its Thai
+// answer) opens the word dialog for `card` (2026-10-11, the user's request). Only on the text itself:
+// the lines run the card's width, and a tap beside them still turns the card. True if it opened.
+function tapCardText(els, e, card) {
+  if (!card) return false;
+  const on = els.some((el) => {
+    if (!el || el.hidden || !el.textContent || !el.contains(e.target)) return false;
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const r = CARD_TAP_REACH;
+    return [...range.getClientRects()].some((b) => e.clientX >= b.left - r && e.clientX <= b.right + r && e.clientY >= b.top - r && e.clientY <= b.bottom + r);
+  });
+  if (on) showWordPop(null, card);
+  return on;
+}
+
 function tapCardThai(el, e, card, { back = false } = {}) {
   if (!el || !el.contains(e.target)) return false;
   const hit = tappedPart(el, card, e.clientX, e.clientY, CARD_TAP_REACH);
@@ -4048,6 +4071,7 @@ function bindEvents() {
     if (e.target.closest('.spell-btn')) return;
     if (e.target.closest('.flip-btn')) return;
     if (e.target.closest('.listen-btn')) return;
+    if (state.showingBack && tapCardText([els.translit, els.english], e, currentCard())) return; // the word dialog: not a turn
     if (tapCardThai(cardThaiShown(), e, currentCard(), { back: state.showingBack })) return; // the Thai: not a turn
     flipCard();
   });
@@ -4173,6 +4197,7 @@ function bindEvents() {
   els.reviewCard.addEventListener('click', (e) => {
     const r = state.review;
     if (!r || e.target.closest('button')) return;
+    if (r.flipped && tapCardText([els.reviewTranslit, els.reviewMain], e, state.cardIndex.get(r.current?.key)?.card)) return; // the word dialog
     if (tapCardThai(recallThaiShown(), e, state.cardIndex.get(r.current?.key)?.card, { back: r.flipped })) return; // the Thai: not a turn
     if (!r.revealed) revealAnswer();
     else turnReviewCard();

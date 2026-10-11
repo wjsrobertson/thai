@@ -1240,6 +1240,11 @@ the Thai on the back of a Flashcards or Recall card.
   the dialog. This covers the English → Thai answer and the smaller Thai on the Thai → English and
   Listen backs. On the front, tapping a letter still says its name, and a tap off the Thai still
   turns the card.
+- **Transliteration and English** (the user's request, same day): on the Topics page, a row's
+  transliteration or English cell opens the dialog for the row's card. That's the whole phrase for
+  a phrase row, whose Thai opens its words one by one. On a card back, a tap on the
+  transliteration's or English's text (`tapCardText`) opens it; a tap beside the text still turns
+  the card.
 - **Layout:** a centred card on every screen size, sized to its content; a long one scrolls inside.
   The transliteration and meaning are in its head, with ✕.
 - **Body:** the word, large (tap a letter to hear it), the Topics rows' three buttons, and Tones.

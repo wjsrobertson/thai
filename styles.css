@@ -1672,6 +1672,8 @@ body { display: flex; flex-direction: column; }
   font-weight: 500;
   min-width: 140px;
 }
+/* A row's transliteration and English open the word dialog too (showWordPop). */
+.wordtable td.opens-word { cursor: pointer; }
 .wordtable .col-translit {
   color: var(--accent);
   font-style: italic;
