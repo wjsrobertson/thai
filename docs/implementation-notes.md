@@ -1595,6 +1595,20 @@ want real use"; letter topics creatively, e.g. the letter names). Written by me 
       new topics to 5 stories each. They use only words that already had cards.
     - **The rule from now on:** a story uses only words that have a topic card. A new word gets a
       topic card as well (`plan5.py` and a story-only check, as in `story_words.py`).
+  - **The Five Tones** (2026-10-11, the user's request): Thai Script › Tones & Reading had tone names,
+    rules, marks and minimal pairs, but nothing on what each tone sounds like. The new topic
+    `script-five-tones` comes first in that group.
+    - **Format:** as in Tone Rules, the front is an everyday word in the tone, so its audio
+      demonstrates it, and the English is the tone with its pitch shape. The note has the Thai
+      name, a description with an English comparison, a shape (→ ↘ ↗ ↘↗), the word's meaning and
+      three more examples.
+    - **The five words:** ปลา mid, ไก่ low, ข้าว falling, ม้า high, หมา rising.
+    - **Two extra cards:** the set คา ข่า ค่า ค้า ขา (one recording, all five in a row) and the
+      tongue-twister ไม้ใหม่ไม่ไหม้ไหม. The twister is split into words like any phrase; the set has
+      spaces, so it stays whole.
+    - **Checked:** no story's meanings changed. A Thai Script card loses to a word's everyday
+      meaning in stories, as with Tone Rules. The topic already has 5+ stories, and the audit is
+      clean.
   - **Common words the story agents found missing** (2026-10-11, the user's request; a background agent,
     scratchpad `newcards/add_cards.py`): 34 cards.
     - **24 new words:** ดำเนินการ, หมัก, ลำบาก, เดือดร้อน, ต่อแถว, เซ, ดัน, เล็ก ๆ, ไถ่โทษ, ล้น, ลูกแกะ,

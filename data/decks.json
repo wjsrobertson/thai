@@ -1309,6 +1309,22 @@
       ]
     },
     {
+      "id": "script-five-tones",
+      "category": "Thai Script",
+      "group": "Tones & Reading",
+      "name": "The Five Tones",
+      "description": "What each of the five tones sounds like, with a familiar word to hear it in. Start here, then see Tone Marks and Tone Rules for how spelling decides the tone.",
+      "cards": [
+        { "thai": "ปลา", "translit": "plaa", "english": "mid tone: level, at your normal pitch", "note": "เสียงสามัญ. Keep the pitch flat in the middle of your voice, like a calm, unemphatic \"ah\". Shape: → (level, middle). ปลา = fish. Also mid: มา to come, กิน to eat, ตา eye." },
+        { "thai": "ไก่", "translit": "gài", "english": "low tone: level, below your normal pitch", "note": "เสียงเอก. Steady and lower than your normal voice, a little flat and heavy; don't let it rise at the end. Shape: → (level, low). ไก่ = chicken. Also low: ป่า forest, สี่ four, ข่า galangal." },
+        { "thai": "ข้าว", "translit": "khâao", "english": "falling tone: starts high, then drops", "note": "เสียงโท. Start high and let the pitch fall, like a firm English \"No!\". Shape: ↘. ข้าว = rice. Also falling: ไม่ not, แม่ mother, ค่า value." },
+        { "thai": "ม้า", "translit": "máa", "english": "high tone: high, rising a little at the end", "note": "เสียงตรี. Pitch it high and slightly tense, lifting a little as it ends, like an excited \"Wow!\". Shape: ↗ (high). ม้า = horse. Also high: น้ำ water, ค้า to trade, โต๊ะ table." },
+        { "thai": "หมา", "translit": "mǎa", "english": "rising tone: dips, then climbs", "note": "เสียงจัตวา. Start low, dip a little, then climb, like a surprised English \"Really?\". Shape: ↘↗. หมา = dog. Also rising: ขา leg, สวย beautiful, สี colour." },
+        { "thai": "คา ข่า ค่า ค้า ขา", "translit": "khaa khàa khâa kháa khǎa", "english": "all five tones in a row: mid, low, falling, high, rising", "note": "Five different words that differ only in tone: คา stuck, ข่า galangal, ค่า value, ค้า to trade, ขา leg. Listen for each pitch shape: → → (low) ↘ ↗ ↘↗." },
+        { "thai": "ไม้ใหม่ไม่ไหม้ไหม", "translit": "máai mài mâi mâi mǎi", "english": "doesn't new wood burn? (a tone tongue-twister)", "note": "High, low, falling, falling, rising: ไม้ wood, ใหม่ new, ไม่ not, ไหม้ to burn, ไหม (question). Thai children use it to practise tones.", "words": ["ไม้::wood", "ใหม่::new", "ไม่::not / no", "ไหม้::to burn / be burnt", "ไหม::yes/no question particle"] }
+      ]
+    },
+    {
       "id": "script-marks",
       "category": "Thai Script",
       "group": "Tones & Reading",
