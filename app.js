@@ -3080,8 +3080,9 @@ function toneSection(card, big) {
 
 // One syllable's rule, as rows: the consonant's class, the tone mark, then what makes the syllable
 // live or dead (its vowel's length and its final) and which it is, and the tone. With a tone mark,
-// the mark decides on its own, so the middle three are dimmed. For an exception: the rules' tone
-// and the one said. Then any note.
+// the mark decides on its own, which the Syllable row says (the middle three rows were dimmed for
+// it at first, which read as a glitch). For an exception: the rules' tone and the one said. Then any
+// note.
 function toneRule(s) {
   const rows = document.createElement('dl');
   rows.className = 'tone-rows';
@@ -3103,15 +3104,12 @@ function toneRule(s) {
   row('Mark', s.mark ? thai(`◌${s.mark} ${MARK_NAMES[s.mark]}`) : 'none');
   const vowelNote = s.writtenLong !== s.long ? [why(`written ${s.writtenLong ? 'long' : 'short'}, said ${s.long ? 'long' : 'short'}`)] : [];
   const f = s.final;
-  const middle = [
-    row('Vowel', `${s.long ? 'long' : 'short'} `, thai(s.vowelName), ...(s.vowelHidden ? [' unwritten'] : []), ...vowelNote),
-    row('Final', ...(f ? [`-${f.sound} `, ...(f.letter ? [thai(f.letter)] : [' in ', thai(f.part)]), why(f.stop ? 'stops the sound' : 'can be held')] : ['none'])),
-    // Why, unless the final row has said it.
-    row('Syllable', `${s.live ? 'live' : 'dead'} `, thai(s.live ? 'คำเป็น' : 'คำตาย'),
-      ...(s.mark ? [why("With a tone mark this doesn't matter: the mark decides.")]
-        : f ? [] : [why(s.long ? 'a long vowel can be held' : 'a short vowel stops short')])),
-  ];
-  if (s.mark) middle.flat().forEach((x) => x.classList.add('tone-moot'));
+  row('Vowel', `${s.long ? 'long' : 'short'} `, thai(s.vowelName), ...(s.vowelHidden ? [' unwritten'] : []), ...vowelNote);
+  row('Final', ...(f ? [`-${f.sound} `, ...(f.letter ? [thai(f.letter)] : [' in ', thai(f.part)]), why(f.stop ? 'stops the sound' : 'can be held')] : ['none']));
+  // Why, unless the final row has said it.
+  row('Syllable', `${s.live ? 'live' : 'dead'} `, thai(s.live ? 'คำเป็น' : 'คำตาย'),
+    ...(s.mark ? [why("With a tone mark this doesn't matter: the mark decides.")]
+      : f ? [] : [why(s.long ? 'a long vowel can be held' : 'a short vowel stops short')]));
   if (s.exception) {
     row('Rules give', toneName(s.rule));
     row('Said', toneName(s.tone))[1].classList.add('tone-said');

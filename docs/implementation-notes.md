@@ -1249,7 +1249,9 @@ the Thai on the back of a Flashcards or Recall card.
   a phrase row, whose Thai opens its words one by one. On a card back, a tap on the
   transliteration's or English's text (`tapCardText`) opens it; a tap beside the text still turns
   the card.
-- **Layout:** a centred card on every screen size, sized to its content; a long one scrolls inside.
+- **Layout:** a card on every screen size, sized to its content; a long one scrolls inside. It's
+  held near the top, not centred. Centred, picking another syllable changed its height and moved
+  the syllable buttons out from under the pointer (the user's report, in Firefox).
   The transliteration and meaning are in its head, with ✕.
 - **Body:** the word, large (tap a letter to hear it), the Topics rows' three buttons, and Tones.
 - **Tones:** expands in place, and whether it's open is remembered. Open, it shows:
@@ -1263,7 +1265,8 @@ the Thai on the back of a Flashcards or Recall card.
       the sound or can be held;
     - Syllable: live คำเป็น or dead คำตาย;
     - Tone; for an exception, "Rules give" and "Said".
-  - Vowel, Final and Syllable are dimmed under a tone mark, which decides on its own.
+  - Under a tone mark, which decides on its own, the Syllable row says so. Dimming Vowel, Final
+    and Syllable for it read as a glitch to the user, so it went.
   - The whole tone table: class against live, dead short, dead long and the four marks. Each cell
     is a tone curve, the rule's cell is picked out, and a key follows.
 - **Closing:** the backdrop, ✕ or Escape.

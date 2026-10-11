@@ -1489,9 +1489,11 @@ body { display: flex; flex-direction: column; }
   transition: none;
 }
 /* ---------- the word dialog (showWordPop) ---------- */
-/* A card sized to its content, centred on every screen size (mobile.css makes other dialogs
-   full-screen sheets); a long one (the Tones open) scrolls inside. */
-.modal.word-modal { padding: 12px; align-items: center; }
+/* A card sized to its content on every screen size (mobile.css makes other dialogs full-screen
+   sheets); a long one (the Tones open) scrolls inside. Held near the top rather than centred, so it
+   grows downwards: centred, a change in its height (picking another syllable) moved it, and the
+   syllable buttons with it, out from under the pointer (2026-10-11, the user's report). */
+.modal.word-modal { padding: max(12px, 6vh) 12px 12px; align-items: flex-start; }
 .modal-panel.word-panel {
   width: min(520px, 100%);
   height: auto;
@@ -1567,8 +1569,6 @@ body { display: flex; flex-direction: column; }
 .tone-rows dt { color: var(--muted); }
 .tone-rows dd { margin: 0; color: var(--ink); }
 .tone-rows .tone-said { font-weight: 600; }
-/* With a tone mark: vowel, final and live or dead don't decide the tone. */
-.tone-rows .tone-moot { opacity: .5; }
 /* Thai looks smaller than Latin at the same size, so a step up (the user asked for larger text). */
 .tone-th { font-size: 1.3em; line-height: 1.2; white-space: nowrap; }
 .tone-why { display: block; color: var(--muted); font-size: .88em; }
