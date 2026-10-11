@@ -1214,6 +1214,54 @@ Thai → English only.
 - **Checked in Chromium:** 20px on a 390px phone and 32px on desktop, the same as the English.
   Nothing overflowed, even on a card with a long note.
 
+## Core Words (2026-10-11), category `Core Words`
+
+**Why:** measured against three Thai corpora in `research/freq/`, the decks had a card for only
+56–59% of the commonest 3,000 words, and covered 88.7% of running spoken text, 83.6% of textbook
+text and 80.5% of written text. Much of the vocabulary was topic-specific; frequent "glue" words
+were missing (หาก, ดังกล่าว, สังคม, พัฒนา, ยอมรับ, ช่วยเหลือ). The corpora are spoken subtitles
+(OpenSubtitles), written (TNC) and textbooks (TTC). The user chose option 1: about 700 words, aiming
+for about 90%.
+
+- **Choosing the words** (scratchpad `core/candidates.py`):
+  - Missing words were ranked by their geometric-mean frequency across the three corpora. That
+    favours words common in every kind of Thai and pushes down subtitle-only name fragments.
+  - The top 850 were cleaned by hand. Out went foreign-name syllables split by the segmenter (ซี,
+    รา, รี่, ลิ…), variant spellings (ปรกติ, เป้น), colours and days already carded in another form,
+    and the 34 words just added for the story agents.
+  - That left **756 words** in four shares (`core/shares.py`):
+    1. linking words, grammar, time and quantity (206)
+    2. society, government, history, religion, places and public life (180)
+    3. verbs (197)
+    4. feelings, people, describing words and things (173)
+- **Cards and stories:** four agents, one per share (brief `core/brief_core.md`).
+  - Each made themed topics of 8–25 cards (`decks/cards_core_N.py`) and stories using every new
+    card (`decks/stories_core_N.py`).
+  - `core/check_core.py` validates a draft. It uses `build_reading.py --extra-topics` with
+    `--extra`, so drafts are tested without touching decks.json.
+  - I read every card and story before `core/integrate_core.py` merged the share. The merge adds
+    the topics after Spoken Thai, groups in share order, registers the stories, rebuilds and runs
+    the checks. Each share was committed and pushed with its audio.
+- **Result:**
+  - **43 topics**, in groups Linking & Grammar, Society & Public Life, Actions, People &
+    Description. Names start "Core Linking:", "Core Society:", "Core Verbs:", "Core Words:".
+  - **756 cards** and **153 stories**, every new card in a story.
+  - **Running-text coverage:** spoken 91.8%, textbook 90.8%, written 88.9%.
+  - **Commonest 3,000 words with a card:** 73% spoken, 78% textbook, 81% written.
+  - **Totals:** 490 topics, 1,299 stories, 8,023 Thai entries.
+  - Cards outside Thai Script that appear in a story: 99.7%.
+- **On the way:**
+  - The audit allows stories up to 90 cards (`STORY_MAX`). Some Core Words stories, eight full
+    sentences each, reach about 80.
+  - เดือด became "to boil, come to the boil (of a liquid)" so it doesn't share "to boil" with ต้ม in
+    a story.
+- **Words the agents still found missing** (plainer wording was used instead):
+  - เวทมนตร์, มิตรภาพ, ลุกลาม;
+  - แต่ as "only", คำ as "mouthful", ตน and องค์ as classifiers;
+  - pipe, pump, placenta;
+  - โปรด as "favourite", ขน as "to carry".
+- **Next step for 95%:** about 2,000 more words, mostly formal and written.
+
 ## Reading practice (2026-10-08)
 
 **Status:** kept and committed ("we'll keep reading although we will need to reshape and clean
