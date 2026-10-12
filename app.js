@@ -111,10 +111,6 @@ const els = {
   readingSection: document.getElementById('reading-section'),
   readingLibrary: document.getElementById('reading-library'),
   readingList: document.getElementById('reading-list'),
-  readingPassage: document.getElementById('reading-passage'),
-  readingBack: document.getElementById('reading-back'),
-  readingName: document.getElementById('reading-name'),
-  readingDesc: document.getElementById('reading-desc'),
   reader: document.getElementById('reader'),
   readerLines: document.getElementById('reader-lines'),
   readerTranslit: document.getElementById('reader-translit'),
@@ -2749,24 +2745,19 @@ function sentenceText(th) {
   return th.replace(/^[^ ]+: /, '').replace(/\|/g, '').replace(/_/g, ' ');
 }
 
-// The Reading page: the current topic's stories (renderReadingList), or one open in the reader. Adding
-// its words to Flashcards is left to the Topics page (the user's call, 2026-10-08). A story you've opened gets a ✓ (prefs readingDone). The page remembers the open
-// story while the app's open (state.readingId); it opens on the list.
+// The Reading page: the current topic's stories (renderReadingList), an accordion. A story opens in
+// place under its title (placeReader), closing the one open before; its title again closes it.
+// Until 2026-10-12 a story opened on a page of its own, with a Back to Stories button (the user
+// wanted to try it in place). Adding its words to Flashcards is left to the Topics page (the user's
+// call, 2026-10-08). A row is the story's title and description: its level and a ✓ once read went on
+// 2026-10-12 (the user's call). The page remembers the open story while the app's open
+// (state.readingId).
 const isPassage = (id) => !!state.decks.find((d) => d.id === id)?.passage;
 
 function renderReading() {
   hideWordPop();
-  const topic = state.readingId ? state.decks.find((d) => d.id === state.readingId && d.passage) : null;
-  els.readingLibrary.hidden = !!topic;
-  els.readingPassage.hidden = !topic;
-  els.readingBack.hidden = !topic;
-  if (!topic) {
-    renderReadingList();
-    return;
-  }
-  els.readingName.textContent = topic.name;
-  els.readingDesc.textContent = topic.description;
-  renderReader(topic);
+  renderReadingList();
+  placeReader();
 }
 
 // The list: the stories that use the current topic's words (the topic picker's choice, shared with
@@ -2774,7 +2765,6 @@ function renderReading() {
 // user's call, 2026-10-08).
 function renderReadingList() {
   const scope = currentScope();
-  const done = new Set(getPreferences().readingDone || []);
   const found = scope ? storiesFor(scope) : [];
   if (!found.length) {
     const empty = document.createElement('div');
@@ -2793,19 +2783,63 @@ function renderReadingList() {
     els.readingList.replaceChildren(empty);
     return;
   }
+  // A story opened from elsewhere (a search result) that isn't one of this topic's goes first.
+  const open = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
+  if (open && !found.some(({ d }) => d === open)) found.unshift({ d: open });
   els.readingList.replaceChildren(...found.map(({ d }) => {
+    const entry = document.createElement('div');
+    entry.className = 'reading-entry';
+    entry.dataset.id = d.id;
     const item = document.createElement('button');
     item.type = 'button';
-    item.className = 'reading-item' + (done.has(d.id) ? ' done' : '');
-    item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"><span class="reading-item-title"></span></span><span class="reading-item-desc"></span></span><span class="reading-item-tick" aria-hidden="true"></span><span class="reading-item-level"></span>';
+    item.className = 'reading-item';
+    item.setAttribute('aria-expanded', 'false');
+    item.setAttribute('aria-controls', 'reader');
+    item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"><span class="reading-item-title"></span></span><span class="reading-item-desc"></span></span><span class="reading-item-chevron" aria-hidden="true">›</span>';
     item.querySelector('.reading-item-title').textContent = d.name;
-    item.querySelector('.reading-item-level').textContent = d.group || '';
     item.querySelector('.reading-item-desc').textContent = d.description;
-    item.querySelector('.reading-item-tick').textContent = done.has(d.id) ? '✓' : '';
-    if (done.has(d.id)) item.setAttribute('aria-label', `${d.name}, read`);
-    item.addEventListener('click', () => openReading(d.id));
-    return item;
+    item.addEventListener('click', () => {
+      if (state.readingId === d.id) closeReading();
+      else openReading(d.id);
+    });
+    entry.append(item);
+    return entry;
   }));
+}
+
+// Puts the reader under the open story's title (or hides it, with none open), and opens that one.
+function placeReader() {
+  const id = state.readingId;
+  const entries = [...els.readingList.querySelectorAll('.reading-entry')];
+  entries.forEach((e) => {
+    const open = e.dataset.id === id;
+    e.classList.toggle('open', open);
+    e.querySelector('.reading-item').setAttribute('aria-expanded', String(open));
+  });
+  const entry = id && entries.find((e) => e.dataset.id === id);
+  const topic = entry && state.decks.find((d) => d.id === id);
+  if (!topic) {
+    els.reader.hidden = true;
+    els.readingLibrary.append(els.reader); // parked, out of the list
+    return;
+  }
+  entry.append(els.reader);
+  els.reader.hidden = false;
+  renderReader(topic);
+}
+
+function closeReading() {
+  hideWordPop();
+  state.readingId = null;
+  placeReader();
+}
+
+// The open story's title at the top of the window, under the sticky top bar.
+function scrollToReading() {
+  const item = els.readingList.querySelector('.reading-entry.open .reading-item');
+  if (!item) return;
+  const bar = document.querySelector('.topbar')?.offsetHeight || 0;
+  window.scrollTo({ top: item.getBoundingClientRect().top + window.scrollY - bar - 8 });
 }
 
 // Which stories go with a topic (or a group or category, their words pooled): those using at least
@@ -2828,15 +2862,15 @@ function storiesFor(scope) {
   return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
 }
 
-// Opens a passage (from the list, or a search result, which also lights the word it found).
+// Opens a passage under its title (from the list, or a search result, which also lights the word
+// it found).
 function openReading(id, word = null) {
+  hideWordPop();
   state.readingId = id;
-  const done = new Set(getPreferences().readingDone || []);
-  done.add(id);
-  setPreferences({ readingDone: [...done] });
   if (state.view !== 'reading') setView('reading');
-  else renderReading();
-  window.scrollTo(0, 0);
+  else if (!els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"]`)) renderReading();
+  else placeReader();
+  scrollToReading();
   if (word) {
     const spans = [...els.readerLines.querySelectorAll('.rw')].filter((w) => w.textContent === word);
     spans[0]?.scrollIntoView({ block: 'center' });
@@ -4000,10 +4034,9 @@ function wait(ms) {
 function bindEvents() {
   els.tabs.forEach((t) => {
     t.addEventListener('click', () => {
-      // Reading's tab again, with a passage open: back to the list.
+      // Reading's tab again, with a story open: it closes, back to the top of the list.
       if (t.dataset.view === 'reading' && state.view === 'reading' && state.readingId) {
-        state.readingId = null;
-        renderReading();
+        closeReading();
         window.scrollTo(0, 0);
         return;
       }
@@ -4028,11 +4061,6 @@ function bindEvents() {
   els.settingsButton.addEventListener('click', openSettings);
   els.settingsModal.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeSettings();
-  });
-  els.readingBack.addEventListener('click', () => {
-    state.readingId = null;
-    renderReading();
-    window.scrollTo(0, 0);
   });
   [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish'], [els.readerSpaces, 'readerSpaces']].forEach(([btn, key]) => {
     btn.addEventListener('click', () => {

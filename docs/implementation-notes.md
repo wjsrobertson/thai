@@ -1359,6 +1359,23 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## Reading list as an accordion (2026-10-12, experiment, branch `2026-10-12-reading-accordion`)
+
+The user wanted to see stories open in place on the Reading page, not on a page of their own with a
+Back to Stories button.
+- **The list:** each story is a row (`.reading-entry`) with its title button, which has
+  `aria-expanded` and a › that turns when it's open.
+- **Opening one:** `openReading` → `placeReader` moves the single `#reader` (the toggles and lines)
+  under that title, joined to it with the accent border. It closes the story open before and
+  scrolls the title to the top, under the sticky bar (`scrollToReading`).
+- **Closing:** the open title again (`closeReading`), or the Reading tab, closes it.
+- **From a search result:** a story that isn't one of the topic's is put first in the list, open,
+  with the word lit as before.
+- **Removed:** the separate passage page (`#reading-passage`, its heading and description) and
+  `#reading-back`.
+- **Rows, the same day:** the ✓ and the level went from the rows (the user's call), so a row is
+  the title, the description and the ›. Nothing records opened stories any more (`readingDone`).
+
 ## Story tools (2026-10-11), `tools/stories.py`
 
 **Why:** until 2026-10-11 the stories were built by `build_reading.py` and its source modules
@@ -1586,9 +1603,8 @@ The other ten passages:
       don't count, or "Spoken 1–20" would match every story.
     - **Order:** most matched words first, then alphabetical by title (since 2026-10-08, the user's
       call; it was the easier level).
-    - **Each story** shows its title and description, then on the right a ✓ once opened (prefs
-      `readingDone`) and its level, flush right (moved there from beside the title at the user's
-      request). The matched words were shown as chips at first; the user had them removed.
+    - **Each story** shows its title and description. On the right there were a ✓ once opened
+      (prefs `readingDone`) and its level; both went on 2026-10-12 (the user's call). The matched words were shown as chips at first; the user had them removed.
       The list's "Reading" heading and intro line went too.
     - **There's never a list of every story**, as there will be too many (the user's call). A
       topic with none says "No stories for … yet" and offers "Try all of <category>".

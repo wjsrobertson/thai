@@ -1326,7 +1326,8 @@ body { display: flex; flex-direction: column; }
 .say:hover, .say:focus-visible { color: var(--accent); outline: none; }
 .say.playing { color: var(--accent); text-decoration-color: var(--accent); }
 
-/* The Reading page (2026-10-08): the passages by level, or one open. */
+/* The Reading page (2026-10-08): the topic's stories, an accordion (2026-10-12): the open one's
+   reader hangs under its title, joined to it. */
 .reading { max-width: 760px; margin: 0 auto; }
 .reading[hidden] { display: none; }
 .reading-item {
@@ -1344,30 +1345,15 @@ body { display: flex; flex-direction: column; }
   cursor: pointer;
 }
 .reading-item:hover { border-color: var(--accent); }
+.reading-item-chevron { flex: none; color: var(--muted); font-size: 1.5em; line-height: 1; transition: transform .15s; }
+.reading-entry.open .reading-item-chevron { transform: rotate(90deg); color: var(--accent); }
+.reading-entry.open .reading-item { margin-bottom: 0; border-color: var(--accent); border-radius: 12px 12px 0 0; }
+.reading-entry.open .reader { margin: 0 0 8px; border-color: var(--accent); border-top: 0; border-radius: 0 0 12px 12px; }
 .reading-item-main { flex: 1; min-width: 0; }
 .reading-item-name { display: block; font-size: calc(18px * var(--fs, 1)); font-weight: 600; }
 .reading-item-desc { display: block; margin-top: 2px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
-.reading-item-tick { flex: none; width: 1.2em; color: var(--good); font-size: 18px; font-weight: 700; text-align: center; }
-/* The level sits flush right, after the ✓ column. */
-.reading-item-level { flex: none; color: var(--muted); font-size: calc(13px * var(--fs, 1)); white-space: nowrap; }
 .reading-empty { padding: 20px 4px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
 .reading-empty .ghost { display: block; margin-top: 12px; padding: 8px 14px; }
-/* In the controls bar, at its right end like Topics' Read all (same .ghost size). */
-.reading-back { display: inline-flex; align-items: center; margin-left: auto; white-space: nowrap; }
-.reading-back[hidden] { display: none; }
-/* A line left arrow, drawn like the other button icons (.review-icon). */
-.back-icon {
-  width: 1.05em;
-  height: 1.05em;
-  margin-right: 0.4em;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.reading-name { margin: 0 0 4px; font-size: calc(24px * var(--fs, 1)); }
-.reading-desc { margin: 0 0 14px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
 .rw.found { color: var(--accent); background: var(--panel-2); }
 /* Home's third card spans both columns. */
 .home-card-wide { grid-column: 1 / -1; }
