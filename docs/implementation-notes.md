@@ -1040,7 +1040,9 @@ The controls row holds:
 Code names (`data-view="wordlist"`, `wordlist-*` classes, `wordlistFirst`) are unchanged, and
 "wordlists" stays in settings search keywords. Older notes below still say Wordlists.
 
-**Wordlists** shows the topic as a sortable table, and each row has a 🔊 button. The filter box
+**Wordlists** shows the topic as a table, in list order, and each row has a 🔊 button. Its
+headings sorted it (and Read all followed the sorted order) until 2026-10-12, when the user asked
+for that to go. The filter box
 above it was removed on 2026-10-07 at the user's request. Which
 column comes first, Thai or English, is the Settings → Wordlists "Show first" setting
 (`settings.wordlistFirst`). It moved off the page on 2026-10-06; an English choice saved in the
@@ -1125,7 +1127,7 @@ a category alone, on every page).
     the name pick and only the ▸ expand, since those targets are small on a phone.
   - Counts in headings don't wrap (`white-space: nowrap`); a long name wraps instead.
 - **Wordlists for several topics:** a heading row per topic (`tr.wl-topic`), in list order. There
-  are no headings while sorted by a column. The header reads "Basics — All 19 topics".
+  were no headings while it was sorted by a column. The header reads "Basics — All 19 topics".
 - **Flashcards:** works as for a topic. Since it shows only Review words, "All of Food & Drink"
   means your Review words from it. The empty-topic message names the scope.
 - **Flashcards: Everything or By topic** (`prefs.flashcardsBy`: `topic` by default, or `all`;
@@ -3290,7 +3292,7 @@ untouched. It fixes what made the app cramped on iPhone:
 - **Wordlist:** each table row becomes a grid card (text stacked on the left, 🔊 on the right).
   "Add all to Review" and "Read all" share their row in two equal halves, under the full-width
   topic button.
-  The header row stays as a compact sort bar.
+  The header row stays as a compact bar of column names.
 - **Modals:** the deck picker and Settings become full-screen sheets; the deck rows
   drop the progress bar.
 - **iOS details:**

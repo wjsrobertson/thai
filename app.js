@@ -194,7 +194,6 @@ const state = {
   dictLetter: null,   // the Dictionary's letter (ก…ฮ), or null for the grid (renderDictionary)
   dictQuery: '',      // and its search box
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
-  sort: { key: null, dir: 'asc' },
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
   pickerOpen: false,
@@ -1881,21 +1880,6 @@ function setDirection(direction) {
 
 // ---------- wordlist ----------
 
-function visibleWordlistRows() {
-  let rows = state.listCards;
-  if (state.sort.key) {
-    const k = state.sort.key;
-    const dir = state.sort.dir === 'asc' ? 1 : -1;
-    rows = rows.slice().sort((a, b) => {
-      const av = a[k] ?? '';
-      const bv = b[k] ?? '';
-      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
-      return String(av).localeCompare(String(bv), 'th') * dir;
-    });
-  }
-  return rows;
-}
-
 // The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → Topics →
 // Show first), then the other two in fixed order.
 const COL_META = {
@@ -1916,7 +1900,7 @@ function renderWordlist() {
   // since Thai is written without them; the user's call, 2026-10-10). The reader has its own button.
   els.wordtable.classList.toggle('show-spaces', !!getSettings().topicWordGaps);
   // Several topics, in list order: a heading row before each topic's words.
-  const topicHeadings = deck.decks.length > 1 && !state.sort.key;
+  const topicHeadings = deck.decks.length > 1;
   let lastTopic = null;
 
   // The name in bold, the description under it in normal weight (until 2026-10-08 both were one
@@ -1946,7 +1930,7 @@ function renderWordlist() {
   }));
   const words = reviewWords();
 
-  const rows = visibleWordlistRows();
+  const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
 
   const cols = wordlistColumns();
 
@@ -1955,20 +1939,7 @@ function renderWordlist() {
   const headRow = document.createElement('tr');
   for (const key of cols) {
     const th = document.createElement('th');
-    th.dataset.sort = key;
     th.textContent = COL_META[key].label;
-    if (state.sort.key === key) {
-      th.classList.add(state.sort.dir === 'asc' ? 'sort-asc' : 'sort-desc');
-    }
-    th.addEventListener('click', () => {
-      if (state.sort.key === key) {
-        state.sort.dir = state.sort.dir === 'asc' ? 'desc' : 'asc';
-      } else {
-        state.sort.key = key;
-        state.sort.dir = 'asc';
-      }
-      renderWordlist();
-    });
     headRow.appendChild(th);
   }
   const audioTh = document.createElement('th');
@@ -3859,7 +3830,7 @@ function phraseWords(card) {
 
 async function startReadAloud() {
   if (state.reading.active) return;
-  const rows = visibleWordlistRows();
+  const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
   if (rows.length === 0) return;
 
   state.reading.active = true;

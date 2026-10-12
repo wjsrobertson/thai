@@ -1797,12 +1797,7 @@ body { display: flex; flex-direction: column; }
   letter-spacing: 1px;
   font-weight: 600;
   border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  user-select: none;
 }
-.wordtable th:hover { color: var(--ink); }
-.wordtable th.sort-asc::after  { content: " ▲"; color: var(--accent); }
-.wordtable th.sort-desc::after { content: " ▼"; color: var(--accent); }
 
 .wordtable td {
   padding: 12px 14px;
