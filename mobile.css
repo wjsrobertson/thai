@@ -156,6 +156,18 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 }
 .modal-head { padding: 12px 16px; }
 .modal-close { font-size: 22px; padding: 6px 10px; }
+/* Settings is a page, not a sheet (2026-10-12, the user's request): it stops at the tab bar, where
+   Settings is lit in place of the page's tab, and another tab leaves it, so no ✕, and no Settings
+   heading either (the user's call: the lit tab says it), so the search is at the top. It's still
+   the modal underneath (openSettings), and a dialog on wider screens. */
+#settings-modal { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+#settings-modal .modal-head { display: none; }
+/* Its search box where the Dictionary's is, the same size and shape, so going between the two pages
+   doesn't shift it (the user's report, 2026-10-12: 8px narrower, 4px shorter, squarer corners). */
+#settings-modal .modal-search { padding: 12px 12px 10px; }
+#settings-search { padding: 12px 16px; border-radius: 12px; }
+html.settings-open .tab[aria-selected="true"] { color: var(--muted); }
+html.settings-open .tab-settings { color: var(--accent); }
 .modal-search { padding: 10px 16px; }
 .modal-body { padding: 6px; }
 
@@ -171,11 +183,6 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 .deck-row-bar { display: none; }
 .cat-decks { padding-left: 0; }
 .sub-decks { margin-left: 10px; }
-
-/* Settings */
-.setting-group { padding: 12px 14px; }
-.setting-row input[type="number"] { max-width: none; }
-.setting-actions { flex-wrap: wrap; }
 
 /* ---------- wordlist: each row becomes a small card, 🔊 on the right ---------- */
 .wordlist-title { font-size: calc(20px * var(--fs, 1)); }
@@ -211,7 +218,6 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 /* Sheets scroll vertically only, so a slightly diagonal swipe can't drag them sideways. Safari can
    size a <select> by its longest option, which pushed setting rows a few pixels too wide. */
 .modal-body { overflow-x: hidden; touch-action: pan-y pinch-zoom; }
-.setting-row { grid-template-columns: minmax(0, 1fr); }
 .setting-row select { min-width: 0; max-width: 100%; }
 
 /* Today */

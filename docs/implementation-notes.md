@@ -1412,6 +1412,44 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   out. Six items get 61–70px each on 375–430px phones ("Flashcards" is 54px), and at 320px the
   labels drop to 10px. The top bar is emptied rather than hidden, since the tab bar is inside it,
   and the body pads its top by the status bar's safe area.
+- **Settings is a page on a phone** (the user's request, the same day), a dialog on wider screens.
+  It's still the settings modal, styled in mobile.css: it stops at the tab bar instead of covering
+  it, Settings is lit there in place of the page's tab (`html.settings-open`), and there's no ✕
+  and no Settings heading (the search is at the top). Its search box matches the Dictionary's
+  in place, size and shape, so it doesn't shift going between the two (the user's report).
+- **Each settings category has a line icon** in the label's colour (the user's request, the same
+  day; phone and desktop): Display a T, Audio the speaker, Topics, Reading and Flashcards the
+  pages' icons, App a phone, Reset an undo arrow.
+- **Settings as a list** (Display and Reading first, then the rest the same day: the user found
+  the opened categories messy, with a bordered box a setting, long help and mixed layouts).
+  `.setting-list` wraps a category's groups in one rounded panel, a row a setting (each
+  `.setting-group` holds one, so search hides a row at a time) with thin lines between, as in the
+  iPhone's Settings:
+  - A dropdown's row is the dropdown (`appearance: none`), the whole width, its value on the right
+    with a ⌄, the setting's name laid over its left with `pointer-events: none`, so a tap anywhere
+    on the row opens it.
+  - An on/off is a switch (a checkbox, `appearance: none`, its knob a radial-gradient background
+    that slides), the row its label. The checkbox's own repeat of the name went.
+  - Help is one short line under the row, or none (Theme's options say it). Reading's "Read all"
+    subhead went (Say the title and Loop are for Read too).
+  - A number is a small box on the right of its row.
+  - An action is a button under its row's help, side by side with the others (`.setting-action`,
+    red if it deletes): Download all audio, Install app, Export and Load. They were rows at first,
+    which didn't look like buttons (the user's call). The three Resets are red rows
+    (`.setting-button`) with their help under them. The ids are unchanged.
+  - Where a category has more than one list, a small heading sits over each
+    (`.setting-list-head`: Topics' Read all; Flashcards' Recognition and Scheduling; App's About).
+    Search hides a list with no matches, and its heading (`filterSettings`).
+  - Spelling's explanation is behind a tap (`.setting-more`: "ⓘ How each spells เรียน"). Its
+    choices are now Vowels whole, As written and School method, and Voice's Recorded and Browser,
+    so the values fit on a 320px phone.
+  - The recording counts (they were Voice's help) and Launch time are in App → About
+    (`recordingsText`, `launchTimingText`).
+  - Category headings are in normal capitals now, all of them.
+  - The old box layout's CSS went (`.setting-subhead`, `.setting-group.danger`, `.danger-btn`,
+    `.setting-actions`' flex row).
+  Any tab leaves it (`closeSettings` in the tabs' click handler), for that tab's page, or the page
+  under it if that's the one tapped.
 - **Fixed inside the top bar:** the bar is `position: fixed` but still inside `.topbar`. On phones
   the top bar is opaque with no `backdrop-filter`, because a backdrop-filter would make the top bar
   the bar's containing block and pin it there.

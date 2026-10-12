@@ -622,8 +622,6 @@ html.modal-open body {
   font-size: calc(15px * var(--fs, 1));
   font-weight: 600;
   color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
   border-radius: 8px;
   user-select: none;
   display: flex;
@@ -631,6 +629,7 @@ html.modal-open body {
   gap: 8px;
 }
 .settings-cat > summary::-webkit-details-marker { display: none; }
+.settings-cat > summary .page-icon { width: 1.3em; height: 1.3em; flex: none; } /* the label's colour (the user's call; accent at first) */
 .settings-cat > summary::before {
   content: "▾";
   font-size: 10px;
@@ -657,14 +656,6 @@ html.modal-open body {
 .setting-group.search-hidden { display: none; }
 .settings-cat.search-hidden { display: none; }
 
-.setting-group {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-}
-
 .setting-row {
   display: grid;
   grid-template-columns: 200px 1fr;
@@ -673,8 +664,6 @@ html.modal-open body {
   padding: 8px 0;
 }
 
-/* "Review mode" above its settings, inside Flashcards. */
-.setting-subhead { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
 .setting-label {
   font-size: calc(16px * var(--fs, 1));
   color: var(--ink);
@@ -717,30 +706,6 @@ html.modal-open body {
   user-select: none;
 }
 
-.setting-group.danger {
-  border-color: var(--danger-line);
-}
-.setting-group.danger .setting-label {
-  color: var(--again);
-}
-.danger-btn {
-  color: var(--again);
-  border-color: var(--again);
-}
-.danger-btn:hover {
-  background: var(--danger-soft);
-}
-
-
-.setting-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border);
-}
-.setting-actions[hidden] { display: none; } /* display:flex above would otherwise override [hidden] */
 
 #offline-progress {
   width: 100%;
@@ -748,6 +713,137 @@ html.modal-open body {
   margin-top: 8px;
   accent-color: var(--accent);
 }
+
+/* Each category as a list (2026-10-12, the user's call: Display and Reading first, then the rest;
+   until then each setting was a bordered box, the control under its name): one panel, a row
+   a setting, as in the iPhone's Settings. A dropdown's row is the dropdown, the whole width, its
+   value on the right and the setting's name over its left (so a tap anywhere on the row opens it);
+   an on/off is a switch on the right. Help is a short line under the row. */
+.setting-list {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.setting-list .setting-group { padding: 0 16px; }
+.setting-list .setting-group + .setting-group { border-top: 1px solid var(--border); }
+.setting-list .setting-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(52px, auto); /* the name's line, a dropdown's or a switch's alike */
+  gap: 2px 12px;
+  padding: 0;
+}
+.setting-list .setting-label { grid-area: 1 / 1; z-index: 1; pointer-events: none; }
+.setting-list .setting-help { grid-area: 2 / 1 / 3 / -1; margin: -6px 0 0; padding-bottom: 12px; font-size: calc(13px * var(--fs, 1)); }
+.setting-list .setting-row select {
+  grid-area: 1 / 1 / 2 / -1;
+  width: 100%;
+  min-height: 52px;
+  padding: 0 22px 0 25%; /* the value, right-aligned, has the rest */
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238a94a6' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 0 center / 16px;
+  border: 0;
+  border-radius: 0;
+  color: var(--muted);
+  text-align: right;
+  text-align-last: right;
+  cursor: pointer;
+}
+.setting-list .setting-row select:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.setting-list .setting-row select option { background: var(--panel-2); color: var(--ink); text-align: left; }
+/* A switch: the knob a white circle drawn as the background, which slides across when it's on. */
+.setting-list .setting-row input[type="checkbox"] {
+  grid-area: 1 / 2;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 48px;
+  height: 28px;
+  margin: 0;
+  border-radius: 14px;
+  background: var(--border-strong) radial-gradient(circle, #fff 0 10px, transparent 11px) no-repeat 0 0 / 28px 28px;
+  cursor: pointer;
+  transition: background-color .15s, background-position .15s;
+}
+.setting-list .setting-row input[type="checkbox"]:checked { background-color: var(--accent); background-position: 20px 0; }
+.setting-list .setting-row input[type="checkbox"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+label.setting-row, button.setting-row { cursor: pointer; }
+/* A number, on the right of its row. */
+.setting-list .setting-row input[type="number"] {
+  grid-area: 1 / 2;
+  width: 72px;
+  max-width: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  text-align: right;
+}
+/* A button as a row (the Resets): the whole width, its text red, its help under it; thin lines
+   above, as between rows. */
+.setting-list .setting-button {
+  display: grid;
+  grid-template-rows: minmax(52px, auto);
+  align-items: center;
+  width: calc(100% + 32px);
+  margin: 0 -16px;
+  padding: 0 16px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--accent);
+  font: inherit;
+  font-size: calc(16px * var(--fs, 1));
+  text-align: left;
+}
+.setting-list .setting-group > .setting-button:first-child { border-top: 0; }
+.setting-list .setting-button .setting-label { color: inherit; }
+.setting-list .setting-button.danger { color: var(--again); }
+.setting-list .setting-button[hidden] { display: none; }
+@media (hover: hover) { .setting-list .setting-button:hover { background: var(--hover); } }
+.setting-list .setting-group:last-child > .setting-button:last-child { border-radius: 0 0 11px 11px; }
+/* An action under its row (Download all audio, Install app, Export and Load): a button, side by
+   side with the others (the user's call: as rows they didn't look like buttons). Red if it
+   deletes. */
+.setting-list .setting-actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 0 14px; }
+.setting-list .setting-actions[hidden], .setting-action[hidden] { display: none; }
+.setting-action {
+  min-height: 40px;
+  padding: 8px 16px;
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--border-strong);
+  border-radius: 10px;
+  font: inherit;
+  font-size: calc(15px * var(--fs, 1));
+  cursor: pointer;
+}
+.setting-action.danger { color: var(--again); background: var(--danger-soft); border-color: var(--danger-line); }
+@media (hover: hover) {
+  .setting-action:hover { border-color: var(--accent); }
+  .setting-action.danger:hover { border-color: var(--again); }
+}
+.setting-list #offline-progress { display: block; margin: 0 0 12px; }
+.setting-list #offline-progress[hidden] { display: none; }
+/* A heading over a list, where a category has more than one (Topics' Read all, Flashcards'). */
+.setting-list-head {
+  margin: 20px 16px 6px;
+  font-size: calc(13px * var(--fs, 1));
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.setting-list-head:first-of-type { margin-top: 4px; }
+.setting-list.search-hidden, .setting-list-head.search-hidden { display: none; }
+/* More about a setting, a tap away (Spelling's examples). */
+.setting-more { margin: -4px 0 0; padding-bottom: 12px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
+.setting-more > summary { color: var(--accent); cursor: pointer; list-style: none; }
+.setting-more > summary::-webkit-details-marker { display: none; }
+.setting-more > summary::before { content: "ⓘ "; }
+.setting-more ul { margin: 8px 0 0; padding-left: 18px; }
+.setting-more li { margin-bottom: 6px; }
+.setting-more b { color: var(--ink); font-weight: 600; }
+.setting-more p { margin: 6px 0 0; }
 
 /* "Settings save automatically" sits centred in the space left below the sections; when they fill
    the panel it just follows them. The list is a column so the footer's auto margins can do that. */
@@ -759,14 +855,6 @@ html.modal-open body {
   text-align: center;
 }
 
-@media (max-width: 600px) {
-  .setting-row {
-    grid-template-columns: 1fr;
-  }
-  .setting-help {
-    grid-column: 1;
-  }
-}
 
 .checkbox {
   display: inline-flex;

@@ -105,6 +105,7 @@ const els = {
   resetReview: document.getElementById('reset-review'),
   setAudioSource: document.getElementById('setting-audio-source'),
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
+  aboutRecordings: document.getElementById('about-recordings'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
   setSpelling: document.getElementById('setting-spelling'),
   setTheme: document.getElementById('setting-theme'),
@@ -1490,8 +1491,11 @@ function closeDeckPicker() {
 
 // ---------- settings modal ----------
 
+// On a phone Settings is a page (mobile.css): it stops at the tab bar, whose Settings is lit
+// (html.settings-open), and another tab leaves it (bindEvents). A dialog on wider screens.
 function openSettings() {
   state.settingsOpen = true;
+  document.documentElement.classList.add('settings-open');
   state.lastFocus = document.activeElement;
   els.settingsModal.hidden = false;
   setModalOpen(true);
@@ -1503,6 +1507,7 @@ function openSettings() {
 
 function closeSettings() {
   state.settingsOpen = false;
+  document.documentElement.classList.remove('settings-open');
   els.settingsModal.hidden = true;
   setModalOpen(false);
   for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'false');
@@ -1595,6 +1600,7 @@ function renderSettings() {
 
   els.setAudioSource.value = s.audioSource;
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
+  els.aboutRecordings.textContent = recordingsText();
   els.setThaiSpeed.value = String(s.thaiSpeed);
   els.setSpelling.value = s.spellingStyle;
   els.setTheme.value = THEMES.includes(s.theme) ? s.theme : 'dark';
@@ -1764,6 +1770,14 @@ function filterSettings(q) {
     const match = !query || haystack.includes(query);
     g.classList.toggle('search-hidden', !match);
     if (match) anyVisible = true;
+  }
+
+  // A list with none left goes, and its heading.
+  for (const list of els.settingsSection.querySelectorAll('.setting-list')) {
+    const empty = !list.querySelector('.setting-group:not(.search-hidden)');
+    list.classList.toggle('search-hidden', empty);
+    const head = list.previousElementSibling;
+    if (head?.classList.contains('setting-list-head')) head.classList.toggle('search-hidden', empty);
   }
 
   // Hide categories whose groups are all filtered out; open any with matches while searching,
@@ -4173,13 +4187,19 @@ function sampleUrl(text, lang) {
 }
 
 function audioSourceHelpText(source) {
-  if (source === 'browser') return "Your browser's built-in voices. Quality varies by browser and OS; Thai is usually poor.";
+  if (source === 'browser') return "Your browser's own voices. Thai is usually poor.";
+  return "Neural voices, recorded. Anything missing uses the browser's voice.";
+}
+
+// Settings → App → About: how many of the cards' Thai and English have a recording (it was under
+// Voice until the settings became a list, 2026-10-12).
+function recordingsText() {
   const coverage = (lang, field) => {
     const texts = new Set(state.decks.flatMap((d) => d.cards.map((c) => c[field])));
     const have = [...texts].filter((t) => sampleFiles[lang][t]).length;
-    return `${have} of ${texts.size}`;
+    return `${have.toLocaleString()} of ${texts.size.toLocaleString()}`;
   };
-  return `Neural-voice recordings from data/audio/ (Thai ${coverage('th', 'thai')}, English ${coverage('en', 'english')}). Anything missing uses the browser voice.`;
+  return `Thai ${coverage('th', 'thai')}, English ${coverage('en', 'english')}.`;
 }
 
 // Stop whatever is playing, sample or TTS. Pending speakAndWait() calls resolve.
@@ -4424,6 +4444,11 @@ function wait(ms) {
 function bindEvents() {
   els.tabs.forEach((t) => {
     t.addEventListener('click', () => {
+      // From the phone's Settings page: leave it, for the page the tab is, the one under it or not.
+      if (state.settingsOpen) {
+        closeSettings();
+        if (t.dataset.view === state.view) return;
+      }
       // Reading's tab again, with a story open: it closes, back to the top of the list.
       if (t.dataset.view === 'reading' && state.view === 'reading' && state.readingId) {
         closeReading();
@@ -4737,8 +4762,8 @@ function launchTimingText() {
   const s = (ms) => `${(ms / 1000).toFixed(2)} s`;
   const from = navigator.serviceWorker?.controller ? 'the saved copy' : 'the network';
   const drawn = window.firstFrameAt != null ? `, drawn at ${s(window.firstFrameAt)}` : '';
-  return `This launch: page loaded from ${from} at ${s(nav.responseEnd)}${drawn}, ready at ${s(ready)}. ` +
-    'Times count from when the page started loading. Any wait before that is the phone opening the app.';
+  return `This time: ready at ${s(ready)}, loaded from ${from} at ${s(nav.responseEnd)}${drawn}. ` +
+    'From when the page started loading.';
 }
 
 // Offline audio. `have` is the saved clips' file names (ClipStore.keys()). They're read only when

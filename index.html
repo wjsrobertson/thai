@@ -300,302 +300,322 @@
         </div>
         <div class="modal-body settings" id="settings-section">
 
+      <!-- Each category's line icon (2026-10-12, the user's request): Topics, Reading and Flashcards
+           are the pages' icons, Audio the speaker; Display a T, App a phone, Reset an undo arrow. -->
       <details class="settings-cat" data-cat="display">
-        <summary>Display</summary>
-        <div class="setting-group" data-search="theme colour color dark light night mode appearance eyes contrast">
-          <label class="setting-row">
-            <span class="setting-label">Theme</span>
-            <select id="setting-theme">
-              <option value="dark">Dark (high contrast)</option>
-              <option value="light">Light (best in daylight)</option>
-              <option value="night">Night (warm, for bedtime)</option>
-            </select>
-            <span class="setting-help">Dark text on a light page reads most accurately in daylight. Night is warm and dim with little blue light, kinder to sleep when you study in bed.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="thai font typeface looped loopless loops curly modern traditional script letters style">
-          <label class="setting-row">
-            <span class="setting-label">Thai font</span>
-            <select id="setting-thai-font">
-              <option value="looped">Looped (traditional)</option>
-              <option value="loopless">Loopless (modern)</option>
-            </select>
-            <span class="setting-help">Looped is the classic style of books, newspapers and most signs. Loopless is the modern style of many ads, logos and phone screens. Worth reading both.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
-          <label class="setting-row">
-            <span class="setting-label">Text size</span>
-            <select id="setting-text-size">
-              <option value="-2">Smallest</option>
-              <option value="-1">Smaller</option>
-              <option value="0" selected>Default</option>
-              <option value="1">Larger</option>
-              <option value="2">Largest</option>
-            </select>
-            <span class="setting-help">Cards, the Topics page's word list, the topic picker and settings. Buttons and the top bar stay the same size.</span>
-          </label>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V4h16v3M9 20h6M12 4v16" /></svg>Display</summary>
+        <!-- A list (2026-10-12, the user's call, trying it on Display and Reading first): one panel, a
+             row a setting with its value on the right, a line of help at most. See .setting-list. -->
+        <div class="setting-list">
+          <div class="setting-group" data-search="theme colour color dark light night mode appearance eyes contrast">
+            <label class="setting-row">
+              <span class="setting-label">Theme</span>
+              <select id="setting-theme">
+                <option value="dark">Dark (high contrast)</option>
+                <option value="light">Light (best in daylight)</option>
+                <option value="night">Night (warm, for bedtime)</option>
+              </select>
+            </label>
+          </div>
+          <div class="setting-group" data-search="thai font typeface looped loopless loops curly modern traditional script letters style">
+            <label class="setting-row">
+              <span class="setting-label">Thai font</span>
+              <select id="setting-thai-font">
+                <option value="looped">Looped (traditional)</option>
+                <option value="loopless">Loopless (modern)</option>
+              </select>
+              <span class="setting-help">Looped is the style of books and signs, loopless of ads and screens. Worth reading both.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="text size font larger smaller bigger zoom read">
+            <label class="setting-row">
+              <span class="setting-label">Text size</span>
+              <select id="setting-text-size">
+                <option value="-2">Smallest</option>
+                <option value="-1">Smaller</option>
+                <option value="0" selected>Default</option>
+                <option value="1">Larger</option>
+                <option value="2">Largest</option>
+              </select>
+              <span class="setting-help">Cards, word lists, the topic picker and settings.</span>
+            </label>
+          </div>
         </div>
       </details>
 
       <details class="settings-cat" data-cat="audio">
-        <summary>Audio</summary>
-        <div class="setting-group" data-search="voice audio source thai english samples recorded mp3 browser tts text to speech speech synthesis">
-          <label class="setting-row">
-            <span class="setting-label">Voice</span>
-            <select id="setting-audio-source">
-              <option value="samples">Pre-generated samples (Recommended)</option>
-              <option value="browser">Browser text-to-speech</option>
-            </select>
-            <span class="setting-help" id="setting-audio-source-help"></span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="thai speed slow slower playback rate tempo">
-          <label class="setting-row">
-            <span class="setting-label">Thai speed</span>
-            <select id="setting-thai-speed">
-              <option value="0.5">0.5× (very slow)</option>
-              <option value="0.6">0.6×</option>
-              <option value="0.7">0.7×</option>
-              <option value="0.8">0.8×</option>
-              <option value="0.9">0.9×</option>
-              <option value="1">1× (normal)</option>
-            </select>
-            <span class="setting-help">Slows Thai audio without lowering the pitch. English always plays at normal speed.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="audio spelling spell school method letter names dictation sound out สะกด">
-          <label class="setting-row">
-            <span class="setting-label">Spelling</span>
-            <select id="setting-spelling">
-              <option value="vowels">Letter names, vowels whole</option>
-              <option value="letters">Letter names, as written</option>
-              <option value="school">School method (sounds)</option>
-            </select>
-            <span class="setting-help">How the spell-aloud buttons spell a word. Vowels whole: each syllable's consonant, its vowel named once however many parts it's written in, the final, then the tone mark (เรียน = ร เรือ · สระเอีย · น หนู). As written: every symbol in typing order (เรียน = สระเอ · ร เรือ · สระอี · ย ยักษ์ · น หนู). School method: the sounds (รอ – เอีย – นอ – เรียน). The few words whose syllables can't be worked out are spelled as written.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="offline download audio save storage cache wifi">
-          <label class="setting-row">
-            <span class="setting-label">Offline audio</span>
-            <span class="setting-help" id="offline-help">Checking saved audio…</span>
-          </label>
-          <progress id="offline-progress" max="1" value="0" hidden></progress>
-          <div class="setting-actions" id="offline-actions">
-            <button type="button" id="offline-download" class="ghost">Download all audio</button>
-            <button type="button" id="offline-delete" class="ghost danger-btn">Delete downloaded audio</button>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Audio</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="voice audio source thai english samples recorded mp3 browser tts text to speech speech synthesis">
+            <label class="setting-row">
+              <span class="setting-label">Voice</span>
+              <select id="setting-audio-source">
+                <option value="samples">Recorded</option>
+                <option value="browser">Browser</option>
+              </select>
+              <span class="setting-help" id="setting-audio-source-help"></span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="thai speed slow slower playback rate tempo">
+            <label class="setting-row">
+              <span class="setting-label">Thai speed</span>
+              <select id="setting-thai-speed">
+                <option value="0.5">0.5× (very slow)</option>
+                <option value="0.6">0.6×</option>
+                <option value="0.7">0.7×</option>
+                <option value="0.8">0.8×</option>
+                <option value="0.9">0.9×</option>
+                <option value="1">1× (normal)</option>
+              </select>
+              <span class="setting-help">Slower Thai at the same pitch. English stays at 1×.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="audio spelling spell school method letter names dictation sound out สะกด">
+            <label class="setting-row">
+              <span class="setting-label">Spelling</span>
+              <select id="setting-spelling">
+                <option value="vowels">Vowels whole</option>
+                <option value="letters">As written</option>
+                <option value="school">School method</option>
+              </select>
+              <span class="setting-help">How the spell-aloud buttons spell a word: letter names, or the sounds.</span>
+            </label>
+            <details class="setting-more">
+              <summary>How each spells เรียน</summary>
+              <ul>
+                <li><b>Vowels whole:</b> ร เรือ · สระเอีย · น หนู. Each syllable's consonant, its vowel named once however many parts it's written in, the final, then the tone mark.</li>
+                <li><b>As written:</b> สระเอ · ร เรือ · สระอี · ย ยักษ์ · น หนู. Every symbol, in typing order.</li>
+                <li><b>School method:</b> รอ – เอีย – นอ – เรียน. The sounds.</li>
+              </ul>
+              <p>The few words whose syllables can't be worked out are spelled as written.</p>
+            </details>
+          </div>
+          <div class="setting-group" data-search="offline download audio save storage cache wifi">
+            <div class="setting-row">
+              <span class="setting-label">Offline audio</span>
+              <span class="setting-help" id="offline-help">Checking saved audio…</span>
+            </div>
+            <progress id="offline-progress" max="1" value="0" hidden></progress>
+            <div class="setting-actions" id="offline-actions">
+              <button type="button" id="offline-download" class="setting-action">Download all audio</button>
+              <button type="button" id="offline-delete" class="setting-action danger">Delete downloaded audio</button>
+            </div>
           </div>
         </div>
       </details>
 
       <details class="settings-cat" data-cat="wordlists">
-        <summary>Topics</summary>
-        <div class="setting-group" data-search="topics wordlists show first column thai english order table">
-          <label class="setting-row">
-            <span class="setting-label">Show first</span>
-            <select id="setting-wordlist-first">
-              <option value="thai">Thai</option>
-              <option value="english">English</option>
-            </select>
-            <span class="setting-help">Which column comes first on the Topics page. Transliteration always follows the Thai.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="topics wordlists word gaps spaces between words phrases split thai">
-          <label class="setting-row">
-            <span class="setting-label">Word gaps in phrases</span>
-            <label class="checkbox-inline">
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="topics wordlists show first column thai english order table">
+            <label class="setting-row">
+              <span class="setting-label">Show first</span>
+              <select id="setting-wordlist-first">
+                <option value="thai">Thai</option>
+                <option value="english">English</option>
+              </select>
+              <span class="setting-help">The first column. Transliteration always follows the Thai.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="topics wordlists word gaps spaces between words phrases split thai">
+            <label class="setting-row">
+              <span class="setting-label">Word gaps in phrases</span>
               <input type="checkbox" id="setting-topic-word-gaps" />
-              <span>Show a space between the words of a phrase</span>
+              <span class="setting-help">A space between a phrase's words. Thai is written without.</span>
             </label>
-            <span class="setting-help">On the Topics page, a phrase's words can each be tapped for their own pop-up, with or without gaps. Thai is written without them. The reader has its own Word gaps button.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="topics wordlists confirm confirmation ask before add all whole deck review don't ask again topic">
-          <label class="setting-row">
-            <span class="setting-label">Confirm “Add all to Flashcards”</span>
-            <label class="checkbox-inline">
+          </div>
+          <div class="setting-group" data-search="topics wordlists confirm confirmation ask before add all whole deck review don't ask again topic">
+            <label class="setting-row">
+              <span class="setting-label">Confirm Add all</span>
               <input type="checkbox" data-confirm-setting="confirmAddAll" />
-              <span>Ask before adding every word in the list</span>
+              <span class="setting-help">Ask before adding every word in the list to Flashcards.</span>
             </label>
-          </label>
-        </div>
-        <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
-          <label class="setting-row">
-            <span class="setting-label">Confirm “Remove all from Flashcards”</span>
-            <label class="checkbox-inline">
+          </div>
+          <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
+            <label class="setting-row">
+              <span class="setting-label">Confirm Remove all</span>
               <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
-              <span>Ask before taking every word in the list out of Flashcards</span>
+              <span class="setting-help">Ask before taking every word in the list out of Flashcards.</span>
             </label>
-          </label>
+          </div>
         </div>
-        <div class="setting-group" data-search="topics read all read aloud repeats wordlist playback twice">
-          <p class="setting-subhead">Read all</p>
-          <label class="setting-row">
-            <span class="setting-label">Repeats</span>
-            <input type="number" min="1" max="10" id="setting-read-repeats" />
-            <span class="setting-help">How many times Read all says each word before moving on.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="topics read all read aloud pause silence between words seconds delay">
-          <label class="setting-row">
-            <span class="setting-label">Pause between words</span>
-            <input type="number" min="0" max="20" step="0.1" id="setting-read-pause" />
-            <span class="setting-help">Seconds of silence between one word and the next.</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="topics read all read aloud speak english translation language">
-          <label class="setting-row">
-            <span class="setting-label">Speak English too</span>
-            <label class="checkbox-inline">
+        <p class="setting-list-head">Read all</p>
+        <div class="setting-list">
+          <div class="setting-group" data-search="topics read all read aloud repeats wordlist playback twice">
+            <label class="setting-row">
+              <span class="setting-label">Repeats</span>
+              <input type="number" min="1" max="10" id="setting-read-repeats" />
+              <span class="setting-help">How many times each word is said.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="topics read all read aloud pause silence between words seconds delay">
+            <label class="setting-row">
+              <span class="setting-label">Pause between words</span>
+              <input type="number" min="0" max="20" step="0.1" id="setting-read-pause" />
+              <span class="setting-help">Seconds.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="topics read all read aloud speak english translation language">
+            <label class="setting-row">
+              <span class="setting-label">Speak English too</span>
               <input type="checkbox" id="setting-read-english" />
-              <span>Say the English translation after the Thai</span>
+              <span class="setting-help">The English after the Thai.</span>
             </label>
-          </label>
+          </div>
         </div>
       </details>
 
       <details class="settings-cat" data-cat="reading">
-        <summary>Reading</summary>
-        <div class="setting-group" data-search="reading stories read all title name english say announce">
-          <p class="setting-subhead">Read all</p>
-          <label class="setting-row">
-            <span class="setting-label">Say the title</span>
-            <label class="checkbox-inline">
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>Reading</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="reading stories read all title name english say announce">
+            <label class="setting-row">
+              <span class="setting-label">Say the title</span>
               <input type="checkbox" id="setting-read-story-titles" />
-              <span>Say each story's English title before its lines</span>
+              <span class="setting-help">The story's English title, before its first line.</span>
             </label>
-          </label>
-        </div>
-        <div class="setting-group" data-search="reading stories read all loop repeat again start over continuous">
-          <label class="setting-row">
-            <span class="setting-label">Loop</span>
-            <label class="checkbox-inline">
+          </div>
+          <div class="setting-group" data-search="reading stories read all loop repeat again start over continuous">
+            <label class="setting-row">
+              <span class="setting-label">Loop</span>
               <input type="checkbox" id="setting-read-stories-loop" />
-              <span>Start again when it finishes</span>
+              <span class="setting-help">Read plays the story again; Read all goes back to the first.</span>
             </label>
-            <span class="setting-help">Read plays the same story again; Read all goes back to the first story.</span>
-          </label>
+          </div>
         </div>
       </details>
 
       <details class="settings-cat" data-cat="deck-mode">
-        <summary>Flashcards</summary>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg>Flashcards</summary>
         <!-- Three parts since 2026-10-08: Test, Review, and the schedule both of them feed (a wrong
              Test answer counts as Very Hard, a right one as Hard). Smart order went the same day. -->
-        <div class="setting-group" data-search="flashcards recognition test mode card order random shuffle deck order sequence list topic">
-          <p class="setting-subhead">Recognition</p>
-          <label class="setting-row">
-            <span class="setting-label">Card order</span>
-            <select id="setting-test-order">
-              <option value="random">Random</option>
-              <option value="deck">List order</option>
-            </select>
-            <span class="setting-help">The order words come round in. Random starts with words you haven't answered yet, then the rest. List order is the order Browse and the Topics page show. A word you get wrong also comes back a few cards later.</span>
-          </label>
+        <p class="setting-list-head">Recognition</p>
+        <div class="setting-list">
+          <div class="setting-group" data-search="flashcards recognition test mode card order random shuffle deck order sequence list topic">
+            <label class="setting-row">
+              <span class="setting-label">Card order</span>
+              <select id="setting-test-order">
+                <option value="random">Random</option>
+                <option value="deck">List order</option>
+              </select>
+              <span class="setting-help">Random starts with words you haven't answered. A wrong one comes back a few cards later.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="flashcards recognition test mode auto progress advance move on next pause seconds answer right">
+            <label class="setting-row">
+              <span class="setting-label">Pause after a right answer</span>
+              <input type="number" min="0" max="5" step="0.1" id="setting-learn-pause" />
+              <span class="setting-help">Seconds before the next card.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="flashcards recognition test mode auto progress advance move on next pause seconds answer wrong">
+            <label class="setting-row">
+              <span class="setting-label">Pause after a wrong answer</span>
+              <input type="number" min="0" max="10" step="0.1" id="setting-wrong-pause" />
+              <span class="setting-help">Seconds, with the right answer showing.</span>
+            </label>
+          </div>
         </div>
-
-        <div class="setting-group" data-search="flashcards recognition test mode auto progress advance move on next pause seconds answer wrong right">
-          <label class="setting-row">
-            <span class="setting-label">Pause after a right answer</span>
-            <input type="number" min="0" max="5" step="0.1" id="setting-learn-pause" />
-            <span class="setting-help">Seconds before the next card.</span>
-          </label>
-          <label class="setting-row">
-            <span class="setting-label">Pause after a wrong answer</span>
-            <input type="number" min="0" max="10" step="0.1" id="setting-wrong-pause" />
-            <span class="setting-help">Seconds before the next card, with the right answer showing. Longer, so you can take it in.</span>
-          </label>
-        </div>
-
-
-        <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits again very hard easy delay interval minutes days gap first new word come back">
-          <p class="setting-subhead">Scheduling (Recognition and Recall)</p>
-          <label class="setting-row">
-            <span class="setting-label">Very Hard: wait (minutes)</span>
-            <input type="number" min="1" max="1440" step="1" id="setting-wait-again" />
-            <span class="setting-help">How soon a word you mark Very Hard, or get wrong in Recognition, is due again. In Recall it also comes back a few cards later, and a Hard one a few more.</span>
-          </label>
-          <label class="setting-row">
-            <span class="setting-label">Hard: first wait (days)</span>
-            <input type="number" min="1" max="60" step="1" id="setting-wait-hard" />
-          </label>
-          <label class="setting-row">
-            <span class="setting-label">Easy: first wait (days)</span>
-            <input type="number" min="1" max="60" step="1" id="setting-wait-easy" />
-            <span class="setting-help">The first waits are for a new word; a right answer in Recognition counts as Hard. Each later right answer makes the wait longer, so words you know come back less and less often (Hard grows it only a little).</span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="flashcards scheduling desired retention fsrs intervals remember percent recognition test recall review">
-          <label class="setting-row">
-            <span class="setting-label">Desired retention</span>
-            <select id="setting-retention">
-              <option value="0.8">80% (words come back less often)</option>
-              <option value="0.85">85%</option>
-              <option value="0.9">90% (Recommended)</option>
-              <option value="0.95">95% (words come back much more often)</option>
-            </select>
-            <span class="setting-help">How likely you should be to remember a word when it's due. Higher means shorter gaps, so words come back more often.</span>
-          </label>
+        <p class="setting-list-head">Scheduling</p>
+        <div class="setting-list">
+          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits again very hard delay interval minutes come back">
+            <label class="setting-row">
+              <span class="setting-label">Very Hard: wait (minutes)</span>
+              <input type="number" min="1" max="1440" step="1" id="setting-wait-again" />
+              <span class="setting-help">For a word marked Very Hard, or wrong in Recognition.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits hard delay interval days first new word">
+            <label class="setting-row">
+              <span class="setting-label">Hard: first wait (days)</span>
+              <input type="number" min="1" max="60" step="1" id="setting-wait-hard" />
+              <span class="setting-help">A right answer in Recognition counts as Hard.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits easy delay interval days first new word">
+            <label class="setting-row">
+              <span class="setting-label">Easy: first wait (days)</span>
+              <input type="number" min="1" max="60" step="1" id="setting-wait-easy" />
+              <span class="setting-help">First waits are for a new word. Each right answer after makes the wait longer.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="flashcards scheduling desired retention fsrs intervals remember percent recognition test recall review">
+            <label class="setting-row">
+              <span class="setting-label">Desired retention</span>
+              <select id="setting-retention">
+                <option value="0.8">80% (fewer reviews)</option>
+                <option value="0.85">85%</option>
+                <option value="0.9">90% (Recommended)</option>
+                <option value="0.95">95% (more reviews)</option>
+              </select>
+              <span class="setting-help">How likely you should be to remember a word when it's due.</span>
+            </label>
+          </div>
         </div>
       </details>
 
       <details class="settings-cat" data-cat="app">
-        <summary>App</summary>
-        <div class="setting-group" data-search="install app home screen iphone add pwa">
-          <label class="setting-row">
-            <span class="setting-label">Install</span>
-            <span class="setting-help" id="install-help"></span>
-          </label>
-          <div class="setting-actions" id="install-actions" hidden>
-            <button type="button" id="install-btn" class="ghost">Install app</button>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01" /></svg>App</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="install app home screen iphone add pwa">
+            <div class="setting-row">
+              <span class="setting-label">Install</span>
+              <span class="setting-help" id="install-help"></span>
+            </div>
+            <div class="setting-actions" id="install-actions" hidden>
+              <button type="button" id="install-btn" class="setting-action">Install app</button>
+            </div>
+          </div>
+          <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
+            <div class="setting-row">
+              <span class="setting-label">Backup</span>
+              <span class="setting-help">Settings, progress and your Flashcards words, in a file: to move to another device, say. Loading replaces what's here. Not downloaded audio.</span>
+            </div>
+            <div class="setting-actions">
+              <button type="button" id="backup-export" class="setting-action">Export to a file</button>
+              <button type="button" id="backup-load" class="setting-action">Load from a file</button>
+              <input type="file" id="backup-file" accept=".json,application/json" hidden />
+            </div>
           </div>
         </div>
-        <div class="setting-group" data-search="launch startup start time slow speed loading">
-          <label class="setting-row">
-            <span class="setting-label">Launch time</span>
-            <span class="setting-help" id="launch-help"></span>
-          </label>
-        </div>
-        <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
-          <label class="setting-row">
-            <span class="setting-label">Backup</span>
-            <span class="setting-help">Save your settings, progress and the words in Flashcards to a file, or load them from one, e.g. to move to another device. Loading replaces what's on this device. Downloaded audio isn't included.</span>
-          </label>
-          <div class="setting-actions">
-            <button type="button" id="backup-export" class="ghost">Export</button>
-            <button type="button" id="backup-load" class="ghost">Load</button>
-            <input type="file" id="backup-file" accept=".json,application/json" hidden />
+        <p class="setting-list-head">About</p>
+        <div class="setting-list">
+          <div class="setting-group" data-search="about recordings audio samples coverage count voice">
+            <div class="setting-row">
+              <span class="setting-label">Recordings</span>
+              <span class="setting-help" id="about-recordings"></span>
+            </div>
+          </div>
+          <div class="setting-group" data-search="about launch startup start time slow speed loading">
+            <div class="setting-row">
+              <span class="setting-label">Launch time</span>
+              <span class="setting-help" id="launch-help"></span>
+            </div>
           </div>
         </div>
       </details>
 
       <details class="settings-cat" data-cat="reset">
-        <summary>Reset</summary>
-        <div class="setting-group danger" data-search="reset progress wipe delete everything study history">
-          <label class="setting-row">
-            <span class="setting-label">Reset progress</span>
-            <span class="setting-help">Wipes your study history on every topic. Your settings and the words in Flashcards are kept.</span>
-          </label>
-          <div class="setting-actions">
-            <button type="button" id="reset-all" class="ghost danger-btn">Reset all progress</button>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M1 4v6h6M3.51 15a9 9 0 1 0 2.13-9.36L1 10" /></svg>Reset</summary>
+        <!-- Each is a button row, red, with what it does under it (each asks first). -->
+        <div class="setting-list">
+          <div class="setting-group" data-search="reset progress wipe delete everything study history">
+            <button type="button" id="reset-all" class="setting-row setting-button danger">
+              <span class="setting-label">Reset all progress</span>
+              <span class="setting-help">Wipes your study history on every topic. Settings and your Flashcards words stay.</span>
+            </button>
           </div>
-        </div>
-        <div class="setting-group danger" data-search="reset clear flashcards review list empty remove words added">
-          <label class="setting-row">
-            <span class="setting-label">Clear Flashcards</span>
-            <span class="setting-help">Takes every word you've added out of Flashcards. Their progress is kept, so adding them again carries on where they left off.</span>
-          </label>
-          <div class="setting-actions">
-            <button type="button" id="reset-review" class="ghost danger-btn">Clear Flashcards</button>
+          <div class="setting-group" data-search="reset clear flashcards review list empty remove words added">
+            <button type="button" id="reset-review" class="setting-row setting-button danger">
+              <span class="setting-label">Clear Flashcards</span>
+              <span class="setting-help">Takes every word out of Flashcards. Their progress stays, for if you add them again.</span>
+            </button>
           </div>
-        </div>
-        <div class="setting-group danger" data-search="reset settings defaults default restore options">
-          <label class="setting-row">
-            <span class="setting-label">Reset settings</span>
-            <span class="setting-help">Puts every setting back to its default. Your progress and the words in Flashcards are kept.</span>
-          </label>
-          <div class="setting-actions">
-            <button type="button" id="reset-settings" class="ghost danger-btn">Reset settings</button>
+          <div class="setting-group" data-search="reset settings defaults default restore options">
+            <button type="button" id="reset-settings" class="setting-row setting-button danger">
+              <span class="setting-label">Reset settings</span>
+              <span class="setting-help">Every setting back to its default. Progress and your Flashcards words stay.</span>
+            </button>
           </div>
         </div>
       </details>
