@@ -1401,10 +1401,21 @@ How it works:
 
 **A card's sound is filed under its `say` too (`cardSay`).** The ณ "at" card added the same day
 has the same Thai as the letter ณ, and the recordings were keyed by Thai only, so the letter had
-been saying ná instead of นอ เณร. gen_audio now keys a card with a `say` under that text as well,
-and lets a plain reading keep the Thai key. The app plays any card as `cardSay(card)` (its `say`,
-else its Thai): the row and card speakers, Listen mode, Recall, Read all, the word dialog,
-preloading, and the tiles.
+been saying ná instead of นอ เณร (the user heard it on the tiles).
+- gen_audio keys a card with a `say` under that text as well, and the app plays any card as
+  `cardSay(card)` (its `say`, else its Thai): the row and card speakers, Listen mode, Recall, Read
+  all, the word dialog, preloading, and the tiles.
+- When cards share a Thai, its key goes to a plain reading, else to a letter's name, else to the
+  first; a plain card taking a letter's key gets a warning. A lone letter in a note or topic text
+  means the letter, and the word ณ never stands alone in text (ณ วันที่, งูใหญ่นอนอยู่ ณ ริมวัด
+  are read whole), so: ณ "at" has `say: นะ` (its dictionary reading) and 'ณ' is the letter again.
+- A letter and its name word in text ("ณ เณร", "ฎ ชฎา", all 44) is read as the letter's name
+  (`LETTER_NAMES` in gen_audio, from the letter cards' `say`): read verbatim, the voice can take
+  the letter for a word. They reuse the letter cards' recordings.
+- **เขา:** "he / she / they" (kháo, on 152 cards counting story copies) has `say: เค้า`, the
+  informal spelling of how it's said; "hill" and "horn" keep the plain เขา, khǎo. They shared one
+  recording before. A check over every card found no other Thai with two readings.
+- 62 recordings are no longer used; `gen_audio.py --prune` would delete them.
 
 ## Flashcards fit a phone screen (2026-10-12, branch `2026-10-12-card-fit`)
 

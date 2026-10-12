@@ -44,8 +44,16 @@ FIELDS = {'th': 'thai', 'en': 'english'}
 THAI_DIGITS = str.maketrans('๐๑๒๓๔๕๖๗๘๙', '0123456789')
 
 
+# A letter and its name word, as notes write it ("ณ เณร"), to the letter's name as its card says it
+# ("นอ เณร"): read verbatim, the voice can take a lone letter for a word (ณ as ná). Filled from the
+# letter cards' `say` in main().
+LETTER_NAMES = {}
+
+
 def spoken_text(text, lang):
     """What the voice actually says, where reading the card text verbatim sounds wrong."""
+    if lang == 'th' and text in LETTER_NAMES:
+        return LETTER_NAMES[text]
     if lang == 'th':
         # Thai laughter "555" (5 = ห้า, hâa) would be read as "five hundred and fifty-five".
         if re.fullmatch(r'5+', text):
@@ -165,32 +173,43 @@ async def main():
     voices = {'th': args.th_voice, 'en': args.en_voice}
 
     decks = json.loads(DECKS.read_text())['decks']
+    for c in (c for d in decks for c in d['cards']):
+        if len(c['thai']) == 1 and ' ' in c.get('say', ''):
+            LETTER_NAMES[f"{c['thai']} {c['say'].split(' ', 1)[1]}"] = c['say']
     # (lang, card text) -> sample filename
     entries = {}
     # sample filename -> (spoken text, voice, trimmed); several card texts can share one sample
     samples = {}
-    by_say = set()  # Thai keys whose sample is a card's `say`, which a plain reading replaces
+    by_say = set()     # Thai keys whose sample is a card's `say`
+    by_letter = set()  # ... and of those, a letter's name
     for d in decks:
         for c in d['cards']:
             for lang, field in FIELDS.items():
                 # A card's optional 'say' replaces what the Thai voice reads, e.g. a lone
                 # letter is read by its name (ก -> กอ ไก่). It's keyed by its Thai and by the `say`
-                # text, which the app plays for the card (cardSay), so when another card has the
-                # same Thai said plainly (ณ the letter, นอ เณร; ณ "at", ná: 2026-10-12) the Thai
-                # key takes the plain reading and the letter still says its name.
+                # text, which the app plays for the card (cardSay). When cards share a Thai, its key
+                # goes to a plain reading, else a letter's name (a lone letter in a note means the
+                # letter), else the first. So ณ (the letter, นอ เณร) keeps 'ณ' and ณ "at" plays its
+                # own say, นะ; เขา (hill, khǎo) keeps 'เขา' and เขา "he" plays เค้า (2026-10-12).
                 text = c.get('say', c[field]) if lang == 'th' else c[field]
                 said = spoken_text(text, lang)
                 voice = voice_for(said, lang, voices)
                 name = sample_name(said, voice, args.rate)
                 samples[name] = (said, voice, False)
                 key = (lang, c[field])
+                letter = len(c[field]) == 1
                 if lang == 'th' and 'say' in c:
                     entries.setdefault(('th', c['say']), name)
-                    if key in entries and key not in by_say:
-                        continue  # a plain reading of this Thai is already there
+                    if key in entries and (key not in by_say or key in by_letter or not letter):
+                        continue
                     by_say.add(key)
+                    if letter:
+                        by_letter.add(key)
                 elif key in by_say:
+                    if key in by_letter:
+                        print(f'warning: {c[field]!r} said plainly ({d["id"]}) takes the letter\'s Thai key: give it a say')
                     by_say.discard(key)
+                    by_letter.discard(key)
                 elif entries.get(key, name) != name:
                     print(f'warning: {c[field]!r} is said two ways; using {said!r} ({d["id"]})')
                 entries[key] = name
