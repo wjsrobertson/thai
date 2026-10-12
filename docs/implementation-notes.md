@@ -1411,7 +1411,11 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   settings as ⚙ does rather than a page. It's a `.tab` without `data-view`, so `els.tabs` leaves it
   out. Six items get 61–70px each on 375–430px phones.
 - **The tabs say Cards and Words** for the Flashcards and Dictionary pages (the user's call, the
-  same day; the home cards too, and the Topics card's "practise it in Cards"), and their text went up a little: 11px to
+  same day; the home cards too, and the Topics card's "practise it in Cards"; then everything the
+  user sees, the same day: toasts, ⇄ tooltips, Add all to Cards, the confirm dialogs, the empty
+  Cards page, the topic picker, Settings' Cards category and help, Clear Cards, the backup summary
+  and the screen-reader labels, "Search words" among them). The code's names (`flashcards`,
+  `dictionary`, `reviewWords`) and saved data are unchanged. Their text went up a little: 11px to
   12.5px on a phone (11.5px at 320px, where Settings, now the longest at 45px, has 52px), 16px to
   17px on wider screens. The top bar is emptied rather than hidden, since the tab bar is inside it,
   and the body pads its top by the status bar's safe area.
@@ -1478,7 +1482,8 @@ is for later).
 - **Home** has a Dictionary card too. With four cards they make a 2 × 2 grid: Reading no longer
   spans both columns, and `.home-card-wide` went. Phones still show one column.
 - **The way in:** a search box over a grid of the 44 letters, ก to ฮ, square tiles with just the
-  letter (its name word and word count went the same day, the user's call; they're in the tooltip).
+  letter (its name word and word count went the same day, the user's call; they're in the tooltip),
+  44px (34px at first; the user asked for larger), no larger at Larger text so ฐ's tail stays in.
   Letters with no words (ฃ ฅ ฏ ฑ ษ ฬ) are greyed out.
 - **A letter** lists its words. **The search** (the topic picker's `wordSearch`, now with a limit and
   a filter) lists up to 200 matches: Thai, English or rough transliteration. ‹ All letters and

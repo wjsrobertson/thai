@@ -1397,7 +1397,8 @@ body { display: flex; flex-direction: column; }
   justify-content: center;
   aspect-ratio: 1;
   padding: 0;
-  font-size: calc(34px * var(--fs, 1));
+  font-size: min(calc(44px * var(--fs, 1)), 44px); /* 34px until 2026-10-12 (the user's request); no larger at Larger text, or ฐ's tail reaches its tile's edge */
+  line-height: 1;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;

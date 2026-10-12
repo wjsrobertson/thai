@@ -574,8 +574,8 @@ function renderReviewOnly() {
   els.stage.classList.toggle('review-only-none', empty);
   if (empty) {
     const scope = flashScope();
-    els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Flashcards yet'
-      : !scope || scope.kind === 'topic' ? "None of this topic's words are in Flashcards yet" : `None of the words in ${scope.name} are in Flashcards yet`;
+    els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Cards yet'
+      : !scope || scope.kind === 'topic' ? "None of this topic's words are in Cards yet" : `None of the words in ${scope.name} are in Cards yet`;
     // Three ways out (2026-10-10, the user's wording and layout), each a button with what it does
     // beside it: add the whole topic (or group); choose words in Topics; or switch to Everything, when
     // that would show something. On Everything there's no topic to add.
@@ -1175,7 +1175,7 @@ function renderReviewBy() {
   const topic = pickerByTopic();
   els.reviewBy.hidden = !has;
   els.reviewByButtons.forEach((b) => b.setAttribute('aria-checked', String((b.dataset.reviewBy === 'topic') === topic)));
-  els.reviewByHelp.textContent = topic ? 'Shared with the Topics page' : "Every word you've added to Flashcards";
+  els.reviewByHelp.textContent = topic ? 'Shared with the Topics page' : "Every word you've added to Cards";
   const list = !has || topic;
   els.deckPickerSearchRow.hidden = !list;
   els.deckPickerTree.hidden = !list;
@@ -1410,14 +1410,14 @@ function wordHitRow(h, added) {
   const paint = () => {
     rv.className = 'row-review' + (added ? ' added' : '');
     rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${h.card.thai} from Flashcards` : `Add ${h.card.thai} to Flashcards`;
+    rv.title = added ? `Remove ${h.card.thai} from Cards` : `Add ${h.card.thai} to Cards`;
     rv.setAttribute('aria-label', rv.title);
   };
   paint();
   rv.addEventListener('click', () => {
     added = !added;
     setInReview([h.key], added);
-    toast(added ? `✓ Added ${h.card.thai} to Flashcards` : `Removed ${h.card.thai} from Flashcards`, { tone: added ? 'good' : '' });
+    toast(added ? `✓ Added ${h.card.thai} to Cards` : `Removed ${h.card.thai} from Cards`, { tone: added ? 'good' : '' });
     paint();
   });
   const sp = document.createElement('button');
@@ -2005,11 +2005,11 @@ function renderWordlist() {
   if (allIn) {
     // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
     const label = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
-    els.wordlistAddAll.replaceChildren(label('label-idle', '✓ All in Flashcards'), label('label-hover', '− Remove all'));
+    els.wordlistAddAll.replaceChildren(label('label-idle', '✓ All in Cards'), label('label-hover', '− Remove all'));
   } else {
-    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Flashcards'); // "…to Review" until 2026-10-08
+    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Cards'); // "…to Review" until 2026-10-08
   }
-  els.wordlistAddAll.title = allIn ? 'Remove all from Flashcards' : '';
+  els.wordlistAddAll.title = allIn ? 'Remove all from Cards' : '';
 }
 
 // A word's row, as on the Topics page and in the Dictionary: its Thai (opening the word dialog; a
@@ -2080,11 +2080,11 @@ function wordRow(c, cols, added) {
   rv.type = 'button';
   rv.className = 'row-review' + (added ? ' added' : '');
   rv.replaceChildren(added ? '✓' : reviewIcon());
-  rv.title = added ? `Remove ${c.thai} from Flashcards` : `Add ${c.thai} to Flashcards`;
+  rv.title = added ? `Remove ${c.thai} from Cards` : `Add ${c.thai} to Cards`;
   rv.setAttribute('aria-label', rv.title);
   rv.addEventListener('click', () => {
     setInReview([c.key], !added);
-    toast(added ? `Removed ${c.thai} from Flashcards` : `✓ Added ${c.thai} to Flashcards`, { tone: added ? '' : 'good' });
+    toast(added ? `Removed ${c.thai} from Cards` : `✓ Added ${c.thai} to Cards`, { tone: added ? '' : 'good' });
   });
   audioTd.append(rv);
   if (isSpellable(c.thai)) {
@@ -3392,14 +3392,14 @@ function showWordPop(anchor, card) {
   const paintReview = () => {
     rv.className = 'row-review' + (added ? ' added' : '');
     rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${card.thai} from Flashcards` : `Add ${card.thai} to Flashcards`;
+    rv.title = added ? `Remove ${card.thai} from Cards` : `Add ${card.thai} to Cards`;
     rv.setAttribute('aria-label', rv.title);
   };
   paintReview();
   rv.addEventListener('click', () => {
     added = !added;
     setInReview([key], added);
-    toast(added ? `✓ Added ${card.thai} to Flashcards` : `Removed ${card.thai} from Flashcards`, { tone: added ? 'good' : '' });
+    toast(added ? `✓ Added ${card.thai} to Cards` : `Removed ${card.thai} from Cards`, { tone: added ? 'good' : '' });
     paintReview();
   });
   actions.append(rv);
@@ -3948,13 +3948,13 @@ async function resetAllProgress() {
 async function resetReviewList() {
   const n = Object.keys(reviewWords()).length;
   if (!n) {
-    toast('Flashcards has no words in it');
+    toast('There are no words in Cards');
     return;
   }
   const ok = await confirmDialog({
-    title: 'Clear Flashcards?',
-    message: `This takes all ${n} word${n === 1 ? '' : 's'} you've added out of Flashcards. Their progress is kept, so adding them again carries on.`,
-    confirmLabel: 'Clear Flashcards',
+    title: 'Clear Cards?',
+    message: `This takes all ${n} word${n === 1 ? '' : 's'} you've added out of Cards. Their progress is kept, so adding them again carries on.`,
+    confirmLabel: 'Clear Cards',
     danger: true,
   });
   if (!ok) return;
@@ -3964,7 +3964,7 @@ async function resetReviewList() {
   renderToday();
   renderWordlist();
   syncReviewOnly();
-  toast('Flashcards cleared');
+  toast('Cards cleared');
 }
 
 // Every setting back to its default (getSettings merges DEFAULT_SETTINGS over what's saved).
@@ -3973,7 +3973,7 @@ async function resetReviewList() {
 async function resetSettings() {
   const ok = await confirmDialog({
     title: 'Reset all settings?',
-    message: 'Every setting goes back to its default. Your progress and the words in Flashcards are kept.',
+    message: 'Every setting goes back to its default. Your progress and the words in Cards are kept.',
     confirmLabel: 'Reset settings',
     danger: true,
   });
@@ -4605,29 +4605,29 @@ function bindEvents() {
       // All in Review: remove them all (their progress is kept).
       const n = state.listCards.length;
       const ok = await confirmDialog({
-        title: 'Remove all from Flashcards?',
-        message: `Remove all ${n} words in ${deck.name} from Flashcards? Your progress on them is kept.`,
+        title: 'Remove all from Cards?',
+        message: `Remove all ${n} words in ${deck.name} from Cards? Your progress on them is kept.`,
         confirmLabel: `Remove ${n}`,
         setting: 'confirmRemoveAll',
       });
       if (ok) {
         setInReview(state.listCards.map((c) => c.key), false);
-        toast(`Removed ${n} words from Flashcards`);
+        toast(`Removed ${n} words from Cards`);
       }
       return;
     }
     const n = keys.length;
     const ok = await confirmDialog({
-      title: 'Add all to Flashcards?',
+      title: 'Add all to Cards?',
       message: n === state.listCards.length
-        ? `Add all ${n} words in ${deck.name} to Flashcards?`
-        : `Add the ${n} words in ${deck.name} that aren't in Flashcards yet?`,
+        ? `Add all ${n} words in ${deck.name} to Cards?`
+        : `Add the ${n} words in ${deck.name} that aren't in Cards yet?`,
       confirmLabel: `Add ${n}`,
       setting: 'confirmAddAll',
     });
     if (ok) {
       setInReview(keys, true);
-      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Flashcards`, { tone: 'good' });
+      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Cards`, { tone: 'good' });
     }
   });
   // Flashcards with none of the topic's words in yet: "Add all words from '…'? Yes" (the question is
@@ -4637,7 +4637,7 @@ function bindEvents() {
     const keys = state.cards.map((c) => c.key).filter((key) => !(key in words));
     if (!keys.length) return;
     setInReview(keys, true);
-    toast(`✓ Added ${keys.length} ${keys.length === 1 ? 'word' : 'words'} to Flashcards`, { tone: 'good' });
+    toast(`✓ Added ${keys.length} ${keys.length === 1 ? 'word' : 'words'} to Cards`, { tone: 'good' });
   });
   els.reviewOnlyTopics.addEventListener('click', () => setView('wordlist'));
   els.reviewOnlyEverything.addEventListener('click', () => setFlashcardsBy('all'));
@@ -4979,7 +4979,7 @@ const BACKUP_FORMAT = 'learnthai-backup';
 function backupSummary(store) {
   const words = Object.keys(store.reviewWords || {}).length;
   const studied = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0])).size;
-  return `${words} word${words === 1 ? '' : 's'} in Flashcards, progress on ${studied}`;
+  return `${words} word${words === 1 ? '' : 's'} in Cards, progress on ${studied}`;
 }
 
 async function exportBackup() {
@@ -5023,7 +5023,7 @@ async function loadBackup(file) {
   const when = backup.exported ? new Date(backup.exported).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'an unknown date';
   const ok = await confirmDialog({
     title: 'Load this backup?',
-    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and words in Flashcards on this device (${backupSummary(loadStore())}).`,
+    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and words in Cards on this device (${backupSummary(loadStore())}).`,
     confirmLabel: 'Load backup',
     danger: true,
   });

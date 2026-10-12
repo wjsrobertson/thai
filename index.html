@@ -118,7 +118,7 @@
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</span>
         <span class="home-card-text">
           <span>Every word, sorted by topic, with audio and spelling.</span>
-          <span>Tap <span class="inline-icon" role="img" aria-label="Add to Flashcards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> on a word to practise it in Cards.</span>
+          <span>Tap <span class="inline-icon" role="img" aria-label="Add to Cards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> on a word to practise it in Cards.</span>
           <span>Hear a whole topic read out with Read all.</span>
         </span>
       </button>
@@ -167,7 +167,7 @@
         <button type="button" role="radio" class="seg-btn" data-order="review" aria-checked="false">Recall</button> <!-- "Review" until 2026-10-08 -->
       </div>
       <div class="wordlist-only wordlist-bar-right">
-        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Flashcards</button>
+        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Cards</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
       </div>
       <!-- Reading's Read all (readStories): where Topics has its Read all, in the same style. Read, for
@@ -202,7 +202,7 @@
     <section class="card-wrap">
       <div class="card-row">
         <button type="button" id="prev-btn" class="nav-btn" aria-label="Previous card" title="Previous (←)">‹</button>
-        <div id="card" class="card" role="button" tabindex="0" aria-label="Flashcard. Click or press space to flip.">
+        <div id="card" class="card" role="button" tabindex="0" aria-label="Card. Tap or press space to turn it over.">
           <div class="face front">
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
@@ -242,10 +242,10 @@
     </section>
 
     <div class="review-only-empty flashcards-only" id="review-only-empty" role="status" hidden>
-      <p class="review-only-empty-title">None of this topic's words are in Flashcards yet</p>
+      <p class="review-only-empty-title">None of this topic's words are in Cards yet</p>
       <div class="review-only-actions">
-        <div class="review-only-row" id="review-only-add-all"><button type="button" class="round-again review-only-btn" id="review-only-yes">Add all words</button><span>Add every word from <span id="review-only-add-name"></span> to Flashcards</span></div>
-        <div class="review-only-row"><button type="button" class="round-again review-only-btn" id="review-only-topics">Choose words</button><span>Add words <span id="review-only-pick-from"></span> individually with the <span class="inline-icon" role="img" aria-label="Add to Flashcards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button</span></div>
+        <div class="review-only-row" id="review-only-add-all"><button type="button" class="round-again review-only-btn" id="review-only-yes">Add all words</button><span>Add every word from <span id="review-only-add-name"></span> to Cards</span></div>
+        <div class="review-only-row"><button type="button" class="round-again review-only-btn" id="review-only-topics">Choose words</button><span>Add words <span id="review-only-pick-from"></span> individually with the <span class="inline-icon" role="img" aria-label="Add to Cards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> button</span></div>
         <div class="review-only-row" id="review-only-empty-hint"><button type="button" class="round-again review-only-btn" id="review-only-everything">View all topics</button><span>Switch to Everything to see all your added words from all topics</span></div>
       </div>
     </div>
@@ -431,14 +431,14 @@
             <label class="setting-row">
               <span class="setting-label">Confirm Add all</span>
               <input type="checkbox" data-confirm-setting="confirmAddAll" />
-              <span class="setting-help">Ask before adding every word in the list to Flashcards.</span>
+              <span class="setting-help">Ask before adding every word in the list to Cards.</span>
             </label>
           </div>
           <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
             <label class="setting-row">
               <span class="setting-label">Confirm Remove all</span>
               <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
-              <span class="setting-help">Ask before taking every word in the list out of Flashcards.</span>
+              <span class="setting-help">Ask before taking every word in the list out of Cards.</span>
             </label>
           </div>
         </div>
@@ -489,7 +489,7 @@
       </details>
 
       <details class="settings-cat" data-cat="deck-mode">
-        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg>Flashcards</summary>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg>Cards</summary>
         <!-- Three parts since 2026-10-08: Test, Review, and the schedule both of them feed (a wrong
              Test answer counts as Very Hard, a right one as Hard). Smart order went the same day. -->
         <p class="setting-list-head">Recognition</p>
@@ -572,7 +572,7 @@
           <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
             <div class="setting-row">
               <span class="setting-label">Backup</span>
-              <span class="setting-help">Settings, progress and your Flashcards words, in a file: to move to another device, say. Loading replaces what's here. Not downloaded audio.</span>
+              <span class="setting-help">Settings, progress and the words in Cards, in a file: to move to another device, say. Loading replaces what's here. Not downloaded audio.</span>
             </div>
             <div class="setting-actions">
               <button type="button" id="backup-export" class="setting-action">Export to a file</button>
@@ -605,19 +605,19 @@
           <div class="setting-group" data-search="reset progress wipe delete everything study history">
             <button type="button" id="reset-all" class="setting-row setting-button danger">
               <span class="setting-label">Reset all progress</span>
-              <span class="setting-help">Wipes your study history on every topic. Settings and your Flashcards words stay.</span>
+              <span class="setting-help">Wipes your study history on every topic. Settings and the words in Cards stay.</span>
             </button>
           </div>
           <div class="setting-group" data-search="reset clear flashcards review list empty remove words added">
             <button type="button" id="reset-review" class="setting-row setting-button danger">
-              <span class="setting-label">Clear Flashcards</span>
-              <span class="setting-help">Takes every word out of Flashcards. Their progress stays, for if you add them again.</span>
+              <span class="setting-label">Clear Cards</span>
+              <span class="setting-help">Takes every word out of Cards. Their progress stays, for if you add them again.</span>
             </button>
           </div>
           <div class="setting-group" data-search="reset settings defaults default restore options">
             <button type="button" id="reset-settings" class="setting-row setting-button danger">
               <span class="setting-label">Reset settings</span>
-              <span class="setting-help">Every setting back to its default. Progress and your Flashcards words stay.</span>
+              <span class="setting-help">Every setting back to its default. Progress and the words in Cards stay.</span>
             </button>
           </div>
         </div>
@@ -635,7 +635,7 @@
     <!-- The Dictionary (renderDictionary): a search box over the ก–ฮ grid; a letter, or a search, lists
          its words in a table like the Topics page's. -->
     <section class="dictionary dictionary-only" id="dictionary-section" hidden>
-      <input type="search" class="dict-search" id="dict-search" placeholder="Search Thai, English or transliteration" autocomplete="off" spellcheck="false" aria-label="Search the dictionary" />
+      <input type="search" class="dict-search" id="dict-search" placeholder="Search Thai, English or transliteration" autocomplete="off" spellcheck="false" aria-label="Search words" />
       <div class="dict-head" id="dict-head" hidden>
         <button type="button" class="ghost dict-back" id="dict-back"></button>
         <span class="dict-heading" id="dict-heading"></span>
