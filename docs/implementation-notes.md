@@ -1411,7 +1411,7 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   settings as ⚙ does rather than a page. It's a `.tab` without `data-view`, so `els.tabs` leaves it
   out. Six items get 61–70px each on 375–430px phones.
 - **The tabs say Cards and Words** for the Flashcards and Dictionary pages (the user's call, the
-  same day; only the tabs, the pages keep their names), and their text went up a little: 11px to
+  same day; the home cards too, and the Topics card's "practise it in Cards"), and their text went up a little: 11px to
   12.5px on a phone (11.5px at 320px, where Settings, now the longest at 45px, has 52px), 16px to
   17px on wider screens. The top bar is emptied rather than hidden, since the tab bar is inside it,
   and the body pads its top by the status bar's safe area.
