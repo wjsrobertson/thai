@@ -1406,9 +1406,12 @@ the tabs are now a bar along the bottom, as in an iPhone app: Home, Topics, Flas
 Dictionary, each a line icon over its name, the current one in the accent colour.
 - **Markup:** one set of tabs. The icons (`.tab-svg`) and the Home tab (`.tab-home`) are hidden on
   wider screens, so desktop is unchanged.
-- **The top bar** (Learn Thai, in place of the Home link, and ⚙) shows only on Home: the user's
-  call, the same day. Settings are reached from Home. On other pages the top bar is emptied
-  (`html[data-view]`, set by `setView`) rather than hidden, since the tab bar is inside it.
+- **No top bar on a phone** (the user's call, the same day). For a while it showed Learn Thai and
+  ⚙ on Home only; now **Settings is the bar's sixth item** (`#tab-settings`, a gear), opening the
+  settings as ⚙ does rather than a page. It's a `.tab` without `data-view`, so `els.tabs` leaves it
+  out. Six items get 61–70px each on 375–430px phones ("Flashcards" is 54px), and at 320px the
+  labels drop to 10px. The top bar is emptied rather than hidden, since the tab bar is inside it,
+  and the body pads its top by the status bar's safe area.
 - **Fixed inside the top bar:** the bar is `position: fixed` but still inside `.topbar`. On phones
   the top bar is opaque with no `backdrop-filter`, because a backdrop-filter would make the top bar
   the bar's containing block and pin it there.

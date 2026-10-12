@@ -17,24 +17,19 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 
 /* ---------- top bar and tab bar ---------- */
 /* The tabs are a bar along the bottom, as in an iPhone app, each an icon over its name: Home,
-   Topics, Flashcards, Reading and Dictionary (2026-10-12: with Dictionary, the tabs no longer fit
-   across the top). The top bar, Learn Thai and ⚙, shows only on Home (the user's call, the same
-   day): elsewhere it's empty and takes no room, though the tab bar inside it stays. */
+   Topics, Flashcards, Reading, Dictionary and Settings (2026-10-12: with Dictionary, the tabs no
+   longer fit across the top). No top bar: its Home and ⚙ are in the tab bar (the user's call, the
+   same day; for a while it was Learn Thai and ⚙, on Home only). It's still there, empty and taking
+   no room, since the tab bar is inside it. */
 .topbar {
-  padding: 10px 12px;
-  gap: 4px;
-  /* Opaque, without the blur: a backdrop-filter would pin the fixed tab bar inside it to the top
-     bar instead of the screen. */
-  background: var(--bg);
+  padding: 0;
+  border: 0;
+  /* No backdrop-filter: it would pin the fixed tab bar inside it to the top bar, not the screen. */
   backdrop-filter: none;
 }
-.topbar h1 { font-size: 17px; white-space: nowrap; letter-spacing: 0; }
-.home-link { display: none; }
-.page-title { display: inline; }
-.tab-icon { padding: 6px 8px; }
-html:not([data-view="home"]) .topbar { padding: 0; border: 0; }
-html:not([data-view="home"]) .topbar h1,
-html:not([data-view="home"]) .topbar .controls { display: none; }
+.topbar h1, .topbar .controls { display: none; }
+/* With no top bar, the page itself keeps clear of the status bar, should it reach under it. */
+body { padding-top: env(safe-area-inset-top, 0px); }
 
 :root { --tabbar-h: 56px; } /* without the home-indicator strip */
 .tabs {
@@ -43,7 +38,7 @@ html:not([data-view="home"]) .topbar .controls { display: none; }
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 0;
   padding: 4px max(4px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(4px, env(safe-area-inset-left, 0px));
   background: var(--panel);
@@ -63,6 +58,7 @@ html:not([data-view="home"]) .topbar .controls { display: none; }
   white-space: nowrap;
 }
 .tab-svg { display: block; width: 24px; height: 24px; }
+@media (max-width: 340px) { .tab { font-size: 10px; } } /* the 320px SE: Flashcards in a 52px slot */
 .tab[aria-selected="true"] { background: none; color: var(--accent); }
 .tab[aria-selected="true"]:hover { color: var(--accent); }
 /* Flashcards' last buttons sit 12px above the tab bar (the stage's usual 24px, less: the card gets it). */

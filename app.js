@@ -7,7 +7,7 @@ import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_N
 
 const els = {
   stage: document.querySelector('.stage'),
-  tabs: document.querySelectorAll('.tab'),
+  tabs: document.querySelectorAll('.tab[data-view]'), // not the phone's Settings (tabSettings)
   deckButton: document.getElementById('deck-button'),
   deckButtonLabel: document.getElementById('deck-button-label'),
   deckButtonIcon: document.querySelector('#deck-button .deck-button-icon'),
@@ -52,6 +52,7 @@ const els = {
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
+  tabSettings: document.getElementById('tab-settings'), // a phone's, in the tab bar
   setWaitAgain: document.getElementById('setting-wait-again'),
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
@@ -1495,7 +1496,7 @@ function openSettings() {
   els.settingsModal.hidden = false;
   setModalOpen(true);
   els.settingsSection.scrollTop = 0;
-  els.settingsButton.setAttribute('aria-expanded', 'true');
+  for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'true');
   renderSettings();
   if (!TOUCH_SCREEN) setTimeout(() => els.settingsSearch.focus(), 0);
 }
@@ -1504,7 +1505,7 @@ function closeSettings() {
   state.settingsOpen = false;
   els.settingsModal.hidden = true;
   setModalOpen(false);
-  els.settingsButton.setAttribute('aria-expanded', 'false');
+  for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'false');
   if (state.lastFocus && typeof state.lastFocus.focus === 'function') {
     state.lastFocus.focus();
   }
@@ -1519,7 +1520,6 @@ function setView(view) {
   els.tabs.forEach((t) => {
     t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
   });
-  document.documentElement.dataset.view = view; // a phone's top bar shows only on Home (mobile.css)
   els.wordlistSection.hidden = view !== 'wordlist';
   els.readingSection.hidden = view !== 'reading';
   els.dictSection.hidden = view !== 'dictionary';
@@ -4480,6 +4480,7 @@ function bindEvents() {
 
   // Settings modal
   els.settingsButton.addEventListener('click', openSettings);
+  els.tabSettings.addEventListener('click', openSettings);
   els.settingsModal.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeSettings();
   });
