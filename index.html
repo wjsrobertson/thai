@@ -37,6 +37,7 @@
       <button type="button" class="tab" role="tab" data-view="wordlist" aria-selected="false">Topics</button>
       <button type="button" class="tab" role="tab" data-view="flashcards" aria-selected="false">Flashcards</button>
       <button type="button" class="tab" role="tab" data-view="reading" aria-selected="false">Reading</button>
+      <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false">Dictionary</button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -119,11 +120,19 @@
         </span>
       </button>
       <!-- Reading (2026-10-08): its own page, not a topic list. -->
-      <button type="button" class="home-card home-card-wide" data-go="reading">
+      <button type="button" class="home-card" data-go="reading">
         <span class="home-card-title">📰 Reading</span>
         <span class="home-card-text">
           <span>Short stories that use the words from each topic.</span>
           <span>Tap any word to hear it and see what it means.</span>
+        </span>
+      </button>
+      <!-- Dictionary (2026-10-12): with it, the four cards make a 2 × 2 grid (Reading spanned both columns). -->
+      <button type="button" class="home-card" data-go="dictionary">
+        <span class="home-card-title">📕 Dictionary</span>
+        <span class="home-card-text">
+          <span>Every word, from ก to ฮ.</span>
+          <span>Search in Thai, English or transliteration, then tap a word to hear it and see its tones.</span>
         </span>
       </button>
     </section>
@@ -590,6 +599,22 @@
         </div>
       </div>
     </div>
+
+    <!-- The Dictionary (renderDictionary): a search box over the ก–ฮ grid; a letter, or a search, lists
+         its words in a table like the Topics page's. -->
+    <section class="dictionary dictionary-only" id="dictionary-section" hidden>
+      <input type="search" class="dict-search" id="dict-search" placeholder="Search Thai, English or transliteration" autocomplete="off" spellcheck="false" aria-label="Search the dictionary" />
+      <div class="dict-head" id="dict-head" hidden>
+        <button type="button" class="ghost dict-back" id="dict-back"></button>
+        <span class="dict-heading" id="dict-heading"></span>
+      </div>
+      <div class="dict-grid" id="dict-grid"></div>
+      <p class="dict-empty" id="dict-empty" hidden></p>
+      <table class="wordtable dict-table" id="dict-table" hidden>
+        <thead id="dict-table-head"></thead>
+        <tbody id="dict-table-body"></tbody>
+      </table>
+    </section>
 
     <section class="wordlist" id="wordlist-section" hidden>
       <div class="wordlist-deck-name" id="wordlist-deck-name"></div>

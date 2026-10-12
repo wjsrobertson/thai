@@ -1369,6 +1369,27 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## Dictionary (2026-10-12, experiment, branch `2026-10-12-dictionary`)
+
+The user wanted a dictionary as a top-level feature: a Dictionary tab (fitting the tabs on a phone
+is for later).
+- **Home** has a Dictionary card too. With four cards they make a 2 × 2 grid: Reading no longer
+  spans both columns, and `.home-card-wide` went. Phones still show one column.
+- **The way in:** a search box over a grid of the 44 letters, ก to ฮ. Each tile has the letter, its
+  name word and how many words file under it; letters with none (ฃ ฅ ฌ ฏ ฑ ฒ ณ ษ ฬ) are greyed out.
+- **A letter** lists its words. **The search** (the topic picker's `wordSearch`, now with a limit and
+  a filter) lists up to 200 matches: Thai, English or rough transliteration. ‹ All letters and
+  ✕ Clear search go back.
+- **The table is the Topics page's**, rows and all. Its row builder became `wordRow(c, cols, added)`
+  and its columns `wordlistColumns()`; both pages use them. So the rows have the word dialog from
+  the Thai, transliteration and English, the note, and the add / spell / play buttons.
+- **The words:** every word card in the topics, one row per card key, leaving out Thai Script's
+  spelling examples and the stories' copies. Phrases are left out too (the user's call, the same
+  day; `isPhrase`): cards listing their `words`, or written with a space (a doubled word like
+  จริง ๆ stays). Compounds such as ข้าวเหนียว have no `words`, so they stay. That's about 7,100. They're in Thai dictionary order
+  (`Intl.Collator('th')`, which files เ แ โ ใ ไ words under their consonant: เกิด under ก). ฤ and ฦ
+  words file under ร and ล.
+
 ## Reading list as an accordion (2026-10-12, experiment, branch `2026-10-12-reading-accordion`)
 
 The user wanted to see stories open in place on the Reading page, not on a page of their own with a

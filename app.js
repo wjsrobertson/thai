@@ -37,6 +37,16 @@ const els = {
   wordlistSection: document.getElementById('wordlist-section'),
   wordlistDeckName: document.getElementById('wordlist-deck-name'),
   wordtable: document.getElementById('wordtable'),
+  dictSection: document.getElementById('dictionary-section'),
+  dictSearch: document.getElementById('dict-search'),
+  dictHead: document.getElementById('dict-head'),
+  dictBack: document.getElementById('dict-back'),
+  dictHeading: document.getElementById('dict-heading'),
+  dictGrid: document.getElementById('dict-grid'),
+  dictEmpty: document.getElementById('dict-empty'),
+  dictTable: document.getElementById('dict-table'),
+  dictTableHead: document.getElementById('dict-table-head'),
+  dictTableBody: document.getElementById('dict-table-body'),
   wordtableHead: document.getElementById('wordtable-head'),
   wordtableBody: document.getElementById('wordtable-body'),
   settingsSection: document.getElementById('settings-section'),
@@ -179,6 +189,8 @@ const state = {
   pos: 0,             // index into queue
   showingBack: false,
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
+  dictLetter: null,   // the Dictionary's letter (ก…ฮ), or null for the grid (renderDictionary)
+  dictQuery: '',      // and its search box
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   sort: { key: null, dir: 'asc' },
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
@@ -1260,7 +1272,7 @@ function looseTranslit(s) {
     .replace(/[^a-z]/g, '').replace(/(.)\1+/g, '$1');
 }
 
-function wordSearch(query) {
+function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
   if (!searchIndex) {
     searchIndex = [...state.cardIndex].map(([key, { card, deckIds }]) => ({
       key, card, deckIds,
@@ -1298,10 +1310,10 @@ function wordSearch(query) {
         else if (qt.length >= 3 && w.translit.includes(qt)) score = Math.min(score, 3.5);
       }
     }
-    if (score < 4) hits.push({ ...w, score });
+    if (score < 4 && (!keep || keep(w))) hits.push({ ...w, score });
   }
   hits.sort((a, b) => a.score - b.score || a.thai.length - b.thai.length);
-  return { hits: hits.slice(0, WORD_HITS_SHOWN), total: hits.length };
+  return { hits: hits.slice(0, limit), total: hits.length };
 }
 
 function wordHitsSection({ hits, total }) {
@@ -1470,6 +1482,8 @@ function setView(view) {
   });
   els.wordlistSection.hidden = view !== 'wordlist';
   els.readingSection.hidden = view !== 'reading';
+  els.dictSection.hidden = view !== 'dictionary';
+  if (view === 'dictionary') renderDictionary();
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
@@ -1827,6 +1841,18 @@ function visibleWordlistRows() {
   return rows;
 }
 
+// The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → Topics →
+// Show first), then the other two in fixed order.
+const COL_META = {
+  thai:     { label: 'Thai',           cls: 'col-thai' },
+  translit: { label: 'Transliteration', cls: 'col-translit' },
+  english:  { label: 'English',        cls: 'col-english' },
+};
+function wordlistColumns() {
+  const first = getSettings().wordlistFirst === 'english' ? 'english' : 'thai';
+  return [first, ...['thai', 'translit', 'english'].filter((k) => k !== first)];
+}
+
 function renderWordlist() {
   if (!state.currentDeckId) return;
   const deck = currentScope();
@@ -1867,15 +1893,7 @@ function renderWordlist() {
 
   const rows = visibleWordlistRows();
 
-  // Build column order: chosen primary first, then the other two in fixed order.
-  const COL_META = {
-    thai:     { label: 'Thai',           cls: 'col-thai' },
-    translit: { label: 'Transliteration', cls: 'col-translit' },
-    english:  { label: 'English',        cls: 'col-english' },
-  };
-  const fixedOrder = ['thai', 'translit', 'english'];
-  const first = getSettings().wordlistFirst === 'english' ? 'english' : 'thai';
-  const cols = [first, ...fixedOrder.filter((k) => k !== first)];
+  const cols = wordlistColumns();
 
   // Render header
   els.wordtableHead.innerHTML = '';
@@ -1921,97 +1939,7 @@ function renderWordlist() {
         th.firstChild.textContent = topic.name;
         frag.appendChild(th);
       }
-      const tr = document.createElement('tr');
-      tr.dataset.key = c.key;
-      if (state.reading.active && state.reading.currentKey === c.key) {
-        tr.classList.add('now-playing');
-      }
-      const added = c.key in words;
-      for (const key of cols) {
-        const td = document.createElement('td');
-        td.className = COL_META[key].cls;
-        td.textContent = c[key];
-        // The Thai opens the word pop-up, as a word in the reader does (2026-10-09, the user's request).
-        // A phrase is split into its words, each opening its own pop-up (2026-10-10, the user's
-        // request; phraseWords); the row's buttons still add, spell and play the whole phrase.
-        const parts = key === 'thai' && phraseWords(c);
-        if (parts) {
-          td.textContent = '';
-          td.classList.add('col-phrase');
-          parts.forEach((w, i) => {
-            // Between words (Thai writes none): a space that Settings → Topics → Word gaps shows.
-            if (i) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
-            const span = Object.assign(document.createElement('span'), { className: 'tw', textContent: w.thai });
-            span.tabIndex = 0;
-            span.setAttribute('role', 'button');
-            span.title = `Show ${w.thai}`;
-            const open = (e) => {
-              e.preventDefault();
-              showWordPop(span, w);
-            };
-            span.addEventListener('click', open);
-            span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
-            td.append(span);
-          });
-        } else if (key === 'thai') {
-          td.tabIndex = 0;
-          td.setAttribute('role', 'button');
-          td.title = 'Show the word';
-          const open = (e) => {
-            e.preventDefault();
-            showWordPop(td, c);
-          };
-          td.addEventListener('click', open);
-          td.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
-        }
-        // The transliteration and English open the word dialog too, for the whole card (a phrase's
-        // too; 2026-10-11, the user's request). Not tab stops: the Thai is the row's.
-        if (key === 'translit' || key === 'english') {
-          td.classList.add('opens-word');
-          td.addEventListener('click', () => showWordPop(td, c));
-        }
-        // English column gets the note appended below.
-        if (key === 'english' && c.note) {
-          const span = document.createElement('span');
-          span.className = 'col-note';
-          td.appendChild(noteText(span, c.note));
-        }
-        tr.appendChild(td);
-      }
-      const audioTd = document.createElement('td');
-      audioTd.className = 'col-audio';
-      // Add to / remove from Review, left of the speaker: the Review icon, or ✓ once added.
-      const rv = document.createElement('button');
-      rv.type = 'button';
-      rv.className = 'row-review' + (added ? ' added' : '');
-      rv.replaceChildren(added ? '✓' : reviewIcon());
-      rv.title = added ? `Remove ${c.thai} from Flashcards` : `Add ${c.thai} to Flashcards`;
-      rv.setAttribute('aria-label', rv.title);
-      rv.addEventListener('click', () => {
-        setInReview([c.key], !added);
-        toast(added ? `Removed ${c.thai} from Flashcards` : `✓ Added ${c.thai} to Flashcards`, { tone: added ? '' : 'good' });
-      });
-      audioTd.append(rv);
-      if (isSpellable(c.thai)) {
-        const sp = document.createElement('button');
-        sp.type = 'button';
-        sp.className = 'row-spell';
-        sp.append(spellIcon());
-        sp.title = `Spell ${c.thai} aloud`;
-        sp.setAttribute('aria-label', sp.title);
-        sp.addEventListener('click', () => speakSpelling(c, [sp]));
-        audioTd.append(sp);
-      }
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'row-speak' + (sayingNow(c.thai) ? ' playing' : '');
-      btn.dataset.say = c.thai;
-      btn.setAttribute('aria-label', 'Play audio');
-      btn.append(speakerIcon());
-      btn.addEventListener('click', () => speakerPress(btn, c.thai));
-      audioTd.appendChild(btn);
-      tr.appendChild(audioTd);
-      frag.appendChild(tr);
+      frag.appendChild(wordRow(c, cols, c.key in words));
     }
     els.wordtableBody.appendChild(frag);
   }
@@ -2027,6 +1955,211 @@ function renderWordlist() {
     els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Flashcards'); // "…to Review" until 2026-10-08
   }
   els.wordlistAddAll.title = allIn ? 'Remove all from Flashcards' : '';
+}
+
+// A word's row, as on the Topics page and in the Dictionary: its Thai (opening the word dialog; a
+// phrase's words each open their own), transliteration and English (opening it too), the note under
+// the English, and the add to Flashcards, spell and play buttons. `cols` is the column order
+// (wordlistColumns); `added`, whether it's in Flashcards.
+function wordRow(c, cols, added) {
+  const tr = document.createElement('tr');
+  tr.dataset.key = c.key;
+  if (state.reading.active && state.reading.currentKey === c.key) {
+    tr.classList.add('now-playing');
+  }
+  for (const key of cols) {
+    const td = document.createElement('td');
+    td.className = COL_META[key].cls;
+    td.textContent = c[key];
+    // The Thai opens the word pop-up, as a word in the reader does (2026-10-09, the user's request).
+    // A phrase is split into its words, each opening its own pop-up (2026-10-10, the user's
+    // request; phraseWords); the row's buttons still add, spell and play the whole phrase.
+    const parts = key === 'thai' && phraseWords(c);
+    if (parts) {
+      td.textContent = '';
+      td.classList.add('col-phrase');
+      parts.forEach((w, i) => {
+        // Between words (Thai writes none): a space that Settings → Topics → Word gaps shows.
+        if (i) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
+        const span = Object.assign(document.createElement('span'), { className: 'tw', textContent: w.thai });
+        span.tabIndex = 0;
+        span.setAttribute('role', 'button');
+        span.title = `Show ${w.thai}`;
+        const open = (e) => {
+          e.preventDefault();
+          showWordPop(span, w);
+        };
+        span.addEventListener('click', open);
+        span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+        td.append(span);
+      });
+    } else if (key === 'thai') {
+      td.tabIndex = 0;
+      td.setAttribute('role', 'button');
+      td.title = 'Show the word';
+      const open = (e) => {
+        e.preventDefault();
+        showWordPop(td, c);
+      };
+      td.addEventListener('click', open);
+      td.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+    }
+    // The transliteration and English open the word dialog too, for the whole card (a phrase's
+    // too; 2026-10-11, the user's request). Not tab stops: the Thai is the row's.
+    if (key === 'translit' || key === 'english') {
+      td.classList.add('opens-word');
+      td.addEventListener('click', () => showWordPop(td, c));
+    }
+    // English column gets the note appended below.
+    if (key === 'english' && c.note) {
+      const span = document.createElement('span');
+      span.className = 'col-note';
+      td.appendChild(noteText(span, c.note));
+    }
+    tr.appendChild(td);
+  }
+  const audioTd = document.createElement('td');
+  audioTd.className = 'col-audio';
+  // Add to / remove from Review, left of the speaker: the Review icon, or ✓ once added.
+  const rv = document.createElement('button');
+  rv.type = 'button';
+  rv.className = 'row-review' + (added ? ' added' : '');
+  rv.replaceChildren(added ? '✓' : reviewIcon());
+  rv.title = added ? `Remove ${c.thai} from Flashcards` : `Add ${c.thai} to Flashcards`;
+  rv.setAttribute('aria-label', rv.title);
+  rv.addEventListener('click', () => {
+    setInReview([c.key], !added);
+    toast(added ? `Removed ${c.thai} from Flashcards` : `✓ Added ${c.thai} to Flashcards`, { tone: added ? '' : 'good' });
+  });
+  audioTd.append(rv);
+  if (isSpellable(c.thai)) {
+    const sp = document.createElement('button');
+    sp.type = 'button';
+    sp.className = 'row-spell';
+    sp.append(spellIcon());
+    sp.title = `Spell ${c.thai} aloud`;
+    sp.setAttribute('aria-label', sp.title);
+    sp.addEventListener('click', () => speakSpelling(c, [sp]));
+    audioTd.append(sp);
+  }
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'row-speak' + (sayingNow(c.thai) ? ' playing' : '');
+  btn.dataset.say = c.thai;
+  btn.setAttribute('aria-label', 'Play audio');
+  btn.append(speakerIcon());
+  btn.addEventListener('click', () => speakerPress(btn, c.thai));
+  audioTd.appendChild(btn);
+  tr.appendChild(audioTd);
+  return tr;
+}
+
+// ---------- Dictionary (2026-10-12, the user's idea; an experiment) ----------
+
+// Every word in the topics (not phrases, Thai Script's spelling examples, or the stories' copies), one row
+// per card key, in Thai dictionary order (Intl.Collator 'th' files เ แ โ ใ ไ words under their
+// consonant: เกิด under ก). The way in is a ก–ฮ grid with a search box above: a letter lists its
+// words, and the search (wordSearch, as the topic picker's) lists its matches, both in a table like
+// the Topics page's (wordRow), with its word dialog and buttons.
+const DICT_LETTERS = 'กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ';
+const DICT_SHOWN = 200; // search matches listed
+let dictEntries = null;  // [card + { key, first }], sorted
+let dictKeys = null;     // their keys, for wordSearch's filter
+
+// The letter a word files under: its first consonant, past a leading vowel; ฤ and ฦ under ร and ล.
+function dictLetterOf(thai) {
+  const ch = thai.replace(/^[เแโใไ]/, '')[0];
+  return ch === 'ฤ' ? 'ร' : ch === 'ฦ' ? 'ล' : ch;
+}
+
+// Words only, no phrases (the user's call, 2026-10-12): a phrase card lists its words (`words`, from
+// the story builder), or is written with a space (ขอ … หน่อย, เร็ว ๆ นี้); a doubled word (จริง ๆ) stays.
+// Compounds (ข้าวเหนียว, ห้องน้ำ) have no `words`, so they're words.
+function isPhrase(c) {
+  return c.words?.length > 1 || /\s/.test(c.thai.replace(/\s+ๆ/g, 'ๆ'));
+}
+
+function buildDictionary() {
+  if (dictEntries) return;
+  const seen = new Map();
+  for (const d of state.decks) {
+    if (d.passage || d.category === 'Thai Script') continue;
+    for (const c of d.cards) {
+      const key = cardKey(c);
+      if (!seen.has(key) && /^[ก-ฮเ-ไฤฦ]/.test(c.thai) && !isPhrase(c)) seen.set(key, { ...c, key, first: dictLetterOf(c.thai) });
+    }
+  }
+  const thaiOrder = new Intl.Collator('th');
+  dictEntries = [...seen.values()].sort((a, b) => thaiOrder.compare(a.thai, b.thai) || a.english.localeCompare(b.english));
+  dictKeys = new Set(seen.keys());
+}
+
+function renderDictionary() {
+  buildDictionary();
+  const q = state.dictQuery.trim();
+  let rows = null;
+  let heading = '';
+  if (q) {
+    const { hits, total } = wordSearch(q, { limit: DICT_SHOWN, keep: (w) => dictKeys.has(w.key) });
+    const byKey = new Map(dictEntries.map((e) => [e.key, e]));
+    rows = hits.map((h) => byKey.get(h.key));
+    heading = total > hits.length ? `The first ${hits.length} of ${total} matches` : `${total} match${total === 1 ? '' : 'es'}`;
+    els.dictBack.textContent = '✕ Clear search';
+  } else if (state.dictLetter) {
+    rows = dictEntries.filter((e) => e.first === state.dictLetter);
+    const name = letterStep(state.dictLetter)?.show || state.dictLetter;
+    heading = `${name} · ${rows.length} word${rows.length === 1 ? '' : 's'}`;
+    els.dictBack.textContent = '‹ All letters';
+  }
+  els.dictGrid.hidden = !!rows;
+  els.dictHead.hidden = !rows;
+  els.dictHeading.textContent = heading;
+  els.dictEmpty.hidden = !(rows && !rows.length);
+  els.dictEmpty.textContent = q ? `Nothing matches "${q}".` : 'No words yet.';
+  els.dictTable.hidden = !rows?.length;
+  if (!rows) {
+    renderDictGrid();
+    return;
+  }
+  els.dictTable.classList.toggle('show-spaces', !!getSettings().topicWordGaps);
+  const cols = wordlistColumns();
+  const head = document.createElement('tr');
+  for (const key of cols) head.append(Object.assign(document.createElement('th'), { textContent: COL_META[key].label }));
+  const audioTh = document.createElement('th');
+  audioTh.setAttribute('aria-label', 'Audio');
+  head.append(audioTh);
+  els.dictTableHead.replaceChildren(head);
+  const words = reviewWords();
+  const frag = document.createDocumentFragment();
+  for (const c of rows) frag.append(wordRow(c, cols, c.key in words));
+  els.dictTableBody.replaceChildren(frag);
+}
+
+// The 44 letters, each with its name word and how many words file under it.
+function renderDictGrid() {
+  if (els.dictGrid.childElementCount) return; // drawn once: the words don't change while the app's open
+  const counts = new Map();
+  for (const e of dictEntries) counts.set(e.first, (counts.get(e.first) || 0) + 1);
+  els.dictGrid.replaceChildren(...[...DICT_LETTERS].map((ch) => {
+    const n = counts.get(ch) || 0;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'dict-letter';
+    b.disabled = !n;
+    const name = (letterStep(ch)?.show || '').split(' ')[1] || '';
+    b.append(
+      Object.assign(document.createElement('span'), { className: 'dict-letter-ch', textContent: ch, lang: 'th' }),
+      Object.assign(document.createElement('span'), { className: 'dict-letter-name', textContent: name, lang: 'th' }),
+      Object.assign(document.createElement('span'), { className: 'dict-letter-count', textContent: n ? String(n) : '–' }),
+    );
+    b.title = n ? `${ch} ${name}: ${n} word${n === 1 ? '' : 's'}` : `${ch} ${name}: no words (obsolete)`;
+    b.addEventListener('click', () => {
+      state.dictLetter = ch;
+      renderDictionary();
+      window.scrollTo(0, 0);
+    });
+    return b;
+  }));
 }
 
 // ---------- Learn mode ----------
@@ -2325,6 +2458,7 @@ function setInReview(keys, on) {
   saveStore(store);
   renderToday();
   if (state.view === 'wordlist') renderWordlist();
+  if (state.view === 'dictionary') renderDictionary();
   syncReviewOnly();
 }
 
@@ -4252,6 +4386,24 @@ function bindEvents() {
   });
 
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
+  let dictTyping = null;
+  els.dictSearch.addEventListener('input', () => {
+    clearTimeout(dictTyping);
+    dictTyping = setTimeout(() => {
+      state.dictQuery = els.dictSearch.value;
+      renderDictionary();
+    }, 150);
+  });
+  els.dictBack.addEventListener('click', () => {
+    if (state.dictQuery.trim()) {
+      state.dictQuery = '';
+      els.dictSearch.value = '';
+    } else {
+      state.dictLetter = null;
+    }
+    renderDictionary();
+    window.scrollTo(0, 0);
+  });
   [els.readingRead, els.readingReadAll].forEach((b) => b.addEventListener('click', () => {
     const run = state.storyReading;
     if (run.paused?.btn === b) { // carry on from where it was paused
@@ -4479,7 +4631,7 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-    if (state.view === 'home' || state.view === 'reading') return; // Flashcards' and Topics' keys
+    if (state.view === 'home' || state.view === 'reading' || state.view === 'dictionary') return; // Flashcards' and Topics' keys
     if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);
       return;

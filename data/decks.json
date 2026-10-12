@@ -57230,6 +57230,62 @@
       ]
     },
     {
+      "id": "rs-old-man-meditates",
+      "category": "Reading",
+      "group": "Medium",
+      "name": "The Old Man Who Meditates",
+      "description": "Forty years of practice, and children who fall asleep.",
+      "passage": [{"th": "วัด|ประกาศ|ว่า ทุก|วัน|พระ|จะ|มี|การ|นั่งสมาธิ ณ|ศาลา|ใหญ่", "en": "The temple announces that every holy day there will be meditation in the main pavilion."}, {"th": "ชาย|เฒ่า|คน|หนึ่ง|มา|นั่งสมาธิ|ทุก|ครั้ง", "en": "One old man comes to meditate every time."}, {"th": "เขา|นั่ง|นิ่ง|ได้|นาน|หลาย|ชั่วโมง", "en": "He can sit still for hours."}, {"th": "เด็ก_ๆ|ใน|วัด|ถาม|พระ|ว่า ชาย|เฒ่า|ทำ|ได้|ยังไง", "en": "The temple children ask the monk how the old man does it."}, {"th": "พระ|ตอบ|ว่า เขา|ฝึก|มา|สี่สิบ|ปี จน|เข้า|ฌาน|ได้", "en": "The monk answers that he has practised for forty years, until he can enter deep meditation."}, {"th": "ส่วน|เด็ก_ๆ|นั่ง|ได้|ไม่|ถึง|ห้า|นาที|ก็|หลับ", "en": "The children, though, are asleep before five minutes are up."}],
+      "cards": [
+        { "thai": "วัด", "translit": "wát", "english": "temple" },
+        { "thai": "ประกาศ", "translit": "prà-gàat", "english": "notice / to announce" },
+        { "thai": "ว่า", "translit": "wâa", "english": "that (reporting) / to say", "note": "รู้ว่า… = know that…; บอกว่า… = said that…" },
+        { "thai": "ทุก", "translit": "thúk", "english": "every", "note": "ทุกวัน = every day." },
+        { "thai": "วันพระ", "translit": "wan phrá", "english": "Buddhist holy day", "words": ["วัน::day", "พระ::monk / sacred"] },
+        { "thai": "วัน", "translit": "wan", "english": "day" },
+        { "thai": "พระ", "translit": "phrá", "english": "monk / sacred", "note": "Also a respectful prefix for sacred things (พระอาทิตย์ = sun)." },
+        { "thai": "จะ", "translit": "jà", "english": "will / going to", "note": "Before the verb: จะไป = will go." },
+        { "thai": "มี", "translit": "mii", "english": "to have / there is" },
+        { "thai": "การ", "translit": "gaan", "english": "(noun-maker: the act of…)", "note": "การ + verb = noun: การกิน = eating." },
+        { "thai": "นั่งสมาธิ", "translit": "nâng-sà-maa-thí", "english": "to meditate" },
+        { "thai": "ณ", "translit": "ná", "english": "at (formal)", "note": "On notices and in formal writing: ณ วันที่ 1 = as of the 1st; ณ ที่นี้ = here." },
+        { "thai": "ศาลา", "translit": "sǎa-laa", "english": "pavilion", "note": "The name word of ศ: ศ ศาลา." },
+        { "thai": "ใหญ่", "translit": "yài", "english": "big" },
+        { "thai": "ชาย", "translit": "chaai", "english": "male" },
+        { "thai": "เฒ่า", "translit": "thâo", "english": "old (of people)", "note": "ชายเฒ่า or ตาเฒ่า = an old man; เฒ่าแก่ = the boss (an old merchant); ผู้เฒ่า = an elder." },
+        { "thai": "คน", "translit": "khon", "english": "person / people" },
+        { "thai": "หนึ่ง", "translit": "nʉ̀ng", "english": "one" },
+        { "thai": "มา", "translit": "maa", "english": "to come", "note": "Mid tone. Compare ม้า (high) horse, หมา (rising) dog." },
+        { "thai": "ครั้ง", "translit": "khráng", "english": "(classifier) times / occurrences", "note": "Three times = สามครั้ง." },
+        { "thai": "เขา", "translit": "kháo", "english": "he / she / they" },
+        { "thai": "นั่ง", "translit": "nâng", "english": "to sit" },
+        { "thai": "นิ่ง", "translit": "nîng", "english": "still, motionless" },
+        { "thai": "ได้", "translit": "dâai", "english": "can / get / did", "note": "After a verb = can: ไปได้. Before a verb = got to / did: ได้ไป." },
+        { "thai": "นาน", "translit": "naan", "english": "for a long time" },
+        { "thai": "หลาย", "translit": "lǎai", "english": "many / several" },
+        { "thai": "ชั่วโมง", "translit": "chûa-moong", "english": "hour" },
+        { "thai": "เด็ก ๆ", "translit": "dèk dèk", "english": "the kids", "note": "A doubled noun can be plural." },
+        { "thai": "ใน", "translit": "nai", "english": "in / inside" },
+        { "thai": "ถาม", "translit": "thǎam", "english": "to ask" },
+        { "thai": "ทำ", "translit": "tham", "english": "to do / to make" },
+        { "thai": "ยังไง", "translit": "yang-ngai", "english": "how", "note": "Spoken form of อย่างไร." },
+        { "thai": "ตอบ", "translit": "tɔ̀ɔp", "english": "to answer" },
+        { "thai": "ฝึก", "translit": "fʉ̀k", "english": "to train" },
+        { "thai": "สี่สิบ", "translit": "sìi-sìp", "english": "40 — forty" },
+        { "thai": "ปี", "translit": "pii", "english": "year" },
+        { "thai": "จน", "translit": "jon", "english": "until / poor" },
+        { "thai": "เข้า", "translit": "khâo", "english": "to enter / go in", "note": "Falling tone. Compare เข่า (low) knee, เขา (rising) hill." },
+        { "thai": "ฌาน", "translit": "chaan", "english": "deep meditation (jhana)", "note": "Buddhist: the absorbed states of deep meditation. เข้าฌาน = to enter it." },
+        { "thai": "ส่วน", "translit": "sùan", "english": "part / as for" },
+        { "thai": "ไม่", "translit": "mâi", "english": "not / no", "note": "Falling tone. Compare ไม้ (high) wood, ใหม่ (low) new, ไหม (rising) question word, ไหม้ (falling too) to burn. ไม้ใหม่ไม่ไหม้ = new wood doesn't burn." },
+        { "thai": "ถึง", "translit": "thʉ̌ng", "english": "to arrive / reach / until" },
+        { "thai": "ห้า", "translit": "hâa", "english": "5 — five" },
+        { "thai": "นาที", "translit": "naa-thii", "english": "minute" },
+        { "thai": "ก็", "translit": "gɔ̂", "english": "then / also / (also softener)", "note": "Multi-purpose linker. ก็ได้ = that's OK." },
+        { "thai": "หลับ", "translit": "làp", "english": "to fall asleep / be asleep" }
+      ]
+    },
+    {
       "id": "read-my-morning",
       "category": "Reading",
       "group": "Harder",
@@ -62699,7 +62755,8 @@
         { "thai": "โดยตรง", "translit": "dooi-trong", "english": "directly", "note": "ติดต่อผู้จัดการโดยตรง = Contact the manager directly." },
         { "thai": "ภายใต้", "translit": "phaai-tâi", "english": "under (rules, a name, conditions)", "note": "ภายใต้กฎหมายไทย = Under Thai law." },
         { "thai": "ตกเป็น", "translit": "tòk-pen", "english": "to become (a victim, the news, someone's)", "note": "เขาตกเป็นเหยื่อแก๊งคอลเซ็นเตอร์ = He fell victim to a call-centre scam gang." },
-        { "thai": "อย่างเช่น", "translit": "yàang-chên", "english": "for example, such as" }
+        { "thai": "อย่างเช่น", "translit": "yàang-chên", "english": "for example, such as" },
+        { "thai": "ณ", "translit": "ná", "english": "at (formal)", "note": "On notices and in formal writing: ณ วันที่ 1 = as of the 1st; ณ ที่นี้ = here." }
       ]
     },
     {
@@ -63648,7 +63705,8 @@
         { "thai": "เพศ", "translit": "phêet", "english": "sex, gender" },
         { "thai": "ธุระ", "translit": "thú-rá", "english": "business, errand (something to see to)", "note": "วันนี้มีธุระ = I have things to see to today." },
         { "thai": "ภาระ", "translit": "phaa-rá", "english": "burden, responsibility", "note": "ไม่อยากเป็นภาระลูก = I don't want to be a burden on my children." },
-        { "thai": "มิตรภาพ", "translit": "mít-trà-phâap", "english": "friendship" }
+        { "thai": "มิตรภาพ", "translit": "mít-trà-phâap", "english": "friendship" },
+        { "thai": "เฒ่า", "translit": "thâo", "english": "old (of people)", "note": "ชายเฒ่า or ตาเฒ่า = an old man; เฒ่าแก่ = the boss (an old merchant); ผู้เฒ่า = an elder." }
       ]
     },
     {
@@ -65291,7 +65349,8 @@
         { "thai": "ฮินดู", "translit": "hin-duu", "english": "Hindu" },
         { "thai": "คุณ", "translit": "khun", "english": "goodness, a kindness (owed back)" },
         { "thai": "ปิด", "translit": "pìt", "english": "to stick on (gold leaf, a plaster)" },
-        { "thai": "ไถ่โทษ", "translit": "thài-thôot", "english": "to atone / make amends", "note": "ทำความดีเพื่อไถ่โทษ = to do good to make up for a wrong." }
+        { "thai": "ไถ่โทษ", "translit": "thài-thôot", "english": "to atone / make amends", "note": "ทำความดีเพื่อไถ่โทษ = to do good to make up for a wrong." },
+        { "thai": "ฌาน", "translit": "chaan", "english": "deep meditation (jhana)", "note": "Buddhist: the absorbed states of deep meditation. เข้าฌาน = to enter it." }
       ]
     },
     {
