@@ -1422,6 +1422,9 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   Everything) use the same line icons, in the accent colour. The topic button shows Topics' list
   for a topic and a folder for a category or Everything. One stroke style, `.page-icon`; the paths
   are inline in index.html and in `PAGE_ICONS` (app.js) for the topic button.
+- **Wider screens too** (the user's request, the same day): the top bar's Home is the Home icon
+  (it was the word), in the accent colour, and each tab has its icon, small (18px), left of its
+  name. Under 700px wide the tab icons go, or ⚙ was pushed off the screen at 601–670px.
 - Checked at 390, 320 and 1280px wide in Chromium; not yet on an iPhone.
 
 ## Dictionary (2026-10-12, experiment, branch `2026-10-12-dictionary`)
