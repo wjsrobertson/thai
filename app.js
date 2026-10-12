@@ -635,21 +635,60 @@ function currentCard() {
 // change. (Review's card grows, so it doesn't need it.)
 // The front's big text on Flashcards' card and Review's, and Flashcards' back.
 function fitCardText() {
+  fitPills();
+  sizeCards();
   fitText(els.thai);
   if (els.reviewPrompt) fitText(els.reviewPrompt);
   fitBack(els.english);
+  fitBack(els.reviewMain);
+}
+
+// On a phone the card takes the height the page leaves it: from under the controls down to the tab
+// bar, less what's under the card (Recognition's answers, the ‹ › buttons, Recall's grades), so the
+// whole page fits the screen at any text size (2026-10-12, the user's choice). It was a share of
+// the screen's height, growing with the text size: at Larger and Largest the buttons went under the
+// tab bar, and on an iPhone SE in Safari even at Default. The text then fits the card (fitText,
+// fitBack). Below CARD_MIN_H the page scrolls instead.
+const PHONE_LAYOUT = matchMedia('(max-width: 600px)'); // as mobile.css's <link media>
+const CARD_MIN_H = 240; // the 72px corner buttons, top and bottom, and a line of text between
+function sizeCards() {
+  for (const card of [els.card, els.reviewCard]) {
+    card.style.height = '';
+    if (!PHONE_LAYOUT.matches || state.view !== 'flashcards' || !card.offsetParent) continue;
+    const bar = document.querySelector('.tabs').getBoundingClientRect();
+    // The lowest of the stage's parts, and the stage's padding under it, in page coordinates.
+    const bottom = Math.max(...[...els.stage.children].filter((e) => e.getClientRects().length)
+      .map((e) => e.getBoundingClientRect().bottom)) + window.scrollY;
+    const spare = bar.top - parseFloat(getComputedStyle(els.stage).paddingBottom) - bottom;
+    card.style.height = `${Math.max(CARD_MIN_H, Math.floor(card.offsetHeight + spare))}px`;
+  }
+}
+
+// Recognition's answers keep to the three lines a phone gives them room for (mobile.css): a longer
+// one shrinks, down to 70%, so the card (sizeCards) keeps its height for it.
+function fitPills() {
+  for (const pill of els.learnPills.children) {
+    pill.style.fontSize = '';
+    if (!PHONE_LAYOUT.matches || !pill.offsetParent) continue;
+    const room = parseFloat(getComputedStyle(pill).minHeight);
+    const base = parseFloat(getComputedStyle(pill).fontSize);
+    for (let k = 0.94; k > 0.69 && pill.getBoundingClientRect().height > room + 0.5; k -= 0.06) pill.style.fontSize = `${base * k}px`;
+  }
 }
 
 // The back scrolls when there's too much on it, but on a phone the longest idioms went just over
-// (6 px, 2026-10-10, once the corner buttons grew): shrink the back's main line (the Thai answer in
-// English → Thai) the same way, down to 70%, until the back fits. Backs that fit are untouched.
+// (6 px, 2026-10-10, once the corner buttons grew): shrink the back the same way, down to 70%, until
+// it fits. Backs that fit are untouched. All its lines shrink together (the Thai again, the
+// transliteration, the answer, the note) since 2026-10-12: the card sized to fit the screen
+// (sizeCards) is shorter at Largest text, and shrinking the answer alone left them over.
 function fitBack(el) {
-  el.style.fontSize = '';
   const body = el.closest('.face-body');
-  if (!body?.offsetParent || !el.textContent) return;
-  const base = parseFloat(getComputedStyle(el).fontSize);
+  const lines = [...body.children];
+  for (const line of lines) line.style.fontSize = '';
+  if (!body.offsetParent || !el.textContent) return;
+  const bases = lines.map((line) => parseFloat(getComputedStyle(line).fontSize));
   for (let k = 0.94; k > 0.69 && body.scrollHeight > body.clientHeight + 1; k -= 0.06) {
-    el.style.fontSize = `${base * k}px`;
+    lines.forEach((line, i) => { line.style.fontSize = `${bases[i] * k}px`; });
   }
 }
 
@@ -1773,6 +1812,7 @@ function setOrderMode(mode) {
     if (leaving === 'review') loadCards(); // Recall's grades, for the cards' progress
     restoreMode(mode);
   }
+  fitCardText(); // the card's height: each mode has its own buttons under it
 }
 
 // Each mode keeps its own place (the user's call, 2026-10-08, after trying one shared word): Browse
@@ -2704,7 +2744,7 @@ function presentEntry() {
   // English → Thai: no audio until the answer is shown, or it would give the answer away.
   els.reviewSpeak.hidden = !thaiFirst;
   renderAutoBadges();
-  fitText(els.reviewPrompt);
+  fitCardText(); // sizes the card too
   if (thaiFirst && autoPlayOn()) speak(card.thai);
 }
 

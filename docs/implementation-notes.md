@@ -1369,6 +1369,36 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## Flashcards fit a phone screen (2026-10-12, branch `2026-10-12-card-fit`)
+
+The user asked whether Flashcards still fit one iPhone screen at larger text sizes. They didn't,
+before the tab bar either. Measured in Chromium at iPhone sizes: in Safari with its toolbars showing
+(390×664), the buttons under the card went 31–65px under the tab bar at Larger and 87–131px at
+Largest. An iPhone SE in Safari (375×548) was over even at Default. The cause: the card's height was
+a share of the screen (46vh, plus 50vh per step of `--fs`), mostly empty space between its corner
+buttons.
+- **`sizeCards()`** (app.js), on a phone: the card takes the height the page leaves it, from under
+  the controls down to the tab bar, less what's under it (Recognition's answers, the ‹ › buttons,
+  Recall's grades). The last buttons end 12px above the bar. It runs first in `fitCardText()`, so
+  at every moment that already fits the text (a new card, a mode, coming to Flashcards, a resize
+  such as Safari's toolbars hiding, a Text size change, fonts arriving), and the text then fits
+  the new size. Below `CARD_MIN_H` (240px: the corner buttons and a line between) the page scrolls.
+  Desktop is untouched (it clears the inline height).
+- **The card keeps one height within a mode:**
+  - Recall's grades keep their room before the card's turned (`visibility: hidden`).
+  - Recognition's answers have room for three lines of English at any text size, and a longer one
+    shrinks to fit (`fitPills`, down to 70%). Answers of one to four lines moved the card by up to
+    60px.
+  - Recognition has no ‹ › row, so no empty grid row and gap under the answers.
+- **`fitBack`** shrinks all the back's lines together (it shrank only the answer): on a shorter
+  card at Largest, the Thai, transliteration and answer were over by a line.
+- **The page is `100dvh` on phones** (html, body min-height), not Safari's `100vh` (the height with
+  its toolbars hidden), so a page that fits doesn't scroll.
+- **Result:** everything fits at all text sizes on a 390px iPhone, in Safari and as a Home Screen
+  app, and on an SE as a Home Screen app. The SE in Safari with its toolbars showing still scrolls
+  10–30px in Recognition (the card at its minimum): one row of controls above the card instead of
+  two would fix that.
+
 ## Phone tab bar (2026-10-12, experiment, branch `2026-10-12-bottom-tabs`)
 
 With Dictionary, the four tabs, Home and ⚙ no longer fit across a phone. On a phone (mobile.css)
@@ -2697,8 +2727,9 @@ and in the inline script.
   the layout can't break.
 - **Phone details:**
   - Inputs use `max(16px, …)`, because iOS zooms into anything smaller.
-  - The card's height grows with `--fs`, so the longest card (เหี้ย, about 175 characters) still
-    clears the corner buttons at the largest size.
+  - The card's height grew with `--fs`, so the longest card (เหี้ย, about 175 characters) still
+    cleared the corner buttons at the largest size. Since 2026-10-12 a phone's card is sized to the
+    screen instead (sizeCards; see "Flashcards fit a phone screen"), and the text shrinks to fit it.
 - **Default:** step 0 is the size the user picked on 2026-10-03, after notes and descriptions
   went from 12–13px to 14–16px.
 

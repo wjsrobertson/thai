@@ -65,6 +65,11 @@ html:not([data-view="home"]) .topbar .controls { display: none; }
 .tab-svg { display: block; width: 24px; height: 24px; }
 .tab[aria-selected="true"] { background: none; color: var(--accent); }
 .tab[aria-selected="true"]:hover { color: var(--accent); }
+/* Flashcards' last buttons sit 12px above the tab bar (the stage's usual 24px, less: the card gets it). */
+.stage[data-view="flashcards"] { padding-bottom: 12px; }
+/* The page is the visible height, not Safari's 100vh (its height with the toolbars hidden), so a
+   page that fits (Flashcards, sized by sizeCards) doesn't scroll. */
+html, body { min-height: 100dvh; }
 /* Room under the page for the bar, and the toasts above it. */
 body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
 .toast { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom, 0px)); }
@@ -108,10 +113,13 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
   grid-area: card;
   max-width: none;
   aspect-ratio: auto;
-  height: clamp(270px, calc(46vh + (var(--fs, 1) - 1) * 50vh), calc(420px * var(--fs, 1))); /* taller with larger text, and room for the 72 px corner buttons */
+  /* Until sizeCards (app.js) sets it: the room the page leaves, so everything fits the screen. */
+  height: clamp(270px, calc(46vh + (var(--fs, 1) - 1) * 50vh), calc(420px * var(--fs, 1)));
 }
 .learn-pills { grid-area: pills; gap: 8px; }
 #prev-btn { grid-area: prev; justify-self: start; }
+/* Recognition has no ‹ ›: no row for them, or its gap would take 12px from the card. */
+.stage[data-order="test"] .card-wrap { grid-template-areas: "card card" "pills pills"; }
 #next-btn { grid-area: next; justify-self: end; }
 .nav-btn { width: 56px; height: 56px; font-size: 26px; }
 
@@ -136,6 +144,9 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 .note { max-width: 100%; }
 
 .learn-pill { min-height: 72px; padding: 12px 8px; font-size: calc(17px * var(--fs, 1)); border-radius: 10px; }
+/* Room for three lines of English, so the card (sized to fit, sizeCards) keeps its height from one
+   question to the next: answers of one to three lines moved it by up to 60px (2026-10-12). */
+.learn-pill { min-height: calc(3 * 1.3 * 17px * var(--fs, 1) + 26px); } /* + padding and border */
 .learn-pill.thai-pill { font-size: calc(27px * var(--fs, 1)); }
 
 /* ---------- modals become full-screen sheets ---------- */
@@ -211,6 +222,9 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 /* As the phone's Test answer buttons (.learn-pill above, in .learn-pills, under the card). */
 .review { gap: 12px; }
 .review-grades { gap: 8px; }
+/* The grades keep their room before the card's turned, so the card (sized to fit, sizeCards) doesn't
+   change height when they come. */
+.review-grades[hidden] { display: grid; visibility: hidden; }
 .grade { min-height: 72px; padding: 12px 8px; border-radius: 10px; font-size: calc(17px * var(--fs, 1)); }
 
 /* Home: the three cards stack */
