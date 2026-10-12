@@ -1409,8 +1409,11 @@ Dictionary, each a line icon over its name, the current one in the accent colour
 - **No top bar on a phone** (the user's call, the same day). For a while it showed Learn Thai and
   ⚙ on Home only; now **Settings is the bar's sixth item** (`#tab-settings`, a gear), opening the
   settings as ⚙ does rather than a page. It's a `.tab` without `data-view`, so `els.tabs` leaves it
-  out. Six items get 61–70px each on 375–430px phones ("Flashcards" is 54px), and at 320px the
-  labels drop to 10px. The top bar is emptied rather than hidden, since the tab bar is inside it,
+  out. Six items get 61–70px each on 375–430px phones.
+- **The tabs say Cards and Words** for the Flashcards and Dictionary pages (the user's call, the
+  same day; only the tabs, the pages keep their names), and their text went up a little: 11px to
+  12.5px on a phone (11.5px at 320px, where Settings, now the longest at 45px, has 52px), 16px to
+  17px on wider screens. The top bar is emptied rather than hidden, since the tab bar is inside it,
   and the body pads its top by the status bar's safe area.
 - **Settings is a page on a phone** (the user's request, the same day), a dialog on wider screens.
   It's still the settings modal, styled in mobile.css: it stops at the tab bar instead of covering

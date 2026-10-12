@@ -166,7 +166,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   border: 0;
   border-radius: 7px;
   padding: 7px 16px;
-  font-size: 16px; /* 13px until 2026-10-08 (the user's request) */
+  font-size: 17px; /* 13px until 2026-10-08, 16px until 2026-10-12 (the user's requests) */
 }
 /* The pages' line icons (PAGE_ICONS): the phone's tab bar, the home cards, the topic button. */
 .page-icon {
