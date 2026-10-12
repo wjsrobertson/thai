@@ -1369,6 +1369,31 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## Phone tab bar (2026-10-12, experiment, branch `2026-10-12-bottom-tabs`)
+
+With Dictionary, the four tabs, Home and ⚙ no longer fit across a phone. On a phone (mobile.css)
+the tabs are now a bar along the bottom, as in an iPhone app: Home, Topics, Flashcards, Reading and
+Dictionary, each a line icon over its name, the current one in the accent colour.
+- **Markup:** one set of tabs. The icons (`.tab-svg`) and the Home tab (`.tab-home`) are hidden on
+  wider screens, so desktop is unchanged.
+- **The top bar** (Learn Thai, in place of the Home link, and ⚙) shows only on Home: the user's
+  call, the same day. Settings are reached from Home. On other pages the top bar is emptied
+  (`html[data-view]`, set by `setView`) rather than hidden, since the tab bar is inside it.
+- **Fixed inside the top bar:** the bar is `position: fixed` but still inside `.topbar`. On phones
+  the top bar is opaque with no `backdrop-filter`, because a backdrop-filter would make the top bar
+  the bar's containing block and pin it there.
+- **Safe areas:** the viewport has `viewport-fit=cover`, so the bar can pad itself clear of the
+  home indicator (`env(safe-area-inset-bottom)`). The body pads its sides by the side insets so an
+  iPhone on its side keeps the page clear of the notch.
+- **Room:** the body pads its bottom by the bar (`--tabbar-h`, 56px), and toasts and the update
+  bar sit above it. Modals (the word dialog's sheet) cover it.
+- **The icons are the pages' icons everywhere** (the user's request, the same day): the home
+  cards' titles (were 📋 📖 📰 📕) and the topic button (was 📖, or 📚 for a category or
+  Everything) use the same line icons, in the accent colour. The topic button shows Topics' list
+  for a topic and a folder for a category or Everything. One stroke style, `.page-icon`; the paths
+  are inline in index.html and in `PAGE_ICONS` (app.js) for the topic button.
+- Checked at 390, 320 and 1280px wide in Chromium; not yet on an iPhone.
+
 ## Dictionary (2026-10-12, experiment, branch `2026-10-12-dictionary`)
 
 The user wanted a dictionary as a top-level feature: a Dictionary tab (fitting the tabs on a phone

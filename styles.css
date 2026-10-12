@@ -121,6 +121,9 @@ body { overflow-x: clip; }
 /* No rubber-band bounce or pull-to-refresh on the page itself (iOS Safari 16+); the scrolling
    sheets inside modals already keep their scroll to themselves (overscroll-behavior: contain). */
 html, body { overscroll-behavior: none; }
+/* viewport-fit=cover (for the phone's bottom bar) lets the page run under an iPhone's notch when
+   it's on its side: keep everything clear of it. */
+body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-area-inset-right, 0px); }
 
 .topbar {
   display: flex;
@@ -165,6 +168,18 @@ html, body { overscroll-behavior: none; }
   padding: 7px 16px;
   font-size: 16px; /* 13px until 2026-10-08 (the user's request) */
 }
+/* The pages' line icons (PAGE_ICONS): the phone's tab bar, the home cards, the topic button. */
+.page-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.deck-button-icon { display: flex; color: var(--accent); }
+.deck-button-icon .page-icon { width: 20px; height: 20px; }
+/* The phone's bottom bar has these (mobile.css); a wider screen has Home in the corner instead. */
+.tab-home, .tab-svg, .page-title { display: none; }
 .tab[aria-selected="true"] {
   background: var(--panel-2);
   color: var(--ink);
@@ -1853,7 +1868,8 @@ body { display: flex; flex-direction: column; }
   touch-action: manipulation;
 }
 .home-card:hover { border-color: var(--accent); }
-.home-card-title { font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
+.home-card-title { display: flex; align-items: center; gap: 12px; font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
+.home-card-title .page-icon { width: 1.2em; height: 1.2em; flex: none; color: var(--accent); }
 /* Three rows: the label (with an accent dot) in its own column, so the descriptions line up. */
 .home-card-list {
   display: grid;

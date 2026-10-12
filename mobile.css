@@ -8,28 +8,67 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 
 /* iOS Safari zooms the page into any focused input smaller than 16px. */
 #deck-picker-search,
+#dict-search,
 #settings-search,
 .setting-row select,
 .setting-row input[type="number"] {
   font-size: max(16px, calc(16px * var(--fs, 1)));
 }
 
-/* ---------- top bar ---------- */
-/* Learn Thai | Topics Flashcards | ⚙ on a phone. iOS's font is a little wider than others, so keep
-   ~30px spare (measured in Chromium) at 375px and up. The tabs went from 13px to 15px on
-   2026-10-08 (the user's request), with room since Review stopped being a third tab. */
-.topbar { padding: 10px 12px; gap: 4px; }
-.topbar h1 { font-size: 16px; white-space: nowrap; letter-spacing: 0; }
-.tabs { gap: 2px; }
-.tab { padding: 6px 10px; font-size: 15px; }
-@media (max-width: 380px) { .tab { padding: 6px 8px; } } /* iPhone SE/mini */
-@media (max-width: 340px) { /* the original 320px iPhone SE: everything a notch smaller */
-  .topbar { padding: 10px 8px; }
-  .topbar h1 { font-size: 14px; }
-  .tab { padding: 6px 6px; font-size: 14px; }
-  .tab-icon { padding: 6px 6px; }
+/* ---------- top bar and tab bar ---------- */
+/* The tabs are a bar along the bottom, as in an iPhone app, each an icon over its name: Home,
+   Topics, Flashcards, Reading and Dictionary (2026-10-12: with Dictionary, the tabs no longer fit
+   across the top). The top bar, Learn Thai and ⚙, shows only on Home (the user's call, the same
+   day): elsewhere it's empty and takes no room, though the tab bar inside it stays. */
+.topbar {
+  padding: 10px 12px;
+  gap: 4px;
+  /* Opaque, without the blur: a backdrop-filter would pin the fixed tab bar inside it to the top
+     bar instead of the screen. */
+  background: var(--bg);
+  backdrop-filter: none;
 }
+.topbar h1 { font-size: 17px; white-space: nowrap; letter-spacing: 0; }
+.home-link { display: none; }
+.page-title { display: inline; }
 .tab-icon { padding: 6px 8px; }
+html:not([data-view="home"]) .topbar { padding: 0; border: 0; }
+html:not([data-view="home"]) .topbar h1,
+html:not([data-view="home"]) .topbar .controls { display: none; }
+
+:root { --tabbar-h: 56px; } /* without the home-indicator strip */
+.tabs {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  padding: 4px max(4px, env(safe-area-inset-right, 0px)) env(safe-area-inset-bottom, 0px) max(4px, env(safe-area-inset-left, 0px));
+  background: var(--panel);
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+}
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  height: calc(var(--tabbar-h) - 5px);
+  padding: 0;
+  font-size: 11px;
+  white-space: nowrap;
+}
+.tab-svg { display: block; width: 24px; height: 24px; }
+.tab[aria-selected="true"] { background: none; color: var(--accent); }
+.tab[aria-selected="true"]:hover { color: var(--accent); }
+/* Room under the page for the bar, and the toasts above it. */
+body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+.toast { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom, 0px)); }
+.update-bar { bottom: calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom, 0px)); }
 
 .stage { padding: 12px 12px 24px; }
 

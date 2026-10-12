@@ -1028,7 +1028,7 @@ function enterReview() {
 function renderDeckButton() {
   const scope = state.view === 'flashcards' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
-  els.deckButtonIcon.textContent = !scope || scope.kind === 'topic' ? '📖' : '📚';
+  els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[!scope || scope.kind === 'topic' ? 'topics' : 'group']));
 }
 
 function selectDeck(deckId) {
@@ -1480,6 +1480,7 @@ function setView(view) {
   els.tabs.forEach((t) => {
     t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
   });
+  document.documentElement.dataset.view = view; // a phone's top bar shows only on Home (mobile.css)
   els.wordlistSection.hidden = view !== 'wordlist';
   els.readingSection.hidden = view !== 'reading';
   els.dictSection.hidden = view !== 'dictionary';
@@ -2570,6 +2571,16 @@ function speakerIcon() {
   });
   return svg;
 }
+// The pages' line icons: the phone's tab bar, the home cards and the topic button (a topic: Topics'
+// list; a category or Everything: a folder). index.html has the same paths inline.
+const PAGE_ICONS = {
+  home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
+  topics: 'M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01',
+  flashcards: 'M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12',
+  reading: 'M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z',
+  dictionary: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z',
+  group: 'M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z',
+};
 const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4');
 
 // A toast: a short message at the bottom of the screen that fades out after `ms`. A new one
