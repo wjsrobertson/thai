@@ -2176,7 +2176,8 @@ function renderDictionary() {
   els.dictTableBody.replaceChildren(frag);
 }
 
-// The 44 letters, each with its name word and how many words file under it.
+// The 44 letters, just the letter on each (its name word and count went on 2026-10-12, the user's
+// call; they're in its tooltip). A letter with no words is greyed out.
 function renderDictGrid() {
   if (els.dictGrid.childElementCount) return; // drawn once: the words don't change while the app's open
   const counts = new Map();
@@ -2188,11 +2189,8 @@ function renderDictGrid() {
     b.className = 'dict-letter';
     b.disabled = !n;
     const name = (letterStep(ch)?.show || '').split(' ')[1] || '';
-    b.append(
-      Object.assign(document.createElement('span'), { className: 'dict-letter-ch', textContent: ch, lang: 'th' }),
-      Object.assign(document.createElement('span'), { className: 'dict-letter-name', textContent: name, lang: 'th' }),
-      Object.assign(document.createElement('span'), { className: 'dict-letter-count', textContent: n ? String(n) : '–' }),
-    );
+    b.lang = 'th';
+    b.textContent = ch;
     b.title = n ? `${ch} ${name}: ${n} word${n === 1 ? '' : 's'}` : `${ch} ${name}: no words (obsolete)`;
     b.addEventListener('click', () => {
       state.dictLetter = ch;

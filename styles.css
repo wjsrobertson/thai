@@ -1301,14 +1301,15 @@ body { display: flex; flex-direction: column; }
 .dict-head { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
 .dict-head[hidden] { display: none; }
 .dict-heading { color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
-.dict-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 8px; }
+.dict-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; }
 .dict-grid[hidden] { display: none; }
 .dict-letter {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 2px;
-  padding: 10px 4px 8px;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: 0;
+  font-size: calc(34px * var(--fs, 1));
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -1317,9 +1318,6 @@ body { display: flex; flex-direction: column; }
 }
 .dict-letter:hover:not(:disabled) { border-color: var(--accent); }
 .dict-letter:disabled { opacity: .35; cursor: default; }
-.dict-letter-ch { font-size: calc(34px * var(--fs, 1)); line-height: 1.25; }
-.dict-letter-name { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-.dict-letter-count { color: var(--muted); font-size: calc(12px * var(--fs, 1)); }
 .dict-empty { color: var(--muted); }
 .dict-empty[hidden], .dict-table[hidden] { display: none; }
 

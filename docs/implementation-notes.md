@@ -1433,8 +1433,9 @@ The user wanted a dictionary as a top-level feature: a Dictionary tab (fitting t
 is for later).
 - **Home** has a Dictionary card too. With four cards they make a 2 × 2 grid: Reading no longer
   spans both columns, and `.home-card-wide` went. Phones still show one column.
-- **The way in:** a search box over a grid of the 44 letters, ก to ฮ. Each tile has the letter, its
-  name word and how many words file under it; letters with none (ฃ ฅ ฌ ฏ ฑ ฒ ณ ษ ฬ) are greyed out.
+- **The way in:** a search box over a grid of the 44 letters, ก to ฮ, square tiles with just the
+  letter (its name word and word count went the same day, the user's call; they're in the tooltip).
+  Letters with no words (ฃ ฅ ฏ ฑ ษ ฬ) are greyed out.
 - **A letter** lists its words. **The search** (the topic picker's `wordSearch`, now with a limit and
   a filter) lists up to 200 matches: Thai, English or rough transliteration. ‹ All letters and
   ✕ Clear search go back.
