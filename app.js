@@ -3025,11 +3025,11 @@ function renderReader(topic) {
 // Reading's Read all (2026-10-12, the user's request; like Topics' Read all, in the same place):
 // each story in the list in turn, from the open one (or the first), opened in place, its English
 // title said, then read line by line, the line being read lit and kept in view. Read, beside it
-// (the same day), reads just the open story, and is greyed out with none open. The button pressed
-// shows ■ Stop; pressed again, or on leaving the page, changing topic, opening or closing a story by
-// hand, or pressing a line's speaker, it stops. The other button stops it and starts its own.
-// Opening a word's dialog only pauses it (the user's request, same day): its button shows
-// ❚❚ Paused, the line stays lit, and pressing it carries on from that line (or the title).
+// (the same day), reads just the open story, in its title row. The button pressed shows ❚❚ Pause;
+// pressed again, or when a word's dialog opens, it pauses (the user's requests, same day): it shows
+// ▶ Paused, the line stays lit, and pressing it carries on from that line (or the title). Leaving the
+// page, changing topic, opening or closing a story by hand, or pressing a line's speaker stops it;
+// the other button stops it and starts its own.
 const STORY_LINE_PAUSE = 600;  // ms between lines
 const STORY_PAUSE = 1500;      // and between stories
 
@@ -3059,7 +3059,8 @@ async function readStories(btn, from = null) {
           state.readingId = id;
           placeReader();
         }
-        if (line < 0) scrollToReading();
+        // Its title into view only if it's off screen: no jump to the top (the user's call, 2026-10-12).
+        if (line < 0) els.readingList.querySelector('.reading-entry.open .reading-item')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
         // Its title first, in English (the user's request, 2026-10-12), the title row lit meanwhile.
         // Settings → Reading → Say the title turns it off.
         if (line < 0 && getSettings().readStoryTitles !== false) {
@@ -3097,8 +3098,8 @@ async function readStories(btn, from = null) {
   }
 }
 
-// A word's dialog pauses the run: it stops where it is, its line (or title) stays lit, and its
-// button carries on from there.
+// Pausing (its button, or a word's dialog): the run stops where it is, its line (or title) stays lit,
+// and its button carries on from there.
 function pauseReadStories() {
   const run = state.storyReading;
   if (!run.active) return;
@@ -3120,7 +3121,7 @@ function stopReadStories() {
   markStoryButtons();
 }
 
-// Read and Read all: ■ Stop on the one running, ❚❚ Paused on the one paused, else as they are.
+// Read and Read all: ❚❚ Pause on the one running, ▶ Paused on the one paused, else as they are.
 function markStoryButtons() {
   const run = state.storyReading;
   for (const [b, label] of [[els.readingRead, 'Read'], [els.readingReadAll, 'Read all']]) {
@@ -3128,10 +3129,10 @@ function markStoryButtons() {
     const paused = run.paused?.btn === b;
     b.classList.toggle('playing', playing);
     b.classList.toggle('paused', paused);
-    if (playing) b.textContent = '■ Stop';
-    else if (paused) b.textContent = '❚❚ Paused';
+    if (playing) b.textContent = '❚❚ Pause';
+    else if (paused) b.textContent = '▶ Paused';
     else b.replaceChildren(speakerIcon(), label);
-    b.title = paused ? 'Paused: press to carry on' : b === els.readingRead ? 'Play the open story, line by line' : 'Play every story in the list, line by line';
+    b.title = paused ? 'Paused: press to carry on' : playing ? 'Pause' : b === els.readingRead ? 'Play the open story, line by line' : 'Play every story in the list, line by line';
   }
 }
 
@@ -4253,13 +4254,16 @@ function bindEvents() {
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
   [els.readingRead, els.readingReadAll].forEach((b) => b.addEventListener('click', () => {
     const run = state.storyReading;
-    if (run.paused?.btn === b) { // carry on from where the word's dialog paused it
+    if (run.paused?.btn === b) { // carry on from where it was paused
       readStories(b, run.paused);
       return;
     }
-    const was = run.active && run.btn;
-    if (storyRunOn()) stopReadStories();
-    if (was !== b) readStories(b);
+    if (run.active && run.btn === b) { // running: pause it (the user's call, 2026-10-12; it stopped)
+      pauseReadStories();
+      return;
+    }
+    if (storyRunOn()) stopReadStories(); // the other button's run ends
+    readStories(b);
   }));
 
   // Deck picker

@@ -1358,6 +1358,7 @@
         { "thai": "คำตาย", "translit": "kham-taai", "english": "dead syllable: it stops short", "note": "ตาย = dead. A short vowel, or a final -k, -t or -p, cuts the sound off." },
         { "thai": "มา", "translit": "maa", "english": "live: a long vowel", "note": "come. Low class, live: mid tone." },
         { "thai": "จะ", "translit": "jà", "english": "dead: a short vowel with no final", "note": "will (future). Mid class, dead: low tone." },
+        { "thai": "นา นะ", "translit": "naa ná", "english": "open syllable: long is live, short is dead", "note": "No final consonant (แม่ ก กา). นา is live, so mid; นะ is dead and short, so high. A sound at the start (น) doesn't count: only the ending does." },
         { "thai": "กิน", "translit": "gin", "english": "live: a short vowel, but a final -n", "note": "eat. The -n can be held. -m and -ng work the same way." },
         { "thai": "ลม", "translit": "lom", "english": "live: a final -m", "note": "wind" },
         { "thai": "ลิง", "translit": "ling", "english": "live: a final -ng", "note": "monkey" },

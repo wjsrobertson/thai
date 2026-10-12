@@ -1380,8 +1380,9 @@ Back to Stories button.
   - Tapped in the list, the page doesn't move: the title stays where it was on screen, even when a
     story open above it closes (the user's call, the same day; at first it scrolled the title to
     the top).
-  - From a search result, and as Read / Read all reach each story, the title is brought to the top
-    under the sticky bar (`scrollToReading`).
+  - From a search result, the title is brought to the top under the sticky bar (`scrollToReading`).
+    Read / Read all only scroll as much as keeps the title, then each line, on screen (`nearest`).
+    At first they brought each story's title to the top, which the user didn't want.
 - **Closing:** the open title again (`closeReading`), or the Reading tab, closes it.
 - **From a search result:** a story that isn't one of the topic's is put first in the list, open,
   with the word lit as before.
@@ -1404,11 +1405,12 @@ Back to Stories button.
   - **Loop** (Settings → Reading, `readStoriesLoop`, on by default; the user's request, same day):
     when a run finishes it starts again. Read plays the same story, and Read all goes back to the
     first story.
-  - **Pausing it** (the user's request, same day): opening a word's dialog pauses the run instead
-    of stopping it (`pauseReadStories`). The button shows ❚❚ Paused (dashed accent border), the
-    line or title stays lit, and pressing it carries on from that line (`readStories(btn, from)`,
-    with the place kept in `storyReading.at`). The other button ends the pause and starts its own.
-  - **Stopping it:** ■ Stop; leaving the page; changing topic; opening or closing a story by hand
+  - **Pausing it** (the user's requests, same day): pressing the running button (❚❚ Pause), or
+    opening a word's dialog, pauses the run (`pauseReadStories`). The button shows ▶ Paused (dashed
+    accent border), the line or title stays lit, and pressing it carries on from that line
+    (`readStories(btn, from)`, with the place kept in `storyReading.at`). The other button ends the
+    pause and starts its own. (The running button showed ■ Stop and stopped, at first.)
+  - **Stopping it:** leaving the page; changing topic; opening or closing a story by hand
     (the Reading tab too); or pressing a line's speaker. Each of these ends a pause too. The speaker matters on a
     phone, where the button scrolls out of view.
 - **The toggles** (Transliteration, English, Word gaps) stay at the top of the open story. Moving
