@@ -1270,7 +1270,7 @@
         { "thai": "กัน", "translit": "gan", "english": "short a before a final — a hook above", "note": "together, each other. –ะ becomes ั." },
         { "thai": "เล็ก", "translit": "lék", "english": "short e before a final — the shortener mark", "note": "small. เ–ะ becomes เ–็." },
         { "thai": "แข็ง", "translit": "khɛ̌ng", "english": "short ɛ before a final — the shortener mark", "note": "hard, strong. แ–ะ becomes แ–็." },
-        { "thai": "คน", "translit": "khon", "english": "short o before a final — not written", "note": "person. โ–ะ vanishes, leaving just two consonants." },
+        { "thai": "คน", "translit": "khon", "english": "short o before a final — not written", "note": "person. โ–ะ vanishes, leaving just two consonants: schools call it สระโอะลดรูป, \"โอะ drops its form\". Also นก (bird), รถ (car), ลม (wind), กก (reed)." },
         { "thai": "ล็อก", "translit": "lɔ́k", "english": "short ɔ before a final — ɔɔ letter plus shortener", "note": "lock (from English). เ–าะ becomes –็อ." },
         { "thai": "เดิน", "translit": "dəən", "english": "long əə before a final — i-mark replaces the ɔɔ letter", "note": "walk. เ–อ becomes เ–ิ." },
         { "thai": "เลย", "translit": "ləəi", "english": "long əə before y — the ɔɔ letter drops", "note": "at all, so, then. เ–อ + ย = เ–ย." },

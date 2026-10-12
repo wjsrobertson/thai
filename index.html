@@ -149,14 +149,19 @@
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Flashcards</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
       </div>
-      <!-- Shown while a story is open (renderReading): at the bar's right end, where Topics has Read all;
-           on the phone the bar wraps, so it gets its own row under the topic button. -->
+      <!-- Reading's Read all (readStories): where Topics has its Read all, in the same style. Read, for
+           the open story, sits in that story's title row (placeReader). -->
+      <div class="reading-only wordlist-bar-right reading-bar-right">
+        <button type="button" id="reading-read-all" class="ghost read-aloud" title="Play every story in the list, line by line"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
+      </div>
     </div>
     <!-- The Reading page (renderReading): the current topic's stories, or one open in the reader. Under the
          controls bar, so the topic button sits on top, as on Topics and Flashcards. -->
     <section class="reading reading-only" id="reading-section" hidden>
       <div class="reading-library" id="reading-library">
         <div id="reading-list"></div>
+        <!-- Read: moved into the open story's title row (placeReader). -->
+        <button type="button" id="reading-read" class="ghost read-aloud" title="Play the open story, line by line" hidden><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read</button>
       </div>
       <!-- The open story's reader: moved under its title in the list (placeReader), an accordion. -->
       <section class="reader" id="reader" hidden>
@@ -427,6 +432,30 @@
               <input type="checkbox" id="setting-read-english" />
               <span>Say the English translation after the Thai</span>
             </label>
+          </label>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="reading">
+        <summary>Reading</summary>
+        <div class="setting-group" data-search="reading stories read all title name english say announce">
+          <p class="setting-subhead">Read all</p>
+          <label class="setting-row">
+            <span class="setting-label">Say the title</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-read-story-titles" />
+              <span>Say each story's English title before its lines</span>
+            </label>
+          </label>
+        </div>
+        <div class="setting-group" data-search="reading stories read all loop repeat again start over continuous">
+          <label class="setting-row">
+            <span class="setting-label">Loop</span>
+            <label class="checkbox-inline">
+              <input type="checkbox" id="setting-read-stories-loop" />
+              <span>Start again when it finishes</span>
+            </label>
+            <span class="setting-help">Read plays the same story again; Read all goes back to the first story.</span>
           </label>
         </div>
       </details>

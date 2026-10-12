@@ -1348,7 +1348,21 @@ body { display: flex; flex-direction: column; }
 .reading-item-chevron { flex: none; color: var(--muted); font-size: 1.5em; line-height: 1; transition: transform .15s; }
 .reading-entry.open .reading-item-chevron { transform: rotate(90deg); color: var(--accent); }
 .reading-entry.open .reading-item { margin-bottom: 0; border-color: var(--accent); border-radius: 12px 12px 0 0; }
+/* The open story's Read, in its title row left of the ›; the title and description leave room for it
+   (wide enough for "❚❚ Paused"). */
+.reading-entry.open .reading-item-main { margin-right: 124px; }
+.reading-head { position: relative; }
+.reading-head #reading-read { position: absolute; top: 50%; right: 46px; min-width: 0; margin: 0; padding: 6px 12px; transform: translateY(-50%); background: var(--panel); }
+.reading-head #reading-read[hidden] { display: none; }
 .reading-entry.open .reader { margin: 0 0 8px; border-color: var(--accent); border-top: 0; border-radius: 0 0 12px 12px; }
+/* The line Read or Read all is reading (readStories), lit like a Topics row; the title while it's said. */
+.reading-entry.open .reading-item.now-playing { background: var(--accent-soft); }
+.reader-line.now-playing { margin: 0 -10px; padding-right: 10px; padding-left: 7px; border-left: 3px solid var(--accent); border-radius: 8px; background: var(--accent-soft); }
+/* Read all sits at the bar's right end, as Topics' Read all does. */
+.reading-bar-right { margin-left: auto; }
+.reading-bar-right > .read-aloud { margin-left: 0; }
+/* Paused by a word's dialog (pauseReadStories): its button carries on. */
+.read-aloud.paused { color: var(--accent); border-color: var(--accent); border-style: dashed; }
 .reading-item-main { flex: 1; min-width: 0; }
 .reading-item-name { display: block; font-size: calc(18px * var(--fs, 1)); font-weight: 600; }
 .reading-item-desc { display: block; margin-top: 2px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
@@ -1392,6 +1406,8 @@ body { display: flex; flex-direction: column; }
 .rw { border-radius: 6px; cursor: pointer; transition: background-color .1s, color .1s; }
 .rw:hover, .rw:focus-visible { background: var(--panel-2); outline: none; }
 .rw.on { color: var(--accent); background: var(--panel-2); }
+/* The word being said as its sentence plays (lightSpokenWord). */
+.rw.speaking { color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, transparent); }
 .rw-gap { display: none; }
 .reader.show-spaces .rw-gap { display: inline; }
 .reader-tr, .reader-en { display: none; margin: 2px 0 0; font-size: calc(15px * var(--fs, 1)); line-height: 1.4; }

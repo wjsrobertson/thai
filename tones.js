@@ -74,6 +74,17 @@ function finalOf(s) {
   return v ? { sound: v[0], letter: '', part: v[1], stop: false } : null;
 }
 
+// An unwritten vowel, and the rule that supplies it: 'o' (คน: two consonants, the short o between
+// them not written: สระโอะลดรูป), 'a' (สบาย's ส: a consonant read with a short a before the next
+// syllable), 'aw' (บริษัท's บ: with ɔɔ, mostly in words from Pali and Sanskrit), 'awR' (อักษร, ละคร: ɔɔ
+// before a final ร, said -n), or '' for a written one.
+function hiddenVowel(s) {
+  if (s.hiddenA) return 'a';
+  if (s.hiddenAw) return 'aw';
+  if (s.hidden) return s.vowel === 'o' ? 'o' : 'awR';
+  return '';
+}
+
 // The class of the syllable's first consonant: { cls, letter (the letter or letters it's about), why }.
 function ownClass(s) {
   const L = s.onset.letters;
@@ -94,7 +105,7 @@ function leadClass(s, prev) {
 }
 
 // Each syllable of `thai`: { said, tl, word, at, tone (as said), cls, clsLetter, clsWhy, mark,
-// long (the vowel as said), vowelName, vowelHidden, writtenLong, final (finalOf), live, column (its
+// long (the vowel as said), vowelName, vowelHidden (hiddenVowel), writtenLong, final (finalOf), live, column (its
 // column in the tone table: TABLE_COLUMNS), rule (the rules' tone), exception (they differ), note },
 // or null when the Thai can't be matched to its transliteration.
 export function toneBreakdown(thai, translit) {
@@ -119,7 +130,7 @@ export function toneBreakdown(thai, translit) {
       note = `The vowel is written ${long ? 'short' : 'long'} but said ${long ? 'long' : 'short'}, which decides the tone here.`;
     }
     return { said: s.said, tl: s.tl, word: s.word, at: s.at, tone, cls: cls.cls, clsLetter: cls.letter, clsWhy: cls.why,
-      mark: s.tone, long, vowelName: s.vowelName, vowelHidden: !!(s.hiddenA || s.hiddenAw || s.hidden), writtenLong, final, live,
+      mark: s.tone, long, vowelName: s.vowelName, vowelHidden: hiddenVowel(s), writtenLong, final, live,
       column: s.tone || (live ? 'live' : long ? 'deadLong' : 'deadShort'), rule, exception: rule !== tone || !!s.special, note };
   });
 }

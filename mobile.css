@@ -52,6 +52,9 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
    it stays on one line: 2026-10-08. At 320px the text is a little smaller as well. */
 .wordlist-bar-right > #wordlist-add-all { flex: 1 1 auto; white-space: nowrap; }
 .wordlist-bar-right > #read-aloud { flex: 0 0 auto; }
+/* Reading's Read all: on the right, as on Topics, not stretched across the row. */
+.reading-bar-right { justify-content: flex-end; }
+.reading-bar-right > button { flex: 0 0 auto; }
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- flashcard: full-width card, answer pills, then prev/next under the thumb ---------- */
@@ -110,6 +113,10 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 .modal-search { padding: 10px 16px; }
 .modal-body { padding: 6px; }
 
+/* The word dialog: a sheet from the top of the screen, as Review's on Everything is, with no gap above
+   it (the user's call, 2026-10-12; it was a card 6vh down). */
+.modal.word-modal { padding: 0 0 12px; }
+.modal-panel.word-panel { border-width: 0 0 1px; border-radius: 0 0 14px 14px; }
 /* Review's dialog on Everything: a short sheet from the top instead of a full-screen one. */
 #deck-picker.review-all .modal-panel { align-self: flex-start; border-radius: 0 0 14px 14px; }
 

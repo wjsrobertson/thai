@@ -204,6 +204,14 @@ async def main():
             name = sample_name(said, voices['th'], args.rate)
             entries[('th', text)] = name
             samples[name] = (said, voices['th'], False)
+    # Story titles in English, which Reading's Read all says before each story (2026-10-12), keyed
+    # under 'en' like a card's English.
+    for d in decks:
+        if d.get('passage') and ('en', d['name']) not in entries:
+            said = spoken_text(d['name'], 'en')
+            name = sample_name(said, voices['en'], args.rate)
+            entries[('en', d['name'])] = name
+            samples[name] = (said, voices['en'], False)
     # Spelling parts, read by the Thai voice (see the module docstring).
     if SPELLING_PARTS.exists():
         for part in json.loads(SPELLING_PARTS.read_text()):

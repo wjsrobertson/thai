@@ -102,6 +102,8 @@ const els = {
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
   setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
+  setReadStoryTitles: document.getElementById('setting-read-story-titles'),
+  setReadStoriesLoop: document.getElementById('setting-read-stories-loop'),
   installHelp: document.getElementById('install-help'),
   installActions: document.getElementById('install-actions'),
   installBtn: document.getElementById('install-btn'),
@@ -111,6 +113,8 @@ const els = {
   readingSection: document.getElementById('reading-section'),
   readingLibrary: document.getElementById('reading-library'),
   readingList: document.getElementById('reading-list'),
+  readingRead: document.getElementById('reading-read'),
+  readingReadAll: document.getElementById('reading-read-all'),
   reader: document.getElementById('reader'),
   readerLines: document.getElementById('reader-lines'),
   readerTranslit: document.getElementById('reader-translit'),
@@ -160,6 +164,8 @@ const DEFAULT_SETTINGS = {
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → Topics)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → Topics)
+  readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
+  readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
 };
 
 const state = {
@@ -184,6 +190,10 @@ const state = {
   expandedGroups: new Set(),     // same for deck groups, keyed `${category}::${group}`
   lastFocus: null,
   reading: { active: false, token: 0, currentKey: null },
+  // Reading's Read / Read all (readStories): running (active), the button it was started from (btn),
+  // where it's got to (at: { ids, idx, line }), and, while a word's dialog has it paused, where to
+  // carry on (paused: { btn, ids, idx, line }).
+  storyReading: { active: false, token: 0, btn: null, at: null, paused: null },
   relearn: new Map(),       // Recognition: card key -> relearning step (requeueRecognition)
   carry: [],                // Recognition: comebacks past the end of the pass, for the next one
   modeSnap: { practice: null, test: null }, // Browse's and Recognition's places while in another mode (snapMode)
@@ -1013,6 +1023,7 @@ function selectDeck(deckId) {
   const deck = resolveScope(deckId);
   if (!deck || deck.kind === 'all') return;
   if (state.reading.active) stopReadAloud();
+  if (storyRunOn()) stopReadStories();
   state.currentDeckId = deckId;
   setPreferences({ currentDeckId: deckId });
   // Flashcards on Everything carries on; otherwise it starts the new topic.
@@ -1462,6 +1473,7 @@ function setView(view) {
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
+  if (view !== 'reading' && storyRunOn()) stopReadStories();
   // Leaving Flashcards: Recall's audio stops, and a Recognition card's pending move waits for the
   // return (below).
   if (view !== 'flashcards' && leaving === 'flashcards') {
@@ -1536,6 +1548,8 @@ function renderSettings() {
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
   els.setTopicWordGaps.checked = !!s.topicWordGaps;
+  els.setReadStoryTitles.checked = s.readStoryTitles !== false;
+  els.setReadStoriesLoop.checked = s.readStoriesLoop !== false;
   renderInstall();
   renderOffline();
   els.launchHelp.textContent = launchTimingText();
@@ -1615,6 +1629,8 @@ function bindSettings() {
     renderOffline();
     toast('Downloaded audio deleted');
   });
+  els.setReadStoryTitles.addEventListener('change', () => setSettings({ readStoryTitles: els.setReadStoryTitles.checked }));
+  els.setReadStoriesLoop.addEventListener('change', () => setSettings({ readStoriesLoop: els.setReadStoriesLoop.checked }));
   els.setTopicWordGaps.addEventListener('change', () => {
     setSettings({ topicWordGaps: els.setTopicWordGaps.checked });
     els.wordtable.classList.toggle('show-spaces', els.setTopicWordGaps.checked);
@@ -2658,6 +2674,7 @@ function tickPlayback() {
   const playing = !!playingUrl && !sampleAudio.paused;
   const t = sampleAudio.currentTime;
   const over = playing && t >= (waveInfo.get(playingUrl)?.tail ?? Infinity);
+  lightSpokenWord(playing && !over, t);
   if (over && speakingText !== null && !speechOver) {
     speechOver = true;
     markSpeakers();
@@ -2671,6 +2688,43 @@ function tickPlayback() {
     [...w.children].forEach((bar, i) => bar.classList.toggle('on', i < lit));
   }
   if (playing && !over) requestAnimationFrame(tickPlayback);
+}
+
+// Reading: the word being said lights up in its line as a sentence plays, from its own speaker,
+// Read or Read all (2026-10-12, the user's request). The timings are the voice's own
+// (data/audio/timings.json, made by tools/word_timings.py): its words are finer than the passage's
+// (ผู้ก่อการร้าย comes as ผู้ ก่อ การ ร้าย), and each lights the passage word it falls in, from the
+// moment it starts until the next one does. A sentence without timings plays unlit.
+let wordTimings = null;  // sentence -> [c, start ms, end ms, …], once loaded (loadWordTimings)
+let litWord = null;
+
+async function loadWordTimings() {
+  if (wordTimings) return;
+  wordTimings = {};
+  try {
+    const res = await fetch('data/audio/timings.json');
+    if (res.ok) wordTimings = (await res.json()).words || {};
+  } catch {
+    // offline and never cached: sentences play unlit
+  }
+}
+
+function lightSpokenWord(playing, t) {
+  let span = null;
+  const times = playing && speakingText !== null && wordTimings?.[speakingText];
+  if (times?.length) {
+    const ms = t * 1000;
+    let c = -1;
+    for (let i = 0; i < times.length && times[i + 1] <= ms; i += 3) c = times[i];
+    if (c >= 0) {
+      const row = [...els.readerLines.children].find((r) => r.dataset.say === speakingText);
+      span = row ? [...row.querySelectorAll('.rw[data-c0]')].find((x) => +x.dataset.c0 <= c && c < +x.dataset.c1) ?? null : null;
+    }
+  }
+  if (span === litWord) return;
+  litWord?.classList.remove('speaking');
+  span?.classList.add('speaking');
+  litWord = span;
 }
 
 function revealAnswer() {
@@ -2756,6 +2810,7 @@ const isPassage = (id) => !!state.decks.find((d) => d.id === id)?.passage;
 
 function renderReading() {
   hideWordPop();
+  loadWordTimings();
   renderReadingList();
   placeReader();
 }
@@ -2790,6 +2845,9 @@ function renderReadingList() {
     const entry = document.createElement('div');
     entry.className = 'reading-entry';
     entry.dataset.id = d.id;
+    // The title row: its button opens and closes the story; the open one's row also holds Read.
+    const head = document.createElement('div');
+    head.className = 'reading-head';
     const item = document.createElement('button');
     item.type = 'button';
     item.className = 'reading-item';
@@ -2799,15 +2857,19 @@ function renderReadingList() {
     item.querySelector('.reading-item-title').textContent = d.name;
     item.querySelector('.reading-item-desc').textContent = d.description;
     item.addEventListener('click', () => {
+      if (storyRunOn()) stopReadStories(); // a story picked by hand ends Read all
       if (state.readingId === d.id) closeReading();
       else openReading(d.id);
     });
-    entry.append(item);
+    head.append(item);
+    entry.append(head);
     return entry;
   }));
 }
 
 // Puts the reader under the open story's title (or hides it, with none open), and opens that one.
+// Read goes in the open story's title row (the user's call, 2026-10-12; it was in the top bar,
+// greyed out with no story open).
 function placeReader() {
   const id = state.readingId;
   const entries = [...els.readingList.querySelectorAll('.reading-entry')];
@@ -2820,15 +2882,19 @@ function placeReader() {
   const topic = entry && state.decks.find((d) => d.id === id);
   if (!topic) {
     els.reader.hidden = true;
-    els.readingLibrary.append(els.reader); // parked, out of the list
+    els.readingRead.hidden = true;
+    els.readingLibrary.append(els.reader, els.readingRead); // parked, out of the list
     return;
   }
+  entry.querySelector('.reading-head').append(els.readingRead);
+  els.readingRead.hidden = false;
   entry.append(els.reader);
   els.reader.hidden = false;
   renderReader(topic);
 }
 
 function closeReading() {
+  if (storyRunOn()) stopReadStories();
   hideWordPop();
   state.readingId = null;
   placeReader();
@@ -2867,10 +2933,16 @@ function storiesFor(scope) {
 function openReading(id, word = null) {
   hideWordPop();
   state.readingId = id;
+  // Tapped in the list, the page doesn't move: the story opens under its title, which stays where it
+  // is on screen even when an open story above it closes (the user's call, 2026-10-12; it scrolled
+  // the title to the top). From elsewhere (a search result), it's brought into view.
+  const item = state.view === 'reading' && els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"] .reading-item`);
+  const before = item ? item.getBoundingClientRect().top : null;
   if (state.view !== 'reading') setView('reading');
-  else if (!els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"]`)) renderReading();
+  else if (!item) renderReading();
   else placeReader();
-  scrollToReading();
+  if (before !== null && !word) window.scrollBy(0, item.getBoundingClientRect().top - before);
+  else scrollToReading();
   if (word) {
     const spans = [...els.readerLines.querySelectorAll('.rw')].filter((w) => w.textContent === word);
     spans[0]?.scrollIntoView({ block: 'center' });
@@ -2894,10 +2966,18 @@ function renderReader(topic) {
     play.title = 'Play the sentence';
     play.setAttribute('aria-label', play.title);
     play.append(speakerIcon());
-    play.addEventListener('click', () => speakerPress(play, sentence));
+    play.addEventListener('click', () => {
+      if (state.storyReading.active) { // a line's speaker during Read all stops it
+        stopReadStories();
+        return;
+      }
+      speakerPress(play, sentence);
+    });
     const th = document.createElement('p');
     th.className = 'reader-th';
+    row.dataset.say = sentence;
     const tr = [];
+    let at = 0; // how far through the sentence as said: each word's place in it (c0–c1, lightSpokenWord)
     line.th.split(' ').forEach((chunk, i) => {
       if (i) th.append(' ');
       chunk.split('|').forEach((tok, j) => {
@@ -2906,10 +2986,13 @@ function renderReader(topic) {
         const label = tok.endsWith(':');
         const w = (label ? tok.slice(0, -1) : tok).replace(/_/g, ' '); // _ is a space inside a word (จริง_ๆ)
         const card = own.get(w);
+        const c = label ? -1 : sentence.indexOf(w, at);
+        if (c >= 0) at = c + w.length;
         if (card) {
           const span = document.createElement('span');
           span.className = 'rw' + (label ? ' rw-label' : '');
           span.textContent = w;
+          if (c >= 0) Object.assign(span.dataset, { c0: c, c1: c + w.length });
           span.tabIndex = 0;
           span.setAttribute('role', 'button');
           const pick = (e) => {
@@ -2939,6 +3022,119 @@ function renderReader(topic) {
   applyReaderToggles();
 }
 
+// Reading's Read all (2026-10-12, the user's request; like Topics' Read all, in the same place):
+// each story in the list in turn, from the open one (or the first), opened in place, its English
+// title said, then read line by line, the line being read lit and kept in view. Read, beside it
+// (the same day), reads just the open story, and is greyed out with none open. The button pressed
+// shows ■ Stop; pressed again, or on leaving the page, changing topic, opening or closing a story by
+// hand, or pressing a line's speaker, it stops. The other button stops it and starts its own.
+// Opening a word's dialog only pauses it (the user's request, same day): its button shows
+// ❚❚ Paused, the line stays lit, and pressing it carries on from that line (or the title).
+const STORY_LINE_PAUSE = 600;  // ms between lines
+const STORY_PAUSE = 1500;      // and between stories
+
+const storyRunOn = () => state.storyReading.active || !!state.storyReading.paused;
+
+// Starts a run from `btn`, or carries on a paused one (`from`: { ids, idx, line }; line -1 is the title).
+async function readStories(btn, from = null) {
+  const all = btn === els.readingReadAll;
+  const ids = from?.ids ?? (all ? [...els.readingList.querySelectorAll('.reading-entry')].map((e) => e.dataset.id)
+    : state.readingId ? [state.readingId] : []);
+  if (!ids.length) return;
+  const run = state.storyReading;
+  run.paused = null;
+  run.active = true;
+  run.btn = btn;
+  const token = ++run.token;
+  markStoryButtons();
+  try {
+    let idx = from ? from.idx : Math.max(0, ids.indexOf(state.readingId));
+    let line = from ? from.line : -1;
+    for (;;) {
+      for (; idx < ids.length; idx++, line = -1) {
+        if (token !== run.token) return;
+        const id = ids[idx];
+        if (state.readingId !== id) {
+          hideWordPop();
+          state.readingId = id;
+          placeReader();
+        }
+        if (line < 0) scrollToReading();
+        // Its title first, in English (the user's request, 2026-10-12), the title row lit meanwhile.
+        // Settings → Reading → Say the title turns it off.
+        if (line < 0 && getSettings().readStoryTitles !== false) {
+          run.at = { ids, idx, line: -1 };
+          const title = els.readingList.querySelector('.reading-entry.open .reading-item');
+          title?.classList.add('now-playing');
+          await speakAndWait(state.decks.find((d) => d.id === id).name, 'en');
+          if (token !== run.token) return; // paused, it stays lit
+          title?.classList.remove('now-playing');
+          await wait(STORY_LINE_PAUSE);
+        }
+        const rows = [...els.readerLines.querySelectorAll('.reader-line')];
+        for (let i = Math.max(0, line); i < rows.length; i++) {
+          if (token !== run.token) return;
+          run.at = { ids, idx, line: i };
+          els.readingList.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
+          rows[i].classList.add('now-playing');
+          rows[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          await speakAndWait(rows[i].querySelector('.reader-play').dataset.say, 'th');
+          if (token !== run.token) return;
+          await wait(STORY_LINE_PAUSE);
+        }
+        if (token !== run.token) return;
+        if (all) await wait(STORY_PAUSE);
+      }
+      // Settings → Reading → Loop (the user's request, 2026-10-12): from the start again, Read the
+      // same story, Read all the first story in the list.
+      if (token !== run.token || getSettings().readStoriesLoop === false) break;
+      if (!all) await wait(STORY_PAUSE);
+      idx = 0;
+      line = -1;
+    }
+  } finally {
+    if (token === run.token) stopReadStories();
+  }
+}
+
+// A word's dialog pauses the run: it stops where it is, its line (or title) stays lit, and its
+// button carries on from there.
+function pauseReadStories() {
+  const run = state.storyReading;
+  if (!run.active) return;
+  run.paused = { btn: run.btn, ...run.at };
+  run.active = false;
+  run.token++; // the run waiting on the sentence bails out
+  stopAudio();
+  markStoryButtons();
+}
+
+function stopReadStories() {
+  const run = state.storyReading;
+  run.active = false;
+  run.paused = null;
+  run.token++; // a run still waiting bails out
+  stopAudio();
+  els.readingList.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
+  run.btn = null;
+  markStoryButtons();
+}
+
+// Read and Read all: ■ Stop on the one running, ❚❚ Paused on the one paused, else as they are.
+function markStoryButtons() {
+  const run = state.storyReading;
+  for (const [b, label] of [[els.readingRead, 'Read'], [els.readingReadAll, 'Read all']]) {
+    const playing = run.active && run.btn === b;
+    const paused = run.paused?.btn === b;
+    b.classList.toggle('playing', playing);
+    b.classList.toggle('paused', paused);
+    if (playing) b.textContent = '■ Stop';
+    else if (paused) b.textContent = '❚❚ Paused';
+    else b.replaceChildren(speakerIcon(), label);
+    b.title = paused ? 'Paused: press to carry on' : b === els.readingRead ? 'Play the open story, line by line' : 'Play every story in the list, line by line';
+  }
+}
+
 // Transliteration and English under each line, and spaces between the Thai words: off to start (the
 // point is to read the script as written), and remembered (prefs).
 function applyReaderToggles() {
@@ -2963,6 +3159,7 @@ let popAnchor = null; // the word or cell it's for (lit: .on)
 let wordPop = null;   // while it's open: { lastFocus }
 
 function showWordPop(anchor, card) {
+  if (state.storyReading.active) pauseReadStories(); // its word takes over the sound, until Read carries on
   speak(card.thai);
   popAnchor?.classList.remove('on');
   popAnchor = anchor;
@@ -3112,6 +3309,15 @@ function toneSection(card, big) {
   return { el: box, shown: () => { if (!panel.hidden) pick(picked); } };
 }
 
+// Why a vowel isn't written (tones.js hiddenVowel), under the Vowel row (2026-10-12, the user's
+// question about กก).
+const HIDDEN_WHY = {
+  o: 'Two consonants with no vowel between them are read with a short o (สระโอะลดรูป: โ-ะ drops its form before a final), as in คน, นก, รถ.',
+  a: 'A consonant with no vowel of its own, before the next syllable, is read with a short a, as in สบาย (สะ-บาย).',
+  aw: 'Read with ɔɔ, as in บริษัท (บอ-ริ-สัด): mostly in words from Pali and Sanskrit.',
+  awR: 'A final ร, said -n, with ɔɔ before it, as in อักษร and ละคร.',
+};
+
 // One syllable's rule, as rows: the consonant's class, the tone mark, then what makes the syllable
 // live or dead (its vowel's length and its final) and which it is, and the tone. With a tone mark,
 // the mark decides on its own, which the Syllable row says (the middle three rows were dimmed for
@@ -3138,7 +3344,7 @@ function toneRule(s) {
   row('Mark', s.mark ? thai(`◌${s.mark} ${MARK_NAMES[s.mark]}`) : 'none');
   const vowelNote = s.writtenLong !== s.long ? [why(`written ${s.writtenLong ? 'long' : 'short'}, said ${s.long ? 'long' : 'short'}`)] : [];
   const f = s.final;
-  row('Vowel', `${s.long ? 'long' : 'short'} `, thai(s.vowelName), ...(s.vowelHidden ? [' unwritten'] : []), ...vowelNote);
+  row('Vowel', `${s.long ? 'long' : 'short'} `, thai(s.vowelName), ...(s.vowelHidden ? [' unwritten', why(HIDDEN_WHY[s.vowelHidden])] : []), ...vowelNote);
   row('Final', ...(f ? [`-${f.sound} `, ...(f.letter ? [thai(f.letter)] : [' in ', thai(f.part)]), why(f.stop ? 'stops the sound' : 'can be held')] : ['none']));
   // Why, unless the final row has said it.
   row('Syllable', `${s.live ? 'live' : 'dead'} `, thai(s.live ? 'คำเป็น' : 'คำตาย'),
@@ -4045,6 +4251,16 @@ function bindEvents() {
   });
 
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
+  [els.readingRead, els.readingReadAll].forEach((b) => b.addEventListener('click', () => {
+    const run = state.storyReading;
+    if (run.paused?.btn === b) { // carry on from where the word's dialog paused it
+      readStories(b, run.paused);
+      return;
+    }
+    const was = run.active && run.btn;
+    if (storyRunOn()) stopReadStories();
+    if (was !== b) readStories(b);
+  }));
 
   // Deck picker
   els.deckButton.addEventListener('click', openDeckPicker);

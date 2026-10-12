@@ -48,6 +48,7 @@ tools/spelling.mjs    spelling coverage report; writes data/spelling-parts.json 
 tools/stories.py      Reading stories: check, sync, add, export, coverage (see Story tools)
 tools/decks_io.py     reads and writes decks.json in its own layout (for the Python tools)
 tools/tones_check.mjs the audit's tone check; tools/tone_exceptions.txt lists the known exceptions
+tools/word_timings.py when each word of every story sentence is said (data/audio/timings.json)
 docs/                 these notes
 ```
 
@@ -1249,8 +1250,9 @@ the Thai on the back of a Flashcards or Recall card.
   a phrase row, whose Thai opens its words one by one. On a card back, a tap on the
   transliteration's or English's text (`tapCardText`) opens it; a tap beside the text still turns
   the card.
-- **Layout:** a card on every screen size, sized to its content; a long one scrolls inside. It's
-  held near the top, not centred. Centred, picking another syllable changed its height and moved
+- **Layout:** a card sized to its content; a long one scrolls inside. On a phone it's a full-width
+  sheet from the top of the screen, its top edge flush (the user's call, 2026-10-12; it had been a
+  card with a gap above). Elsewhere it's held near the top, not centred. Centred, picking another syllable changed its height and moved
   the syllable buttons out from under the pointer (the user's report, in Firefox).
   The transliteration and meaning are in its head, with ✕.
 - **Body:** the word, large (tap a letter to hear it), the Topics rows' three buttons, and Tones.
@@ -1265,6 +1267,14 @@ the Thai on the back of a Flashcards or Recall card.
       the sound or can be held;
     - Syllable: live คำเป็น or dead คำตาย;
     - Tone; for an exception, "Rules give" and "Said".
+  - An unwritten vowel says why under the Vowel row (`HIDDEN_WHY`, from tones.js `hiddenVowel`),
+    added 2026-10-12 after the user asked about กก:
+    - short o between two consonants (สระโอะลดรูป: คน, กก);
+    - short a before the next syllable (สบาย);
+    - ɔɔ in Pali and Sanskrit words (บริษัท);
+    - ɔɔ before a final ร said -n (อักษร, ละคร).
+
+    The Vowels Before a Final card คน now names สระโอะลดรูป and gives more examples.
   - Under a tone mark, which decides on its own, the Syllable row says so. Dimming Vowel, Final
     and Syllable for it read as a glitch to the user, so it went.
   - The whole tone table: class against live, dead short, dead long and the four marks. Each cell
@@ -1366,13 +1376,59 @@ Back to Stories button.
 - **The list:** each story is a row (`.reading-entry`) with its title button, which has
   `aria-expanded` and a › that turns when it's open.
 - **Opening one:** `openReading` → `placeReader` moves the single `#reader` (the toggles and lines)
-  under that title, joined to it with the accent border. It closes the story open before and
-  scrolls the title to the top, under the sticky bar (`scrollToReading`).
+  under that title, joined to it with the accent border, and closes the story open before.
+  - Tapped in the list, the page doesn't move: the title stays where it was on screen, even when a
+    story open above it closes (the user's call, the same day; at first it scrolled the title to
+    the top).
+  - From a search result, and as Read / Read all reach each story, the title is brought to the top
+    under the sticky bar (`scrollToReading`).
 - **Closing:** the open title again (`closeReading`), or the Reading tab, closes it.
 - **From a search result:** a story that isn't one of the topic's is put first in the list, open,
   with the word lit as before.
 - **Removed:** the separate passage page (`#reading-passage`, its heading and description) and
   `#reading-back`.
+- **Read** (the user's request, same day) reads just the open story, the same way. It sits in the
+  open story's title row, left of the › (`placeReader` moves it there; the row is a `.reading-head`
+  around the title button, since a button can't hold another). It was beside Read all at first,
+  greyed out with no story open. Both are `readStories(button)`; the other button stops a
+  run and starts its own.
+- **Read all** (`readStories`, the user's request, same day): a button where Topics has its
+  Read all, in the same style (`.read-aloud`); on a phone it sits right-aligned under the topic
+  button.
+  - It opens each story in the list in turn, from the open one (or the first). It says the story's
+    English title (its row lit; the titles are recorded with the English voice, gen_audio, keyed
+    under `en`; Settings → Reading → Say the title, `readStoryTitles`, on by default, turns it off),
+    then its lines one by one: the sentence recordings, 0.6 s apart, with 1.5 s
+    between stories.
+  - The line being read is lit (`.reader-line.now-playing`) and kept in view.
+  - **Loop** (Settings → Reading, `readStoriesLoop`, on by default; the user's request, same day):
+    when a run finishes it starts again. Read plays the same story, and Read all goes back to the
+    first story.
+  - **Pausing it** (the user's request, same day): opening a word's dialog pauses the run instead
+    of stopping it (`pauseReadStories`). The button shows ❚❚ Paused (dashed accent border), the
+    line or title stays lit, and pressing it carries on from that line (`readStories(btn, from)`,
+    with the place kept in `storyReading.at`). The other button ends the pause and starts its own.
+  - **Stopping it:** ■ Stop; leaving the page; changing topic; opening or closing a story by hand
+    (the Reading tab too); or pressing a line's speaker. Each of these ends a pause too. The speaker matters on a
+    phone, where the button scrolls out of view.
+- **The toggles** (Transliteration, English, Word gaps) stay at the top of the open story. Moving
+  them into the controls bar, between the topic button and Read, was tried the same day and taken
+  back: it looked poor, and on a phone it took a third row of controls.
+- **The word being said lights up** (the user's request, same day) as a sentence plays, from its
+  own speaker, Read or Read all (`lightSpokenWord`, called from `tickPlayback` each frame).
+  - **Timings:** they're the voice's own word boundaries. `tools/word_timings.py` asks edge-tts for
+    each sentence again with `boundary='WordBoundary'` and writes `data/audio/timings.json`
+    (`{sentence: [c, start ms, end ms, …]}`; c is the word's place in the sentence as said).
+    - The new clip matches the stored one in length but not byte for byte (the same speech,
+      encoded a little differently). So the stored clip is kept unless its length differs; then
+      the new one replaces it, and the timings fit it exactly.
+    - Re-runs do only the sentences without timings, so run it after adding stories.
+  - **Lighting:** the voice's words are finer than the passage's (ผู้ก่อการร้าย comes as
+    ผู้ ก่อ การ ร้าย). Each one lights the passage word it falls in (`renderReader` puts each word's
+    place in the sentence on its span as `data-c0`/`c1`), from its start until the next word's.
+    The light is `.rw.speaking`.
+  - **Loading:** `loadWordTimings` fetches the file with the Reading page; it's in the service
+    worker's shell. A sentence without timings plays unlit.
 - **Rows, the same day:** the ✓ and the level went from the rows (the user's call), so a row is
   the title, the description and the ›. Nothing records opened stories any more (`readingDone`).
 
