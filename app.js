@@ -122,6 +122,9 @@ const els = {
   offlineHelp: document.getElementById('offline-help'),
   launchHelp: document.getElementById('launch-help'),
   wordlistAbout: document.getElementById('wordlist-about'),
+  wordlistLetters: document.getElementById('wordlist-letters'),
+  wordlistLetterGrid: document.getElementById('wordlist-letter-grid'),
+  wordlistLettersHint: document.getElementById('wordlist-letters-hint'),
   readingSection: document.getElementById('reading-section'),
   readingLibrary: document.getElementById('reading-library'),
   readingList: document.getElementById('reading-list'),
@@ -1880,6 +1883,48 @@ function setDirection(direction) {
 
 // ---------- wordlist ----------
 
+// Topics whose letters are also shown as tiles under the text, each playing its card's sound when
+// tapped (2026-10-12, the user's requests). A consonant's sound is its name (the card's `say`: ก
+// says กอ ไก่); a vowel's is the vowel. `groups`: the cards in groups of that many, in order: a
+// short/long pair is 2, and Diphthongs' อำ ใอ ไอ เอา, which have no pairs, are 4.
+const LETTER_BOARD_TOPICS = {
+  'script-consonants-all': { hint: 'Tap a letter to hear its name.' },
+  'script-vowels': { hint: 'Tap a vowel to hear it: short on the left, long on the right.', groups: Array(9).fill(2) },
+  'script-diphthongs': { hint: 'Tap a vowel to hear it. Each pair is short, then long; อำ ใอ ไอ เอา have no pair.', groups: [2, 2, 2, 4, 2] },
+};
+function renderLetterBoard(deck) {
+  const topic = deck.kind === 'topic' && LETTER_BOARD_TOPICS[deck.decks[0].id] ? deck.decks[0] : null;
+  els.wordlistLetters.hidden = !topic;
+  if (!topic || els.wordlistLetterGrid.dataset.topic === topic.id) return;
+  const { hint, groups } = LETTER_BOARD_TOPICS[topic.id];
+  els.wordlistLetterGrid.dataset.topic = topic.id;
+  els.wordlistLettersHint.textContent = hint;
+  els.wordlistLetterGrid.className = groups ? 'vowel-pairs' : 'dict-grid';
+  const tiles = topic.cards.map((c) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'dict-letter letter-tile' + (sayingNow(c.thai) ? ' playing' : '');
+    b.lang = 'th';
+    b.textContent = c.thai;
+    b.dataset.say = c.thai;
+    b.title = `${c.translit}: ${c.english}`;
+    b.setAttribute('aria-label', `${c.thai}, ${c.translit}`);
+    b.addEventListener('click', () => speakerPress(b, c.thai));
+    return b;
+  });
+  if (!groups) {
+    els.wordlistLetterGrid.replaceChildren(...tiles);
+    return;
+  }
+  let at = 0;
+  els.wordlistLetterGrid.replaceChildren(...groups.map((n) => {
+    const g = document.createElement('div');
+    g.className = 'vowel-pair' + (n > 2 ? ' vowel-group-wide' : '');
+    g.append(...tiles.slice(at, at += n));
+    return g;
+  }));
+}
+
 // The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → Topics →
 // Show first), then the other two in fixed order.
 const COL_META = {
@@ -1928,6 +1973,7 @@ function renderWordlist() {
     }
     return el;
   }));
+  renderLetterBoard(deck);
   const words = reviewWords();
 
   const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
@@ -4388,7 +4434,7 @@ function markSpeakers() {
   const recall = state.review?.current && state.cardIndex.get(state.review.current.key)?.card.thai;
   els.speakButtons.forEach((b) => b.classList.toggle('playing', on(flash)));
   document.querySelectorAll('.review-speak').forEach((b) => b.classList.toggle('playing', on(recall)));
-  document.querySelectorAll('.row-speak').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
+  document.querySelectorAll('.row-speak, .letter-tile').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
 }
 
 function ttsAndWait(text, lang) {

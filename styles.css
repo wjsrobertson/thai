@@ -1408,6 +1408,17 @@ body { display: flex; flex-direction: column; }
 .dict-letter:hover:not(:disabled) { border-color: var(--accent); }
 .dict-letter:disabled { opacity: .35; cursor: default; }
 .dict-empty { color: var(--muted); }
+/* Alphabet in Order's letter tiles (renderLetterBoard), the Words grid's: lit while the name plays. */
+.letter-board { margin: 0 0 20px; }
+.letter-board[hidden] { display: none; }
+.letter-board-hint { margin: 0 0 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.letter-tile.playing { border-color: var(--accent); color: var(--accent); }
+/* Short & Long Vowels: a pair a cell, short then long, the tiles wider than square for เอาะ. */
+.vowel-pairs { display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 10px; }
+.vowel-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+/* Four with no pairs (Diphthongs' อำ ใอ ไอ เอา): two cells' width, tiles the pairs' size. */
+.vowel-group-wide { grid-column: span 2; grid-template-columns: repeat(4, 1fr); }
+.vowel-pairs .letter-tile { aspect-ratio: auto; height: 64px; font-size: min(calc(28px * var(--fs, 1)), 30px); white-space: nowrap; }
 .dict-empty[hidden], .dict-table[hidden] { display: none; }
 
 /* Wordlist view */

@@ -1371,6 +1371,28 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## Alphabet in Order's letter tiles (2026-10-12)
+
+The user asked for something to tap on the Alphabet in Order topic, between its text and the word
+list: the 44 letters as tiles, the same as the Words page's grid (`.dict-grid`, `.dict-letter`),
+each saying its name when tapped, under "Tap a letter to hear its name."
+- `renderLetterBoard(deck)`, called from `renderWordlist`, for the topics in `LETTER_BOARD_TOPICS`
+  (just `script-consonants-all`). It builds the tiles once per topic.
+- A tile plays its card's sound (`speakerPress`), and a letter card's sound is its name (the
+  card's `say`: ก is กอ ไก่), so no new recordings were needed.
+- A tile is lit while its name plays (`.letter-tile.playing`, set by `markSpeakers` with the row
+  speakers), so Read all lights each tile in turn too.
+- **Short & Long Vowels** got the same, the same day (the user's request): its 18 vowels as 9
+  pairs (`pairs` in `LETTER_BOARD_TOPICS`, `.vowel-pair`), short on the left, long on the right, so
+  the length is heard side by side. A vowel's tile plays the vowel (its card has no `say`). The
+  tiles are wider than square and the text 28px, so เอาะ and เออะ fit at 320px.
+- **Diphthongs & Special Vowels** too (the user's request, the same day): `groups` in
+  `LETTER_BOARD_TOPICS` replaced `pairs`, the cards in groups of that many, in order: its three
+  short/long diphthong pairs, then อำ ใอ ไอ เอา, which have no pairs (a group of 4 two cells wide,
+  `.vowel-group-wide`), then ฤ ฤๅ. ฤ and ฤๅ play their cards' `say` (รึ, รือ). On a phone the cell
+  after the third diphthong is left empty, which sets the special vowels apart.
+- The topic list now starts Thai Script → Consonants with Alphabet in Order (it was fifth).
+
 ## Flashcards fit a phone screen (2026-10-12, branch `2026-10-12-card-fit`)
 
 The user asked whether Flashcards still fit one iPhone screen at larger text sizes. They didn't,
