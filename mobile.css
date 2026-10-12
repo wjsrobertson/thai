@@ -184,6 +184,16 @@ html.settings-open .tab-settings { color: var(--accent); }
 .cat-decks { padding-left: 0; }
 .sub-decks { margin-left: 10px; }
 
+/* A board's grouped tiles (renderLetterBoard): five to a line at 375px and up, a group of five
+   (the tone sets and chants) on one line down to 320px. */
+.letter-groups { gap: 10px 20px; } /* a clear space between groups, 4px between tiles */
+.letter-groups .letter-tile { min-width: 64px; height: 64px; padding: 0 6px; font-size: min(calc(28px * var(--fs, 1)), 30px); }
+.letter-groups.letters .letter-tile { width: 64px; height: 64px; }
+@media (max-width: 340px) {
+  .letter-groups .letter-tile { min-width: 54px; padding: 0 4px; font-size: 24px; }
+  .letter-groups.letters .letter-tile { width: 54px; height: 54px; font-size: 38px; }
+}
+
 /* ---------- wordlist: each row becomes a small card, 🔊 on the right ---------- */
 .wordlist-title { font-size: calc(20px * var(--fs, 1)); }
 .wordlist-desc { font-size: calc(16px * var(--fs, 1)); }

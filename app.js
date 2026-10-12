@@ -499,6 +499,11 @@ async function loadAudioManifest() {
   return files;
 }
 
+// What a card's Thai sound is filed under: its `say` when it has one (a letter, read by its name: ก
+// is กอ ไก่), else its Thai. gen_audio keys both, so a plain card with the same Thai (ณ "at") keeps
+// its own reading (2026-10-12).
+const cardSay = (card) => card.say || card.thai;
+
 function cardKey(card) {
   // Stable id per card; thai+english is unique enough for hand-curated decks.
   return `${card.thai}::${card.english}`;
@@ -754,7 +759,7 @@ function renderCard() {
   els.backThai.textContent = thaiSide ? c.thai : '';
   els.backThai.hidden = !thaiSide;
   if (thaiSide) {
-    if (state.direction === 'listen') els.thai.replaceChildren(listenButton(c.thai));
+    if (state.direction === 'listen') els.thai.replaceChildren(listenButton(cardSay(c)));
     else els.thai.textContent = c.thai;
     els.thai.classList.remove('front-en');
     els.translit.textContent = c.translit;
@@ -779,7 +784,7 @@ function renderCard() {
   fitCardText();
   renderAutoBadges();
   if (state.view === 'flashcards' && state.orderMode !== 'review' && !state.reading.active) { // Review mode hides this card
-    if ((state.direction !== 'en-th' || state.showingBack) && autoPlayOn()) speak(c.thai);
+    if ((state.direction !== 'en-th' || state.showingBack) && autoPlayOn()) speak(cardSay(c));
     else stopAudio(); // nothing to say yet, but don't carry on with the last card's word or spelling
   }
 }
@@ -833,7 +838,7 @@ function flipCard() {
   if (state.orderMode === 'test' && !state.learnAnswers.has(c.key)) return;
   setFlipped(!state.showingBack);
   // Turning to the side that speaks says the word (speakingSide).
-  if (speakingSide(state.direction, state.showingBack) && autoPlayOn()) speak(c.thai);
+  if (speakingSide(state.direction, state.showingBack) && autoPlayOn()) speak(cardSay(c));
 }
 
 // The side of a card that says its Thai when turned to (or shown): Thai → English's front (the
@@ -1424,11 +1429,11 @@ function wordHitRow(h, added) {
   });
   const sp = document.createElement('button');
   sp.type = 'button';
-  sp.className = 'row-speak' + (sayingNow(h.card.thai) ? ' playing' : '');
-  sp.dataset.say = h.card.thai;
+  sp.className = 'row-speak' + (sayingNow(cardSay(h.card)) ? ' playing' : '');
+  sp.dataset.say = cardSay(h.card);
   sp.setAttribute('aria-label', `Play ${h.card.thai}`);
   sp.append(speakerIcon());
-  sp.addEventListener('click', () => speakerPress(sp, h.card.thai));
+  sp.addEventListener('click', () => speakerPress(sp, cardSay(h.card)));
   row.append(main, rv, sp);
   return row;
 }
@@ -1722,7 +1727,7 @@ function bindSettings() {
     if (n >= 0.5 && n <= 1) setSettings({ thaiSpeed: n });
     // Preview the new speed on the current card.
     const c = currentCard();
-    if (c) speak(c.thai);
+    if (c) speak(cardSay(c));
   });
   els.setReadRepeats.addEventListener('change', () => {
     const n = parseInt(els.setReadRepeats.value, 10);
@@ -1883,46 +1888,44 @@ function setDirection(direction) {
 
 // ---------- wordlist ----------
 
-// Topics whose letters are also shown as tiles under the text, each playing its card's sound when
-// tapped (2026-10-12, the user's requests). A consonant's sound is its name (the card's `say`: ก
-// says กอ ไก่); a vowel's is the vowel. `groups`: the cards in groups of that many, in order: a
-// short/long pair is 2, and Diphthongs' อำ ใอ ไอ เอา, which have no pairs, are 4.
-const LETTER_BOARD_TOPICS = {
-  'script-consonants-all': { hint: 'Tap a letter to hear its name.' },
-  'script-vowels': { hint: 'Tap a vowel to hear it: short on the left, long on the right.', groups: Array(9).fill(2) },
-  'script-diphthongs': { hint: 'Tap a vowel to hear it. Each pair is short, then long; อำ ใอ ไอ เอา have no pair.', groups: [2, 2, 2, 4, 2] },
-};
+// A topic's tiles to tap and hear, under its text (2026-10-12, the user's requests): its `board` in
+// decks.json, with a `hint` line over them and either
+// - `tiles`: square tiles in a grid, as on the Words page (Alphabet in Order), or
+// - `groups`: tiles in groups, a group kept on one line: short/long vowel pairs, sound and tone
+//   pairs, tone chants, letters that sound or look alike. `letters`: the tiles are single letters,
+//   square and large.
+// A tile plays its Thai's sound (gen_audio records any that isn't a card's): a letter says its name,
+// as its card does (ก: กอ ไก่). It's lit while it plays (markSpeakers), so Read all lights them too.
 function renderLetterBoard(deck) {
-  const topic = deck.kind === 'topic' && LETTER_BOARD_TOPICS[deck.decks[0].id] ? deck.decks[0] : null;
+  const topic = deck.kind === 'topic' && deck.decks[0].board ? deck.decks[0] : null;
   els.wordlistLetters.hidden = !topic;
   if (!topic || els.wordlistLetterGrid.dataset.topic === topic.id) return;
-  const { hint, groups } = LETTER_BOARD_TOPICS[topic.id];
+  const { hint, tiles, groups, letters } = topic.board;
   els.wordlistLetterGrid.dataset.topic = topic.id;
-  els.wordlistLettersHint.textContent = hint;
-  els.wordlistLetterGrid.className = groups ? 'vowel-pairs' : 'dict-grid';
-  const tiles = topic.cards.map((c) => {
+  els.wordlistLettersHint.textContent = hint || '';
+  els.wordlistLetterGrid.className = groups ? 'letter-groups' + (letters ? ' letters' : '') : 'dict-grid';
+  const tile = (thai) => {
+    const card = topic.cards.find((c) => c.thai === thai);
+    const say = card ? cardSay(card) : thai;
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'dict-letter letter-tile' + (sayingNow(c.thai) ? ' playing' : '');
+    b.className = 'dict-letter letter-tile' + (sayingNow(say) ? ' playing' : '');
     b.lang = 'th';
-    b.textContent = c.thai;
-    b.dataset.say = c.thai;
-    b.title = `${c.translit}: ${c.english}`;
-    b.setAttribute('aria-label', `${c.thai}, ${c.translit}`);
-    b.addEventListener('click', () => speakerPress(b, c.thai));
+    b.textContent = thai;
+    b.dataset.say = say;
+    if (card) b.title = `${card.translit}: ${card.english}`;
+    b.setAttribute('aria-label', card ? `${thai}, ${card.translit}` : thai);
+    b.addEventListener('click', () => speakerPress(b, say));
     return b;
-  });
-  if (!groups) {
-    els.wordlistLetterGrid.replaceChildren(...tiles);
-    return;
-  }
-  let at = 0;
-  els.wordlistLetterGrid.replaceChildren(...groups.map((n) => {
-    const g = document.createElement('div');
-    g.className = 'vowel-pair' + (n > 2 ? ' vowel-group-wide' : '');
-    g.append(...tiles.slice(at, at += n));
-    return g;
-  }));
+  };
+  els.wordlistLetterGrid.replaceChildren(...(groups
+    ? groups.map((group) => {
+      const g = document.createElement('div');
+      g.className = 'letter-group';
+      g.append(...group.map(tile));
+      return g;
+    })
+    : tiles.map(tile)));
 }
 
 // The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → Topics →
@@ -2116,11 +2119,11 @@ function wordRow(c, cols, added) {
   }
   const btn = document.createElement('button');
   btn.type = 'button';
-  btn.className = 'row-speak' + (sayingNow(c.thai) ? ' playing' : '');
-  btn.dataset.say = c.thai;
+  btn.className = 'row-speak' + (sayingNow(cardSay(c)) ? ' playing' : '');
+  btn.dataset.say = cardSay(c);
   btn.setAttribute('aria-label', 'Play audio');
   btn.append(speakerIcon());
-  btn.addEventListener('click', () => speakerPress(btn, c.thai));
+  btn.addEventListener('click', () => speakerPress(btn, cardSay(c)));
   audioTd.appendChild(btn);
   tr.appendChild(audioTd);
   return tr;
@@ -2417,7 +2420,7 @@ function handleLearnPick(btn, isCorrect) {
 
   // Flip the card to reveal the back face; in English → Thai that's the Thai, so say it now.
   setFlipped(true);
-  if (state.direction === 'en-th' && autoPlayOn()) speak(c.thai);
+  if (state.direction === 'en-th' && autoPlayOn()) speak(cardSay(c));
 
   // Saved now, so leaving during the pause loses nothing; then on to the next card, after Settings →
   // Flashcards' pause for a right answer, or the longer one for a wrong answer (to take in the right
@@ -2750,7 +2753,7 @@ function presentEntry() {
   // Listen → English: the sound only, the word's waveform, as on Flashcards' card. (Until
   // 2026-10-08 Settings → Recall → Show Thai script made Thai → English audio only, with an eye
   // button to show the script; Listen replaced both.)
-  if (listen) els.reviewPrompt.replaceChildren(listenButton(card.thai));
+  if (listen) els.reviewPrompt.replaceChildren(listenButton(cardSay(card)));
   else els.reviewPrompt.textContent = thaiFirst ? card.thai : card.english;
   els.reviewPrompt.className = 'review-prompt thai' + (thaiFirst ? '' : ' front-en');
   // The back, as Flashcards' (renderCard): Thai → English repeats the Thai at the English's size,
@@ -2774,7 +2777,7 @@ function presentEntry() {
   els.reviewSpeak.hidden = !thaiFirst;
   renderAutoBadges();
   fitCardText(); // sizes the card too
-  if (thaiFirst && autoPlayOn()) speak(card.thai);
+  if (thaiFirst && autoPlayOn()) speak(cardSay(card));
 }
 
 // Review's card turns like Flashcards' (.card.flipped). Before Show it only turns to the answer
@@ -2951,7 +2954,7 @@ function revealAnswer() {
   els.reviewSpeak.hidden = false;
   els.reviewSpell.hidden = !spellingFor(state.cardIndex.get(e.key).card);
   renderAutoBadges(); // the front's speaker (and its A) shows now
-  if (speakingSide(e.dir, true) && autoPlayOn()) speak(state.cardIndex.get(e.key).card.thai);
+  if (speakingSide(e.dir, true) && autoPlayOn()) speak(cardSay(state.cardIndex.get(e.key).card));
   els.reviewGrades.hidden = false;
 }
 
@@ -2960,7 +2963,7 @@ function revealAnswer() {
 function turnReviewCard() {
   const r = state.review;
   setReviewFlipped(!r.flipped);
-  if (speakingSide(r.current.dir, r.flipped) && autoPlayOn()) speak(state.cardIndex.get(r.current.key).card.thai);
+  if (speakingSide(r.current.dir, r.flipped) && autoPlayOn()) speak(cardSay(state.cardIndex.get(r.current.key).card));
 }
 
 // Save the grade, and set when the card comes back in this visit: Again and Hard a few cards later
@@ -3375,7 +3378,7 @@ let wordPop = null;   // while it's open: { lastFocus }
 
 function showWordPop(anchor, card) {
   if (state.storyReading.active) pauseReadStories(); // its word takes over the sound, until Read carries on
-  speak(card.thai);
+  speak(cardSay(card));
   popAnchor?.classList.remove('on');
   popAnchor = anchor;
   anchor?.classList.add('on');
@@ -3432,12 +3435,12 @@ function showWordPop(anchor, card) {
   }
   const play = document.createElement('button');
   play.type = 'button';
-  play.className = 'row-speak' + (sayingNow(card.thai) ? ' playing' : ''); // lit while it plays (markSpeakers)
-  play.dataset.say = card.thai;
+  play.className = 'row-speak' + (sayingNow(cardSay(card)) ? ' playing' : ''); // lit while it plays (markSpeakers)
+  play.dataset.say = cardSay(card);
   play.title = `Play ${card.thai}`;
   play.setAttribute('aria-label', play.title);
   play.append(speakerIcon());
-  play.addEventListener('click', () => speakerPress(play, card.thai));
+  play.addEventListener('click', () => speakerPress(play, cardSay(card)));
   actions.append(play);
   // Under them, the word's tones (tones.js), closed to a row until tapped.
   const tones = toneSection(card, big);
@@ -3899,7 +3902,7 @@ async function startReadAloud() {
       const s = getSettings();
       for (let i = 0; i < s.readRepeats; i++) {
         if (token !== state.reading.token) return;
-        await speakAndWait(card.thai, 'th');
+        await speakAndWait(cardSay(card), 'th');
         if (token !== state.reading.token) return;
         if (s.readSpeakEnglish) {
           await speakAndWait(card.english, 'en');
@@ -4067,7 +4070,7 @@ function preloadDeckAudio(deck) {
   }
   const entries = [];
   const add = (url, keep) => url && entries.push({ url, keep });
-  for (const c of cards) add(sampleUrl(c.thai, 'th'), true);
+  for (const c of cards) add(sampleUrl(cardSay(c), 'th'), true);
   for (const c of cards) {
     for (const step of (spellingFor(c) || []).flat()) if (!step.gap && !step.word) add(sampleUrl(step.say, 'sp'), false);
   }
@@ -4301,7 +4304,7 @@ async function speakSpelling(card, buttons = [], { onStep } = {}) {
         const part = step.word ? null : await parts.get(sampleUrl(step.say, 'sp'));
         if (run !== spellRun) return;
         onStep?.(step); // e.g. the reader's pop-up lights up the part being read
-        if (step.word) await speakAndWait(card.thai, 'th');
+        if (step.word) await speakAndWait(cardSay(card), 'th');
         else if (!part || !(await playSample(part, speedFor('sp')))) await speakAndWait(step.say, 'sp');
         wait = SPELL_STEP_PAUSE;
       }
@@ -4430,8 +4433,8 @@ const sayingNow = (thai) => speakingText !== null && !speechOver && thai === spe
 // all reaching the row).
 function markSpeakers() {
   const on = sayingNow;
-  const flash = currentCard()?.thai;
-  const recall = state.review?.current && state.cardIndex.get(state.review.current.key)?.card.thai;
+  const flash = currentCard() && cardSay(currentCard());
+  const recall = state.review?.current && cardSay(state.cardIndex.get(state.review.current.key).card);
   els.speakButtons.forEach((b) => b.classList.toggle('playing', on(flash)));
   document.querySelectorAll('.review-speak').forEach((b) => b.classList.toggle('playing', on(recall)));
   document.querySelectorAll('.row-speak, .letter-tile').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
@@ -4585,7 +4588,7 @@ function bindEvents() {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       const c = currentCard();
-      if (c) speakerPress(btn, c.thai);
+      if (c) speakerPress(btn, cardSay(c));
     });
   });
   els.autoBadges.forEach((btn) => {
@@ -4676,7 +4679,7 @@ function bindEvents() {
   });
   els.reviewCard.querySelectorAll('.review-speak').forEach((btn) => btn.addEventListener('click', () => {
     const entry = state.review?.current;
-    if (entry) speakerPress(btn, state.cardIndex.get(entry.key).card.thai);
+    if (entry) speakerPress(btn, cardSay(state.cardIndex.get(entry.key).card));
   }));
   [els.reviewSpell, els.reviewSpellBack].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a tap on the card
@@ -4733,7 +4736,7 @@ function bindEvents() {
       flipCard();
     } else if (e.key === 'p' || e.key === 'P') {
       const c = currentCard();
-      if (c) speak(c.thai);
+      if (c) speak(cardSay(c));
     } else if (e.key === 'ArrowRight') {
       goNext();
     } else if (e.key === 'ArrowLeft') {

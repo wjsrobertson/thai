@@ -169,19 +169,31 @@ async def main():
     entries = {}
     # sample filename -> (spoken text, voice, trimmed); several card texts can share one sample
     samples = {}
+    by_say = set()  # Thai keys whose sample is a card's `say`, which a plain reading replaces
     for d in decks:
         for c in d['cards']:
             for lang, field in FIELDS.items():
                 # A card's optional 'say' replaces what the Thai voice reads, e.g. a lone
-                # letter is read by its name (ก -> กอ ไก่). The manifest stays keyed by c['thai'].
+                # letter is read by its name (ก -> กอ ไก่). It's keyed by its Thai and by the `say`
+                # text, which the app plays for the card (cardSay), so when another card has the
+                # same Thai said plainly (ณ the letter, นอ เณร; ณ "at", ná: 2026-10-12) the Thai
+                # key takes the plain reading and the letter still says its name.
                 text = c.get('say', c[field]) if lang == 'th' else c[field]
                 said = spoken_text(text, lang)
                 voice = voice_for(said, lang, voices)
                 name = sample_name(said, voice, args.rate)
-                if entries.get((lang, c[field]), name) != name:
-                    print(f'warning: {c[field]!r} is said two ways; using {said!r} ({d["id"]})')
-                entries[(lang, c[field])] = name
                 samples[name] = (said, voice, False)
+                key = (lang, c[field])
+                if lang == 'th' and 'say' in c:
+                    entries.setdefault(('th', c['say']), name)
+                    if key in entries and key not in by_say:
+                        continue  # a plain reading of this Thai is already there
+                    by_say.add(key)
+                elif key in by_say:
+                    by_say.discard(key)
+                elif entries.get(key, name) != name:
+                    print(f'warning: {c[field]!r} is said two ways; using {said!r} ({d["id"]})')
+                entries[key] = name
     # Thai in notes and topic paragraphs, which the app makes tap-to-play (appendNoteText,
     # 2026-10-08): each playable run, keyed under 'th' like a card's Thai. A run that is a card's
     # Thai keeps that card's sample (its 'say' and all).
@@ -192,6 +204,17 @@ async def main():
             said = spoken_text(run, 'th')
             name = sample_name(said, voices['th'], args.rate)
             entries[('th', run)] = name
+            samples[name] = (said, voices['th'], False)
+    # A topic's tiles to tap (its `board`: renderLetterBoard, 2026-10-12): each a Thai string keyed
+    # like a card's Thai. One that is a card's Thai keeps that card's sample (a letter says its name).
+    for d in decks:
+        board = d.get('board') or {}
+        for text in board.get('tiles') or [t for group in board.get('groups', []) for t in group]:
+            if ('th', text) in entries:
+                continue
+            said = spoken_text(text, 'th')
+            name = sample_name(said, voices['th'], args.rate)
+            entries[('th', text)] = name
             samples[name] = (said, voices['th'], False)
     # Reading passages (a topic's `passage`): each sentence, so the reader can play it whole. Keyed
     # by sentence_text(), as the app's reader does.

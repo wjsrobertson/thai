@@ -1371,27 +1371,40 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
-## Alphabet in Order's letter tiles (2026-10-12)
+## Tiles to tap and hear on Thai Script topics (2026-10-12)
 
-The user asked for something to tap on the Alphabet in Order topic, between its text and the word
-list: the 44 letters as tiles, the same as the Words page's grid (`.dict-grid`, `.dict-letter`),
-each saying its name when tapped, under "Tap a letter to hear its name."
-- `renderLetterBoard(deck)`, called from `renderWordlist`, for the topics in `LETTER_BOARD_TOPICS`
-  (just `script-consonants-all`). It builds the tiles once per topic.
-- A tile plays its card's sound (`speakerPress`), and a letter card's sound is its name (the
-  card's `say`: ก is กอ ไก่), so no new recordings were needed.
-- A tile is lit while its name plays (`.letter-tile.playing`, set by `markSpeakers` with the row
-  speakers), so Read all lights each tile in turn too.
-- **Short & Long Vowels** got the same, the same day (the user's request): its 18 vowels as 9
-  pairs (`pairs` in `LETTER_BOARD_TOPICS`, `.vowel-pair`), short on the left, long on the right, so
-  the length is heard side by side. A vowel's tile plays the vowel (its card has no `say`). The
-  tiles are wider than square and the text 28px, so เอาะ and เออะ fit at 320px.
-- **Diphthongs & Special Vowels** too (the user's request, the same day): `groups` in
-  `LETTER_BOARD_TOPICS` replaced `pairs`, the cards in groups of that many, in order: its three
-  short/long diphthong pairs, then อำ ใอ ไอ เอา, which have no pairs (a group of 4 two cells wide,
-  `.vowel-group-wide`), then ฤ ฤๅ. ฤ and ฤๅ play their cards' `say` (รึ, รือ). On a phone the cell
-  after the third diphthong is left empty, which sets the special vowels apart.
-- The topic list now starts Thai Script → Consonants with Alphabet in Order (it was fifth).
+The user asked for something to tap on Alphabet in Order, between its text and the word list, then
+the same on the two vowel topics, then on every topic where hearing things side by side helps. 19
+topics have them, under a line of help:
+- **Alphabet in Order:** the 44 letters, square, as on the Words page, each saying its name.
+- **Mid, High, Low — Paired, Low — Sonorants:** the class's letters, those with the same sound
+  together (ข ฃ, ศ ษ ส, ค ฅ ฆ…). **Look-alike Letters:** the look-alikes together (บ ป, ด ต, ข ช ซ…).
+- **Short & Long Vowels, Diphthongs & Special Vowels:** short/long pairs; อำ ใอ ไอ เอา, which have
+  no pairs, as a group of four. The vowel's sound, not a name.
+- **Tone Chants:** each chant a row, tapped through a syllable at a time (กา ก่า ก้า ก๊า ก๋า…).
+- **Final Sound Families:** กา (no final), then กก กด กบ, then กง กน กม เกย เกอว.
+- **Sound Pairs (3) and Tone Pairs (6):** each pair or set together, in the topic's card order
+  (ไก่ | ไข่; คา ข่า ค่า ค้า ขา…).
+
+How it works:
+- **A topic's `board` in decks.json:** `hint`, then `tiles` (square tiles in a grid) or `groups`
+  (a list of lists, a group kept on one line, the groups flowing on); `letters: true` makes grouped
+  tiles square with a large letter. `renderLetterBoard` (app.js) draws it once per topic.
+- **A tile plays its Thai's sound:** a card's own (a letter's `say`, so ก says กอ ไก่), else a
+  recording gen_audio makes for the tile (the board's strings are keyed like a card's Thai; the
+  chant syllables were mostly there already, 4 were new). It's lit while it plays
+  (`.letter-tile.playing`, `markSpeakers`), so Read all lights the tiles in turn.
+- **Layout:** `.letter-groups` is a flex wrap of `.letter-group`s, 4px between tiles and 20px
+  between groups on a phone. Tiles are 64px (54px at 320px, so a set of five fits) and grow for a
+  long word. Checked on all 19 at 320, 390 and 1280px: no group split across lines, nothing cut.
+- Alphabet in Order is now the first Consonants topic (it was fifth).
+
+**A card's sound is filed under its `say` too (`cardSay`).** The ณ "at" card added the same day
+has the same Thai as the letter ณ, and the recordings were keyed by Thai only, so the letter had
+been saying ná instead of นอ เณร. gen_audio now keys a card with a `say` under that text as well,
+and lets a plain reading keep the Thai key. The app plays any card as `cardSay(card)` (its `say`,
+else its Thai): the row and card speakers, Listen mode, Recall, Read all, the word dialog,
+preloading, and the tiles.
 
 ## Flashcards fit a phone screen (2026-10-12, branch `2026-10-12-card-fit`)
 

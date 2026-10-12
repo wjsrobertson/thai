@@ -982,6 +982,7 @@
       "description": "All 44 consonants in alphabet order, ก to ฮ. ฃ and ฅ are obsolete.",
       "about": "Thai schoolchildren learn the order with the song ก เอ๋ย ก ไก่, which gives every letter its name word: \"ก เอ๋ย ก ไก่, ข ไข่ อยู่ในเล้า, ฃ ขวด ของเรา…\".\n\nThe order itself has a pattern: rows grouped by where in the mouth the sound is made, from the throat forward, each ending in a nasal. ก ข ฃ ค ฅ ฆ ง are made in the throat, จ ฉ ช ซ ฌ ญ at the palate, ฎ ฏ ฐ ฑ ฒ ณ with the tongue curled back, ด ต ถ ท ธ น at the teeth, and บ ป ผ ฝ พ ฟ ภ ม at the lips. The rest follow: ย ร ล ว, the three s letters ศ ษ ส, and ห ฬ อ ฮ.",
       "formerIds": ["script-consonants-all-all-consonants"],
+      "board": {"hint": "Tap a letter to hear its name.", "tiles": ["ก", "ข", "ฃ", "ค", "ฅ", "ฆ", "ง", "จ", "ฉ", "ช", "ซ", "ฌ", "ญ", "ฎ", "ฏ", "ฐ", "ฑ", "ฒ", "ณ", "ด", "ต", "ถ", "ท", "ธ", "น", "บ", "ป", "ผ", "ฝ", "พ", "ฟ", "ภ", "ม", "ย", "ร", "ล", "ว", "ศ", "ษ", "ส", "ห", "ฬ", "อ", "ฮ"]},
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
@@ -1036,6 +1037,7 @@
       "name": "Mid Class",
       "description": "The 9 mid-class consonants. A letter's class decides its syllable's tone. The back gives the letter's name (the letter + a word starting with it), which the audio says.",
       "about": "Remember them: on the ground, a dancing child (ด เด็ก) wearing a headdress (ฎ ชฎา) pokes a fish (ป ปลา) in a basin (อ อ่าง) with an ox goad (ฏ ปฏัก), feeds a leaf (บ ใบไม้) to a turtle (ต เต่า), and puts a chicken (ก ไก่) on a plate (จ จาน).\n\nThai schoolchildren learn them as ไก่จิกเด็กตายบนปากโอ่ง, \"a chicken pecked a child to death on the rim of a jar\". Its เด็ก and ตาย also stand for ฎ and ฏ, which have the same sounds, and the full form names them: ไก่จิก เด็กตาย เฎ็กฏาย บนปากโอ่ง.",
+      "board": {"hint": "Tap a letter to hear its name. Letters with the same sound are together.", "letters": true, "groups": [["ก"], ["จ"], ["ฎ", "ด"], ["ฏ", "ต"], ["บ"], ["ป"], ["อ"]]},
       "cards": [
         { "thai": "ก", "translit": "gɔɔ gài", "english": "g — chicken", "note": "Mid class. Final: -k. Unaspirated, between English g and k.", "say": "กอ ไก่" },
         { "thai": "จ", "translit": "jɔɔ jaan", "english": "j — plate", "note": "Mid class. Final: -t. Unaspirated, a soft j.", "say": "จอ จาน" },
@@ -1056,6 +1058,7 @@
       "name": "High Class",
       "description": "The 11 high-class consonants, all aspirated or hissing sounds. An unmarked live syllable with one is rising.",
       "about": "Remember them: a tiger (ส เสือ) wants breakfast. It sniffs out a bag (ถ ถุง) of eggs (ข ไข่) and a bottle (ฃ ขวด) hidden in a chest (ห หีบ) under a pavilion (ศ ศาลา). It noses the lid (ฝ ฝา) open, and a bee (ผ ผึ้ง) stings it on the nose. Up on his stone seat (ฐ ฐาน), a hermit (ษ ฤๅษี) laughs and clashes his cymbals (ฉ ฉิ่ง).\n\nThai schoolchildren learn them as ผีฝากถุงข้าวสารให้ฉัน, \"a ghost left a bag of rice with me\". The other letters join the word with their sound: ฐ with ถุง, ศ ษ with สาร, and the obsolete ฃ with ข้าว.",
+      "board": {"hint": "Tap a letter to hear its name. Letters with the same sound are together.", "letters": true, "groups": [["ข", "ฃ"], ["ฉ"], ["ฐ", "ถ"], ["ผ"], ["ฝ"], ["ศ", "ษ", "ส"], ["ห"]]},
       "cards": [
         { "thai": "ข", "translit": "khɔ̌ɔ khài", "english": "kh — egg", "note": "High class. Final: -k. Aspirated, like English k.", "say": "ขอ ไข่" },
         { "thai": "ฃ", "translit": "khɔ̌ɔ khùat", "english": "kh — bottle (obsolete)", "note": "High class. No longer used (ข replaced it), but still recited in the alphabet.", "say": "ขอ ขวด" },
@@ -1078,6 +1081,7 @@
       "name": "Low Class — Paired",
       "description": "14 low-class consonants that share a sound with a high-class letter (ค and ข, ท and ถ, พ and ผ…). Having both lets Thai spell every tone.",
       "about": "Thai schoolchildren learn them as พ่อค้าฟันทองซื้อช้างฮ่อ, \"a gold-toothed merchant buys a Haw elephant\" (the Haw were Yunnanese caravan traders). Each word gives one sound, and the rarer letters with that sound join it: พ่อ for พ ภ, ค้า for ค ฅ ฆ, ฟัน for ฟ, ทอง for ท ธ ฑ ฒ, ซื้อ for ซ, ช้าง for ช ฌ, ฮ่อ for ฮ. Some schools use โชคภูโซ พุทโธ ไฮไฟ instead, which names ช ค ภ ซ พ ท ธ ฮ ฟ and leaves ฅ ฆ ฌ ฑ ฒ to learn by rote.\n\nEach of them is the low twin of a high-class letter with the same sound. The high rhyme ผีฝากถุงข้าวสารให้ฉัน gives ผ ฝ ถ ข ส ห ฉ, and their twins are พ ฟ ท ค ซ ฮ ช: the merchant's rhyme again, in another order. And a shortcut for any letter: if it isn't in the mid rhyme or the high rhyme, it's low.",
+      "board": {"hint": "Tap a letter to hear its name. Letters with the same sound are together.", "letters": true, "groups": [["ค", "ฅ", "ฆ"], ["ช", "ฌ"], ["ซ"], ["ฑ", "ฒ", "ท", "ธ"], ["พ", "ภ"], ["ฟ"], ["ฮ"]]},
       "cards": [
         { "thai": "ค", "translit": "khɔɔ khwaai", "english": "kh — buffalo", "note": "Low class. Final: -k. The everyday low-class kh: คน khon (person).", "say": "คอ ควาย" },
         { "thai": "ฅ", "translit": "khɔɔ khon", "english": "kh — person (obsolete)", "note": "Low class. No longer used (ค replaced it), but still recited in the alphabet.", "say": "คอ คน" },
@@ -1106,6 +1110,7 @@
       "name": "Low Class — Sonorants",
       "description": "The 10 low-class consonants with no high-class twin. A silent ห in front makes them high class.",
       "about": "Remember them: out on the river, a giant (ย ยักษ์) rows a boat (ร เรือ) with a woman (ญ หญิง) and a novice monk (ณ เณร) aboard. A monkey (ล ลิง) snatches the woman's ring (ว แหวน) and leaps onto a horse (ม ม้า) on the bank, while a snake (ง งู) chases a mouse (น หนู) up the string of a star-shaped kite (ฬ จุฬา).\n\nThai schoolchildren learn them as งูใหญ่นอนอยู่ ณ ริมวัด โมฬีโลก, \"a big snake lies beside Wat Molilok\".",
+      "board": {"hint": "Tap a letter to hear its name. Letters with the same sound are together.", "letters": true, "groups": [["ง"], ["ญ", "ย"], ["ณ", "น"], ["ม"], ["ร"], ["ล", "ฬ"], ["ว"]]},
       "cards": [
         { "thai": "ง", "translit": "ngɔɔ nguu", "english": "ng — snake", "note": "Low class. Final: -ng. Also starts syllables, which English never does: งู nguu.", "say": "งอ งู" },
         { "thai": "ญ", "translit": "yɔɔ yǐng", "english": "y — woman", "note": "Low class. Final: -n. หญิง yǐng (woman), บุญ bun (merit).", "say": "ยอ หญิง" },
@@ -1188,6 +1193,7 @@
       "group": "Consonants",
       "name": "Look-alike Letters",
       "description": "Letters that differ by one stroke. The tail trick: a tall tail turns บ b into ป p, ผ ph into ฝ f, พ ph into ฟ f and ค kh into ศ s.",
+      "board": {"hint": "Tap a letter to hear its name. The look-alikes are together.", "letters": true, "groups": [["บ", "ป"], ["ผ", "ฝ"], ["พ", "ฟ"], ["ค", "ศ"], ["ร", "ธ"], ["ด", "ต"], ["ข", "ช", "ซ"], ["ล", "ส"], ["อ", "ฮ"]]},
       "cards": [
         { "thai": "บ", "translit": "bɔɔ bai-máai", "english": "b — leaf", "note": "b. ป (p) is บ with a tall tail.", "partners": ["ป::p — fish"], "say": "บอ ใบไม้" },
         { "thai": "ป", "translit": "pɔɔ plaa", "english": "p — fish", "note": "p: บ (b) with a tall tail.", "partners": ["บ::b — leaf"], "say": "ปอ ปลา" },
@@ -1217,6 +1223,7 @@
       "name": "Short & Long Vowels",
       "description": "The 9 basic vowels, each short and long. Length changes meaning, so it matters. อ is only a placeholder for the consonant.",
       "about": "Five vowels are written before the consonant but said after it: เ แ โ ไ ใ. In เก, the ก is said first: \"gee\". Others sit above the consonant (อิ) or below it (อุ), and some wrap round it (เอือ).\n\nTricks for length: ะ cuts a vowel short, its two dots a stop sign: เอ ee, เอะ e. An extra stroke makes it long: ิ i, ี ii; ุ u, ู uu. And U is Under: ุ and ู are the only vowels written below the consonant.\n\nThree mouth shapes: a smile for อิ อี เอ แอ, round lips for อุ อู โอ ออ, and in between for อึ อือ เออ. Say อู with a smile and you get อือ.",
+      "board": {"hint": "Tap a vowel to hear it: short on the left, long on the right.", "groups": [["อะ", "อา"], ["อิ", "อี"], ["อึ", "อือ"], ["อุ", "อู"], ["เอะ", "เอ"], ["แอะ", "แอ"], ["โอะ", "โอ"], ["เอาะ", "ออ"], ["เออะ", "เออ"]]},
       "cards": [
         { "thai": "อะ", "translit": "à", "english": "a — short, as in 'cut'", "note": "–ะ after the consonant. Before a final it becomes ั: กัน gan." },
         { "thai": "อา", "translit": "aa", "english": "aa — long, as in 'father'", "note": "–า after the consonant: มา maa (come)." },
@@ -1245,6 +1252,7 @@
       "name": "Diphthongs & Special Vowels",
       "description": "Gliding vowels, the vowels with a built-in ending (อำ, ใอ, ไอ, เอา) and the Sanskrit ฤ. อ is only a placeholder for the consonant.",
       "about": "Each glide is two vowels run together: เอีย is อี sliding into อา, เอือ is อือ into อา, and อัว is อู into อา. The shortcut vowels อำ ไอ ใอ เอา have their ending built in: am, ai, ai, ao.\n\nThai schools call อำ ไอ ใอ เอา สระเกิน, the \"extra\" vowels.",
+      "board": {"hint": "Tap a vowel to hear it. Each pair is short, then long; อำ ใอ ไอ เอา have no pair.", "groups": [["เอียะ", "เอีย"], ["เอือะ", "เอือ"], ["อัวะ", "อัว"], ["อำ", "ใอ", "ไอ", "เอา"], ["ฤ", "ฤๅ"]]},
       "cards": [
         { "thai": "เอียะ", "translit": "ìa", "english": "ia — short (rare)", "note": "เ–ียะ: mostly sound words, like เพียะ (slap!)." },
         { "thai": "เอีย", "translit": "ia", "english": "ia — long, as in 'Mia'", "note": "เ–ีย: เมีย mia (wife), เรียน rian (study)." },
@@ -1412,6 +1420,7 @@
       "name": "Tone Chants",
       "description": "ผันวรรณยุกต์: one syllable run through every tone mark, class by class, as Thai children chant it, and the definitions and base tones schools teach with it. Say each until it's automatic.",
       "about": "Thai schools teach the tone rules as ผันวรรณยุกต์: take one syllable and run it through every tone mark, class by class, out loud. Chant the three live ones (กา…, ขา…, คา…) until they're automatic, and you have the whole table for live syllables.\n\nSchools then teach three things by heart: the line อักษรกลางผันได้ห้าเสียง…, the definitions of คำเป็น and คำตาย (by the final-consonant families, see Final Sound Families), and each class's base tone (พื้นเสียง), live and dead, which the marks run on from.\n\nIn short, four rules. Mid class is the reference: the mark's name is the tone's name (ไม้เอก gives เสียงเอก, low). High class takes the marks as mid does, but unmarked it rises. Low class is one step higher: ่ gives falling, ้ gives high, and unmarked it's mid. A dead syllable with no mark is low, except on low class: high if the vowel is short, falling if it's long.\n\nRead the other way, down the table's columns, one sound with a mid, a high and a low letter: กา ขา คา (live), กัด ขัด คัด (dead, short), ตาก ถาก ทาก (dead, long).\n\nA high and a low letter fill each other's gaps: คา ข่า ค่า ค้า ขา (The Five Tones) gets all five tones from ข and ค.",
+      "board": {"hint": "Tap through each chant, one syllable at a time, as Thai children recite it.", "groups": [["กา", "ก่า", "ก้า", "ก๊า", "ก๋า"], ["ปา", "ป่า", "ป้า", "ป๊า", "ป๋า"], ["ขา", "ข่า", "ข้า"], ["คา", "ค่า", "ค้า"], ["จะ", "จ้ะ", "จ๊ะ"], ["กา", "ขา", "คา"], ["กัด", "ขัด", "คัด"], ["ตาก", "ถาก", "ทาก"]]},
       "cards": [
         { "thai": "กา ก่า ก้า ก๊า ก๋า", "translit": "gaa gàa gâa gáa gǎa", "english": "mid class: all five tones (mid, low, falling, high, rising)", "note": "The only class that takes all four marks, and the mark names the tone: ไม้เอก low, ไม้โท falling, ไม้ตรี high, ไม้จัตวา rising." },
         { "thai": "ปา ป่า ป้า ป๊า ป๋า", "translit": "paa pàa pâa páa pǎa", "english": "mid class again: five real words", "note": "ปา = to throw, ป่า = forest, ป้า = aunt, ป๊า = dad (Chinese-Thai families), ป๋า = \"daddy\" (a rich patron)." },
@@ -1461,6 +1470,7 @@
       "group": "Tones & Reading",
       "name": "Final Sound Families",
       "description": "Thai schools sort final consonants into \"mothers\" (แม่), each named after a sample word: dozens of final letters, only eight end sounds.",
+      "board": {"hint": "Tap to hear each final: none (แม่ ก กา), then -k -t -p, then -ng -n -m -y -w.", "groups": [["กา"], ["กก", "กด", "กบ"], ["กง", "กน", "กม", "เกย", "เกอว"]]},
       "cards": [
         { "thai": "แม่ ก กา", "translit": "mɛ̂ɛ gɔɔ gaa", "english": "no final consonant (open syllable)", "note": "e.g. มา, ดี, ไป." },
         { "thai": "แม่กก", "translit": "mɛ̂ɛ gòk", "english": "the -k family", "note": "Ends in ก ข ค ฆ. e.g. นก (bird), สุข (happy).", "words": ["แม่::mother / mum", "กก::gok, the -k final class (in mae gok)"] },
@@ -1512,6 +1522,7 @@
       "name": "Tone Pairs: Five Tones & Common Words",
       "description": "Words that differ only in tone, starting with a full set of five: คา ข่า ค่า ค้า ขา.",
       "about": "For a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap through each set: the same sounds, a different tone.", "groups": [["คา", "ข่า", "ค่า", "ค้า", "ขา"], ["ไม่", "ไม้", "ใหม่", "ไหม", "ไหม้"], ["มา", "ม้า", "หมา"], ["ขาว", "ข้าว", "ข่าว"], ["ใกล้", "ไกล"]]},
       "cards": [
         { "thai": "คา", "translit": "khaa", "english": "stuck (in something)", "note": "Mid tone. Compare ข่า (low) galangal, ค่า (falling) value, ค้า (high) to trade, ขา (rising) leg.", "partners": ["ข่า::galangal", "ค่า::value", "ค้า::to trade", "ขา::leg"] },
         { "thai": "ข่า", "translit": "khàa", "english": "galangal", "note": "Low tone. Compare คา (mid) stuck, ค่า (falling) value, ค้า (high) to trade, ขา (rising) leg.", "partners": ["คา::stuck (in something)", "ค่า::value", "ค้า::to trade", "ขา::leg"] },
@@ -1540,6 +1551,7 @@
       "name": "Tone Pairs: Body, Family & Animals",
       "description": "Tigers, shirts and mats; aunts and forests; necks and joints; knees and hills.",
       "about": "For a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap through each set: the same sounds, a different tone.", "groups": [["เสือ", "เสื้อ", "เสื่อ"], ["ปา", "ป่า", "ป้า"], ["นา", "หน้า", "น้า", "หนา"], ["คอ", "ขอ", "ข้อ"], ["ปู", "ปู่"], ["เข่า", "เข้า", "เขา"]]},
       "cards": [
         { "thai": "เสือ", "translit": "sʉ̌a", "english": "tiger", "note": "Rising tone. Compare เสื้อ (falling) shirt, เสื่อ (low) mat.", "partners": ["เสื้อ::shirt / top", "เสื่อ::mat (to sit on)"] },
         { "thai": "เสื้อ", "translit": "sʉ̂a", "english": "shirt / top", "note": "Falling tone. Compare เสือ (rising) tiger, เสื่อ (low) mat.", "partners": ["เสือ::tiger", "เสื่อ::mat (to sit on)"] },
@@ -1568,6 +1580,7 @@
       "name": "Tone Pairs: Everyday Words",
       "description": "Easy to mix up in daily life: five and looking for, beautiful and unlucky, buying and honest, slow and tea.",
       "about": "For a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap through each set: the same sounds, a different tone.", "groups": [["หา", "ห้า", "ฮา"], ["สวย", "ซวย"], ["ซื้อ", "สื่อ", "ซื่อ"], ["น้ำ", "นำ"], ["ช้า", "ชา"], ["ยา", "ย่า", "หญ้า"], ["ไฟ", "ไฝ"]]},
       "cards": [
         { "thai": "หา", "translit": "hǎa", "english": "to look for", "note": "Rising tone. Compare ห้า (falling) five, ฮา (mid) hilarious.", "partners": ["ห้า::5 — five", "ฮา::hilarious"] },
         { "thai": "ห้า", "translit": "hâa", "english": "5 — five", "note": "Falling tone. Compare หา (rising) to look for, ฮา (mid) hilarious.", "partners": ["หา::to look for", "ฮา::hilarious"] },
@@ -1595,6 +1608,7 @@
       "name": "Tone Pairs: Numbers, Directions & Particles",
       "description": "Colour and four, nine and old, left and late, and the female ค่ะ and คะ.",
       "about": "For a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap through each set: the same sounds, a different tone.", "groups": [["สี", "สี่", "ซี้"], ["เก้า", "เก่า", "เกา"], ["ทราย", "ส่าย", "ซ้าย", "สาย"], ["มี", "หมี่", "หมี"], ["ไว", "ไหว", "ไหว้"], ["ค่ะ", "คะ"]]},
       "cards": [
         { "thai": "สี", "translit": "sǐi", "english": "colour", "note": "Rising tone. Compare สี่ (low) four, ซี้ (high) best mate.", "partners": ["สี่::4 — four", "ซี้::best mate / close friend"] },
         { "thai": "สี่", "translit": "sìi", "english": "4 — four", "note": "Low tone. Compare สี (rising) colour, ซี้ (high) best mate.", "partners": ["สี::colour", "ซี้::best mate / close friend"] },
@@ -1623,6 +1637,7 @@
       "name": "Tone Pairs: Body, Home & Nature",
       "description": "Tails and malls, shoulders and chasing, teeth and dreams, doctors and pots, wind and falling over.",
       "about": "For a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap through each set: the same sounds, a different tone.", "groups": [["หาง", "ห่าง", "ห้าง"], ["ไหล", "ไหล่", "ไล่"], ["ฟัน", "ฝัน"], ["หมอ", "หม้อ"], ["ใส", "ใส่"], ["นอน", "หนอน"], ["ลม", "ล้ม"], ["ต้ม", "ตม"]]},
       "cards": [
         { "thai": "หาง", "translit": "hǎang", "english": "tail", "note": "Rising tone. Compare ห่าง (low) far apart, ห้าง (falling) mall.", "partners": ["ห่าง::far apart / distant", "ห้าง::mall / shopping centre"] },
         { "thai": "ห่าง", "translit": "hàang", "english": "far apart / distant", "note": "Low tone. Compare หาง (rising) tail, ห้าง (falling) mall.", "partners": ["หาง::tail", "ห้าง::mall / shopping centre"] },
@@ -1651,6 +1666,7 @@
       "name": "Tone Pairs: Buying, Selling & More",
       "description": "Selling and camps, broken and the rich boss, wrapping and dorms, turtles and stoves, little and a bit.",
       "about": "For a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap through each set: the same sounds, a different tone.", "groups": [["ขาย", "คาย", "ค่าย"], ["เสีย", "เสี่ย"], ["ห่อ", "หอ"], ["เล่น", "เลน"], ["เต่า", "เตา"], ["น้อย", "หน่อย"], ["ปี", "ปี่"]]},
       "cards": [
         { "thai": "ขาย", "translit": "khǎai", "english": "to sell", "note": "Rising tone. Compare คาย (mid) to spit out, ค่าย (falling) camp.", "partners": ["คาย::to spit out", "ค่าย::camp"] },
         { "thai": "คาย", "translit": "khaai", "english": "to spit out", "note": "Mid tone. Compare ขาย (rising) to sell, ค่าย (falling) camp.", "partners": ["ขาย::to sell", "ค่าย::camp"] },
@@ -1676,6 +1692,7 @@
       "name": "Sound Pairs: g and kh, j and ch",
       "description": "ก (g) and จ (j) have no puff of air; ข/ค (kh) and ช/ฉ (ch) have one.",
       "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap each pair: ก and จ on the left have no puff of air, the letters on the right have one.", "groups": [["ไก่", "ไข่"], ["กา", "คา"], ["กาง", "คาง"], ["กัน", "คัน"], ["กว้าง", "ขว้าง"], ["จาน", "ชาน"], ["จุด", "ฉุด"]]},
       "cards": [
         { "thai": "ไก่", "translit": "gài", "english": "chicken", "note": "g, no puff. Compare ไข่ (kh) egg.", "partners": ["ไข่::egg"] },
         { "thai": "ไข่", "translit": "khài", "english": "egg", "note": "kh, a puff of air. Compare ไก่ (g) chicken.", "partners": ["ไก่::chicken"] },
@@ -1700,6 +1717,7 @@
       "name": "Sound Pairs: p and ph, t and th",
       "description": "ป (p) and ต (t) have no puff of air; พ/ผ (ph) and ท/ถ (th) have one. Duck or spicy, close or wrong depend on it.",
       "about": "Hold a hand in front of your mouth: the aspirated one (kh, ch, ph, th) puffs air, the other doesn't. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap each pair: ป and ต on the left have no puff of air, the letters on the right have one.", "groups": [["ปา", "พา"], ["เป็ด", "เผ็ด"], ["ปิด", "ผิด"], ["ป้า", "ผ้า"], ["ตา", "ทา"], ["ไต", "ไทย"], ["ตก", "ถก"], ["ตี", "ที"]]},
       "cards": [
         { "thai": "ปา", "translit": "paa", "english": "to throw", "note": "p, no puff. Compare พา (ph) to take someone along.", "partners": ["พา::to take (someone) / lead"] },
         { "thai": "พา", "translit": "phaa", "english": "to take (someone) / lead", "note": "ph, a puff of air. Compare ปา (p) to throw.", "partners": ["ปา::to throw"] },
@@ -1726,6 +1744,7 @@
       "name": "Sound Pairs: b and p, d and t",
       "description": "Real b and d against ป and ต, which English ears hear as b and d.",
       "about": "ป and ต have no puff of air, so to English ears they sound like b and d. But บ and ด are true b and d, so crazy and aunt, good and hit are different words. Each pair has the same tone and vowel, so only the first sound differs.\n\nFor a listening drill, switch Flashcards to Listen → English.",
+      "board": {"hint": "Tap each pair: บ and ด on the left are voiced (b, d), ป and ต on the right aren't (p, t).", "groups": [["บ้า", "ป้า"], ["ใบ", "ไป"], ["บ่า", "ป่า"], ["บก", "ปก"], ["ดี", "ตี"], ["ดำ", "ตำ"]]},
       "cards": [
         { "thai": "บ้า", "translit": "bâa", "english": "crazy / mad", "note": "b. Compare ป้า (p) aunt. Calling your aunt crazy is the classic slip.", "partners": ["ป้า::aunt (older than your parent)"] },
         { "thai": "ป้า", "translit": "pâa", "english": "aunt (older than your parent)", "note": "p. Compare บ้า (b) crazy.", "partners": ["บ้า::crazy / mad"] },

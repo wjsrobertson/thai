@@ -1413,12 +1413,19 @@ body { display: flex; flex-direction: column; }
 .letter-board[hidden] { display: none; }
 .letter-board-hint { margin: 0 0 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
 .letter-tile.playing { border-color: var(--accent); color: var(--accent); }
-/* Short & Long Vowels: a pair a cell, short then long, the tiles wider than square for เอาะ. */
-.vowel-pairs { display: grid; grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); gap: 10px; }
-.vowel-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
-/* Four with no pairs (Diphthongs' อำ ใอ ไอ เอา): two cells' width, tiles the pairs' size. */
-.vowel-group-wide { grid-column: span 2; grid-template-columns: repeat(4, 1fr); }
-.vowel-pairs .letter-tile { aspect-ratio: auto; height: 64px; font-size: min(calc(28px * var(--fs, 1)), 30px); white-space: nowrap; }
+/* Tiles in groups (a board's `groups`): a group stays on one line, the groups flow on. A tile is at
+   least a pair's half and grows for a long word; `letters` makes them square, the letter large. */
+.letter-groups { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.letter-group { display: flex; gap: 4px; }
+.letter-groups .letter-tile {
+  aspect-ratio: auto;
+  min-width: 80px;
+  height: 68px;
+  padding: 0 10px;
+  font-size: min(calc(30px * var(--fs, 1)), 32px);
+  white-space: nowrap;
+}
+.letter-groups.letters .letter-tile { width: 76px; min-width: 0; height: 76px; padding: 0; font-size: min(calc(44px * var(--fs, 1)), 44px); }
 .dict-empty[hidden], .dict-table[hidden] { display: none; }
 
 /* Wordlist view */
