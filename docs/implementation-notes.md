@@ -2822,8 +2822,9 @@ and in the inline script.
 
 - **Black** (2026-10-13, the user's request, after the Grok app): white text on a pure black page
   (`--bg` #000, no glow), panels just off black (#0a0a0a, #151515; #111 and #1c1c1c at first, darker
-  at the user's request), borders #444 to set them apart (#262626, then #333, still too dark on the
-  user's iPhone), secondary
+  at the user's request), borders #666 to set them apart (#262626, #333 and #444 were all too dark
+  on the user's iPhone; now #626875), all the greys a little blue (the user found the theme
+  slightly brown, likely the iPhone's True Tone warming neutral greys), secondary
   text a light grey, and the plain buttons' text lighter still (`--button-ink` #d6d6d6: the tabs,
   the segmented rows, ghost buttons; it's `--muted` in the other themes). A card's back is as dark as its
   front (`--card-back`; a shade lighter in the other themes), at the user's request

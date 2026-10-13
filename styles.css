@@ -52,16 +52,17 @@
 }
 /* Black: white text on a pure black page, the highest contrast (2026-10-13, the user's request,
    after the Grok app). Panels just off black (darker again the same day, the user's call), with
-   borders to set them apart; secondary text a light grey, so it still reads. */
+   borders to set them apart; secondary text a light grey, so it still reads. The greys lean a
+   little blue (the user's call: neutral ones looked brownish on a warm iPhone screen, True Tone). */
 :root[data-theme="black"] {
-  --bg: #000000; --bg-glow: #000000; --panel: #0a0a0a; --panel-2: #151515;
-  --ink: #ffffff; --muted: #b4b4b4; --button-ink: #d6d6d6; --accent: #ffc23d; --on-accent: #000000;
-  --card-back: #0a0a0a;
+  --bg: #000000; --bg-glow: #000000; --panel: #090a0e; --panel-2: #13151b;
+  --ink: #ffffff; --muted: #afb5c1; --button-ink: #d1d7e2; --accent: #ffc23d; --on-accent: #000000;
+  --card-back: #090a0e;
   --accent-soft: rgba(255, 194, 61, .1); --accent-glow: rgba(255, 194, 61, .45);
   --good: #4ade80; --hard: #fbbf24; --again: #ff7a7a; --easy: #6cb0ff;
   --danger-line: rgba(255, 122, 122, .35); --danger-soft: rgba(255, 122, 122, .12);
-  --border: #444444; --border-strong: #5c5c5c; --hover: rgba(255, 255, 255, .05);
-  --control: #171717; --control-line: #6a6a6a; --control-ink: #e6e6e6;
+  --border: #626875; --border-strong: #79808c; --hover: rgba(220, 230, 255, .05);
+  --control: #15171d; --control-line: #818896; --control-ink: #e1e6ee;
   --topbar: rgba(0, 0, 0, .88); --backdrop: rgba(0, 0, 0, .75); --shadow: 0 10px 30px rgba(0, 0, 0, .6);
   --tone-mid: #c4ccd8; --tone-low: #6cb0ff; --tone-falling: #ff7a7a; --tone-high: #cf9bff; --tone-rising: #4ade80;
 }
