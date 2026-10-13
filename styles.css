@@ -49,15 +49,16 @@
   --tone-mid: #5b6471; --tone-low: #2457c5; --tone-falling: #c0392b; --tone-high: #8a3fd1; --tone-rising: #17784a;
 }
 /* Black: white text on a pure black page, the highest contrast (2026-10-13, the user's request,
-   after the Grok app). Panels a step off black, secondary text a light grey, so it still reads. */
+   after the Grok app). Panels just off black (darker again the same day, the user's call), with
+   borders to set them apart; secondary text a light grey, so it still reads. */
 :root[data-theme="black"] {
-  --bg: #000000; --bg-glow: #000000; --panel: #111111; --panel-2: #1c1c1c;
+  --bg: #000000; --bg-glow: #000000; --panel: #0a0a0a; --panel-2: #151515;
   --ink: #ffffff; --muted: #b4b4b4; --accent: #ffc23d; --on-accent: #000000;
   --accent-soft: rgba(255, 194, 61, .1); --accent-glow: rgba(255, 194, 61, .45);
   --good: #4ade80; --hard: #fbbf24; --again: #ff7a7a; --easy: #6cb0ff;
   --danger-line: rgba(255, 122, 122, .35); --danger-soft: rgba(255, 122, 122, .12);
-  --border: #2a2a2a; --border-strong: #454545; --hover: rgba(255, 255, 255, .05);
-  --control: #1f1f1f; --control-line: #555555; --control-ink: #e6e6e6;
+  --border: #262626; --border-strong: #404040; --hover: rgba(255, 255, 255, .05);
+  --control: #171717; --control-line: #4d4d4d; --control-ink: #e6e6e6;
   --topbar: rgba(0, 0, 0, .88); --backdrop: rgba(0, 0, 0, .75); --shadow: 0 10px 30px rgba(0, 0, 0, .6);
   --tone-mid: #c4ccd8; --tone-low: #6cb0ff; --tone-falling: #ff7a7a; --tone-high: #cf9bff; --tone-rising: #4ade80;
 }

@@ -2821,7 +2821,8 @@ on 2026-10-07 at the user's request. A saved removed value shows as Dark, both i
 and in the inline script.
 
 - **Black** (2026-10-13, the user's request, after the Grok app): white text on a pure black page
-  (`--bg` #000, no glow), panels a step off black (#111, #1c1c1c), secondary text a light grey
+  (`--bg` #000, no glow), panels just off black (#0a0a0a, #151515; #111 and #1c1c1c at first, darker
+  at the user's request), borders #262626 to set them apart, secondary text a light grey
   (#b4b4b4, about 10:1 on black), the accent and rating colours a touch brighter. The status bar
   goes black too. On a phone the Settings page now has the page's background (it had the panel
   colour, from when it was a sheet), so its lists show as panels in every theme.
