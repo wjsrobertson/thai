@@ -1040,11 +1040,11 @@ function fitText(el) {
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(fitCardText, 150);
+  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); }, 150);
 });
 // The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
 // the fallback: fit again once it's in.
-document.fonts?.addEventListener?.('loadingdone', () => fitCardText());
+document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); });
 
 function renderCard() {
   renderReviewOnly();
@@ -1858,6 +1858,7 @@ function setView(view) {
     t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
   });
   els.wordlistSection.hidden = view !== 'wordlist';
+  if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
   els.readingSection.hidden = view !== 'reading';
   els.dictSection.hidden = view !== 'dictionary';
   if (view === 'dictionary') renderDictionary();
@@ -1900,6 +1901,7 @@ const TEXT_SCALES = { '-2': 0.8, '-1': 0.9, 0: 1, 1: 1.15, 2: 1.3 };
 function applyTextSize() {
   document.documentElement.style.setProperty('--fs', TEXT_SCALES[getSettings().textSize] ?? 1);
   if (els.thai) fitCardText();
+  if (els.wordlistLetterGrid) sizeLetterTiles();
 }
 
 // The colour theme: data-theme on <html> picks a palette in styles.css (dark is the default, with
@@ -2224,6 +2226,7 @@ function setDirection(direction) {
 function renderLetterBoard(deck) {
   const topic = deck.kind === 'topic' && deck.decks[0].board ? deck.decks[0] : null;
   els.wordlistLetters.hidden = !topic;
+  if (topic && els.wordlistLetterGrid.dataset.topic === topic.id) sizeLetterTiles();
   if (!topic || els.wordlistLetterGrid.dataset.topic === topic.id) return;
   const { hint, tiles, groups, letters } = topic.board;
   els.wordlistLetterGrid.dataset.topic = topic.id;
@@ -2251,6 +2254,26 @@ function renderLetterBoard(deck) {
       return g;
     })
     : tiles.map(tile)));
+  sizeLetterTiles();
+}
+
+// Grouped tiles all take the widest one's width (เออะ is wider than อะ), so the columns line up
+// when the rows are centred (2026-10-13, the user's call). Measured with the tiles at their own
+// width, again when the fonts arrive, the window resizes or the text size changes.
+function sizeLetterTiles() {
+  const grid = els.wordlistLetterGrid;
+  if (!grid.classList.contains('letter-groups') || grid.classList.contains('letters') || !grid.offsetParent) return;
+  grid.style.removeProperty('--tile-w');
+  grid.classList.remove('tight');
+  const widest = Math.ceil(Math.max(...[...grid.querySelectorAll('.letter-tile')].map((t) => t.getBoundingClientRect().width)));
+  if (!(widest > 0)) return;
+  // No wider than lets the biggest group fit the width (Final Sound Families' five, with เกอว, on a
+  // phone); then the tiles' side padding shrinks (.tight) so the widest word still fits.
+  const most = Math.max(...[...grid.children].map((g) => g.childElementCount));
+  const gap = parseFloat(getComputedStyle(grid.firstElementChild).columnGap) || 0;
+  const room = Math.floor((grid.clientWidth - (most - 1) * gap) / most);
+  grid.style.setProperty('--tile-w', `${Math.min(widest, room)}px`);
+  grid.classList.toggle('tight', room < widest);
 }
 
 // The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → Topics →

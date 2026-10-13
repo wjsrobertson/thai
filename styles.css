@@ -1477,7 +1477,7 @@ body { display: flex; flex-direction: column; }
 .letter-tile.playing { border-color: var(--accent); color: var(--accent); }
 /* Tiles in groups (a board's `groups`): a group stays on one line, the groups flow on. A tile is at
    least a pair's half and grows for a long word; `letters` makes them square, the letter large. */
-.letter-groups { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+.letter-groups { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 16px; } /* rows centred (2026-10-13) */
 .letter-group { display: flex; gap: 4px; }
 .letter-groups .letter-tile {
   aspect-ratio: auto;
@@ -1487,6 +1487,9 @@ body { display: flex; flex-direction: column; }
   font-size: min(calc(30px * var(--fs, 1)), 32px);
   white-space: nowrap;
 }
+/* Every tile the widest one's width (sizeLetterTiles), so the columns line up. */
+.letter-groups .letter-tile { width: var(--tile-w, auto); }
+.letter-groups.tight .letter-tile { padding-left: 2px; padding-right: 2px; }
 .letter-groups.letters .letter-tile { width: 76px; min-width: 0; height: 76px; padding: 0; font-size: min(calc(44px * var(--fs, 1)), 44px); }
 .dict-empty[hidden], .dict-table[hidden] { display: none; }
 

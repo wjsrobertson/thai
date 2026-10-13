@@ -1455,7 +1455,9 @@ How it works:
   chant syllables were mostly there already, 4 were new). It's lit while it plays
   (`.letter-tile.playing`, `markSpeakers`), so Read all lights the tiles in turn.
 - **Layout:** `.letter-groups` is a flex wrap of `.letter-group`s, 4px between tiles and 20px
-  between groups on a phone. Tiles are 64px (54px at 320px, so a set of five fits) and grow for a
+  between groups on a phone, the rows centred, and every tile the widest one's width
+  (`sizeLetterTiles`, `--tile-w`; 2026-10-13, the user's call: they sat to the left, and เออะ's
+  wider tiles put the columns out of line). Tiles are 64px (54px at 320px, so a set of five fits) and grow for a
   long word. Checked on all 19 at 320, 390 and 1280px: no group split across lines, nothing cut.
 - Alphabet in Order is now the first Consonants topic (it was fifth).
 
