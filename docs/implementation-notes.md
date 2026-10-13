@@ -2822,7 +2822,10 @@ and in the inline script.
 
 - **Black** (2026-10-13, the user's request, after the Grok app): white text on a pure black page
   (`--bg` #000, no glow), panels just off black (#0a0a0a, #151515; #111 and #1c1c1c at first, darker
-  at the user's request), borders #262626 to set them apart, secondary text a light grey
+  at the user's request), borders #333 to set them apart (lighter, again the user's call), secondary
+  text a light grey, and the plain buttons' text lighter still (`--button-ink` #d6d6d6: the tabs,
+  the segmented rows, ghost buttons; it's `--muted` in the other themes). A card's back is as dark as its
+  front (`--card-back`; a shade lighter in the other themes), at the user's request
   (#b4b4b4, about 10:1 on black), the accent and rating colours a touch brighter. The status bar
   goes black too. On a phone the Settings page now has the page's background (it had the panel
   colour, from when it was a sheet), so its lists show as panels in every theme.
