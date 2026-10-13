@@ -725,6 +725,8 @@ Script: scratchpad `decks/merge15.py`.
   - "Vowels": Short & Long Vowels, Diphthongs & Special Vowels, Vowels Before a Final
   - "Tones & Reading": Tone Marks & Symbols, Tone Rules, Final Consonant Sounds, Clusters & Odd
     Spellings
+  - "Words & Spelling" (2026-10-13): Reading Compounds, Homophones & Homographs, Native or
+    Borrowed, Commonly Misspelt Words. Topics added since are in their own sections.
 - **Consonant cards:**
   - The card is the bare letter; `translit` is its name (gɔɔ gài).
   - `english` is the sound plus the word in the name ("g — chicken"), which keeps the glosses
@@ -1391,6 +1393,32 @@ after Tone Rules: `script-leading`, 25 cards.
 - A tile board (its `board`): the seven pairs, the four อ words, the four two-syllable words. The
   word dialog's Tones panel already explains each case ("ห in front makes ม high class").
 - อย่าอยู่อย่างอยาก moved here from Clusters & Odd Spellings (one card, not two).
+
+**What schoolkids learn that the app didn't have: five topics** (2026-10-13). The user asked what
+Thai schools teach about script and language that the app lacked; of the gaps found, they picked
+these five. Each is in Thai Script, with an `about`:
+- **Vowel Symbol Names** (Vowels, 17 cards): the 21 รูปสระ less ฤ ฤๅ ฦ ฦๅ (already in Diphthongs &
+  Special Vowels). Cards are the marks on ◌ (◌ะ, เ◌; ◌ั and ◌็ copied from Tone Marks & Symbols),
+  `translit` the name, `english` the job, `say` the name. ฝนทอง and ฟันหนู have no character of
+  their own, so they are shown as ◌ี and ◌ื. A `letters` board by position: before, after, above
+  (two rows of three: six overflowed a phone), below, and อ ย ว.
+- **Words & Spelling**, a new group after Tones & Reading:
+  - **Reading Compounds** (17): สมาส with the linking sound (รัฐบาล, ภูมิศาสตร์ against ภูมิใจ,
+    ผลไม้ and พลเมือง linked anyway), and สนธิ, merged vowels (ธนาคาร, สุโขทัย, นโยบาย).
+  - **Homophones & Homographs** (20): six same-sound sets (ค่า ฆ่า ข้า, บาท บาตร, ศาล สาร สาน,
+    พัน พันธุ์ ภัณฑ์, จันทร์ จันทน์, โจทย์ โจทก์) as a board; สระ, ตากลม and พยาธิ read two ways;
+    ขัน and ตา, one word with several meanings. The audit forbids the same Thai twice in a topic and
+    two readings in one `translit`, so each homograph is one card: the main reading as `translit`,
+    both in `english` ("pond (sà); also vowel (sà-rà)"), and both in `say` (สะ สะหระ) so the
+    audio has the two. สระ is in `SAME_THAI_TRANSLIT_OK`.
+  - **Native or Borrowed** (20): a rule deck (`english` names the sign, the meaning starts the
+    note): native, Pali and Sanskrit, Khmer, Chinese and English words, by the signs schools teach.
+  - **Commonly Misspelt Words** (20): the right spelling, its meaning, and the usual mistake in
+    the note. The wrong forms in the notes are tap-to-hear like any Thai there; left as they are.
+- อ ย ว are in `SAME_THAI_TRANSLIT_OK`: the letters' names against tua ɔɔ, tua yɔɔ, tua wɔɔ.
+- **Bare marks in text:** a combining mark after a space (", add ำ") draws on the space, so 38 in
+  notes and `about`s, in these topics and older ones, got a ◌ base (◌ำ, ◌่). The older "–" base
+  (เ–็) was already fine and is left.
 
 **Clusters & Odd Spellings, 11 more cards** (2026-10-13, after the user asked for more rules like
 ห นำ; now 24), with an `about` for them:
