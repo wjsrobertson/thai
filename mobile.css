@@ -162,6 +162,9 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
    the modal underneath (openSettings), and a dialog on wider screens. */
 #settings-modal { bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
 #settings-modal .modal-head { display: none; }
+/* The page's own background, as the other pages have, so its lists stand out as panels (black on
+   the Black theme). */
+#settings-modal .settings-modal-panel { background: var(--bg); }
 /* Its search box where the Dictionary's is, the same size and shape, so going between the two pages
    doesn't shift it (the user's report, 2026-10-12: 8px narrower, 4px shorter, squarer corners). */
 #settings-modal .modal-search { padding: 12px 12px 10px; }

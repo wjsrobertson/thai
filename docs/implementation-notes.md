@@ -2816,10 +2816,15 @@ Search doesn't look at section names, so each Flashcards group has
   (`data-search-opened`).
 
 **Theme** (Display, added 2026-10-06): `theme` is one of `dark` (the default, the original
-look), `light` or `night`. Dim, Sepia and Match device (`system`) were added at first and removed
+look), `light`, `night` or `black`. Dim, Sepia and Match device (`system`) were added at first and removed
 on 2026-10-07 at the user's request. A saved removed value shows as Dark, both in `applyTheme()`
 and in the inline script.
 
+- **Black** (2026-10-13, the user's request, after the Grok app): white text on a pure black page
+  (`--bg` #000, no glow), panels a step off black (#111, #1c1c1c), secondary text a light grey
+  (#b4b4b4, about 10:1 on black), the accent and rating colours a touch brighter. The status bar
+  goes black too. On a phone the Settings page now has the page's background (it had the panel
+  colour, from when it was a sheet), so its lists show as panels in every theme.
 - **Palettes:** each theme is a set of CSS variables in `styles.css`. Dark is plain `:root`; the
   others are `:root[data-theme="…"]`. Every colour in the styles comes from a variable, including
   hovers, the top bar, the modal backdrop, the danger tints, `--on-accent` (text on accent

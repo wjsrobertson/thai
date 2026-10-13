@@ -12,7 +12,7 @@
     (function () {
       try {
         var settings = (JSON.parse(localStorage.getItem('learnthai:v1')) || {}).settings || {};
-        if (settings.theme === 'light' || settings.theme === 'night') document.documentElement.dataset.theme = settings.theme;
+        if (['light', 'night', 'black'].includes(settings.theme)) document.documentElement.dataset.theme = settings.theme;
         // And the Thai font (Settings → Display → Thai font; app.js applyThaiFont()).
         if (settings.thaiFont === 'loopless') document.documentElement.dataset.thaiFont = 'loopless';
       } catch (e) { /* no saved settings: the default dark theme and looped font */ }
@@ -310,13 +310,14 @@
         <!-- A list (2026-10-12, the user's call, trying it on Display and Reading first): one panel, a
              row a setting with its value on the right, a line of help at most. See .setting-list. -->
         <div class="setting-list">
-          <div class="setting-group" data-search="theme colour color dark light night mode appearance eyes contrast">
+          <div class="setting-group" data-search="theme colour color dark light night black oled mode appearance eyes contrast">
             <label class="setting-row">
               <span class="setting-label">Theme</span>
               <select id="setting-theme">
                 <option value="dark">Dark (high contrast)</option>
                 <option value="light">Light (best in daylight)</option>
                 <option value="night">Night (warm, for bedtime)</option>
+                <option value="black">Black (highest contrast)</option>
               </select>
             </label>
           </div>
