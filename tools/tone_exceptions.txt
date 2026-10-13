@@ -89,6 +89,8 @@
 กา gâa           # ฮาร์โมนิกา haa-moo-ní-gâa: rules mid, said falling
 เกรด greet       # เกรด greet: rules low, said mid
 เขา kháo         # เขา kháo: rules rising, said high
+ฉัน chán         # ฉัน chán (Clusters & Odd Spellings): rules rising, said high
+ไหม mái         # ไหม mái (Clusters & Odd Spellings): rules rising, said high
 เจ็ต jét         # เครื่องบินเจ็ต khrʉ̂ang-bin jét: rules low, said high
 เคส khéet        # เคส khéet: rules falling, said high
 เชฟ chéf         # เชฟ chéf: rules mid, said high

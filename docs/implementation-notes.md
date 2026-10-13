@@ -429,7 +429,8 @@ mnemonics, after our consonant-class memory scenes.
   - **Mid:** ไก่จิกเด็กตายบนปากโอ่ง.
   - **High:** ผีฝากถุงข้าวสารให้ฉัน.
   - **Low sonorants:** งูใหญ่นอนอยู่ ณ ริมวัด โมฬีโลก.
-- **อย่าอยู่อย่างอยาก,** a card in Clusters & Odd Spellings: the four silent-อ words.
+- **อย่าอยู่อย่างอยาก,** the four silent-อ words: a card in Clusters & Odd Spellings, moved to
+  Leading ห & อ on 2026-10-13 (same card key, and its `words`, since a story uses it as a phrase).
 - **The 20 ใ Words,** a new topic in Vowels (20 cards). The rhyme ผู้ใหญ่หาผ้าใหม่… is its `about`.
 - **Final Sound Families,** a new topic in Tones & Reading (9 cards): แม่ ก กา, แม่กก, แม่กด, แม่กบ,
   แม่กง, แม่กน, แม่กม, แม่เกย, แม่เกอว, each with its letters and an example. Final Consonant
@@ -506,11 +507,14 @@ mnemonics, after our consonant-class memory scenes.
 - **What:** a Tone Pairs group at the end of Thai Script, in three topics (53 cards, 11 new). The
   user picked this as the quick option. The full tone trainer (`review-design.md` §5: hear a word,
   pick it from its set, two voices) wasn't built.
-  - **Tone Pairs: Five Tones & Common Words:** คา ข่า ค่า ค้า ขา, ไม่ ไม้ ใหม่ ไหม ไหม้, มา ม้า หมา,
-    ขาว ข้าว ข่าว, ใกล้ ไกล.
-  - **Tone Pairs: Body, Family & Animals:** เสือ เสื้อ เสื่อ, ปา ป่า ป้า, นา หน้า น้า หนา, คอ ขอ ข้อ,
+  - **Tone Pairs: Five Tones & Common Words:** คา ข่า ค่า ค้า ขา, ใหม่ ไม่ ไหม้ ไม้ ไหม, มา ม้า หมา,
+    ข่าว ข้าว ขาว, ไกล ใกล้.
+  - **Tone Pairs: Body, Family & Animals:** เสื่อ เสื้อ เสือ, ปา ป่า ป้า, นา หน้า น้า หนา, คอ ข้อ ขอ,
     ปู ปู่, เข่า เข้า เขา.
-  - **Tone Pairs: Everyday Words:** หา ห้า ฮา, สวย ซวย, ซื้อ สื่อ ซื่อ, น้ำ นำ, ช้า ชา, ยา ย่า หญ้า, ไฟ ไฝ.
+  - **Tone Pairs: Everyday Words:** ฮา ห้า หา, ซวย สวย, สื่อ ซื่อ ซื้อ, นำ น้ำ, ชา ช้า, ยา ย่า หญ้า, ไฟ ไฝ.
+  - **Every set in tone order** (2026-10-13, the user's call; 23 sets in the six topics had been in
+    no order): mid, low, falling, high, rising, the order schools chant (สามัญ เอก โท ตรี จัตวา).
+    The cards follow their tiles' order. Two words on one tone keep their order (ไม่ before ไหม้).
 - **Recognition offers the partners as the wrong answers** (2026-10-08, the user's request; at
   first they were random picks from the topic).
   - **The data:** each card in a Tone or Sound Pairs topic has `partners`, the card keys
@@ -1370,6 +1374,35 @@ for about 90%.
   - pipe, pump, placenta;
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
+
+## Leading ห & อ topic (2026-10-13)
+
+The user asked why ห in front of ม makes หมา high class; the answer (ห นำ, อ นำ ย, and a letter
+lending its class across syllables, all อักษรนำ) became a topic in Thai Script → Tones & Reading,
+after Tone Rules: `script-leading`, 25 cards.
+- The two rules as cards (ห นำ, อ นำ ย, with `say` หอ นำ / ออ นำ ยอ so the letters are read by
+  name) and the four-word mnemonic อย่าอยู่อย่างอยาก.
+- Seven pairs, a low sonorant alone and led by ห: มา/หมา, นา/หนา, มี/หมี, ลาย/หลาย, เงา/เหงา,
+  วาน/หวาน, and ไม้/ไหม้ (a marked one: high, then falling). The four อ words, with notes comparing
+  ย่า, ย่าง, ยาก. Four two-syllable words where the first letter lends its class: ขนม, สนุก, อร่อย,
+  ขยัน.
+- All 22 words already had cards in other topics, so they use the same English and
+  transliteration (no new Words page entries); only the notes are this topic's.
+- A tile board (its `board`): the seven pairs, the four อ words, the four two-syllable words. The
+  word dialog's Tones panel already explains each case ("ห in front makes ม high class").
+- อย่าอยู่อย่างอยาก moved here from Clusters & Odd Spellings (one card, not two).
+
+**Clusters & Odd Spellings, 11 more cards** (2026-10-13, after the user asked for more rules like
+ห นำ; now 24), with an `about` for them:
+- ฑ read as d (บัณฑิต) or, usually, th (มณฑล).
+- ฤ's three readings: rʉ alone or after ค น พ ม ห (ฤดู), ri after ก ต ท ป ศ ส (อังกฤษ), rəə in
+  ฤกษ์.
+- A final ติ / ตุ not read (ญาติ, เหตุ), and the ติ back in a compound (อุบัติเหตุ).
+- Spoken against written tone: ฉัน chán, ไหม mái, เขา kháo, with `say` ชั้น / มั้ย / เค้า so the
+  audio has the spoken tone. Everywhere else ฉัน and ไหม keep the spelt chǎn, mǎi (เขา was already
+  kháo), so both are in `SAME_THAI_TRANSLIT_OK` (tools/audit_decks.py) and `tone_exceptions.txt`.
+- As a rule deck, `english` names the rule in romanisation (no Thai in `english`: tho montho,
+  the letter rʉ), and the meaning starts the note.
 
 ## Touch targets, pressed state, reduced motion, focus (2026-10-13)
 
