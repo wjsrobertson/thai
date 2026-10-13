@@ -60,8 +60,8 @@
   --accent-soft: rgba(255, 194, 61, .1); --accent-glow: rgba(255, 194, 61, .45);
   --good: #4ade80; --hard: #fbbf24; --again: #ff7a7a; --easy: #6cb0ff;
   --danger-line: rgba(255, 122, 122, .35); --danger-soft: rgba(255, 122, 122, .12);
-  --border: #333333; --border-strong: #4d4d4d; --hover: rgba(255, 255, 255, .05);
-  --control: #171717; --control-line: #5a5a5a; --control-ink: #e6e6e6;
+  --border: #444444; --border-strong: #5c5c5c; --hover: rgba(255, 255, 255, .05);
+  --control: #171717; --control-line: #6a6a6a; --control-ink: #e6e6e6;
   --topbar: rgba(0, 0, 0, .88); --backdrop: rgba(0, 0, 0, .75); --shadow: 0 10px 30px rgba(0, 0, 0, .6);
   --tone-mid: #c4ccd8; --tone-low: #6cb0ff; --tone-falling: #ff7a7a; --tone-high: #cf9bff; --tone-rising: #4ade80;
 }
