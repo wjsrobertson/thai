@@ -10,6 +10,7 @@
   --muted: #93a0b3;
   --button-ink: var(--muted);               /* text on the plain buttons: tabs, the segmented rows, ghost buttons */
   --card-back: var(--panel-2);              /* a card's back, a shade off its front (the same in Black) */
+  --press: rgba(255, 255, 255, .1);         /* the tint over a button while it's pressed */
   --accent: #f7b733;
   --on-accent: #111;                        /* text on accent-coloured buttons */
   --accent-soft: rgba(247, 183, 51, .08);   /* the row being read aloud */
@@ -51,6 +52,7 @@
   --control: #eeece6; --control-line: #8a8782; --control-ink: #5b6471;
   --topbar: rgba(245, 244, 240, .85); --backdrop: rgba(20, 20, 20, .35); --shadow: 0 8px 24px rgba(40, 35, 20, .1);
   --tone-mid: #5b6471; --tone-low: #2457c5; --tone-falling: #c0392b; --tone-high: #8a3fd1; --tone-rising: #17784a;
+  --press: rgba(0, 0, 0, .08);
 }
 /* Charcoal: dark mode as the guidelines have it (2026-10-13, the user's request, beside Black):
    a dark grey page, not black (no smearing on OLED, and less halation, the glow of bright text
@@ -101,6 +103,25 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Pressed: a quick tint over anything tapped (2026-10-13). A phone has no hover, so until now a
+   button showed nothing until its action happened. An inset shadow, so no layout or transform
+   changes; iOS shows :active only with a touchstart listener, which app.js adds. */
+button:active:not(:disabled), [role="button"]:active, summary:active, label.setting-row:active {
+  box-shadow: inset 0 0 0 999px var(--press);
+}
+
+/* The device's Reduce Motion setting (iPhone: Accessibility → Motion): no card flip, pulsing,
+   sliding or smooth scrolling; things change at once (2026-10-13). Only the sound waves honoured it
+   before. Transitions still end (and fire transitionend), just at once. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 
 /* Thai in an embedded face, the same on every device and offline (not from a CDN): Noto Looped
    Thai (traditional, the default) or Noto Sans Thai (loopless, modern), picked in Settings →
@@ -1176,6 +1197,8 @@ body { display: flex; flex-direction: column; }
   position: relative;
   outline: none;
 }
+/* The card can be focused (Space flips it): show it when that's by keyboard (2026-10-13). */
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
 .card .face {
   position: absolute;

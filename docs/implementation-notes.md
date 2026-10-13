@@ -1371,6 +1371,35 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## Touch targets, pressed state, reduced motion, focus (2026-10-13)
+
+The user asked what other display and button guidelines the app should follow. A check of every
+tappable thing on a 390px phone, and of the styles, found four, all fixed:
+- **Tap targets at least 44px tall on a phone** (Apple's guideline; WCAG 2.5.5, with 24px the
+  WCAG 2.2 floor). They were: the segmented rows 29px, the reader's toggles 27px, the picker's
+  "All of" buttons 25px, Spelling's ⓘ 21px, ghost buttons 31–36px, number boxes 32px, ✕ 38px,
+  setting headings 40px. mobile.css sets `min-height: 44px` on them; desktop keeps its sizes.
+  Left as they are: words in text and story lines (WCAG exempts targets inside a sentence), the
+  table's translit and English lines (with the Thai, one 76px target), the switches (their 52px
+  row is the target) and the A badge (a 50px `::before`). Cards still fits a phone screen; its
+  card is ~30px shorter.
+- **The text in them sized to match** (the user's next ask): 15px at least on a phone (the segmented
+  rows, the reader's toggles and the picker's "All of" buttons were 13px, its headings 14px), the
+  everyday buttons 16px (Add all, Read all, Read, ‹ All letters, the topic button, the settings
+  buttons; from 15px). Icons are em-sized and grew with it. Nothing is cut off at 320 or 390px
+  (at 320 the reader's toggles take two lines beside Read, as they already did at 13px).
+- **A pressed state:** phones have no hover, so a tap showed nothing until its action happened.
+  `button:active` (and role=button, summary, setting rows) gets an inset tint (`--press`: white
+  10% on the dark themes, black 8% on Light), which moves nothing. iOS shows `:active` only with
+  a touchstart listener, so app.js adds an empty one.
+- **Reduce Motion** (`prefers-reduced-motion`): only the sound waves honoured it. Now every
+  animation and transition is instant (the card flip, the pulsing Next, the accordion, toasts),
+  and the JS scrolls jump instead of gliding (`SCROLL_BEHAVIOR`).
+- **Keyboard focus:** the flashcard (focusable; Space flips it) hid its focus ring; it now shows
+  an accent outline with `:focus-visible`.
+- Not done (low priority): about 20 controls explain themselves only in hover tooltips (`title`),
+  which phones never show; the important ones say the same on screen.
+
 ## One card per meaning across topics (2026-10-13)
 
 The user asked why ยังไง was listed twice on the Words page: Question Words had it as "how

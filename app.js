@@ -794,6 +794,13 @@ function migrateCardRenames() {
   saveStore(store);
 }
 
+// Smooth scrolling, unless the device asks for reduced motion (2026-10-13).
+const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
+const SCROLL_BEHAVIOR = () => (REDUCED_MOTION.matches ? 'auto' : 'smooth');
+
+// iOS Safari applies :active (the pressed tint, styles.css) only on pages with a touchstart listener.
+document.addEventListener('touchstart', () => {}, { passive: true });
+
 // ---------- data loading ----------
 
 async function loadDecks() {
@@ -3595,7 +3602,7 @@ async function readStories(btn, from = null) {
           placeReader();
         }
         // Its title into view only if it's off screen: no jump to the top (the user's call, 2026-10-12).
-        if (line < 0) els.readingList.querySelector('.reading-entry.open .reading-item')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        if (line < 0) els.readingList.querySelector('.reading-entry.open .reading-item')?.scrollIntoView({ block: 'nearest', behavior: SCROLL_BEHAVIOR() });
         // Its title first, in English (the user's request, 2026-10-12), the title row lit meanwhile.
         // Settings → Reading → Say the title turns it off.
         if (line < 0 && getSettings().readStoryTitles !== false) {
@@ -3613,7 +3620,7 @@ async function readStories(btn, from = null) {
           run.at = { ids, idx, line: i };
           els.readingList.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
           rows[i].classList.add('now-playing');
-          rows[i].scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+          rows[i].scrollIntoView({ block: 'nearest', behavior: SCROLL_BEHAVIOR() });
           await speakAndWait(rows[i].querySelector('.reader-play').dataset.say, 'th');
           if (token !== run.token) return;
           await wait(STORY_LINE_PAUSE);
@@ -4215,7 +4222,7 @@ async function startReadAloud() {
       renderWordlist();
       // Scroll the row into view if needed.
       const rowEl = els.wordtableBody.querySelector('tr.now-playing');
-      if (rowEl) rowEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      if (rowEl) rowEl.scrollIntoView({ block: 'nearest', behavior: SCROLL_BEHAVIOR() });
 
       const s = getSettings();
       for (let i = 0; i < s.readRepeats; i++) {

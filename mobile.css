@@ -156,6 +156,23 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 }
 .modal-head { padding: 12px 16px; }
 .modal-close { font-size: 22px; padding: 6px 10px; }
+
+/* Tap targets at least 44px tall, Apple's guideline (and WCAG 2.5.5's), on a phone (2026-10-13, the
+   user's call after a check of every control: the segmented rows were 29px, the reader's toggles
+   27px, the picker's "All of" buttons 25px, Spelling's ⓘ 21px). Desktop keeps its sizes. */
+.seg-btn, .ghost, .reader-toggle, .scope-all, .cat-header, .sub-header, .tones-toggle,
+.deck-button, .setting-action, #deck-picker-search { min-height: 44px; }
+.modal-close { min-width: 44px; min-height: 44px; }
+.setting-list .setting-row input[type="number"] { min-height: 44px; }
+.setting-more > summary { display: flex; align-items: center; min-height: 44px; }
+.settings-cat > summary { min-height: 44px; }
+/* …and the text in them sized to match (2026-10-13, the user's call): 15px at least (it was 13px in
+   the segmented rows, the reader's toggles and the picker's "All of" buttons), the everyday buttons
+   16px. Their icons are em-sized, so they grow with it. */
+.deck-picker-bar .seg-btn { font-size: 15px; }
+.reader-toggle, .scope-all, .cat-header { font-size: calc(15px * var(--fs, 1)); }
+.ghost, .deck-button { font-size: 16px; }
+.setting-action { font-size: calc(16px * var(--fs, 1)); }
 /* Settings is a page, not a sheet (2026-10-12, the user's request): it stops at the tab bar, where
    Settings is lit in place of the page's tab, and another tab leaves it, so no ✕, and no Settings
    heading either (the user's call: the lit tab says it), so the search is at the top. It's still
