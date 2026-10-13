@@ -20,13 +20,14 @@
   --easy: #60a5fa;
   --danger-line: rgba(248, 113, 113, .3);
   --danger-soft: rgba(248, 113, 113, .1);
-  --border: #262b36;
-  --border-strong: #3a4150;                 /* hovered borders */
+  --border: #5a6681;                        /* 3:1 on the panels (WCAG 1.4.11); #262b36 until 2026-10-13 */
+  --border-strong: #76829c;                 /* hovered borders */
+  --control-border: #606d8a;                /* outlines of controls: 3:1 on every background (WCAG 1.4.11); containers' borders may be fainter */
   /* Round icon buttons (the card's speaker, ⟳ and ก, and ‹ ›): a step lighter than the card, with a
      clear outline and brighter icons. In the dark themes the panel colours and --border were too
      close to the card to see (2026-10-10, the user's report); light keeps its old look. */
   --control: #262c38;
-  --control-line: #4b5568;
+  --control-line: #67738c;                  /* 3.6:1 on the card */
   --control-ink: #b9c3d2;
   --hover: rgba(255, 255, 255, .02);        /* hovered table rows */
   --topbar: rgba(15, 17, 21, .7);
@@ -41,14 +42,32 @@
 :root[data-theme="light"] {
   color-scheme: light;
   --bg: #f5f4f0; --bg-glow: #ffffff; --panel: #ffffff; --panel-2: #eeece6;
-  --ink: #1f2328; --muted: #5b6471; --accent: #a35d00; --on-accent: #ffffff;
-  --accent-soft: rgba(163, 93, 0, .08); --accent-glow: rgba(163, 93, 0, .35);
+  --ink: #1f2328; --muted: #5b6471; --accent: #9e5a00; --on-accent: #ffffff;
+  --accent-soft: rgba(158, 90, 0, .08); --accent-glow: rgba(158, 90, 0, .35);
   --good: #17784a; --hard: #9a5b00; --again: #c0392b; --easy: #2457c5;
   --danger-line: rgba(192, 57, 43, .35); --danger-soft: rgba(192, 57, 43, .07);
-  --border: #dedad1; --border-strong: #bdb7aa; --hover: rgba(0, 0, 0, .025);
-  --control: #eeece6; --control-line: #dedad1; --control-ink: #5b6471;
+  --border: #dedad1; --border-strong: #6f6b65; --hover: rgba(0, 0, 0, .025);
+  --control-border: #8a8782; /* 3.0–3.6:1; containers keep the soft #dedad1 and their shadows */
+  --control: #eeece6; --control-line: #8a8782; --control-ink: #5b6471;
   --topbar: rgba(245, 244, 240, .85); --backdrop: rgba(20, 20, 20, .35); --shadow: 0 8px 24px rgba(40, 35, 20, .1);
   --tone-mid: #5b6471; --tone-low: #2457c5; --tone-falling: #c0392b; --tone-high: #8a3fd1; --tone-rising: #17784a;
+}
+/* Charcoal: dark mode as the guidelines have it (2026-10-13, the user's request, beside Black):
+   a dark grey page, not black (no smearing on OLED, and less halation, the glow of bright text
+   on black that people with astigmatism see); off-white text, not white; surfaces lighter the
+   higher they sit; softer, desaturated colours; borders and outlines at 3:1 (WCAG 1.4.11), text
+   at 4.5:1 or more (muted 5.9–7.6:1, ink 11–14:1). Its greys lean slightly blue, as Google's do. */
+:root[data-theme="charcoal"] {
+  --bg: #1b1c1f; --bg-glow: #222429; --panel: #24262a; --panel-2: #2e3035;
+  --ink: #e8eaed; --muted: #a8adb4; --button-ink: #c9cdd2; --accent: #f5c46a; --on-accent: #1b1c1f;
+  --accent-soft: rgba(245, 196, 106, .1); --accent-glow: rgba(245, 196, 106, .4);
+  --good: #81c995; --hard: #fdd663; --again: #f28b82; --easy: #8ab4f8;
+  --danger-line: rgba(242, 139, 130, .4); --danger-soft: rgba(242, 139, 130, .12);
+  --border: #6a7078; --border-strong: #858b93; --hover: rgba(255, 255, 255, .04);
+  --control-border: #727982;
+  --control: #34373c; --control-line: #7d838b; --control-ink: #e3e5e8;
+  --topbar: rgba(27, 28, 31, .88); --backdrop: rgba(0, 0, 0, .6); --shadow: 0 10px 30px rgba(0, 0, 0, .45);
+  --tone-mid: #bdc1c6; --tone-low: #8ab4f8; --tone-falling: #f28b82; --tone-high: #d7aefb; --tone-rising: #81c995;
 }
 /* Black: white text on a pure black page, the highest contrast (2026-10-13, the user's request,
    after the Grok app). Panels just off black (darker again the same day, the user's call), with
@@ -62,6 +81,7 @@
   --good: #4ade80; --hard: #fbbf24; --again: #ff7a7a; --easy: #6cb0ff;
   --danger-line: rgba(255, 122, 122, .35); --danger-soft: rgba(255, 122, 122, .12);
   --border: #626875; --border-strong: #79808c; --hover: rgba(220, 230, 255, .05);
+  --control-border: #626875;
   --control: #15171d; --control-line: #818896; --control-ink: #e1e6ee;
   --topbar: rgba(0, 0, 0, .88); --backdrop: rgba(0, 0, 0, .75); --shadow: 0 10px 30px rgba(0, 0, 0, .6);
   --tone-mid: #c4ccd8; --tone-low: #6cb0ff; --tone-falling: #ff7a7a; --tone-high: #cf9bff; --tone-rising: #4ade80;
@@ -73,8 +93,9 @@
   --accent-soft: rgba(217, 143, 43, .1); --accent-glow: rgba(217, 143, 43, .4);
   --good: #9fba69; --hard: #d9a440; --again: #d9755f; --easy: #a6b59d;
   --danger-line: rgba(217, 117, 95, .35); --danger-soft: rgba(217, 117, 95, .1);
-  --border: #2d2720; --border-strong: #463c31; --hover: rgba(255, 230, 190, .03);
-  --control: #2c251d; --control-line: #5c4d3b; --control-ink: #c9b08a;
+  --border: #2d2720; --border-strong: #9a8366; --hover: rgba(255, 230, 190, .03);
+  --control-border: #79664e; /* 3.0–3.5:1; containers keep the soft #2d2720 */
+  --control: #2c251d; --control-line: #816c53; --control-ink: #c9b08a;
   --topbar: rgba(19, 16, 13, .82); --backdrop: rgba(0, 0, 0, .6); --shadow: 0 10px 30px rgba(0,0,0,.4);
   --tone-mid: #b3a184; --tone-low: #8fabcc; --tone-falling: #e07a62; --tone-high: #c99bd8; --tone-rising: #a8c271;
 }
@@ -174,7 +195,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   display: flex;
   gap: 4px;
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 10px;
   padding: 3px;
 }
@@ -217,7 +238,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   padding: 6px 10px;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   line-height: 1;
   cursor: pointer;
@@ -243,7 +264,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
 .controls select {
   background: var(--panel);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   padding: 6px 10px;
   font-size: 14px;
@@ -255,7 +276,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   gap: 10px;
   background: var(--panel);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 10px;
   padding: 10px 18px;
   font-size: 15px;
@@ -341,7 +362,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   width: 100%;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   padding: 10px 14px;
   font-size: calc(16px * var(--fs, 1));
@@ -376,7 +397,7 @@ html.modal-open body {
 .scope-all {
   flex: none;
   padding: 4px 10px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
@@ -620,7 +641,7 @@ html.modal-open body {
   width: 100%;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   padding: 10px 14px;
   font-size: calc(16px * var(--fs, 1));
@@ -692,7 +713,7 @@ html.modal-open body {
 .setting-row input[type="number"] {
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: calc(16px * var(--fs, 1));
@@ -779,7 +800,7 @@ html.modal-open body {
   height: 28px;
   margin: 0;
   border-radius: 14px;
-  background: var(--border-strong) radial-gradient(circle, #fff 0 10px, transparent 11px) no-repeat 0 0 / 28px 28px;
+  background: var(--control-border) radial-gradient(circle, #fff 0 10px, transparent 11px) no-repeat 0 0 / 28px 28px;
   cursor: pointer;
   transition: background-color .15s, background-position .15s;
 }
@@ -829,7 +850,7 @@ label.setting-row, button.setting-row { cursor: pointer; }
   padding: 8px 16px;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--border-strong);
+  border: 1px solid var(--control-border);
   border-radius: 10px;
   font: inherit;
   font-size: calc(15px * var(--fs, 1));
@@ -892,7 +913,7 @@ button {
 .ghost {
   background: transparent;
   color: var(--button-ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   padding: 6px 10px;
   font-size: 15px;
@@ -1001,7 +1022,7 @@ button {
 .segmented {
   display: inline-flex;
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   padding: 3px;
   gap: 2px;
@@ -1295,8 +1316,8 @@ body { display: flex; flex-direction: column; }
 .back .auto-badge { box-shadow: 0 0 0 2px var(--card-back); }
 .auto-badge[hidden] { display: none; }
 .auto-badge::before { content: ''; position: absolute; inset: -10px; border-radius: 50%; }
-.auto-badge[aria-pressed="false"] { background: var(--panel-2); color: var(--muted); box-shadow: 0 0 0 1px var(--border), 0 0 0 3px var(--panel); }
-.back .auto-badge[aria-pressed="false"] { box-shadow: 0 0 0 1px var(--border), 0 0 0 3px var(--card-back); }
+.auto-badge[aria-pressed="false"] { background: var(--panel-2); color: var(--muted); box-shadow: 0 0 0 1px var(--control-border), 0 0 0 3px var(--panel); }
+.back .auto-badge[aria-pressed="false"] { box-shadow: 0 0 0 1px var(--control-border), 0 0 0 3px var(--card-back); }
 .auto-badge[aria-pressed="false"]::after {
   content: '';
   position: absolute;
@@ -1320,7 +1341,7 @@ body { display: flex; flex-direction: column; }
   min-width: 0;
   background: var(--panel);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 12px;
   padding: 40px 16px;
   font-size: calc(20px * var(--fs, 1));
@@ -1398,7 +1419,7 @@ body { display: flex; flex-direction: column; }
   margin: 0 0 16px;
   padding: 12px 16px;
   background: var(--panel-2);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 12px;
   color: var(--ink);
   font-size: calc(17px * var(--fs, 1));
@@ -1418,7 +1439,7 @@ body { display: flex; flex-direction: column; }
   font-size: min(calc(44px * var(--fs, 1)), 44px); /* 34px until 2026-10-12 (the user's request); no larger at Larger text, or ฐ's tail reaches its tile's edge */
   line-height: 1;
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 12px;
   color: var(--ink);
   cursor: pointer;
@@ -1580,7 +1601,7 @@ body { display: flex; flex-direction: column; }
 .reader-show { color: var(--muted); font-size: calc(13px * var(--fs, 1)); margin-right: 2px; }
 .reader-toggle {
   padding: 5px 12px;
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   border-radius: 999px;
   background: transparent;
   color: var(--muted);
@@ -1961,7 +1982,7 @@ body { display: flex; flex-direction: column; }
   border-radius: 12px;
   background: var(--panel);
   color: var(--ink);
-  border: 1px solid var(--border);
+  border: 1px solid var(--control-border);
   font-size: calc(20px * var(--fs, 1));
   font-weight: 600;
   touch-action: manipulation;

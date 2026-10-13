@@ -2816,10 +2816,40 @@ Search doesn't look at section names, so each Flashcards group has
   (`data-search-opened`).
 
 **Theme** (Display, added 2026-10-06): `theme` is one of `dark` (the default, the original
-look), `light`, `night` or `black`. Dim, Sepia and Match device (`system`) were added at first and removed
+look), `charcoal`, `light`, `night` or `black`. Dim, Sepia and Match device (`system`) were added at first and removed
 on 2026-10-07 at the user's request. A saved removed value shows as Dark, both in `applyTheme()`
 and in the inline script.
 
+- **Charcoal** (2026-10-13, the user's request: a best-practice dark theme beside Black). What the
+  guidelines say, and how it follows them:
+  - **WCAG 2 contrast:** text at least 4.5:1 (7:1 for AAA), large text 3:1, and the boundaries of
+    controls (borders, outlines) 3:1 (1.4.11 Non-text Contrast). Charcoal: ink 11–14:1, secondary
+    text 5.9–7.6:1, button text 9.5:1, borders 3.0–3.4:1, round-button outlines 4:1.
+  - **Material Design's dark theme:** a dark grey page (#121212-ish), not black, which smears on
+    OLED screens when scrolling and makes bright text glow (halation, worst for people with
+    astigmatism); off-white text, not white (87% and 60% white for primary and secondary);
+    surfaces lighter the higher they sit; desaturated colours, as saturated ones vibrate on dark.
+    Charcoal: page #1b1c1f, panels #24262a and #2e3035, text #e8eaed, Google's softer
+    green / yellow / red / blue for the ratings and tones, a paler orange accent. Its greys lean
+    slightly blue, as Google's do (the user found neutral greys brownish on the iPhone).
+  - **Apple's HIG** allows a true black base (Black follows that) but asks for 4.5:1, ideally 7:1.
+  - A check (`contrast.py` in the session, ratios as above) also found Dark's borders at 1.2–1.3:1
+    and its round-button outlines at 2.3:1, under the 3:1 rule. Raised the same day (the user's
+    call): borders #5a6681 (3.0:1 on the panels, from #262b36), outlines #67738c (3.6:1), hover
+    #76829c.
+- **Control outlines (`--control-border`) apart from container borders** (2026-10-13, the user's
+  call, for Light and then Night): buttons, inputs, the segmented rows, the topic button, ⚙, the
+  answer and grade buttons, letter tiles, the reader's toggles, the settings' action buttons and
+  switches (their "off" track) and the auto-play badge's ring are outlined at 3:1 on every
+  background (page, panel and raised panel) in every theme; cards, panels, tables, rows and
+  dividers keep `--border`, which may be fainter (Light and Night keep their soft ones, with the
+  cards' shadows). Light: outlines #8a8782 (3.0–3.6:1), round buttons the same, the accent #9e5a00
+  (4.5:1 on the raised grey, from #a35d00). Night: #79664e (3.0–3.5:1), round buttons #816c53.
+  Dark #606d8a and Charcoal #727982 (their borders were 2.6–2.7:1 against the raised panel).
+  `--border-strong` (hover, the switches' track was its old user) is a step stronger than the
+  outline in every theme.
+- **The list is darkest to lightest** (the user's call): Black, Night, Dark, Charcoal, Light, by
+  page luminance (Night's page is a hair darker than Dark's).
 - **Black** (2026-10-13, the user's request, after the Grok app): white text on a pure black page
   (`--bg` #000, no glow), panels just off black (#0a0a0a, #151515; #111 and #1c1c1c at first, darker
   at the user's request), borders #666 to set them apart (#262626, #333 and #444 were all too dark

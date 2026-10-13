@@ -166,7 +166,7 @@ const DEFAULT_SETTINGS = {
   confirmRemoveAll: true,         // Topics page "✓ All in Flashcards" (remove all) asks first
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
-  theme: 'dark',                  // Settings → Display → Theme: dark | light | night | black
+  theme: 'dark',                  // Settings → Display → Theme: dark | charcoal | light | night | black
   thaiFont: 'looped',             // Settings → Display → Thai font: 'looped' (Noto Looped Thai) | 'loopless' (Noto Sans Thai)
   spellingStyle: 'vowels',        // the spell-aloud buttons: 'vowels' (names, vowels whole) | 'letters' (names, as written) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
@@ -1899,7 +1899,7 @@ function applyTextSize() {
 // no attribute). The status-bar colour (meta theme-color) follows the page. index.html applies the
 // saved theme before first paint. Anything else saved (Dim, Sepia and "Match device" were removed)
 // shows as Dark.
-const THEMES = ['dark', 'light', 'night', 'black'];
+const THEMES = ['dark', 'charcoal', 'light', 'night', 'black'];
 function applyTheme() {
   let theme = getSettings().theme;
   if (!THEMES.includes(theme)) theme = 'dark';
