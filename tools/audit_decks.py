@@ -28,7 +28,7 @@ DECKS_JSON = Path(__file__).resolve().parent.parent / 'data' / 'decks.json'
 TRANSLIT_OK = re.compile(r"^[a-zà-ǿɔɛəʉ̀-ͯ .\-]+$")
 THAI = re.compile(r'[฀-๿]')
 # Known and intentional.
-SAME_THAI_TRANSLIT_OK = {'เขา'}   # kháo (pronoun, as said) vs khǎo (horn, mountain)
+SAME_THAI_TRANSLIT_OK = {'เขา', 'ณ'}   # เขา: kháo (pronoun, as said) vs khǎo (horn, mountain); ณ: the letter (nɔɔ neen) vs the word "at" (ná)
 # Word topics hold at most 25 cards (the user's rule, 2026-10-06: longer ones were split by sub-theme).
 # The one exception, the user's call on 2026-10-09: Alphabet in Order, all 44 consonants ก to ฮ,
 # where the unbroken order is the point. Reading stories' word lists aren't topics in this sense.

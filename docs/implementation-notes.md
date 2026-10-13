@@ -1371,6 +1371,37 @@ for about 90%.
   - โปรด as "favourite", ขน as "to carry".
 - **Next step for 95%:** about 2,000 more words, mostly formal and written.
 
+## One card per meaning across topics (2026-10-13)
+
+The user asked why ยังไง was listed twice on the Words page: Question Words had it as "how
+(casual)" and Contractions: Questions as "how", and a card is its Thai and English, so they were
+two cards. 380 words were listed more than once (same Thai, same pronunciation). Of the two fixes
+offered (one Words row per word, or tidy the data), the user chose the data.
+- **210 merges** (431 glosses): each word's cards with the same meaning now share one gloss, so
+  they're one card everywhere (topics, stories, Cards, progress), keeping each topic's own note.
+  Usually the fuller or clearer gloss, sometimes a combination (เรา "we / us / I (casual)", พี่
+  "older sibling; you, I (to or from someone older)"). เค้า is "he / she / they (casual spelling)",
+  as เขา's "he / she / they" is in the same topic.
+- **Kept apart (196 words):** different meanings (ผม I / hair, หมา dog / the insult), a
+  classifier beside the noun (ห้อง room / rooms), adjective beside verb (เปิด open / to open), and
+  the Spoken Top-500 cards that gloss several meanings at once (ชั้น "I / floor, level"), which
+  a merge would lose.
+- 3,998 cards changed (most in stories), and 1,248 `words`/`partners` references. The Words page
+  went from 7,085 entries to 6,864. 42 new glosses got English recordings.
+- **Saved data:** `migrateCardRenames` (app.js, once per browser) moves Cards words and progress
+  from the 264 old keys (`CARD_RENAMES`) to the new ones; where both have something, the earlier
+  added date and the progress with more reviews stay.
+- audit_decks now lists ณ beside เขา as Thai said two ways on purpose (the letter, and "at").
+- **The colours (the user's next find, สีเหลือง and เหลือง):** the Colors topic's 14 สี- compounds
+  (สีแดง, สีขาว…) are now phrases, สี + the colour word (`words`), as a Thai dictionary has them,
+  so the Words page lists just เหลือง. They're glossed "red (the colour)" and so on, beside the bare
+  words' "red": a story holds both the phrase and its words, and a topic can't hold one English
+  twice. New bare cards in Adjectives: Senses & Qualities (now 25): ขาว, ดำ, ชมพู, ม่วง, เทา,
+  น้ำเงิน. สีส้ม, สีทอง, สีเงิน and สีน้ำตาล use ส้ม "orange", ทอง "gold", เงิน "money / silver" and
+  น้ำตาล "sugar" (brown is "sugar colour"). เรือใบสีฟ้า (Man City) is เรือใบ + สี + ฟ้า. Eight stories
+  were added again so their lines split the colours and keep the phrase cards (15 lines).
+  `CARD_RENAMES` moves saved progress on the old colour keys too.
+
 ## Tiles to tap and hear on Thai Script topics (2026-10-12)
 
 The user asked for something to tap on Alphabet in Order, between its text and the word list, then
