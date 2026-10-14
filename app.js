@@ -4991,11 +4991,11 @@ function hideWordPop() {
 
 // ---------- tones (tones.js) ----------
 
-// The word dialog's Tones (2026-10-11, the user's request). Closed, it's "Tones" and a small curve
-// per syllable; open (the small curves hidden): a strip with each syllable's tone drawn, its
-// transliteration and the tone's name; the rule for the syllable picked (the first, to start), row
-// by row (toneRule); and its cell in the tone table (toneTable). Picking a syllable lights its
-// letters in the big word and says it. Open or closed is remembered (prefs.popTones).
+// The word dialog's Tones (2026-10-11, the user's request): a strip with each syllable's tone drawn,
+// its transliteration and the tone's name; the rule for the syllable picked (the first, to start),
+// row by row (toneRule); and its cell in the tone table (toneTable). Picking a syllable lights its
+// letters in the big word and says it. Always open since 2026-10-14 (the user's call); it was a
+// row of small curves that opened, open or closed remembered in prefs.popTones.
 // { el, shown } (call shown() once the dialog is showing, to light the picked syllable), or null for
 // a word whose Thai can't be matched to its transliteration.
 function toneSection(card, big) {
@@ -5004,11 +5004,6 @@ function toneSection(card, big) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const newWord = (n) => n > 0 && syls[n].word !== syls[n - 1].word;
   const box = el('div', 'pop-tones');
-  const toggle = el('button', 'tones-toggle');
-  toggle.type = 'button';
-  const minis = el('span', 'tones-minis');
-  syls.forEach((s, n) => minis.append(toneCurve(s.tone, { staff: false, gap: newWord(n) })));
-  toggle.append(el('span', 'tones-label', 'Tones'), minis, el('span', 'tones-chevron', '›'));
 
   const panel = el('div', 'tones-panel');
   const strip = el('div', 'tones-strip');
@@ -5034,21 +5029,8 @@ function toneSection(card, big) {
   });
   panel.append(strip, ...(syls.length > 1 ? [el('p', 'tones-hint', 'Tap a syllable to see its rule.')] : []), detail, table);
 
-  const setOpen = (open) => {
-    box.classList.toggle('open', open);
-    toggle.setAttribute('aria-expanded', String(open));
-    panel.hidden = !open;
-  };
-  setOpen(!!getPreferences().popTones);
-  toggle.addEventListener('click', () => {
-    const open = panel.hidden;
-    setOpen(open);
-    setPreferences({ popTones: open });
-    if (open) pick(picked);
-    else lightParts(big, null);
-  });
-  box.append(toggle, panel);
-  return { el: box, shown: () => { if (!panel.hidden) pick(picked); } };
+  box.append(el('div', 'tones-head', 'Tones'), panel);
+  return { el: box, shown: () => pick(picked) };
 }
 
 // Why a vowel isn't written (tones.js hiddenVowel), under the Vowel row (2026-10-12, the user's
@@ -5158,10 +5140,10 @@ const TONE_PATHS = {
   high: 'M3 7C14 7 24 6 33 2.5',
   rising: 'M3 13C11 18 21 18 33 4',
 };
-function toneCurve(tone, { staff = true, gap = false } = {}) {
+function toneCurve(tone, { staff = true } = {}) {
   const NS = 'http://www.w3.org/2000/svg';
   const svg = document.createElementNS(NS, 'svg');
-  svg.setAttribute('class', `tone-curve tone-${tone}` + (gap ? ' word-start' : ''));
+  svg.setAttribute('class', `tone-curve tone-${tone}`);
   svg.setAttribute('viewBox', '0 0 36 20');
   svg.setAttribute('aria-hidden', 'true');
   if (staff) {

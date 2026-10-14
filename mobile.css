@@ -185,7 +185,7 @@ html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom,
 /* Tap targets at least 44px tall, Apple's guideline (and WCAG 2.5.5's), on a phone (2026-10-13, the
    user's call after a check of every control: the segmented rows were 29px, the reader's toggles
    27px, the picker's "All of" buttons 25px, Spelling's ⓘ 21px). Desktop keeps its sizes. */
-.seg-btn, .ghost, .reader-toggle, .scope-all, .cat-header, .sub-header, .tones-toggle,
+.seg-btn, .ghost, .reader-toggle, .scope-all, .cat-header, .sub-header,
 .deck-button, .setting-action, #deck-picker-search { min-height: 44px; }
 .modal-close { min-width: 44px; min-height: 44px; }
 .setting-list .setting-row input[type="number"] { min-height: 44px; }

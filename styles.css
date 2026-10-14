@@ -1969,30 +1969,11 @@ body { display: flex; flex-direction: column; }
 .word-box { position: relative; }
 .word-modal .pop-word { font-size: calc(64px * var(--fs, 1)); }
 
-/* Tones (toneSection): a row of small tone curves that opens to each syllable's tone and its rule. */
+/* Tones (toneSection): each syllable's tone and its rule, under a heading (always open: it was a
+   row of small curves that opened, until 2026-10-14). */
 .pop-tones { margin: 4px 0 0; border-top: 1px solid var(--border); }
-.tones-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px 2px 4px;
-  background: none;
-  border: 0;
-  color: var(--muted);
-  font: inherit;
-  cursor: pointer;
-}
-.tones-toggle:hover { color: var(--accent); }
-.tones-label { font-weight: 600; }
-.tones-minis { display: flex; flex: 1; align-items: center; gap: 2px; min-width: 0; overflow: hidden; }
-.tones-minis .tone-curve { flex: none; width: 26px; height: 15px; }
-.tones-minis .word-start { margin-left: 8px; }
-.pop-tones.open .tones-minis { visibility: hidden; }
-.tones-chevron { font-size: 1.5em; line-height: 1; transition: transform .15s; }
-.pop-tones.open .tones-chevron { transform: rotate(90deg); }
+.tones-head { padding: 12px 2px 4px; color: var(--muted); font-weight: 600; }
 .tones-panel { padding-top: 8px; }
-.tones-panel[hidden] { display: none; }
 
 /* A tone's curve (toneCurve), in its colour; the staff is three faint lines. */
 .tone-curve { overflow: visible; }

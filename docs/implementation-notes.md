@@ -1241,7 +1241,8 @@ opens to:
   shows "Rules give" and "Said", and a note.
 
 Picking a syllable lights its letters in the big word and says it (its school-spelling recording,
-`sp`). The panel's open or closed state is remembered (`prefs.popTones`). Each tone has a colour
+`sp`). The panel's open or closed state was remembered (`prefs.popTones`); since 2026-10-14 it's always
+open, under a plain "Tones" heading, with no toggle or small curves (the user's call). Each tone has a colour
 token (`--tone-mid` …) per theme.
 
 **The word dialog (2026-10-11, experiment, branch `2026-10-11-tones-modal`):** the word pop-up had
