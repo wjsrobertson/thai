@@ -4627,11 +4627,12 @@ function closeReading() {
   placeReader();
 }
 
-// The open story's title at the top of the window, under the sticky top bar.
+// The open story's title at the top of the window, under the sticky top bar (on a phone, the
+// pinned section row; .section-bar has no box elsewhere, as the phone's .topbar has no height).
 function scrollToReading() {
   const item = els.readingList.querySelector('.reading-entry.open .reading-item');
   if (!item) return;
-  const bar = document.querySelector('.topbar')?.offsetHeight || 0;
+  const bar = (document.querySelector('.topbar')?.offsetHeight || 0) + (document.querySelector('.section-bar')?.offsetHeight || 0);
   window.scrollTo({ top: item.getBoundingClientRect().top + window.scrollY - bar - 8 });
 }
 
@@ -6060,6 +6061,10 @@ function bindEvents() {
     if (e.target.dataset.close !== undefined) closeMore();
   });
   PHONE_LAYOUT.addEventListener('change', () => closeMore());
+  // On a phone the pinned top rows take the page's colour once it scrolls under them (mobile.css).
+  const markScrolled = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 0);
+  window.addEventListener('scroll', markScrolled, { passive: true });
+  markScrolled();
 
   bindWritePad();
   // The Alphabet: Letters | Cards | Write, and the grid's class colours.

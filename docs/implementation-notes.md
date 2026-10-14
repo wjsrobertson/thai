@@ -1908,6 +1908,31 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   name. Under 700px wide the tab icons go, or ⚙ was pushed off the screen at 601–670px.
 - Checked at 390, 320 and 1280px wide in Chromium; not yet on an iPhone.
 
+## The top row pinned on a phone (2026-10-14)
+
+The user: on a phone the top menu should stay in place as the page scrolls, like the tab bar, on
+Topics, the Alphabet and the Dictionary, as Settings' search already does. mobile.css only;
+desktop measured identical before and after (1280px: every control's box the same).
+- **Markup:** the topic button, the Alphabet's set menu and the page switches are in `.section-bar`,
+  the page's other controls (Cards' direction and mode, List's Add all and Read all, Reading's Read
+  all) in `.bar-rest`, both inside `.deck-picker-bar`. Elsewhere both are `display: contents`, so the
+  bar is the one flex row it was. A sticky box stays only while its parent is on screen, so on a
+  phone `.deck-picker-bar` is `display: contents` too and `.section-bar`'s parent is the stage.
+- **Pinned:** `.section-bar` and the Dictionary's `.dict-top` are `position: sticky; top: 0`. They
+  take the stage's 12px top padding and its gutters (negative margins), so the button and search
+  sit at 12–64px as before (the search where Settings' is). `.bar-rest` scrolls away; its rows get
+  12px below each (none when all are hidden). The second row is 12px under the first (was 8px).
+- **Background:** clear at rest, so the page's top glow shows no edge; once the page scrolls,
+  `html.scrolled` (a passive scroll listener in app.js) gives them `--bg` and a hairline, as the tab
+  bar has at the foot. The glow is `background-attachment: fixed`, which iOS Safari ignores, so a
+  gradient on the bar couldn't be matched.
+- **Scrolling to things:** `html { scroll-padding }` keeps rows the browser scrolls to (Reading's
+  read-along, `block: 'nearest'`) out from under the pinned row (88px) and the tab bar.
+  scrollToReading counts `.section-bar`'s height with `.topbar`'s (each 0 where the other is used).
+- Checked at 390px on List, Cards, Reading, Letters, Write, the Dictionary's grid and a letter's
+  list, at rest and scrolled, at text sizes 1 and 2 (the row is 76px at both); the Alphabet's set
+  menu opens under it while scrolled; Cards and Write still fit without scrolling.
+
 ## Dictionary (2026-10-12, experiment, branch `2026-10-12-dictionary`)
 
 The user wanted a dictionary as a top-level feature: a Dictionary tab (fitting the tabs on a phone

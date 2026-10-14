@@ -1091,6 +1091,8 @@ button {
   .deck-picker-bar .seg-btn { white-space: nowrap; }
 }
 @media (max-width: 1000px) { .deck-picker-bar { flex-wrap: wrap; } }
+/* The bar's two boxes (index.html) add nothing here: on a phone the first is pinned (mobile.css). */
+.section-bar, .bar-rest { display: contents; }
 /* Flashcards with none of the topic's words in Review: a message in place of the card, centred in
    the space under the controls. The page fills the screen (body is a column, the stage grows) and
    on Flashcards the stage is a column too, so the message's auto margins can centre it. */

@@ -74,7 +74,6 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 .stage { padding: 12px 12px 24px; }
 
 /* ---------- controls: deck button on its own row, toggles share the next ---------- */
-.deck-picker-bar { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .stage.review-only-none[data-view="flashcards"] { padding-bottom: 12px; } /* = the bar's margin */
 .deck-button { flex: 1 1 0; min-width: 0; max-width: none; padding: 10px 14px; } /* beside Study's or the Alphabet's switch (2026-10-14; it had the row to itself) */
 .deck-button-label { flex: 1; max-width: none; text-align: left; }
@@ -96,6 +95,32 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 .reading-bar-right { justify-content: flex-end; }
 .reading-bar-right > button { flex: 0 0 auto; }
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
+
+/* ---------- the section's top row, pinned ---------- */
+/* Topics' and the Alphabet's topic button and page switch, and the Dictionary's search and Thai |
+   English, stay at the top as the page scrolls under them, as the tab bar stays at the foot and
+   Settings' search at its top (2026-10-14, the user's request). The rows take the stage's top
+   padding and its gutters, so they sit where they did; the bar's other controls (.bar-rest: Cards'
+   direction and mode, List's Add all and Read all) scroll away. Clear until the page scrolls, then
+   the page's colour with a hairline (html.scrolled, set in app.js), so the background's glow at
+   the top shows no edge at rest. Taller than the row, the browser's own scrolling to a row keeps
+   it out from under them (scroll-padding), and from under the tab bar. */
+.stage:not([data-view="home"]) { padding-top: 0; }
+.deck-picker-bar { display: contents; }
+.section-bar, .dict-top {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  margin-left: -12px;
+  margin-right: -12px;
+  padding: 12px 12px;
+}
+.section-bar { display: flex; gap: 8px; }
+.dict-top { margin-bottom: 4px; } /* with its padding, the 16px it had */
+html.scrolled :is(.section-bar, .dict-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
+.bar-rest { display: flex; flex-wrap: wrap; gap: 0 8px; }
+.bar-rest > * { margin-bottom: 12px; } /* under a row, none when they're all hidden */
+html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 8px); }
 
 /* ---------- flashcard: full-width card, answer pills, then prev/next under the thumb ---------- */
 .card-wrap {
