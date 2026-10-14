@@ -1876,10 +1876,17 @@ function openSettings() {
   els.settingsModal.hidden = false;
   setModalOpen(true);
   els.settingsSection.scrollTop = 0;
+  markSettingsScrolled();
   for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'true');
   markMore();
   renderSettings();
   if (!TOUCH_SCREEN) setTimeout(() => els.settingsSearch.focus(), 0);
+}
+
+// The hairline under Settings' search once its list scrolls under it (mobile.css), as the other
+// pages' pinned rows have.
+function markSettingsScrolled() {
+  els.settingsModal.classList.toggle('scrolled', els.settingsSection.scrollTop > 0);
 }
 
 function closeSettings() {
@@ -6061,10 +6068,12 @@ function bindEvents() {
     if (e.target.dataset.close !== undefined) closeMore();
   });
   PHONE_LAYOUT.addEventListener('change', () => closeMore());
-  // On a phone the pinned top rows take the page's colour once it scrolls under them (mobile.css).
+  // On a phone the pinned top rows take the page's colour once it scrolls under them (mobile.css);
+  // Settings scrolls in its own box, under its search.
   const markScrolled = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 0);
   window.addEventListener('scroll', markScrolled, { passive: true });
   markScrolled();
+  els.settingsSection.addEventListener('scroll', markSettingsScrolled, { passive: true });
 
   bindWritePad();
   // The Alphabet: Letters | Cards | Write, and the grid's class colours.

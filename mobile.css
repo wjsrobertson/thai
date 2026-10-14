@@ -210,6 +210,10 @@ html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom,
 /* Its search box where the Dictionary's is, the same size and shape, so going between the two pages
    doesn't shift it (the user's report, 2026-10-12: 8px narrower, 4px shorter, squarer corners). */
 #settings-modal .modal-search { padding: 12px 12px 10px; border-bottom: 0; } /* no line under it, as the Dictionary's has none (the user's call, 2026-10-14) */
+/* …until the list scrolls under it, as the other pages' pinned rows (the user's call, the same day);
+   over the list, so its rows don't cover the line. */
+#settings-modal .modal-search { position: relative; z-index: 1; }
+#settings-modal.scrolled .modal-search { box-shadow: 0 1px 0 var(--border); }
 #settings-search { padding: 12px 16px; border-radius: 12px; }
 /* …and as tall: the Dictionary's search stretches to its Thai | English switch, 52px (2026-10-14,
    the user's request; it was 48px here). */

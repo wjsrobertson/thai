@@ -1933,7 +1933,10 @@ desktop measured identical before and after (1280px: every control's box the sam
   stretches to its Thai | English switch (52px); Settings' was 48px (50px at text size 2). Now
   `min-height: 52px` on a phone, so going between the two pages doesn't shift it.
   And no line under it (the user's call): `.modal-search`'s border is off for the Settings page on
-  a phone, as the Dictionary's search has none; the dialog on wider screens keeps it.
+  a phone, as the Dictionary's search has none; the dialog on wider screens keeps it. Then (the
+  user's call) the line comes back once the list scrolls under it, as on the other pages: Settings
+  scrolls in its own box (`.modal-body`), so markSettingsScrolled sets `#settings-modal.scrolled`
+  from its scroll, and openSettings (which scrolls it to the top) clears it.
 - Checked at 390px on List, Cards, Reading, Letters, Write, the Dictionary's grid and a letter's
   list, at rest and scrolled, at text sizes 1 and 2 (the row is 76px at both); the Alphabet's set
   menu opens under it while scrolled; Cards and Write still fit without scrolling.
