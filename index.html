@@ -103,7 +103,7 @@
           <input type="checkbox" id="confirm-dont-ask" />
           <span>Don't ask again</span>
         </label>
-        <span class="setting-help">You can turn this back on in Settings<svg class="arrow-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Topics.</span>
+        <span class="setting-help">You can turn this back on in Settings<svg class="arrow-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>List.</span>
       </div>
       <div class="confirm-actions">
         <button type="button" class="ghost" id="confirm-cancel">Cancel</button>
@@ -126,49 +126,30 @@
 
   <main class="stage" data-view="home" data-section="words">
     <section class="home home-only" id="home-section">
-      <!-- Each card: a title and its text (Topics: plain sentences; Flashcards: a row per mode, a
-           label then what it does; spans, since a button may only hold phrasing content).
-           2026-10-08. The topic line at the foot went the same day. -->
-      <button type="button" class="home-card" data-go="wordlist">
+      <!-- The three sections, as the tab bar has them (2026-10-14, the user's call: the home page went to
+           Topics, Alphabet and Dictionary, not to the pages inside them). Each card opens its section where
+           you last were in it (goTo). Topics is first and across both columns; a card is a title and its
+           text, or rows of a label and what it does (spans, since a button may only hold phrasing content). -->
+      <button type="button" class="home-card home-card-wide" data-go="study">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</span>
-        <span class="home-card-text">
-          <span>Every word, sorted by topic, with audio and spelling.</span>
-          <span>Tap <span class="inline-icon" role="img" aria-label="Add to Cards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> on a word to practise it in Cards.</span>
-          <span>Hear a whole topic read out with Read all.</span>
-        </span>
-      </button>
-      <button type="button" class="home-card" data-go="flashcards">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg>Cards</span>
         <span class="home-card-list">
-          <span class="home-card-row"><b>Browse</b><span>Flip through the cards to memorise words</span></span>
-          <span class="home-card-row"><b>Recognition</b><span>Pick the right answer to check you recognise each word</span></span>
-          <span class="home-card-row"><b>Recall</b><span>Remember each word yourself; the hard ones come back sooner</span></span>
+          <span class="home-card-row"><b>List</b><span>Every word in a topic, with audio and spelling. Tap <span class="inline-icon" role="img" aria-label="Add to Cards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> to add one to Cards.</span></span>
+          <span class="home-card-row"><b>Cards</b><span>Browse, Recognition and Recall: the hard words come back sooner</span></span>
+          <span class="home-card-row"><b>Reading</b><span>Short stories that use the topic's words; tap any word to hear it</span></span>
         </span>
       </button>
-      <!-- Reading (2026-10-08): its own page, not a topic list. -->
-      <button type="button" class="home-card" data-go="reading">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>Reading</span>
+      <button type="button" class="home-card" data-go="alphabet">
+        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg>Alphabet</span>
         <span class="home-card-text">
-          <span>Short stories that use the words from each topic.</span>
-          <span>Tap any word to hear it and see what it means.</span>
+          <span>The consonants, the vowels and the tones.</span>
+          <span>Each letter with its picture, name, class and sound, and cards to practise them.</span>
         </span>
       </button>
-      <!-- Dictionary (2026-10-12): with it, the four cards make a 2 × 2 grid (Reading spanned both columns). -->
-      <!-- The Flashcards and Dictionary cards say Cards and Words, as the tabs do (the user's call, 2026-10-12). -->
       <button type="button" class="home-card" data-go="dictionary">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>Dictionary</span>
         <span class="home-card-text">
-          <span>Every word, from ก to ฮ.</span>
+          <span>Every word, from ก to ฮ, or A to Z in English.</span>
           <span>Search in Thai, English or transliteration, then tap a word to hear it and see its tones.</span>
-        </span>
-      </button>
-      <!-- Alphabet (2026-10-14): the fifth card, across both columns. (It had the first letters' pictures for a
-           moment; the user's call to take them off.) -->
-      <button type="button" class="home-card home-card-wide" data-go="alphabet">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg>Alphabet</span>
-        <span class="home-card-text">
-          <span>The 44 consonants, each with its picture, name, class and sound.</span>
-          <span>Practise them with their own Browse, Recognition and Recall.</span>
         </span>
       </button>
     </section>
@@ -459,7 +440,7 @@
       </details>
 
       <details class="settings-cat" data-cat="wordlists">
-        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</summary>
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18M3 15h18M9 10v9" /></svg>List</summary>
         <div class="setting-list">
           <div class="setting-group" data-search="topics wordlists show first column thai english order table">
             <label class="setting-row">
@@ -468,7 +449,7 @@
                 <option value="thai">Thai</option>
                 <option value="english">English</option>
               </select>
-              <span class="setting-help">The first column. Transliteration always follows the Thai.</span>
+              <span class="setting-help">The first column, here and in the Dictionary's Thai lists. Transliteration always follows the Thai.</span>
             </label>
           </div>
           <div class="setting-group" data-search="topics wordlists word gaps spaces between words phrases split thai">
@@ -519,28 +500,10 @@
         </div>
       </details>
 
-      <details class="settings-cat" data-cat="reading">
-        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>Reading</summary>
-        <div class="setting-list">
-          <div class="setting-group" data-search="reading stories read all title name english say announce">
-            <label class="setting-row">
-              <span class="setting-label">Say the title</span>
-              <input type="checkbox" id="setting-read-story-titles" />
-              <span class="setting-help">The story's English title, before its first line.</span>
-            </label>
-          </div>
-          <div class="setting-group" data-search="reading stories read all loop repeat again start over continuous">
-            <label class="setting-row">
-              <span class="setting-label">Loop</span>
-              <input type="checkbox" id="setting-read-stories-loop" />
-              <span class="setting-help">Read plays the story again; Read all goes back to the first.</span>
-            </label>
-          </div>
-        </div>
-      </details>
-
       <details class="settings-cat" data-cat="deck-mode">
         <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg>Cards</summary>
+        <!-- 2026-10-14: these cover the Alphabet's cards too (the same engine), so a line says so. -->
+        <p class="setting-cat-note">These apply to the Alphabet's cards too.</p>
         <!-- Three parts since 2026-10-08: Test, Review, and the schedule both of them feed (a wrong
              Test answer counts as Very Hard, a right one as Hard). Smart order went the same day. -->
         <p class="setting-list-head">Recognition</p>
@@ -603,6 +566,26 @@
                 <option value="0.95">95% (more reviews)</option>
               </select>
               <span class="setting-help">How likely you should be to remember a word when it's due.</span>
+            </label>
+          </div>
+        </div>
+      </details>
+
+      <details class="settings-cat" data-cat="reading">
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>Reading</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="reading stories read all title name english say announce">
+            <label class="setting-row">
+              <span class="setting-label">Say the title</span>
+              <input type="checkbox" id="setting-read-story-titles" />
+              <span class="setting-help">The story's English title, before its first line.</span>
+            </label>
+          </div>
+          <div class="setting-group" data-search="reading stories read all loop repeat again start over continuous">
+            <label class="setting-row">
+              <span class="setting-label">Loop</span>
+              <input type="checkbox" id="setting-read-stories-loop" />
+              <span class="setting-help">Read plays the story again; Read all goes back to the first.</span>
             </label>
           </div>
         </div>

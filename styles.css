@@ -898,6 +898,8 @@ label.setting-row, button.setting-row { cursor: pointer; }
 }
 .setting-list-head:first-of-type { margin-top: 4px; }
 .setting-list.search-hidden, .setting-list-head.search-hidden { display: none; }
+/* A line under a category's name: what it covers beyond it (Cards: the Alphabet's cards too). */
+.setting-cat-note { margin: 2px 16px 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
 /* More about a setting, a tap away (Spelling's examples). */
 .setting-more { margin: -4px 0 0; padding-bottom: 12px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
 .setting-more > summary { color: var(--accent); cursor: pointer; list-style: none; }
@@ -2229,7 +2231,7 @@ body { display: flex; flex-direction: column; }
   touch-action: manipulation;
 }
 .home-card:hover { border-color: var(--accent); }
-.home-card-wide { grid-column: 1 / -1; } /* the Alphabet's, under the 2 × 2 */
+.home-card-wide { grid-column: 1 / -1; } /* Topics', across both columns above Alphabet and Dictionary */
 .home-card-title { display: flex; align-items: center; gap: 12px; font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
 .home-card-title .page-icon { width: 1.2em; height: 1.2em; flex: none; color: var(--accent); }
 /* Three rows: the label (with an accent dot) in its own column, so the descriptions line up. */

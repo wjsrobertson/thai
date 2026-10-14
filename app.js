@@ -179,7 +179,7 @@ const DEFAULT_SETTINGS = {
   waitHardDays: 1,                // Hard: a new word's first wait; later waits grow from it
   waitEasyDays: 3,                // Easy (FSRS Good): a new word's first wait; later waits grow from it
   retention: 0.9,                 // FSRS desired retention
-  confirmAddAll: true,            // Topics page "Add all to Flashcards" asks first (Settings → Topics)
+  confirmAddAll: true,            // Topics page "Add all to Flashcards" asks first (Settings → List)
   confirmRemoveAll: true,         // Topics page "✓ All in Flashcards" (remove all) asks first
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
@@ -188,14 +188,14 @@ const DEFAULT_SETTINGS = {
   spellingStyle: 'vowels',        // the spell-aloud buttons: 'vowels' (names, vowels whole) | 'letters' (names, as written) | 'school' (sounds)
   textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
-  readRepeats: 2,                 // times Read all says each word (Settings → Topics; 1 until 2026-10-08)
+  readRepeats: 2,                 // times Read all says each word (Settings → List; 1 until 2026-10-08)
   readPauseSec: 1.5,              // seconds of silence between words
   readSpeakEnglish: true,         // whether to speak English after Thai
   learnPauseMs: 1500,             // Recognition: pause after a right answer before the next card
   wrongPauseMs: 4000,             // Recognition: pause after a wrong one (its own setting since 2026-10-08; 3 s at first)
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
-  wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → Topics)
-  topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → Topics)
+  wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → List)
+  topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
   readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
 };
@@ -3016,7 +3016,7 @@ function sizeTiles(grid) {
   grid.classList.toggle('tight', room < widest);
 }
 
-// The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → Topics →
+// The word tables' columns (the Topics page, the Dictionary): the chosen first (Settings → List →
 // Show first), then the other two in fixed order.
 const COL_META = {
   thai:     { label: 'Thai',           cls: 'col-thai' },

@@ -1616,6 +1616,18 @@ Letters | Cards is.
 
 ## The Topics section: List, Cards and Reading as one (2026-10-14)
 
+**Settings, to match** (the user's go-ahead, the same day): the Topics category is **List** (the
+switch's name and table icon; data-cat stays `wordlists`), and the three are ordered List, Cards,
+Reading, as the switch has them. Cards has a line, "These apply to the Alphabet's cards too"
+(`.setting-cat-note`: the same engine), and Show first's help says it sets the Dictionary's Thai lists
+too. The confirm dialog's "turn this back on" points to Settings → List. No Alphabet or Dictionary
+category: their only choices (Classes, Thai | English) are on their pages.
+
+**The home page links to the three sections** (the user's call, the same day: it was linking to the
+pages inside them): Topics (across both columns; its rows List, Cards and Reading, List keeping the ⇄
+hint), Alphabet and Dictionary, as the tab bar has them. Each opens its section where you last were
+(goTo: Topics' last page, the Alphabet's Letters or Cards). The Cards and Reading cards went.
+
 **Words is the Dictionary again** (the user's call, the same day, with Topics named): the tab and
 the home card say Dictionary, and the letter dialog's link "All N in the Dictionary ›". (It was
 "Words" from 2026-10-12; "Search words" and the like stay, being about words, not the page.)
@@ -1698,7 +1710,8 @@ later (it's already in `fonts/`, NotoSansThai).
   robe, the hermit's tiger-skin hat, the giant's green face and crown, Montho's crown. The files
   are the source: edit them directly. A new one goes in LETTER_PICS and sw.js's SHELL (now v19),
   so it's offline.
-- **Home card** (the user's request, the same day): the fifth, across both columns on wider screens;
+- **Home card** (the user's request, the same day; later the home page became the three sections' cards,
+  see The Topics section): the fifth, across both columns on wider screens;
   it opens the Alphabet's last page, as More's row does. No pictures on it (the user's call: it had
   the first five letters' for a moment).
 - **Vowels and tones** (the same day; the user's calls: one choice for both pages, at the top as the
