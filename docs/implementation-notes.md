@@ -1606,9 +1606,26 @@ Dictionary, each a line icon over its name, the current one in the accent colour
 - **Markup:** one set of tabs. The icons (`.tab-svg`) and the Home tab (`.tab-home`) are hidden on
   wider screens, so desktop is unchanged.
 - **No top bar on a phone** (the user's call, the same day). For a while it showed Learn Thai and
-  ⚙ on Home only; now **Settings is the bar's sixth item** (`#tab-settings`, a gear), opening the
+  ⚙ on Home only; then **Settings was the bar's sixth item** (until More, 2026-10-14) (`#tab-settings`, a gear), opening the
   settings as ⚙ does rather than a page. It's a `.tab` without `data-view`, so `els.tabs` leaves it
   out. Six items get 61–70px each on 375–430px phones.
+- **More** (2026-10-14, the user's call, so new pages fit; this replaced Words and Settings in
+  the bar). The bar is Home, Topics, Cards, Reading and More, the first four always there. More
+  (`#tab-more`, a circle with three dots) opens `#more-menu`, a list just above the bar of the pages
+  without a tab: Words, then Settings.
+  - **Adding a page:** another `.more-item` in index.html, with `data-view` (a page, as the tabs
+    have) or `data-action` (Settings, which is the settings dialog). `MORE_VIEWS` comes from the
+    markup, so More lights for a new page with no code change.
+  - **Lit:** More is in the accent colour while its list is open (the page's tab dims then, as it
+    does under Settings: `html.more-open`), or one of its pages is showing (`.current`, or
+    `html.settings-open`). The list marks the page you're on (`aria-current`).
+  - **Closing:** tapping the dim, More again, another tab or a row, or Escape. Arrow keys move
+    between rows. It closes too if the window widens past the phone layout.
+  - **Layering:** the list is outside the header, at z-index 105, so it opens over the Settings
+    page (a modal, 100); it stops at the bar, as Settings does, so the bar stays in reach.
+  - Words' tab is still in the markup, hidden in mobile.css: wider screens keep Words as a tab and
+    ⚙ for Settings, and More is hidden there. Five tabs give 62px each at 320px and 76px at 390px,
+    so the 320px font-size step went.
 - **The tabs say Cards and Words** for the Flashcards and Dictionary pages (the user's call, the
   same day; the home cards too, and the Topics card's "practise it in Cards"; then everything the
   user sees, the same day: toasts, ⇄ tooltips, Add all to Cards, the confirm dialogs, the empty

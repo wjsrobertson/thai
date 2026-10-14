@@ -238,10 +238,11 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
 }
 .deck-button-icon { display: flex; color: var(--accent); }
 .deck-button-icon .page-icon { width: 20px; height: 20px; }
-/* The phone's bottom bar has these (mobile.css); a wider screen has Home in the corner instead. */
+/* The phone's bottom bar has Home and More (mobile.css); a wider screen has Home in the corner instead,
+   Words as a tab, and ⚙. */
 /* On a wider screen each tab has its icon, small, left of its name (2026-10-12, the user's request). */
 .tab { display: inline-flex; align-items: center; gap: 7px; }
-.tab-home, .tab-settings { display: none; } /* after .tab, which would show them */
+.tab-home, .tab-more { display: none; } /* after .tab, which would show them */
 .tab-svg { width: 18px; height: 18px; flex: none; }
 /* Under 700px wide (a tablet in a split view, a small window), they'd push ⚙ off the screen.
    (A phone, under 600px, has its own: mobile.css.) */

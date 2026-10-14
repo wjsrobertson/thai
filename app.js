@@ -7,7 +7,7 @@ import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_N
 
 const els = {
   stage: document.querySelector('.stage'),
-  tabs: document.querySelectorAll('.tab[data-view]'), // not the phone's Settings (tabSettings)
+  tabs: document.querySelectorAll('.tab[data-view]'), // not the phone's More (tabMore)
   deckButton: document.getElementById('deck-button'),
   deckButtonLabel: document.getElementById('deck-button-label'),
   deckButtonIcon: document.querySelector('#deck-button .deck-button-icon'),
@@ -52,7 +52,9 @@ const els = {
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
-  tabSettings: document.getElementById('tab-settings'), // a phone's, in the tab bar
+  tabMore: document.getElementById('tab-more'), // a phone's, in the tab bar
+  moreMenu: document.getElementById('more-menu'), // its list
+  moreItems: document.querySelectorAll('.more-item'),
   setWaitAgain: document.getElementById('setting-wait-again'),
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
@@ -202,6 +204,7 @@ const state = {
   pickerOpen: false,
   pickerFilter: '',
   settingsOpen: false,
+  moreOpen: false, // the phone's More list
   expandedCategories: new Set(), // open picker categories; reset to the current deck's on each open (openDeckPicker)
   expandedGroups: new Set(),     // same for deck groups, keyed `${category}::${group}`
   lastFocus: null,
@@ -1823,8 +1826,9 @@ function closeDeckPicker() {
 
 // ---------- settings modal ----------
 
-// On a phone Settings is a page (mobile.css): it stops at the tab bar, whose Settings is lit
-// (html.settings-open), and another tab leaves it (bindEvents). A dialog on wider screens.
+// On a phone Settings is a page (mobile.css), opened from More's list: it stops at the tab bar,
+// whose More is lit (html.settings-open), and another tab leaves it (bindEvents). A dialog on wider
+// screens.
 function openSettings() {
   state.settingsOpen = true;
   document.documentElement.classList.add('settings-open');
@@ -1832,7 +1836,8 @@ function openSettings() {
   els.settingsModal.hidden = false;
   setModalOpen(true);
   els.settingsSection.scrollTop = 0;
-  for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'true');
+  els.settingsButton.setAttribute('aria-expanded', 'true');
+  markMore();
   renderSettings();
   if (!TOUCH_SCREEN) setTimeout(() => els.settingsSearch.focus(), 0);
 }
@@ -1842,10 +1847,56 @@ function closeSettings() {
   document.documentElement.classList.remove('settings-open');
   els.settingsModal.hidden = true;
   setModalOpen(false);
-  for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'false');
+  els.settingsButton.setAttribute('aria-expanded', 'false');
+  markMore();
   if (state.lastFocus && typeof state.lastFocus.focus === 'function') {
     state.lastFocus.focus();
   }
+}
+
+// ---------- the phone's More list ----------
+
+// More, the phone's last tab, lists the pages without a tab of their own (Words, Settings; the
+// user's call, 2026-10-14, so new pages fit). Its tab is lit while one of them shows (markMore).
+const MORE_VIEWS = new Set([...document.querySelectorAll('.more-item[data-view]')].map((b) => b.dataset.view));
+
+function openMore() {
+  state.moreOpen = true;
+  els.moreMenu.hidden = false;
+  document.documentElement.classList.add('more-open');
+  els.tabMore.setAttribute('aria-expanded', 'true');
+  markMore();
+  if (!TOUCH_SCREEN) els.moreItems[0].focus();
+}
+
+function closeMore(refocus = false) {
+  if (!state.moreOpen) return;
+  state.moreOpen = false;
+  els.moreMenu.hidden = true;
+  document.documentElement.classList.remove('more-open');
+  els.tabMore.setAttribute('aria-expanded', 'false');
+  if (refocus) els.tabMore.focus();
+}
+
+function markMore() {
+  const here = state.settingsOpen ? 'settings' : state.view;
+  els.tabMore.classList.toggle('current', MORE_VIEWS.has(state.view));
+  for (const b of els.moreItems) {
+    if ((b.dataset.view || b.dataset.action) === here) b.setAttribute('aria-current', 'page');
+    else b.removeAttribute('aria-current');
+  }
+}
+
+function pickMore(b) {
+  closeMore();
+  if (b.dataset.action === 'settings') {
+    if (state.settingsOpen) return;
+    els.tabMore.focus({ preventScroll: true }); // where focus returns when Settings closes
+    openSettings();
+    return;
+  }
+  if (state.settingsOpen) closeSettings();
+  setView(b.dataset.view);
 }
 
 // ---------- view switching ----------
@@ -1857,6 +1908,7 @@ function setView(view) {
   els.tabs.forEach((t) => {
     t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
   });
+  markMore();
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
   els.readingSection.hidden = view !== 'reading';
@@ -4812,6 +4864,7 @@ function wait(ms) {
 function bindEvents() {
   els.tabs.forEach((t) => {
     t.addEventListener('click', () => {
+      closeMore();
       // From the phone's Settings page: leave it, for the page the tab is, the one under it or not.
       if (state.settingsOpen) {
         closeSettings();
@@ -4873,7 +4926,13 @@ function bindEvents() {
 
   // Settings modal
   els.settingsButton.addEventListener('click', openSettings);
-  els.tabSettings.addEventListener('click', openSettings);
+  // The phone's More: its tab opens and closes the list; a row picks its page.
+  els.tabMore.addEventListener('click', () => (state.moreOpen ? closeMore() : openMore()));
+  els.moreItems.forEach((b) => b.addEventListener('click', () => pickMore(b)));
+  els.moreMenu.addEventListener('click', (e) => {
+    if (e.target.dataset.close !== undefined) closeMore();
+  });
+  PHONE_LAYOUT.addEventListener('change', () => closeMore());
   els.settingsModal.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeSettings();
   });
@@ -5056,6 +5115,19 @@ function bindEvents() {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeDeckPicker();
+      }
+      return;
+    }
+    if (state.moreOpen) { // before Settings: the list can be open over it
+      const items = [...els.moreItems];
+      const i = items.indexOf(document.activeElement);
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMore(true);
+      } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        const step = e.key === 'ArrowDown' ? 1 : -1;
+        items[(i + step + items.length) % items.length].focus();
       }
       return;
     }
