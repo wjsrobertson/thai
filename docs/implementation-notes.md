@@ -1598,6 +1598,23 @@ buttons.
   10–30px in Recognition (the card at its minimum): one row of controls above the card instead of
   two would fix that.
 
+## Study: Topics, Cards and Reading as one section (2026-10-14)
+
+The user's call, after the Alphabet's picker-and-switch: the three pages already share the topic
+picker, so they're one section, **Study**, with the same shape. They asked for labelled buttons, not
+icons in the picker's row ("it isn't explicit").
+- **Tabs:** the phone's bar is Home · Study · Alphabet · Words · More; wider screens' tabs are Study ·
+  Alphabet · Words. More's list now holds only Settings (and pages to come); Alphabet and Words left
+  it for the bar.
+- **The switch:** `.study-switch` (Topics | Cards | Reading) under the topic button, shown on the three
+  pages but not on the Alphabet's Cards page; a row of its own on a phone, as the Alphabet's is.
+  Reading again with a story open closes it (it was the Reading tab's job).
+- **Code:** the views are still `wordlist`, `flashcards` and `reading`. The tab is `data-view="study"`;
+  `pageNow()` calls the three `study`, so its tab lights; `goTo('study')` opens the one you were last
+  on (prefs.studyPage, saved by setView); the home cards go to their pages as before.
+- **Wider screens:** the topic button keeps at least 220px and the controls' row wraps, or the switch
+  squeezed the topic's name to "C…".
+
 ## Alphabet (2026-10-14)
 
 A section of its own, the user's design: the consonants in a grid that opens a letter dialog (with
@@ -1675,6 +1692,16 @@ later (it's already in `fonts/`, NotoSansThai).
     marks, live and dead, and leading ห/อ): the Tones set's cards. `english` is "falling tone —
     rice"; the tone checker vouches for each. In Recognition their answers are tones (`answerText`,
     `TONE_ANSWERS`: the right one and two others), the tone read from the transliteration's mark.
+  - **The Tones set's cards are many more** (the user's call, the same day: 25 was far too few):
+    Read the Tone's 25 first, then every one-syllable word in the topics whose tone follows the
+    rules (`addToneDrill`), the most used (topics and stories holding it) first, about 1,860 in
+    all. A word only in Thai Script's topics is left out, and so is any whose toneBreakdown is an
+    exception (the loanwords and the like in tone_exceptions.txt), which would teach a wrong rule.
+    Each card: "falling tone — rice", and a note made from the breakdown (`toneReason`: "High
+    class + ไม้โท: falling."). The words have their Thai audio already; the "… tone — …" English has
+    none (only an English → Thai card would want it). Built the first time the set is used
+    (alphaScope), about 0.1 s in Chromium, not at startup. A tone's dialog lists only its first
+    eight.
   - minmax(0, 1fr) columns keep the five tone tiles inside 320px; the chart is at most 640px wide.
 
 ## Phone tab bar (2026-10-12, experiment, branch `2026-10-12-bottom-tabs`)

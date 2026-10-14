@@ -53,6 +53,7 @@ const els = {
   alphaLegend: document.getElementById('alpha-legend'),
   alphaClasses: document.getElementById('alpha-classes'),
   alphaPageButtons: document.querySelectorAll('[data-alpha-page]'),
+  studyPageButtons: document.querySelectorAll('[data-study-page]'),
   cardPic: document.getElementById('card-pic'),
   reviewPic: document.getElementById('review-pic'),
   dictEmpty: document.getElementById('dict-empty'),
@@ -1909,7 +1910,11 @@ const LETTER_PICS = {
 const alphaSets = {}; // set -> a scope as resolveScope makes them, for the Cards engine (flashScope)
 let alphaCards = [];  // the consonants: their grid, and their dialog's same-sound and look-alike letters
 const alphaSetNow = () => (ALPHA_SETS[getPreferences().alphaSet] ? getPreferences().alphaSet : 'consonants');
-const alphaScope = () => alphaSets[alphaSetNow()];
+const alphaScope = () => {
+  const set = alphaSetNow();
+  if (set === 'tones') addToneDrill();
+  return alphaSets[set];
+};
 const onAlphabet = () => state.view === 'alphabet' || state.section === 'alphabet';
 
 function buildAlphabet() {
@@ -1921,6 +1926,43 @@ function buildAlphabet() {
     alphaSets[set] = { id, kind: 'alphabet', name: def.label, label: def.label, description: '', decks: [deck], cards, deckOf: new Map(cards.map((c) => [cardKey(c), deck])) };
   }
   alphaCards = alphaSets.consonants.cards;
+}
+
+// The Tones set's cards: Read the Tone's 25, then every one-syllable word in the topics whose tone
+// follows the rules (tones.js; not the loanwords and the like in tone_exceptions.txt, which would
+// teach the wrong rule), the most used first: about 1,700 (the user's call, 2026-10-14: 25 was far
+// too few). Built the first time the set is used, not at startup: a toneBreakdown each.
+let toneDrillAdded = false;
+function addToneDrill() {
+  if (toneDrillAdded || !alphaSets.tones) return;
+  toneDrillAdded = true;
+  const scope = alphaSets.tones;
+  const have = new Set(scope.cards.map((c) => c.thai));
+  const scriptIds = new Set(state.decks.filter((d) => d.category === 'Thai Script').map((d) => d.id));
+  const best = new Map(); // thai -> its most used card
+  for (const { card, deckIds } of state.cardIndex.values()) {
+    if (card.alpha || have.has(card.thai) || !/^[\u0E00-\u0E7F]+$/.test(card.thai) || /[\s-]/.test(card.translit || '')) continue;
+    if (deckIds.every((id) => scriptIds.has(id))) continue; // Thai Script's spelling examples
+    if ((best.get(card.thai)?.n || 0) >= deckIds.length) continue;
+    best.set(card.thai, { card, n: deckIds.length });
+  }
+  const deck = scope.decks[0];
+  for (const { card } of [...best.values()].sort((x, y) => y.n - x.n)) {
+    const syl = toneBreakdown(card.thai, card.translit);
+    if (syl?.length !== 1 || syl[0].exception) continue;
+    const c = { thai: card.thai, translit: card.translit, english: `${syl[0].tone} tone — ${card.english}`, note: toneReason(syl[0]),
+      ...(card.say ? { say: card.say } : {}), alpha: true, alphaSet: 'tones', pic: null };
+    scope.cards.push(c); // also the deck's (the same array)
+    scope.deckOf.set(cardKey(c), deck);
+    state.cardIndex.set(cardKey(c), { card: c, deckIds: [scope.id] });
+  }
+}
+
+// Why a syllable has its tone, from toneBreakdown's reading of it: "High class + ไม้โท: falling."
+function toneReason(s) {
+  const cls = `${cap(CLASS_NAMES[s.cls])} class` + (s.clsWhy ? ` (${s.clsWhy})` : '');
+  const how = s.mark ? ` + ${MARK_NAMES[s.mark]}` : s.column === 'live' ? ', live, no mark' : `, dead (${s.column === 'deadShort' ? 'short' : 'long'}), no mark`;
+  return `${cls}${how}: ${s.tone}.`;
 }
 
 // The set menu, under the topic button on the Alphabet's pages.
@@ -2269,7 +2311,7 @@ function showTonePop(anchor, tone) {
     });
   }
   facts.add('Made by', how);
-  const words = alphaSets.tones.cards.filter((c) => toneOfTranslit(c.translit) === tone);
+  const words = alphaSets.tones.cards.filter((c) => toneOfTranslit(c.translit) === tone).slice(0, 8); // Read the Tone's first
   if (words.length) facts.add('Words', chipRow(words, (w) => `${w.thai}: ${w.english}`, (w) => speak(cardSay(w))));
   items.push(facts);
   if (card?.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), card.note));
@@ -2507,14 +2549,21 @@ function pickMore(b) {
   goTo(b.dataset.view);
 }
 
-// The page a tab or More's row names: the Alphabet opens on whichever of its pages you were last on.
+// Study (2026-10-14, the user's call): Topics, Cards and Reading as one section, its pages picked by
+// the .study-switch under the topic button.
+const STUDY_VIEWS = new Set(['wordlist', 'flashcards', 'reading']);
+
+// The page a tab, a home card or More's row names: Study and the Alphabet open on whichever of their
+// pages you were last on.
 function goTo(view) {
-  if (view === 'alphabet' && getPreferences().alphaPage === 'cards') setView('flashcards', { section: 'alphabet' });
+  const p = getPreferences();
+  if (view === 'study') setView(STUDY_VIEWS.has(p.studyPage) ? p.studyPage : 'wordlist');
+  else if (view === 'alphabet' && p.alphaPage === 'cards') setView('flashcards', { section: 'alphabet' });
   else setView(view);
 }
 
-// Which tab's page is showing: the Alphabet's Cards page is the Alphabet's.
-const pageNow = () => (state.section === 'alphabet' ? 'alphabet' : state.view);
+// Which tab's page is showing: Study's three are Study's; the Alphabet's Cards page is the Alphabet's.
+const pageNow = () => (state.section === 'alphabet' ? 'alphabet' : STUDY_VIEWS.has(state.view) ? 'study' : state.view);
 
 // ---------- view switching ----------
 
@@ -2543,6 +2592,7 @@ function setView(view, { section = 'words' } = {}) {
   markMore();
   els.alphaSection.hidden = view !== 'alphabet';
   if (view === 'alphabet') renderAlphabet();
+  els.studyPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.studyPage === view ? 'true' : 'false'));
   els.alphaPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaPage === (view === 'alphabet' ? 'letters' : 'cards') ? 'true' : 'false'));
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
@@ -2570,7 +2620,7 @@ function setView(view, { section = 'words' } = {}) {
       if (c && state.learnAnswers.has(c.key)) advance(); // answered (and saved) just before leaving
     }
   }
-  setPreferences({ view, section });
+  setPreferences({ view, section, ...(STUDY_VIEWS.has(view) && section === 'words' ? { studyPage: view } : {}) });
 }
 
 // ---------- settings UI ----------
@@ -5520,16 +5570,23 @@ function bindEvents() {
         closeSettings();
         if (t.dataset.view === pageNow()) return;
       }
-      // Reading's tab again, with a story open: it closes, back to the top of the list.
-      if (t.dataset.view === 'reading' && state.view === 'reading' && state.readingId) {
-        closeReading();
-        window.scrollTo(0, 0);
-        return;
-      }
       if (t.dataset.view === pageNow()) return; // already there
       goTo(t.dataset.view);
     });
   });
+  // Study's Topics | Cards | Reading.
+  els.studyPageButtons.forEach((b) => b.addEventListener('click', () => {
+    const page = b.dataset.studyPage;
+    closeMore();
+    if (state.settingsOpen) closeSettings();
+    // Reading again, with a story open: it closes, back to the top of the list.
+    if (page === 'reading' && state.view === 'reading' && state.readingId) {
+      closeReading();
+      window.scrollTo(0, 0);
+      return;
+    }
+    if (page !== state.view || state.section !== 'words') setView(page);
+  }));
 
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
   let dictTyping = null;

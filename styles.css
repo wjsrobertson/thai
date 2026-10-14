@@ -303,7 +303,8 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   padding: 10px 18px;
   font-size: 15px;
   max-width: 480px;
-  min-width: 0; /* a long topic name ends in "…" (its label) rather than pushing the button wide */
+  min-width: min(220px, 100%); /* a long topic name ends in "…" (its label) rather than pushing the button wide; at
+     least 220px, so Study's switch beside it can't squeeze it to a letter (2026-10-14) */
 }
 .deck-button:hover {
   border-color: var(--accent);
@@ -1498,6 +1499,9 @@ body { display: flex; flex-direction: column; }
 /* Its letter page (view alphabet), and its cards: the Cards page with the Alphabet's cards
    (data-section alphabet). Both have the Letters | Cards switch where the topic button goes. */
 :root { --cls-mid: #4f8fd6; --cls-high: #d9534f; --cls-low: #3c9d61; } /* the classes' colours */
+/* Study's Topics | Cards | Reading, on those three pages (not the Alphabet's Cards page). */
+.study-switch { display: none; }
+.stage:is([data-view="wordlist"], [data-view="flashcards"], [data-view="reading"]):not([data-section="alphabet"]) .study-switch { display: inline-flex; }
 .alpha-switch { display: none; }
 .stage[data-view="alphabet"] .alpha-switch,
 .stage[data-section="alphabet"] .alpha-switch { display: inline-flex; }
@@ -1509,7 +1513,7 @@ body { display: flex; flex-direction: column; }
 }
 .alphabet { max-width: 1000px; margin: 0 auto; }
 /* The set menu, under the topic button (toggleAlphaSets places it). */
-.deck-picker-bar { position: relative; }
+.deck-picker-bar { position: relative; flex-wrap: wrap; } /* a full row wraps rather than squeezing the topic button */
 .alpha-set-menu {
   position: absolute;
   z-index: 20;

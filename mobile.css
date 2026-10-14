@@ -17,8 +17,9 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 
 /* ---------- top bar and tab bar ---------- */
 /* The tabs are a bar along the bottom, as in an iPhone app, each an icon over its name: Home,
-   Topics, Cards, Reading and More (2026-10-12: with Words, the tabs no longer fit across the top;
-   2026-10-14: Words and Settings moved into More's list, the user's call, so new pages fit). No top bar: its Home and ⚙ are in the tab bar (the user's call, the
+   Study, Alphabet, Words and More (2026-10-12: with Words, the tabs no longer fit across the top;
+   2026-10-14: More, holding Settings, so new pages fit; Study in place of Topics, Cards and
+   Reading, the user's calls). No top bar: its Home and ⚙ are in the tab bar (the user's call, the
    same day; for a while it was Learn Thai and ⚙, on Home only). It's still there, empty and taking
    no room, since the tab bar is inside it. */
 .topbar {
@@ -188,7 +189,9 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
 
-/* The Alphabet's Letters | Cards switch takes the topic button's row. */
+/* Study's and the Alphabet's switches take a row of their own, under the topic button. */
+.stage:is([data-view="wordlist"], [data-view="flashcards"], [data-view="reading"]):not([data-section="alphabet"]) .study-switch { display: flex; flex: 1 1 100%; }
+.study-switch .seg-btn { flex: 1; }
 .stage[data-view="alphabet"] .alpha-switch,
 .stage[data-section="alphabet"] .alpha-switch { display: flex; flex: 1 1 100%; }
 .alpha-switch .seg-btn { flex: 1; }
@@ -206,9 +209,8 @@ html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More 
 .letter-pic { width: 112px; height: 112px; }
 
 /* ---------- More: its tab and its list ---------- */
-/* Alphabet and Words are in More's list, not the bar. More is lit while its list is open, or one of its pages
-   (Words, Settings) is showing. */
-.tab[data-view="dictionary"], .tab[data-view="alphabet"] { display: none; }
+/* More is lit while its list is open, or one of its pages (Settings) is showing. (Alphabet and Words
+   were in its list until Study took Topics, Cards and Reading's three places, 2026-10-14.) */
 .dots { stroke-width: 3; }
 .tab-more.current,
 .tab-more[aria-expanded="true"],
