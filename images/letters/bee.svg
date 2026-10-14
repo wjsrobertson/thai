@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#fffaf2"/><g fill="none" stroke="#2b2b2b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"><defs><clipPath id="bee"><ellipse cx="212" cy="236" rx="100" ry="72"/></clipPath></defs>
+  <ellipse cx="190" cy="140" rx="44" ry="62" transform="rotate(-24 190 140)" fill="#dff1f8"/>
+  <ellipse cx="254" cy="146" rx="40" ry="58" transform="rotate(22 254 146)" fill="#dff1f8"/>
+  <path d="M310 236 L336 236" stroke-width="9"/>
+  <ellipse cx="212" cy="236" rx="100" ry="72" fill="#f2b632"/>
+  <g clip-path="url(#bee)" stroke="none" fill="#2b2b2b"><rect x="186" y="150" width="26" height="180"/><rect x="240" y="150" width="26" height="180"/><rect x="292" y="150" width="30" height="180"/></g>
+  <ellipse cx="212" cy="236" rx="100" ry="72"/>
+  <circle cx="142" cy="220" r="7" fill="#2b2b2b"/>
+  <path d="M132 254 C142 264 158 264 166 254"/>
+  <path d="M136 172 C126 140 108 128 96 128 M160 168 C160 136 152 116 140 106"/>
+  <circle cx="94" cy="128" r="7" fill="#2b2b2b"/><circle cx="138" cy="104" r="7" fill="#2b2b2b"/></g></svg>

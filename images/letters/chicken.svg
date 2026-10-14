@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <rect width="400" height="400" fill="#fffaf2"/>
+  <g fill="none" stroke="#2b2b2b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
+    <!-- comb -->
+    <path d="M114 94 C104 72 124 64 130 84 C130 60 154 60 151 86 C160 70 178 80 162 100" fill="#e0443a"/>
+    <!-- head, back, tail and belly in one line -->
+    <path d="M100 110 C102 88 140 80 160 100 C168 112 167 132 160 146
+             C176 176 206 186 246 176 C272 169 286 150 292 122
+             L332 78 C344 118 340 150 324 176
+             C348 178 354 204 334 228
+             C320 282 262 314 196 312 C130 310 92 270 92 220
+             C92 186 98 160 100 132" fill="#fffaf2"/>
+    <!-- beak -->
+    <path d="M100 110 L70 121 L100 132" fill="#f2b632"/>
+    <!-- wattle -->
+    <path d="M100 133 C90 142 92 160 102 161 C111 159 110 143 104 134" fill="#e0443a"/>
+    <!-- wing -->
+    <path d="M164 216 C190 190 242 190 264 210 C246 242 204 252 174 240 Z"/>
+    <path d="M192 228 C208 222 228 221 244 214"/>
+    <!-- tail feather lines -->
+    <path d="M300 132 C310 150 314 165 312 180"/>
+    <path d="M318 188 C326 200 328 210 326 220"/>
+    <!-- legs and feet -->
+    <path d="M176 311 L172 346 M172 346 L152 357 M172 346 L175 364 M172 346 L193 356"/>
+    <path d="M216 309 L221 346 M221 346 L200 357 M221 346 L224 364 M221 346 L243 355"/>
+  </g>
+  <!-- eye -->
+  <circle cx="129" cy="108" r="6" fill="#2b2b2b"/>
+</svg>

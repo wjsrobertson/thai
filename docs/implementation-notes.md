@@ -1598,6 +1598,60 @@ buttons.
   10–30px in Recognition (the card at its minimum): one row of controls above the card instead of
   two would fix that.
 
+## Alphabet (2026-10-14)
+
+A section of its own, the user's design: the consonants in a grid that opens a letter dialog (with
+the pictures), and its own Browse, Recognition and Recall. The user's calls: no "known" marks on
+the grid, letter progress apart from word progress, consonants only for now, the loopless font
+later (it's already in `fonts/`, NotoSansThai).
+- **Where:** More's first row on a phone, a top tab on wider screens (data-view `alphabet`, a line
+  ก for its icon). It opens on whichever of its pages you were last on (prefs.alphaPage).
+- **Letters | Cards:** a switch in the topic button's place (`.alpha-switch`), on both pages.
+- **Letters** (`#alphabet-section`, renderAlphabet): the 44 letters in `.dict-grid` tiles, ฃ ฅ
+  dimmed; Classes (prefs.alphaClasses) colours them mid blue, high red, low green (`--cls-*`,
+  with a legend).
+- **The letter dialog** (showLetterPop) uses the word dialog's frame (#word-modal: close, Escape,
+  backdrop): the letter large (tap: its name), its picture, play; Name, Class, Sound (start and
+  final, from the card's note: "Final: -k", "Never a final", "No longer used"), Same sound (other
+  letters with the sound, by class colour) and Looks like (the Look-alike Letters board's groups),
+  each opening that letter; the note; five words starting with it (the most topics first), each
+  opening the word dialog; All N in Words.
+- **The cards** are Alphabet in Order's (`script-consonants-all`) with `alpha: true` and `pic`:
+  - **Their own progress:** cardKey is `abc:ก`, so their items are apart from the Thai Script
+    topics' letter cards; the backup summary counts them as letters.
+  - **The Cards engine, swapped:** the Alphabet's Cards page is the Cards page (view
+    `flashcards`) with `state.section = 'alphabet'` (stage `data-section`). `useSection` keeps
+    each section's engine state (`ENGINE_STATE`: cards, queue, position, mode, direction,
+    Recognition's and Recall's streams) while the other's is in, so each keeps its place.
+    setView swaps the words' back for anything but the Alphabet's Cards page; answerSeq stays
+    global. Mode and direction save as prefs.alphaOrderMode / alphaDirection.
+  - Every letter is in (no adding to Cards): `reviewOnlyCards` and Recall's `reviewPool` take
+    them all, in alphabet order. `ALPHA_SCOPE` is a full scope (decks, cards, deckOf) for
+    flashScope; the letters are in `state.cardIndex` under the deck id `alphabet`.
+  - **The picture** shows on the card's back (`#card-pic`, Recall's `#review-pic`; showPic).
+- **Pictures** (`images/letters/*.svg`, LETTER_PICS): all 44 (ก ข ค ง จ ช ป first, the other 37 the
+  same day, at the user's request), drawn by hand as SVG (the user liked the style): viewBox 0 0 400 400, a cream square (#fffaf2), outlines #2b2b2b at
+  stroke-width 7 with round caps and joins, flat fills (white, greys, red #e0443a, yellow #f2b632,
+  green #86c98a, blue #b9e0ee). Checked by rendering in headless Chromium. The buffalo is a head
+  from the front: side on, it read as a goat. Others that needed a second go: ฉ's cymbals (a split
+  ball, then headphones, before two bowls on a cord), ฐ's pedestal (with a lotus bud it was a
+  birthday cake; then a stone plinth, which the user found un-Thai; now a gold Thai lotus base,
+  ฐานบัว: slabs, downward and upward lotus-petal bands, a jewelled waist. No Buddha image on it), ฏ's ox goad (a
+  spear with a tassel at first; now a long wooden stick with a thin iron spike, bound at the tip,
+  and a cord loop: the user picked it over the goad shown prodding a buffalo), and ศ's pavilion (redone at the
+  user's request as a Thai sala: an orange-and-green tiled gable with a lower eave tier, a gold
+  gable face, gold barge boards with ใบระกา blades, a ช่อฟ้า at the peak and หางหงส์ at the ends, white
+  pillars on a raised platform). The people (ฅ ญ ด ท ฒ ณ ษ ย ฑ) are head-and-shoulders
+  portraits on one template (the neck runs from inside the head into the shirt, drawn behind both:
+  at first it stopped short and the heads floated, the user's report), told apart by what they wear: the soldier's helmet, the novice's
+  robe, the hermit's tiger-skin hat, the giant's green face and crown, Montho's crown. The files
+  are the source: edit them directly. A new one goes in LETTER_PICS and sw.js's SHELL (now v19),
+  so it's offline.
+- **Home card** (the user's request, the same day): the fifth, across both columns on wider screens;
+  it opens the Alphabet's last page, as More's row does. No pictures on it (the user's call: it had
+  the first five letters' for a moment).
+- Not done: vowels and tone marks.
+
 ## Phone tab bar (2026-10-12, experiment, branch `2026-10-12-bottom-tabs`)
 
 With Dictionary, the four tabs, Home and ⚙ no longer fit across a phone. On a phone (mobile.css)

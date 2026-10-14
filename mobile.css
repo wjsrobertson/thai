@@ -188,10 +188,17 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
 
+/* The Alphabet's Letters | Cards switch takes the topic button's row. */
+.stage[data-view="alphabet"] .alpha-switch,
+.stage[data-section="alphabet"] .alpha-switch { display: flex; flex: 1 1 100%; }
+.alpha-switch .seg-btn { flex: 1; }
+.letter-big { font-size: 92px; }
+.letter-pic { width: 112px; height: 112px; }
+
 /* ---------- More: its tab and its list ---------- */
-/* Words is in More's list, not the bar. More is lit while its list is open, or one of its pages
+/* Alphabet and Words are in More's list, not the bar. More is lit while its list is open, or one of its pages
    (Words, Settings) is showing. */
-.tab[data-view="dictionary"] { display: none; }
+.tab[data-view="dictionary"], .tab[data-view="alphabet"] { display: none; }
 .dots { stroke-width: 3; }
 .tab-more.current,
 .tab-more[aria-expanded="true"],

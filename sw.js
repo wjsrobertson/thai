@@ -14,7 +14,7 @@
 
 importScripts('audio-store.js'); // self.ClipStore
 
-const SHELL_CACHE = 'learnthai-shell-v17';  // bump if SHELL changes, so stale entries are dropped
+const SHELL_CACHE = 'learnthai-shell-v19';  // bump if SHELL changes, so stale entries are dropped
 const OLD_AUDIO_CACHE = 'learnthai-audio'; // where clips were kept until 2026-10-07: deleted on activate
 const NETWORK_TIMEOUT_MS = 4000;
 // Paths relative to the service worker's scope ('' is the app's root URL).
@@ -24,6 +24,14 @@ const SHELL = [
   'fonts/NotoLoopedThai-Regular.woff2', 'fonts/NotoLoopedThai-Bold.woff2',
   'fonts/NotoSansThai-Regular.woff2', 'fonts/NotoSansThai-Bold.woff2',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/favicon-32.png',
+  // The Alphabet's letter pictures (app.js LETTER_PICS): add each new one here too.
+  ...[
+    'chicken', 'egg', 'bottle', 'buffalo', 'person', 'bell', 'snake', 'plate', 'cymbals',
+    'elephant', 'chain', 'tree', 'woman', 'headdress', 'ox-goad', 'pedestal', 'montho', 'old-man',
+    'novice-monk', 'child', 'turtle', 'bag', 'soldier', 'flag', 'mouse', 'leaf', 'fish', 'bee',
+    'lid', 'tray', 'tooth', 'junk', 'horse', 'giant', 'boat', 'monkey', 'ring', 'pavilion',
+    'hermit', 'tiger', 'chest', 'kite', 'basin', 'owl'
+  ].map((n) => `images/letters/${n}.svg`),
 ];
 const shellUrl = (path) => new URL(path, self.registration.scope).href;
 

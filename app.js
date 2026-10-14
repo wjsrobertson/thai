@@ -1,4 +1,4 @@
-import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable } from './spell.js';
+import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable, consonantClass } from './spell.js';
 import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 
 // Learn Thai — flashcard app
@@ -43,6 +43,13 @@ const els = {
   dictBack: document.getElementById('dict-back'),
   dictHeading: document.getElementById('dict-heading'),
   dictGrid: document.getElementById('dict-grid'),
+  alphaSection: document.getElementById('alphabet-section'),
+  alphaGrid: document.getElementById('alpha-grid'),
+  alphaLegend: document.getElementById('alpha-legend'),
+  alphaClasses: document.getElementById('alpha-classes'),
+  alphaPageButtons: document.querySelectorAll('[data-alpha-page]'),
+  cardPic: document.getElementById('card-pic'),
+  reviewPic: document.getElementById('review-pic'),
   dictEmpty: document.getElementById('dict-empty'),
   dictTable: document.getElementById('dict-table'),
   dictTableHead: document.getElementById('dict-table-head'),
@@ -195,6 +202,7 @@ const state = {
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
+  section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
   dictLetter: null,   // the Dictionary's letter (ก…ฮ), or null for the grid (renderDictionary)
   dictQuery: '',      // and its search box
@@ -833,6 +841,9 @@ async function loadAudioManifest() {
 const cardSay = (card) => card.say || card.thai;
 
 function cardKey(card) {
+  // The Alphabet's letters have their own progress (the user's call, 2026-10-14), apart from the
+  // same letters' cards in Thai Script's topics: abc:ก.
+  if (card.alpha) return `abc:${card.thai}`;
   // Stable id per card; thai+english is unique enough for hand-curated decks.
   return `${card.thai}::${card.english}`;
 }
@@ -858,6 +869,7 @@ function buildCardIndex() {
       state.cardIndex.get(key).deckIds.push(d.id);
     }
   }
+  for (const c of alphaCards) state.cardIndex.set(cardKey(c), { card: c, deckIds: ['alphabet'] });
 }
 
 // ---------- queue building ----------
@@ -882,6 +894,7 @@ function buildQueue(cards) {
 
 // The topic's words in Review (maybe none): what Flashcards goes through.
 function reviewOnlyCards() {
+  if (state.section === 'alphabet') return state.cards;
   const words = reviewWords();
   return state.cards.filter((c) => c.key in words);
 }
@@ -1073,6 +1086,7 @@ function renderCard() {
     }
     els.cardSpell.hidden = true;
     els.cardSpellFront.hidden = true;
+    showPic(els.cardPic, null);
     setFlipped(false);
     updateStats();
     return;
@@ -1101,6 +1115,7 @@ function renderCard() {
     els.english.classList.add('back-th');
   }
   noteText(els.note, c.note || '');
+  showPic(els.cardPic, c);
   renderSpelling();
   setFlipped(false);
   updateStats();
@@ -1330,6 +1345,7 @@ const groupScopeId = (cat, group) => `group:${cat}::${group}`;
 // Flashcards (2026-10-08); Review's own switch (prefs.reviewBy) went with the Review tab.
 const flashcardsByAll = () => getPreferences().flashcardsBy === 'all';
 function flashScope() {
+  if (state.section === 'alphabet') return ALPHA_SCOPE;
   return flashcardsByAll() ? resolveScope('all') : currentScope();
 }
 
@@ -1345,6 +1361,10 @@ function setFlashcardsBy(by) {
 // every card (its queue keeps the words in Review, and Test mode draws answer choices from all).
 // Both keep resolveScope's order, so a queue's indices stay valid across a reload.
 function loadCards() {
+  if (state.section === 'alphabet') { // the letters, every one (nothing to add first)
+    state.cards = mergeProgressIntoCards(alphaCards);
+    return;
+  }
   const topic = currentScope();
   state.listCards = topic ? mergeProgressIntoCards(topic.cards) : [];
   state.cards = flashcardsByAll() ? mergeProgressIntoCards(resolveScope('all').cards) : state.listCards;
@@ -1854,6 +1874,220 @@ function closeSettings() {
   }
 }
 
+// ---------- the Alphabet ----------
+
+// The Alphabet (2026-10-14, the user's design): the 44 consonants in a grid like the Words page's,
+// each opening a dialog (showLetterPop) with its picture, name, class and sound; and its own Browse,
+// Recognition and Recall (its Cards page). The letters are Alphabet in Order's cards, with their
+// own progress (cardKey: abc:ก) and their own place, mode and direction (useSection).
+const ALPHA_TOPIC = 'script-consonants-all';
+// Every letter's picture (images/letters/, SVG; all 44 since 2026-10-14). A letter without one would show none.
+const LETTER_PICS = {
+  ก: 'chicken', ข: 'egg', ฃ: 'bottle', ค: 'buffalo', ฅ: 'person', ฆ: 'bell', ง: 'snake',
+  จ: 'plate', ฉ: 'cymbals', ช: 'elephant', ซ: 'chain', ฌ: 'tree', ญ: 'woman', ฎ: 'headdress',
+  ฏ: 'ox-goad', ฐ: 'pedestal', ฑ: 'montho', ฒ: 'old-man', ณ: 'novice-monk', ด: 'child',
+  ต: 'turtle', ถ: 'bag', ท: 'soldier', ธ: 'flag', น: 'mouse', บ: 'leaf', ป: 'fish', ผ: 'bee',
+  ฝ: 'lid', พ: 'tray', ฟ: 'tooth', ภ: 'junk', ม: 'horse', ย: 'giant', ร: 'boat', ล: 'monkey',
+  ว: 'ring', ศ: 'pavilion', ษ: 'hermit', ส: 'tiger', ห: 'chest', ฬ: 'kite', อ: 'basin', ฮ: 'owl'
+};
+let alphaCards = [];
+let ALPHA_SCOPE = null; // a scope as resolveScope makes them, for the Cards engine (flashScope)
+
+function buildAlphabet() {
+  const topic = state.decks.find((d) => d.id === ALPHA_TOPIC);
+  alphaCards = (topic?.cards || []).map((c) => ({ ...c, alpha: true, pic: LETTER_PICS[c.thai] || null }));
+  const deck = { id: 'alphabet', name: 'Alphabet', cards: alphaCards };
+  ALPHA_SCOPE = {
+    id: 'alphabet', kind: 'alphabet', name: 'Alphabet', label: 'Alphabet', description: 'The 44 consonants',
+    decks: [deck], cards: alphaCards, deckOf: new Map(alphaCards.map((c) => [cardKey(c), deck])),
+  };
+}
+
+const picSrc = (pic) => `images/letters/${pic}.svg`;
+
+// A card's picture on its back (renderCard, presentEntry): only the Alphabet's have one.
+function showPic(img, card) {
+  img.hidden = !card?.pic;
+  if (!card?.pic) return;
+  img.src = picSrc(card.pic);
+  img.alt = (card.english.split(' — ')[1] || '').replace(/ \(.*\)$/, '');
+}
+
+// A letter's facts, from its card: the sound it starts a syllable with and ends one with (its note
+// says "Final: -k", "Never a final", or "No longer used"), its class, and whether it's obsolete.
+function letterFacts(c) {
+  const [sound, word] = c.english.split(' — ');
+  const final = c.note?.match(/Final: (-[a-zʔ]+)/)?.[1] || null;
+  const obsolete = /No longer used/.test(c.note || '');
+  const cls = consonantClass(c.thai);
+  return { sound, word: word?.replace(/ \(obsolete\)$/, ''), final, obsolete, cls };
+}
+
+function renderAlphabet() {
+  const byClass = !!getPreferences().alphaClasses;
+  els.alphaClasses.setAttribute('aria-pressed', byClass ? 'true' : 'false');
+  els.alphaLegend.hidden = !byClass;
+  els.alphaGrid.classList.toggle('by-class', byClass);
+  if (els.alphaGrid.childElementCount) return; // drawn once
+  els.alphaGrid.replaceChildren(...alphaCards.map((c) => {
+    const f = letterFacts(c);
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `dict-letter cls-${CLASS_NAMES[f.cls] || 'mid'}` + (f.obsolete ? ' obsolete' : '');
+    b.lang = 'th';
+    b.textContent = c.thai;
+    b.title = `${c.thai} ${c.say?.split(' ')[1] || ''}: ${c.english}`;
+    b.addEventListener('click', () => showLetterPop(b, c));
+    return b;
+  }));
+}
+
+// The letter's dialog, in the word dialog's frame (so closing, Escape and the backdrop are its):
+// the letter, large (tap: its name), its picture, its class, sound, letters with the same sound
+// and letters it looks like (each opens that letter's), its note, and a few words that start with it.
+function showLetterPop(anchor, c) {
+  if (state.storyReading.active) pauseReadStories();
+  speak(cardSay(c));
+  popAnchor?.classList.remove('on');
+  popAnchor = anchor;
+  anchor?.classList.add('on');
+  const f = letterFacts(c);
+  els.wordModalTr.textContent = c.translit;
+  els.wordModalEn.textContent = c.english;
+  const hero = document.createElement('div');
+  hero.className = 'letter-hero';
+  const big = document.createElement('button');
+  big.type = 'button';
+  big.className = 'letter-big';
+  big.lang = 'th';
+  big.textContent = c.thai;
+  big.title = `Say ${c.say || c.thai}`;
+  big.addEventListener('click', () => speak(cardSay(c)));
+  hero.append(big);
+  if (c.pic) {
+    const img = document.createElement('img');
+    img.className = 'letter-pic';
+    img.src = picSrc(c.pic);
+    img.alt = f.word || '';
+    hero.append(img);
+  }
+  const actions = document.createElement('div');
+  actions.className = 'pop-actions';
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'row-speak' + (sayingNow(cardSay(c)) ? ' playing' : '');
+  play.dataset.say = cardSay(c);
+  play.title = `Play ${c.say || c.thai}`;
+  play.setAttribute('aria-label', play.title);
+  play.append(speakerIcon());
+  play.addEventListener('click', () => speakerPress(play, cardSay(c)));
+  actions.append(play);
+
+  const facts = document.createElement('dl');
+  facts.className = 'letter-facts';
+  const fact = (label, ...value) => {
+    const dd = document.createElement('dd');
+    dd.append(...value);
+    facts.append(Object.assign(document.createElement('dt'), { textContent: label }), dd);
+  };
+  const chips = (letters) => {
+    const box = document.createElement('div');
+    box.className = 'letter-chips';
+    for (const other of letters) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = `letter-chip cls-${CLASS_NAMES[consonantClass(other.thai)] || 'mid'}`;
+      b.lang = 'th';
+      b.textContent = other.thai;
+      b.title = `${other.thai}: ${other.english}`;
+      b.addEventListener('click', () => showLetterPop(null, other));
+      box.append(b);
+    }
+    return box;
+  };
+  fact('Name', Object.assign(document.createElement('span'), { lang: 'th', textContent: c.say || c.thai }), ` ${c.translit}`);
+  const clsName = CLASS_NAMES[f.cls];
+  if (clsName) fact('Class', Object.assign(document.createElement('span'), { className: `cls-${clsName}`, textContent: `● ${clsName[0].toUpperCase()}${clsName.slice(1)}` }));
+  fact('Sound', f.obsolete ? 'No longer used' : /silent/.test(f.sound) ? 'Silent: it carries a vowel'
+    : `${f.sound} at the start; ${f.final ? `${f.final} at the end` : 'never at the end'}`);
+  const same = alphaCards.filter((o) => o !== c && !/silent/.test(f.sound) && o.english.split(' — ')[0] === f.sound);
+  if (same.length) fact('Same sound', chips(same));
+  const looks = state.decks.find((d) => d.id === 'script-lookalikes')?.board?.groups?.find((g) => g.includes(c.thai)) || [];
+  const alike = alphaCards.filter((o) => o !== c && looks.includes(o.thai));
+  if (alike.length) fact('Looks like', chips(alike));
+
+  const parts = [hero, actions, facts];
+  if (c.note) parts.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), c.note));
+  // A few words that start with it, the most widely used first (by how many topics have them).
+  buildDictionary();
+  const words = dictEntries.filter((e) => e.first === c.thai);
+  if (words.length) {
+    const reach = (e) => state.cardIndex.get(e.key)?.deckIds.length || 0;
+    const top = [...words].sort((x, y) => reach(y) - reach(x) || x.thai.length - y.thai.length).slice(0, 5);
+    parts.push(Object.assign(document.createElement('p'), { className: 'letter-words-head', textContent: `Words that start with ${c.thai}` }));
+    for (const w of top) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'letter-word';
+      b.append(Object.assign(document.createElement('span'), { className: 'letter-word-th', lang: 'th', textContent: w.thai }),
+        Object.assign(document.createElement('span'), { className: 'letter-word-en', textContent: w.english }));
+      b.addEventListener('click', () => showWordPop(null, w));
+      parts.push(b);
+    }
+    const all = document.createElement('button');
+    all.type = 'button';
+    all.className = 'ghost letter-all';
+    all.textContent = `All ${words.length} in Words ›`;
+    all.addEventListener('click', () => {
+      hideWordPop();
+      state.dictLetter = c.thai;
+      state.dictQuery = '';
+      setView('dictionary');
+      window.scrollTo(0, 0);
+    });
+    parts.push(all);
+  }
+  els.wordModalBody.replaceChildren(...parts);
+  if (!wordPop) wordPop = { lastFocus: document.activeElement };
+  els.wordModal.hidden = false;
+  setModalOpen(true);
+  els.wordModalBody.scrollTop = 0;
+  els.wordModalClose.focus({ preventScroll: true });
+}
+
+// Whose cards the Cards engine holds. The words' and the Alphabet's each keep theirs (place, mode,
+// direction, Recall stream) while the other's are in; the Alphabet's start afresh on its first
+// visit, in its own saved mode and direction (prefs.alphaOrderMode, alphaDirection).
+const ENGINE_STATE = ['cards', 'flashScopeId', 'queue', 'pos', 'showingBack', 'orderMode', 'direction', 'relearn', 'carry', 'modeSnap', 'learnAnswers', 'review', 'reviewOnlySig'];
+const sectionEngines = {};
+function useSection(section) {
+  if (state.section === section) return;
+  sectionEngines[state.section] = Object.fromEntries(ENGINE_STATE.map((k) => [k, state[k]]));
+  state.section = section;
+  els.stage.dataset.section = section;
+  const saved = sectionEngines[section];
+  if (saved) {
+    Object.assign(state, saved);
+  } else {
+    const p = getPreferences();
+    Object.assign(state, {
+      orderMode: ['practice', 'test', 'review'].includes(p.alphaOrderMode) ? p.alphaOrderMode : 'practice',
+      direction: ['th-en', 'en-th', 'listen'].includes(p.alphaDirection) ? p.alphaDirection : 'th-en',
+      cards: [], queue: [], pos: 0, showingBack: false, flashScopeId: null, relearn: new Map(), carry: [],
+      modeSnap: { practice: null, test: null }, learnAnswers: new Map(), review: null, reviewOnlySig: '',
+    });
+  }
+  els.stage.dataset.order = state.orderMode;
+  els.orderButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.order === state.orderMode ? 'true' : 'false'));
+  els.directionButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false'));
+  if (saved) {
+    if (state.orderMode !== 'review') renderCard();
+  } else {
+    reloadFlashcards();
+  }
+  renderToday();
+}
+
 // ---------- the phone's More list ----------
 
 // More, the phone's last tab, lists the pages without a tab of their own (Words, Settings; the
@@ -1879,8 +2113,8 @@ function closeMore(refocus = false) {
 }
 
 function markMore() {
-  const here = state.settingsOpen ? 'settings' : state.view;
-  els.tabMore.classList.toggle('current', MORE_VIEWS.has(state.view));
+  const here = state.settingsOpen ? 'settings' : pageNow();
+  els.tabMore.classList.toggle('current', MORE_VIEWS.has(pageNow()));
   for (const b of els.moreItems) {
     if ((b.dataset.view || b.dataset.action) === here) b.setAttribute('aria-current', 'page');
     else b.removeAttribute('aria-current');
@@ -1896,19 +2130,45 @@ function pickMore(b) {
     return;
   }
   if (state.settingsOpen) closeSettings();
-  setView(b.dataset.view);
+  goTo(b.dataset.view);
 }
+
+// The page a tab or More's row names: the Alphabet opens on whichever of its pages you were last on.
+function goTo(view) {
+  if (view === 'alphabet' && getPreferences().alphaPage === 'cards') setView('flashcards', { section: 'alphabet' });
+  else setView(view);
+}
+
+// Which tab's page is showing: the Alphabet's Cards page is the Alphabet's.
+const pageNow = () => (state.section === 'alphabet' ? 'alphabet' : state.view);
 
 // ---------- view switching ----------
 
-function setView(view) {
+// `section`: on Cards, whose cards: the words', or the Alphabet's (its Cards page). Anywhere else the
+// engine holds the words' (useSection).
+function setView(view, { section = 'words' } = {}) {
   const leaving = state.view;
+  const leavingSection = state.section;
+  if (view !== 'flashcards') section = 'words';
+  const wasCards = leaving === 'flashcards';
+  // Leaving a Cards page (Flashcards, or the Alphabet's): Recall's audio stops, and a Recognition
+  // card's pending move waits for the return (below).
+  if (wasCards && (view !== 'flashcards' || section !== leavingSection)) {
+    if (state.review) stopAudio();
+    state.answerSeq += 1;
+  }
+  useSection(section);
+  const entering = view === 'flashcards' && (!wasCards || section !== leavingSection);
   state.view = view;
   els.stage.dataset.view = view;
+  const page = pageNow();
   els.tabs.forEach((t) => {
-    t.setAttribute('aria-selected', t.dataset.view === view ? 'true' : 'false');
+    t.setAttribute('aria-selected', t.dataset.view === page ? 'true' : 'false');
   });
   markMore();
+  els.alphaSection.hidden = view !== 'alphabet';
+  if (view === 'alphabet') renderAlphabet();
+  els.alphaPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaPage === (view === 'alphabet' ? 'letters' : 'cards') ? 'true' : 'false'));
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
   els.readingSection.hidden = view !== 'reading';
@@ -1918,30 +2178,24 @@ function setView(view) {
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
   if (view !== 'reading' && storyRunOn()) stopReadStories();
-  // Leaving Flashcards: Recall's audio stops, and a Recognition card's pending move waits for the
-  // return (below).
-  if (view !== 'flashcards' && leaving === 'flashcards') {
-    if (state.review) stopAudio();
-    state.answerSeq += 1;
-  }
   renderDeckButton(); // Flashcards' button can say Everything
   if (view === 'flashcards') fitCardText(); // laid out only now if the card was hidden
   // Words added to or taken out of Review elsewhere (Wordlists, Review) apply on coming back.
-  if (view === 'flashcards' && leaving !== 'flashcards' && state.flashScopeId && reviewOnlySignature() !== state.reviewOnlySig) {
+  if (entering && state.flashScopeId && reviewOnlySignature() !== state.reviewOnlySig) {
     rebuildCurrentQueue();
     renderReviewOnly();
   }
   // Flashcards reopens in the mode you left, where you left it (the user's request, 2026-10-08;
   // that morning it always opened on Browse and leaving ended the streams). Direction is kept too
   // (prefs, like the mode).
-  if (view === 'flashcards' && leaving !== 'flashcards') {
+  if (entering) {
     if (state.orderMode === 'review') enterReview(); // Recall's stream: its card, or a new stream
     if (state.orderMode === 'test') {
       const c = currentCard();
       if (c && state.learnAnswers.has(c.key)) advance(); // answered (and saved) just before leaving
     }
   }
-  setPreferences({ view });
+  setPreferences({ view, section });
 }
 
 // ---------- settings UI ----------
@@ -2204,7 +2458,7 @@ function setOrderMode(mode) {
     b.setAttribute('aria-checked', b.dataset.order === mode ? 'true' : 'false');
   });
   state.answerSeq += 1; // cancels a pending move to the next card
-  setPreferences({ orderMode: mode });
+  setPreferences({ [state.section === 'alphabet' ? 'alphaOrderMode' : 'orderMode']: mode });
   if (leaving === 'review') stopAudio(); // Recall's stream itself stays in state.review
   if (mode === 'review') {
     enterReview();
@@ -2256,7 +2510,7 @@ function setDirection(direction) {
   els.directionButtons.forEach((b) => {
     b.setAttribute('aria-checked', b.dataset.direction === direction ? 'true' : 'false');
   });
-  setPreferences({ direction });
+  setPreferences({ [state.section === 'alphabet' ? 'alphaDirection' : 'direction']: direction });
   // Each direction has its own progress, so re-read it; every mode starts afresh.
   loadCards();
   if (state.review) stopAudio();
@@ -2863,6 +3117,10 @@ function reviewScopeDeckIds() {
 // with its progress in one direction (it: null for a word not started in it).
 function reviewPool(dir = state.direction) {
   const items = loadStore().items || {};
+  // The Alphabet's Recall: every letter, in alphabet order.
+  if (state.section === 'alphabet') {
+    return alphaCards.map((c) => ({ key: cardKey(c), dir, deckId: 'alphabet', it: items[itemKeyOf(cardKey(c), dir)] || null }));
+  }
   const f = reviewFilter();
   const scopeIds = reviewScopeDeckIds();
   const pool = [];
@@ -3164,6 +3422,7 @@ function presentEntry() {
   els.reviewMain.className = 'english' + (thaiFirst ? '' : ' back-th');
   els.reviewTranslit.textContent = card.translit;
   noteText(els.reviewNote, card.note || '');
+  showPic(els.reviewPic, card);
   // The spelling is only spoken (its written line on the back went on 2026-10-09, the user's call).
   const groups = spellingFor(card);
   // Spell it aloud: on the front only when it shows the Thai (as on Flashcards' card).
@@ -4868,7 +5127,7 @@ function bindEvents() {
       // From the phone's Settings page: leave it, for the page the tab is, the one under it or not.
       if (state.settingsOpen) {
         closeSettings();
-        if (t.dataset.view === state.view) return;
+        if (t.dataset.view === pageNow()) return;
       }
       // Reading's tab again, with a story open: it closes, back to the top of the list.
       if (t.dataset.view === 'reading' && state.view === 'reading' && state.readingId) {
@@ -4876,7 +5135,8 @@ function bindEvents() {
         window.scrollTo(0, 0);
         return;
       }
-      setView(t.dataset.view);
+      if (t.dataset.view === pageNow()) return; // already there
+      goTo(t.dataset.view);
     });
   });
 
@@ -4933,6 +5193,18 @@ function bindEvents() {
     if (e.target.dataset.close !== undefined) closeMore();
   });
   PHONE_LAYOUT.addEventListener('change', () => closeMore());
+
+  // The Alphabet: Letters | Cards, and the grid's class colours.
+  els.alphaPageButtons.forEach((b) => b.addEventListener('click', () => {
+    const page = b.dataset.alphaPage;
+    setPreferences({ alphaPage: page });
+    if (page === 'cards') setView('flashcards', { section: 'alphabet' });
+    else setView('alphabet');
+  }));
+  els.alphaClasses.addEventListener('click', () => {
+    setPreferences({ alphaClasses: !getPreferences().alphaClasses });
+    renderAlphabet();
+  });
   els.settingsModal.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeSettings();
   });
@@ -5021,7 +5293,7 @@ function bindEvents() {
 
 
   els.homeLink.addEventListener('click', () => setView('home'));
-  els.homeCards.forEach((card) => card.addEventListener('click', () => setView(card.dataset.go)));
+  els.homeCards.forEach((card) => card.addEventListener('click', () => goTo(card.dataset.go))); // the Alphabet: its last page
 
   // Adding to Review by hand
   els.wordlistAddAll.addEventListener('click', async () => {
@@ -5146,7 +5418,7 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-    if (state.view === 'home' || state.view === 'reading' || state.view === 'dictionary') return; // Flashcards' and Topics' keys
+    if (state.view === 'home' || state.view === 'reading' || state.view === 'dictionary' || state.view === 'alphabet') return; // Flashcards' and Topics' keys
     if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);
       return;
@@ -5418,8 +5690,10 @@ const BACKUP_FORMAT = 'learnthai-backup';
 
 function backupSummary(store) {
   const words = Object.keys(store.reviewWords || {}).length;
-  const studied = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0])).size;
-  return `${words} word${words === 1 ? '' : 's'} in Cards, progress on ${studied}`;
+  const keys = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0]));
+  const letters = [...keys].filter((k) => k.startsWith('abc:')).length;
+  const studied = keys.size - letters;
+  return `${words} word${words === 1 ? '' : 's'} in Cards, progress on ${studied}` + (letters ? ` and ${letters} letter${letters === 1 ? '' : 's'}` : '');
 }
 
 async function exportBackup() {
@@ -5482,6 +5756,7 @@ async function init() {
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));
+    buildAlphabet();
     buildCardIndex();
   } catch (e) {
     els.thai.textContent = '⚠';
