@@ -2158,8 +2158,8 @@ function showVowelPop(anchor, c) {
 
 const TONE_ORDER = ['mid', 'low', 'falling', 'high', 'rising'];
 const cap = (s) => s[0].toUpperCase() + s.slice(1);
-// The tone chart: a row a mark (or none, or a dead syllable), a column a class (tableTone gives the
-// tone). The syllables are Tone Chants'; ๊ and ๋ go on mid class only.
+// The tone chart's syllables, by column (none, a mark, dead) and class (tableTone gives the tone).
+// They're Tone Chants'; ๊ and ๋ go on mid class only. Drawn a row a class (renderTonesPage).
 const TONE_CHART = [
   ['live', 'No mark', ['กา', 'ขา', 'คา']],
   ['่', 'ไม้เอก', ['ก่า', 'ข่า', 'ค่า']],
@@ -2184,8 +2184,10 @@ function chartCell(syl, cls, column) {
   b.className = 'tone-cell' + (sayingNow(syl) ? ' playing' : '');
   b.dataset.say = syl;
   b.title = `${syl}: ${tone} tone`;
-  b.append(Object.assign(document.createElement('span'), { className: 'cell-th', lang: 'th', textContent: syl }),
-    Object.assign(document.createElement('span'), { className: `cell-tone tone-${tone}`, textContent: tone }));
+  b.setAttribute('aria-label', `${syl}, ${tone} tone`);
+  const curve = toneCurve(tone, { staff: false });
+  curve.classList.add(`tone-${tone}`);
+  b.append(Object.assign(document.createElement('span'), { className: 'cell-th', lang: 'th', textContent: syl }), curve);
   b.addEventListener('click', () => speakerPress(b, syl));
   td.append(b);
   return td;
@@ -2213,21 +2215,23 @@ function renderTonesPage() {
     b.addEventListener('click', () => showMarkPop(b, c));
     marks.append(b);
   }
+  // The tone chart as the word dialog's tone table has it (the user's call: the same way round): a row
+  // a class; columns live, dead short, dead long, then the four marks.
+  const sylAt = (cls, column) => TONE_CHART.find(([c]) => c === column)?.[2][CHART_CLASSES.indexOf(cls)] || null;
   const table = document.createElement('table');
   table.className = 'tone-chart';
+  const th = (text, attrs = {}) => Object.assign(document.createElement('th'), { textContent: text, ...attrs });
+  const head1 = document.createElement('tr');
+  head1.append(th(''), th('no mark', { colSpan: 3 }), th('tone mark', { colSpan: 4 }));
+  const head2 = document.createElement('tr');
+  head2.append(th(''), ...TABLE_COLUMNS.map((c) => (TABLE_HEADS[c] ? th(TABLE_HEADS[c]) : th(`◌${c}`, { lang: 'th' }))));
   const thead = document.createElement('thead');
-  const hr = document.createElement('tr');
-  hr.append(document.createElement('th'), ...CHART_CLASSES.map((cls) => Object.assign(document.createElement('th'), { className: `cls-${CLASS_NAMES[cls]}`, textContent: cap(CLASS_NAMES[cls]) })));
-  thead.append(hr);
+  thead.append(head1, head2);
   const tbody = document.createElement('tbody');
-  for (const [column, label, syls] of TONE_CHART) {
+  for (const cls of CHART_CLASSES) {
     const tr = document.createElement('tr');
-    const th = document.createElement('th');
-    th.scope = 'row';
-    const glyph = column.length === 1 ? `◌${column}` : '';
-    if (glyph) th.append(Object.assign(document.createElement('span'), { className: 'mark-glyph', lang: 'th', textContent: glyph }), ' ');
-    th.append(Object.assign(document.createElement('span'), { lang: glyph ? 'th' : undefined, textContent: label }));
-    tr.append(th, ...syls.map((syl, i) => chartCell(syl, CHART_CLASSES[i], column)));
+    tr.append(th(cap(CLASS_NAMES[cls]), { scope: 'row', className: `cls-${CLASS_NAMES[cls]}` }));
+    tr.append(...TABLE_COLUMNS.map((column) => chartCell(sylAt(cls, column), cls, column)));
     tbody.append(tr);
   }
   table.append(thead, tbody);

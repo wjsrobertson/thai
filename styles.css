@@ -1564,26 +1564,29 @@ body { display: flex; flex-direction: column; }
 .tone-tile b, .mark-tile b { font-size: 15px; }
 .tone-tile span, .mark-tile span { color: var(--muted); font-size: 13px; }
 .mark-tile .mark-glyph { color: var(--ink); font-size: 36px; line-height: 1.1; }
-.tone-chart { width: 100%; max-width: 640px; border-collapse: separate; border-spacing: 4px; }
-.tone-chart th { padding: 0 4px; color: var(--muted); font-size: 14px; font-weight: 600; text-align: left; white-space: nowrap; }
-.tone-chart thead th { text-align: center; }
-.tone-chart th .mark-glyph { color: var(--ink); font-size: 22px; }
+/* The tone chart, as the word dialog's tone table: a row a class, a column per way of writing it. */
+.tone-chart { width: 100%; max-width: 720px; border-collapse: separate; border-spacing: 3px; table-layout: fixed; }
+.tone-chart th { padding: 0 2px; color: var(--muted); font-size: 13px; font-weight: 600; line-height: 1.15; text-align: center; vertical-align: bottom; }
+.tone-chart thead tr:first-child th { padding-bottom: 2px; border-bottom: 1px solid var(--border); }
+.tone-chart th[lang="th"] { font-size: 22px; font-weight: 400; line-height: 1.6; } /* the marks sit high above ◌ */
+.tone-chart tbody th { width: 3.4em; font-size: 14px; text-align: left; vertical-align: middle; }
 .tone-cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 2px;
   width: 100%;
   min-height: 58px;
-  padding: 4px;
+  padding: 4px 0;
   background: var(--panel);
   border: 1px solid var(--control-border);
   border-radius: 10px;
   color: var(--ink);
 }
 .tone-cell.playing { border-color: var(--accent); }
-.tone-cell .cell-th { font-size: calc(24px * var(--fs, 1)); line-height: 1.25; }
-.tone-cell .cell-tone { font-size: 12px; font-weight: 700; }
+.tone-cell .cell-th { font-size: calc(20px * var(--fs, 1)); line-height: 1.3; }
+.tone-cell .tone-curve { width: 26px; height: 15px; }
 .tone-chart .tone-none { color: var(--muted); text-align: center; }
 .alpha-tones-note { margin: 12px 0 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
 /* In the tone and vowel dialogs. */

@@ -1665,9 +1665,10 @@ later (it's already in `fonts/`, NotoSansThai).
     each a chip with its glyph that says its name; แ is ไม้หน้า ×2; ◌ึ lists only พินทุ์อิ, as what
     its curl is called couldn't be confirmed), live or dead, and its note.
   - **Tones page** (renderTonesPage): the five tones (toneCurve, the Thai name), the four marks
-    (Tone Marks & Symbols' cards), and the tone chart: a row per mark, no mark, dead short and dead
-    long; a column per class; each cell a Tone Chants syllable with its tone from tones.js
-    `tableTone`, so it can't disagree with the rules. A tone's dialog: its curve, The Five Tones'
+    (Tone Marks & Symbols' cards), and the tone chart, the word dialog's tone table's way round (the
+    user's call): a row per class; columns live, dead short, dead long, then the four marks; each
+    cell a Tone Chants syllable and its tone's curve, the tone from tones.js `tableTone`, so it
+    can't disagree with the rules. (At first the classes were columns.) A tone's dialog: its curve, The Five Tones'
     description and example, what makes it (the chart's cells), and Read the Tone's words with it.
     A mark's dialog: the tone it gives each class, with the chart's syllable.
   - **Read the Tone** (Thai Script → Tones & Reading, 25 cards, five per tone, across classes,
