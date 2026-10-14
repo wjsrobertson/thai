@@ -179,6 +179,13 @@
         <span class="deck-button-label" id="deck-button-label">Choose a topic</span>
         <span class="deck-button-chevron" aria-hidden="true">▾</span>
       </button>
+      <!-- The Alphabet's sets (2026-10-14, the user's call: at the top, as the topic picker is elsewhere):
+           on its pages the topic button opens this (toggleAlphaSets). -->
+      <div class="alpha-set-menu" id="alpha-set-menu" role="menu" aria-label="Alphabet sets" hidden>
+        <button type="button" class="alpha-set-item" role="menuitemradio" data-alpha-set="consonants" aria-checked="true"><span class="alpha-set-text"><b>Consonants</b><span>The 44 letters, each with a picture</span></span><span class="alpha-set-check" aria-hidden="true">✓</span></button>
+        <button type="button" class="alpha-set-item" role="menuitemradio" data-alpha-set="vowels" aria-checked="false"><span class="alpha-set-text"><b>Vowels</b><span>The 30 vowels, short and long</span></span><span class="alpha-set-check" aria-hidden="true">✓</span></button>
+        <button type="button" class="alpha-set-item" role="menuitemradio" data-alpha-set="tones" aria-checked="false"><span class="alpha-set-text"><b>Tones</b><span>The five tones, the marks, and reading a syllable's tone</span></span><span class="alpha-set-check" aria-hidden="true">✓</span></button>
+      </div>
       <!-- The Alphabet's two pages (2026-10-14): its letter grid, and its own cards (the Cards page with
            the Alphabet's cards swapped in: useSection). In place of the topic button there. -->
       <div class="segmented alpha-switch" role="radiogroup" aria-label="Alphabet page">
@@ -686,11 +693,13 @@
          (showLetterPop). 2026-10-14. -->
     <section class="alphabet alphabet-only" id="alphabet-section" hidden>
       <div class="alpha-top">
-        <p class="alpha-hint">Tap a letter for its name, picture, class and sound.</p>
+        <p class="alpha-hint" id="alpha-hint">Tap a letter for its name, picture, class and sound.</p>
         <button type="button" class="reader-toggle alpha-classes" id="alpha-classes" aria-pressed="false">Classes</button>
       </div>
       <p class="alpha-legend" id="alpha-legend" hidden><span class="cls-mid">● Mid</span><span class="cls-high">● High</span><span class="cls-low">● Low</span></p>
       <div class="dict-grid alpha-grid" id="alpha-grid"></div>
+      <div class="letter-groups alpha-vowels" id="alpha-vowels" hidden></div> <!-- renderVowelGrid -->
+      <div class="alpha-tones" id="alpha-tones" hidden></div> <!-- renderTonesPage -->
     </section>
 
     <section class="wordlist" id="wordlist-section" hidden>

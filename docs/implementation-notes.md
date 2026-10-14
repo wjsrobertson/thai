@@ -1650,7 +1650,31 @@ later (it's already in `fonts/`, NotoSansThai).
 - **Home card** (the user's request, the same day): the fifth, across both columns on wider screens;
   it opens the Alphabet's last page, as More's row does. No pictures on it (the user's call: it had
   the first five letters' for a moment).
-- Not done: vowels and tone marks.
+- **Vowels and tones** (the same day; the user's calls: one choice for both pages, at the top as the
+  topic picker is elsewhere; tone cards drill reading a syllable's tone; Vowel Symbol Names stays in
+  Topics):
+  - **Sets** (`ALPHA_SETS`: Consonants, Vowels, Tones; prefs.alphaSet): on the Alphabet's pages the
+    topic button shows the set and opens `#alpha-set-menu` under it (toggleAlphaSets; an outside
+    tap or Escape closes it). A new set redraws Letters and starts its cards afresh, as a new topic
+    does on Cards. Each set is a scope (`alphabet:<set>`) built from Thai Script topics; progress is
+    its own: `abc:ก`, `abc:vowels:อา`, `abc:tones:ข้าว`.
+  - **Vowels:** Short & Long Vowels and Diphthongs & Special Vowels' 30 cards, in groups
+    (`VOWEL_GROUPS`: short/long pairs, then อำ ใอ ไอ เอา, then ฤ ฤๅ), as the boards' tiles
+    (sizeTiles, now shared with the boards). The dialog (showVowelPop): sound and length, the
+    short or long partner (ใอ/ไอ: same sound), the marks it's written with (`VOWEL_PART_NAMES`,
+    each a chip with its glyph that says its name; แ is ไม้หน้า ×2; ◌ึ lists only พินทุ์อิ, as what
+    its curl is called couldn't be confirmed), live or dead, and its note.
+  - **Tones page** (renderTonesPage): the five tones (toneCurve, the Thai name), the four marks
+    (Tone Marks & Symbols' cards), and the tone chart: a row per mark, no mark, dead short and dead
+    long; a column per class; each cell a Tone Chants syllable with its tone from tones.js
+    `tableTone`, so it can't disagree with the rules. A tone's dialog: its curve, The Five Tones'
+    description and example, what makes it (the chart's cells), and Read the Tone's words with it.
+    A mark's dialog: the tone it gives each class, with the chart's syllable.
+  - **Read the Tone** (Thai Script → Tones & Reading, 25 cards, five per tone, across classes,
+    marks, live and dead, and leading ห/อ): the Tones set's cards. `english` is "falling tone —
+    rice"; the tone checker vouches for each. In Recognition their answers are tones (`answerText`,
+    `TONE_ANSWERS`: the right one and two others), the tone read from the transliteration's mark.
+  - minmax(0, 1fr) columns keep the five tone tiles inside 320px; the chart is at most 640px wide.
 
 ## Phone tab bar (2026-10-12, experiment, branch `2026-10-12-bottom-tabs`)
 

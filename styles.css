@@ -1501,8 +1501,6 @@ body { display: flex; flex-direction: column; }
 .alpha-switch { display: none; }
 .stage[data-view="alphabet"] .alpha-switch,
 .stage[data-section="alphabet"] .alpha-switch { display: inline-flex; }
-.stage[data-view="alphabet"] .deck-button,
-.stage[data-section="alphabet"] .deck-button,
 .stage[data-view="alphabet"] .card-wrap,
 .stage[data-view="alphabet"] .flashcards-only,
 .stage[data-view="alphabet"] .wordlist-only,
@@ -1510,6 +1508,100 @@ body { display: flex; flex-direction: column; }
   display: none !important;
 }
 .alphabet { max-width: 1000px; margin: 0 auto; }
+/* The set menu, under the topic button (toggleAlphaSets places it). */
+.deck-picker-bar { position: relative; }
+.alpha-set-menu {
+  position: absolute;
+  z-index: 20;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.alpha-set-menu[hidden] { display: none; }
+.alpha-set-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  padding: 8px 16px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  text-align: left;
+}
+.alpha-set-item + .alpha-set-item { border-top: 1px solid var(--border); }
+.alpha-set-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.alpha-set-text b { font-size: 17px; }
+.alpha-set-text span { color: var(--muted); font-size: 14px; }
+.alpha-set-check { color: var(--accent); font-weight: 700; visibility: hidden; }
+.alpha-set-item[aria-checked="true"] b { color: var(--accent); }
+.alpha-set-item[aria-checked="true"] .alpha-set-check { visibility: visible; }
+/* Vowels: the boards' grouped tiles, a short/long pair to a group. */
+.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-classes[hidden] { display: none; }
+/* Tones: the five tones, the four marks, the chart. */
+.alpha-tones-head { margin: 20px 0 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; }
+.alpha-tones-head:first-child { margin-top: 4px; }
+/* minmax(0, 1fr): the columns may be narrower than their content ("Falling" and its curve at 320px). */
+.tone-tiles { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.mark-tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.tone-tile, .mark-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-height: 92px;
+  padding: 10px 4px;
+  background: var(--panel);
+  border: 1px solid var(--control-border);
+  border-radius: 12px;
+  color: var(--ink);
+}
+.tone-tile .tone-curve { width: 54px; height: 30px; margin-bottom: 2px; }
+.tone-tile b, .mark-tile b { font-size: 15px; }
+.tone-tile span, .mark-tile span { color: var(--muted); font-size: 13px; }
+.mark-tile .mark-glyph { color: var(--ink); font-size: 36px; line-height: 1.1; }
+.tone-chart { width: 100%; max-width: 640px; border-collapse: separate; border-spacing: 4px; }
+.tone-chart th { padding: 0 4px; color: var(--muted); font-size: 14px; font-weight: 600; text-align: left; white-space: nowrap; }
+.tone-chart thead th { text-align: center; }
+.tone-chart th .mark-glyph { color: var(--ink); font-size: 22px; }
+.tone-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 58px;
+  padding: 4px;
+  background: var(--panel);
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  color: var(--ink);
+}
+.tone-cell.playing { border-color: var(--accent); }
+.tone-cell .cell-th { font-size: calc(24px * var(--fs, 1)); line-height: 1.25; }
+.tone-cell .cell-tone { font-size: 12px; font-weight: 700; }
+.tone-chart .tone-none { color: var(--muted); text-align: center; }
+.alpha-tones-note { margin: 12px 0 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+/* In the tone and vowel dialogs. */
+.tone-big { display: block; width: 190px; height: 106px; margin: 8px auto 4px; }
+.letter-big.wide { font-size: 76px; }
+.mark-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 4px 12px;
+  background: var(--panel);
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: 16px;
+}
+.mark-chip .mark-glyph { font-size: 24px; }
 .alphabet[hidden] { display: none; }
 .alpha-top { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
 .alpha-hint { flex: 1; margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }

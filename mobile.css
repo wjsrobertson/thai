@@ -193,6 +193,16 @@ html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More 
 .stage[data-section="alphabet"] .alpha-switch { display: flex; flex: 1 1 100%; }
 .alpha-switch .seg-btn { flex: 1; }
 .letter-big { font-size: 92px; }
+.letter-big.wide { font-size: 68px; }
+.tone-tile b, .mark-tile b { font-size: 13px; }
+.tone-tile .tone-curve { width: 46px; height: 26px; }
+@media (max-width: 360px) {
+  .tone-tiles { gap: 5px; }
+  .tone-tile { padding: 8px 2px; }
+  .tone-tile b { font-size: 12px; }
+  .tone-tile .tone-curve { width: 38px; height: 22px; }
+}
+.tone-chart th { font-size: 13px; padding: 0 2px; }
 .letter-pic { width: 112px; height: 112px; }
 
 /* ---------- More: its tab and its list ---------- */

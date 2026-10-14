@@ -44,6 +44,11 @@ const els = {
   dictHeading: document.getElementById('dict-heading'),
   dictGrid: document.getElementById('dict-grid'),
   alphaSection: document.getElementById('alphabet-section'),
+  alphaHint: document.getElementById('alpha-hint'),
+  alphaVowels: document.getElementById('alpha-vowels'),
+  alphaTones: document.getElementById('alpha-tones'),
+  alphaSetMenu: document.getElementById('alpha-set-menu'),
+  alphaSetItems: document.querySelectorAll('[data-alpha-set]'),
   alphaGrid: document.getElementById('alpha-grid'),
   alphaLegend: document.getElementById('alpha-legend'),
   alphaClasses: document.getElementById('alpha-classes'),
@@ -843,7 +848,7 @@ const cardSay = (card) => card.say || card.thai;
 function cardKey(card) {
   // The Alphabet's letters have their own progress (the user's call, 2026-10-14), apart from the
   // same letters' cards in Thai Script's topics: abc:ก.
-  if (card.alpha) return `abc:${card.thai}`;
+  if (card.alpha) return card.alphaSet === 'consonants' ? `abc:${card.thai}` : `abc:${card.alphaSet}:${card.thai}`;
   // Stable id per card; thai+english is unique enough for hand-curated decks.
   return `${card.thai}::${card.english}`;
 }
@@ -869,7 +874,7 @@ function buildCardIndex() {
       state.cardIndex.get(key).deckIds.push(d.id);
     }
   }
-  for (const c of alphaCards) state.cardIndex.set(cardKey(c), { card: c, deckIds: ['alphabet'] });
+  for (const scope of Object.values(alphaSets)) for (const c of scope.cards) state.cardIndex.set(cardKey(c), { card: c, deckIds: [scope.id] });
 }
 
 // ---------- queue building ----------
@@ -1345,7 +1350,7 @@ const groupScopeId = (cat, group) => `group:${cat}::${group}`;
 // Flashcards (2026-10-08); Review's own switch (prefs.reviewBy) went with the Review tab.
 const flashcardsByAll = () => getPreferences().flashcardsBy === 'all';
 function flashScope() {
-  if (state.section === 'alphabet') return ALPHA_SCOPE;
+  if (state.section === 'alphabet') return alphaScope();
   return flashcardsByAll() ? resolveScope('all') : currentScope();
 }
 
@@ -1362,7 +1367,7 @@ function setFlashcardsBy(by) {
 // Both keep resolveScope's order, so a queue's indices stay valid across a reload.
 function loadCards() {
   if (state.section === 'alphabet') { // the letters, every one (nothing to add first)
-    state.cards = mergeProgressIntoCards(alphaCards);
+    state.cards = mergeProgressIntoCards(alphaScope().cards);
     return;
   }
   const topic = currentScope();
@@ -1422,6 +1427,11 @@ function enterReview() {
 
 // The topic button: what the page shows (Flashcards can be on Everything).
 function renderDeckButton() {
+  if (onAlphabet()) { // the Alphabet's set (toggleAlphaSets)
+    els.deckButtonLabel.textContent = ALPHA_SETS[alphaSetNow()].label;
+    els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS.alphabet));
+    return;
+  }
   const scope = state.view === 'flashcards' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
   els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[!scope || scope.kind === 'topic' ? 'topics' : 'group']));
@@ -1880,7 +1890,13 @@ function closeSettings() {
 // each opening a dialog (showLetterPop) with its picture, name, class and sound; and its own Browse,
 // Recognition and Recall (its Cards page). The letters are Alphabet in Order's cards, with their
 // own progress (cardKey: abc:ก) and their own place, mode and direction (useSection).
-const ALPHA_TOPIC = 'script-consonants-all';
+// The Alphabet's sets (2026-10-14, the user's call): the topic button picks one for both its pages.
+// Each set's cards come from Thai Script topics, with their own progress (cardKey).
+const ALPHA_SETS = {
+  consonants: { label: 'Consonants', topics: ['script-consonants-all'], hint: 'Tap a letter for its name, picture, class and sound.' },
+  vowels: { label: 'Vowels', topics: ['script-vowels', 'script-diphthongs'], hint: 'Tap a vowel for its sound, its partner and the marks it\'s written with.' },
+  tones: { label: 'Tones', topics: ['script-read-tone'], hint: 'Tap a tone or a mark to learn it, or a syllable in the chart to hear it. The cards: read a syllable\'s tone.' },
+};
 // Every letter's picture (images/letters/, SVG; all 44 since 2026-10-14). A letter without one would show none.
 const LETTER_PICS = {
   ก: 'chicken', ข: 'egg', ฃ: 'bottle', ค: 'buffalo', ฅ: 'person', ฆ: 'bell', ง: 'snake',
@@ -1890,17 +1906,48 @@ const LETTER_PICS = {
   ฝ: 'lid', พ: 'tray', ฟ: 'tooth', ภ: 'junk', ม: 'horse', ย: 'giant', ร: 'boat', ล: 'monkey',
   ว: 'ring', ศ: 'pavilion', ษ: 'hermit', ส: 'tiger', ห: 'chest', ฬ: 'kite', อ: 'basin', ฮ: 'owl'
 };
-let alphaCards = [];
-let ALPHA_SCOPE = null; // a scope as resolveScope makes them, for the Cards engine (flashScope)
+const alphaSets = {}; // set -> a scope as resolveScope makes them, for the Cards engine (flashScope)
+let alphaCards = [];  // the consonants: their grid, and their dialog's same-sound and look-alike letters
+const alphaSetNow = () => (ALPHA_SETS[getPreferences().alphaSet] ? getPreferences().alphaSet : 'consonants');
+const alphaScope = () => alphaSets[alphaSetNow()];
+const onAlphabet = () => state.view === 'alphabet' || state.section === 'alphabet';
 
 function buildAlphabet() {
-  const topic = state.decks.find((d) => d.id === ALPHA_TOPIC);
-  alphaCards = (topic?.cards || []).map((c) => ({ ...c, alpha: true, pic: LETTER_PICS[c.thai] || null }));
-  const deck = { id: 'alphabet', name: 'Alphabet', cards: alphaCards };
-  ALPHA_SCOPE = {
-    id: 'alphabet', kind: 'alphabet', name: 'Alphabet', label: 'Alphabet', description: 'The 44 consonants',
-    decks: [deck], cards: alphaCards, deckOf: new Map(alphaCards.map((c) => [cardKey(c), deck])),
-  };
+  for (const [set, def] of Object.entries(ALPHA_SETS)) {
+    const cards = def.topics.flatMap((id) => state.decks.find((d) => d.id === id)?.cards || [])
+      .map((c) => ({ ...c, alpha: true, alphaSet: set, pic: set === 'consonants' ? LETTER_PICS[c.thai] || null : null }));
+    const id = `alphabet:${set}`;
+    const deck = { id, name: def.label, cards };
+    alphaSets[set] = { id, kind: 'alphabet', name: def.label, label: def.label, description: '', decks: [deck], cards, deckOf: new Map(cards.map((c) => [cardKey(c), deck])) };
+  }
+  alphaCards = alphaSets.consonants.cards;
+}
+
+// The set menu, under the topic button on the Alphabet's pages.
+function toggleAlphaSets(open = els.alphaSetMenu.hidden) {
+  if (!open && els.alphaSetMenu.hidden) return;
+  els.alphaSetMenu.hidden = !open;
+  els.deckButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+  if (!open) return;
+  const set = alphaSetNow();
+  els.alphaSetItems.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaSet === set ? 'true' : 'false'));
+  const b = els.deckButton;
+  Object.assign(els.alphaSetMenu.style, { top: `${b.offsetTop + b.offsetHeight + 6}px`, left: `${b.offsetLeft}px`, width: `${Math.max(b.offsetWidth, 300)}px` });
+  if (!TOUCH_SCREEN) [...els.alphaSetItems].find((x) => x.dataset.alphaSet === set)?.focus();
+}
+
+// A new set: both pages show it; its cards start afresh (as a new topic does on Cards).
+function setAlphaSet(set) {
+  toggleAlphaSets(false);
+  if (set === alphaSetNow() || !ALPHA_SETS[set]) return;
+  setPreferences({ alphaSet: set });
+  delete sectionEngines.alphabet;
+  if (state.section === 'alphabet') {
+    reloadFlashcards();
+    fitCardText();
+  }
+  renderDeckButton();
+  if (state.view === 'alphabet') renderAlphabet();
 }
 
 const picSrc = (pic) => `images/letters/${pic}.svg`;
@@ -1924,11 +1971,22 @@ function letterFacts(c) {
 }
 
 function renderAlphabet() {
+  const set = alphaSetNow();
   const byClass = !!getPreferences().alphaClasses;
+  els.alphaHint.textContent = ALPHA_SETS[set].hint;
+  els.alphaClasses.hidden = set !== 'consonants';
   els.alphaClasses.setAttribute('aria-pressed', byClass ? 'true' : 'false');
-  els.alphaLegend.hidden = !byClass;
+  els.alphaLegend.hidden = set !== 'consonants' || !byClass;
+  els.alphaGrid.hidden = set !== 'consonants';
+  els.alphaVowels.hidden = set !== 'vowels';
+  els.alphaTones.hidden = set !== 'tones';
   els.alphaGrid.classList.toggle('by-class', byClass);
-  if (els.alphaGrid.childElementCount) return; // drawn once
+  if (set === 'vowels') {
+    if (!els.alphaVowels.childElementCount) renderVowelGrid();
+    sizeTiles(els.alphaVowels);
+  }
+  if (set === 'tones' && !els.alphaTones.childElementCount) renderTonesPage();
+  if (set !== 'consonants' || els.alphaGrid.childElementCount) return; // drawn once
   els.alphaGrid.replaceChildren(...alphaCards.map((c) => {
     const f = letterFacts(c);
     const b = document.createElement('button');
@@ -1940,6 +1998,318 @@ function renderAlphabet() {
     b.addEventListener('click', () => showLetterPop(b, c));
     return b;
   }));
+}
+
+// Small tappable chips in a dialog's facts (other letters, a vowel's partner): each opens its own.
+function chipRow(items, label, onPick, cls = () => '') {
+  const box = document.createElement('div');
+  box.className = 'letter-chips';
+  for (const item of items) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = `letter-chip ${cls(item)}`;
+    b.lang = 'th';
+    b.textContent = item.thai;
+    b.title = label(item);
+    b.addEventListener('click', () => onPick(item));
+    box.append(b);
+  }
+  return box;
+}
+
+// Opens the word dialog's frame on these contents (the letter, vowel, tone and mark dialogs).
+function openPop(anchor, tr, en, parts) {
+  if (state.storyReading.active) pauseReadStories();
+  popAnchor?.classList.remove('on');
+  popAnchor = anchor;
+  anchor?.classList.add('on');
+  els.wordModalTr.textContent = tr;
+  els.wordModalEn.textContent = en;
+  els.wordModalBody.replaceChildren(...parts);
+  if (!wordPop) wordPop = { lastFocus: document.activeElement };
+  els.wordModal.hidden = false;
+  setModalOpen(true);
+  els.wordModalBody.scrollTop = 0;
+  els.wordModalClose.focus({ preventScroll: true });
+}
+
+function factList() {
+  const dl = document.createElement('dl');
+  dl.className = 'letter-facts';
+  dl.add = (label, ...value) => {
+    const dd = document.createElement('dd');
+    dd.append(...value);
+    dl.append(Object.assign(document.createElement('dt'), { textContent: label }), dd);
+  };
+  return dl;
+}
+
+function playButton(say, title) {
+  const actions = document.createElement('div');
+  actions.className = 'pop-actions';
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'row-speak' + (sayingNow(say) ? ' playing' : '');
+  play.dataset.say = say;
+  play.title = title;
+  play.setAttribute('aria-label', title);
+  play.append(speakerIcon());
+  play.addEventListener('click', () => speakerPress(play, say));
+  actions.append(play);
+  return actions;
+}
+
+// ---------- the Alphabet's vowels ----------
+
+// The grid's groups: short and long pairs, then the four with a final built in, and ฤ ฤๅ.
+const VOWEL_GROUPS = [['อะ', 'อา'], ['อิ', 'อี'], ['อึ', 'อือ'], ['อุ', 'อู'], ['เอะ', 'เอ'], ['แอะ', 'แอ'], ['โอะ', 'โอ'],
+  ['เอาะ', 'ออ'], ['เออะ', 'เออ'], ['เอียะ', 'เอีย'], ['เอือะ', 'เอือ'], ['อัวะ', 'อัว'], ['อำ', 'ใอ', 'ไอ', 'เอา'], ['ฤ', 'ฤๅ']];
+const VOWEL_LIVE_SHORT = new Set(['อำ', 'ใอ', 'ไอ', 'เอา']); // short, but ending in -m, -i, -o: live
+const vowelShort = (v) => v.endsWith('ะ') || ['อิ', 'อึ', 'อุ', 'ฤ'].includes(v) || VOWEL_LIVE_SHORT.has(v);
+// The marks a vowel is written with (Vowel Symbol Names' names). ◌ึ: only the part that's sure.
+const VOWEL_PART_NAMES = {
+  'ะ': ['วิสรรชนีย์'], 'ั': ['ไม้หันอากาศ'], '็': ['ไม้ไต่คู้'], 'า': ['ลากข้าง'], 'ำ': ['หยาดน้ำค้าง', 'ลากข้าง'],
+  'ิ': ['พินทุ์อิ'], 'ี': ['พินทุ์อิ', 'ฝนทอง'], 'ึ': ['พินทุ์อิ'], 'ื': ['พินทุ์อิ', 'ฟันหนู'], 'ุ': ['ตีนเหยียด'], 'ู': ['ตีนคู้'],
+  'เ': ['ไม้หน้า'], 'แ': ['ไม้หน้า', 'ไม้หน้า'], 'ใ': ['ไม้ม้วน'], 'ไ': ['ไม้มลาย'], 'โ': ['ไม้โอ'],
+  'อ': ['ตัวออ'], 'ย': ['ตัวยอ'], 'ว': ['ตัววอ'],
+};
+function vowelParts(v) {
+  if (v === 'ฤ') return ['ตัวรึ'];
+  if (v === 'ฤๅ') return ['ตัวรือ'];
+  return [...v.replace('อ', '')].flatMap((ch) => VOWEL_PART_NAMES[ch] || []); // the first อ only holds the place
+}
+// A mark's name -> how it's drawn (Vowel Symbol Names' cards: ◌า for ลากข้าง).
+let markGlyphs = null;
+const markGlyph = (name) => {
+  markGlyphs ||= new Map((state.decks.find((d) => d.id === 'script-vowel-names')?.cards || []).map((c) => [c.say, c.thai]));
+  return markGlyphs.get(name) || { ตัวรึ: 'ฤ', ตัวรือ: 'ฤๅ' }[name] || '';
+};
+
+function renderVowelGrid() {
+  const byThai = new Map(alphaSets.vowels.cards.map((c) => [c.thai, c]));
+  const placed = new Set(VOWEL_GROUPS.flat());
+  const groups = [...VOWEL_GROUPS, alphaSets.vowels.cards.map((c) => c.thai).filter((v) => !placed.has(v))].filter((g) => g.length);
+  els.alphaVowels.replaceChildren(...groups.map((group) => {
+    const g = document.createElement('div');
+    g.className = 'letter-group';
+    for (const v of group) {
+      const c = byThai.get(v);
+      if (!c) continue;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dict-letter letter-tile';
+      b.lang = 'th';
+      b.textContent = v;
+      b.title = `${c.translit}: ${c.english}`;
+      b.addEventListener('click', () => showVowelPop(b, c));
+      g.append(b);
+    }
+    return g;
+  }));
+}
+
+// A vowel's dialog: the vowel large (tap: its sound), its sound and length, its partner, the marks
+// it's written with (each says its name), live or dead, and its note.
+function showVowelPop(anchor, c) {
+  speak(cardSay(c));
+  const short = vowelShort(c.thai);
+  const big = document.createElement('button');
+  big.type = 'button';
+  big.className = 'letter-big' + ([...c.thai].length > 2 ? ' wide' : '');
+  big.lang = 'th';
+  big.textContent = c.thai;
+  big.title = `Say ${c.thai}`;
+  big.addEventListener('click', () => speak(cardSay(c)));
+  const hero = Object.assign(document.createElement('div'), { className: 'letter-hero' });
+  hero.append(big);
+  const facts = factList();
+  facts.add('Sound', `${c.english.split(' — ')[0]}, ${short ? 'short' : 'long'}`);
+  const group = VOWEL_GROUPS.find((g) => g.includes(c.thai)) || [];
+  const mates = alphaSets.vowels.cards.filter((o) => o !== c && group.includes(o.thai));
+  const sameSound = mates.filter((o) => ['ใอ', 'ไอ'].includes(o.thai) && ['ใอ', 'ไอ'].includes(c.thai));
+  const partner = group.length === 2 ? mates : [];
+  if (partner.length) facts.add(short ? 'Long partner' : 'Short partner', chipRow(partner, (o) => `${o.thai}: ${o.english}`, (o) => showVowelPop(null, o)));
+  if (sameSound.length) facts.add('Same sound', chipRow(sameSound, (o) => `${o.thai}: ${o.english}`, (o) => showVowelPop(null, o)));
+  const parts = vowelParts(c.thai);
+  if (parts.length) {
+    const box = Object.assign(document.createElement('div'), { className: 'letter-chips' });
+    for (let i = 0; i < parts.length; i++) {
+      const name = parts[i];
+      const twice = parts[i + 1] === name;
+      if (twice) i += 1;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mark-chip';
+      b.append(Object.assign(document.createElement('span'), { className: 'mark-glyph', lang: 'th', textContent: markGlyph(name) }),
+        Object.assign(document.createElement('span'), { lang: 'th', textContent: name + (twice ? ' ×2' : '') }));
+      b.title = `Say ${name}`;
+      b.addEventListener('click', () => speak(name));
+      box.append(b);
+    }
+    facts.add('Written with', box);
+  }
+  facts.add('Syllable', short && !VOWEL_LIVE_SHORT.has(c.thai) ? 'Dead when nothing follows (a short vowel)' : 'Live');
+  const items = [hero, playButton(cardSay(c), `Play ${c.thai}`), facts];
+  if (c.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), c.note));
+  openPop(anchor, c.translit, c.english, items);
+}
+
+// ---------- the Alphabet's tones ----------
+
+const TONE_ORDER = ['mid', 'low', 'falling', 'high', 'rising'];
+const cap = (s) => s[0].toUpperCase() + s.slice(1);
+// The tone chart: a row a mark (or none, or a dead syllable), a column a class (tableTone gives the
+// tone). The syllables are Tone Chants'; ๊ and ๋ go on mid class only.
+const TONE_CHART = [
+  ['live', 'No mark', ['กา', 'ขา', 'คา']],
+  ['่', 'ไม้เอก', ['ก่า', 'ข่า', 'ค่า']],
+  ['้', 'ไม้โท', ['ก้า', 'ข้า', 'ค้า']],
+  ['๊', 'ไม้ตรี', ['ก๊า', null, null]],
+  ['๋', 'ไม้จัตวา', ['ก๋า', null, null]],
+  ['deadShort', 'Dead, short', ['กัด', 'ขัด', 'คัด']],
+  ['deadLong', 'Dead, long', ['ตาก', 'ถาก', 'ทาก']],
+];
+const CHART_CLASSES = ['M', 'H', 'L'];
+const fiveTones = () => state.decks.find((d) => d.id === 'script-five-tones')?.cards || [];
+const toneMarkCards = () => (state.decks.find((d) => d.id === 'script-marks')?.cards || []).filter((c) => '่้๊๋'.includes(c.thai.replace('◌', '')) && c.thai.length === 2);
+// The Five Tones' card for a tone: its example word and description.
+const toneCard = (tone) => fiveTones().find((c) => c.english.startsWith(`${tone} tone`));
+
+function chartCell(syl, cls, column) {
+  if (!syl) return Object.assign(document.createElement('td'), { className: 'tone-none', textContent: '—' });
+  const tone = tableTone(cls, column);
+  const td = document.createElement('td');
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'tone-cell' + (sayingNow(syl) ? ' playing' : '');
+  b.dataset.say = syl;
+  b.title = `${syl}: ${tone} tone`;
+  b.append(Object.assign(document.createElement('span'), { className: 'cell-th', lang: 'th', textContent: syl }),
+    Object.assign(document.createElement('span'), { className: `cell-tone tone-${tone}`, textContent: tone }));
+  b.addEventListener('click', () => speakerPress(b, syl));
+  td.append(b);
+  return td;
+}
+
+function renderTonesPage() {
+  const head = (text) => Object.assign(document.createElement('p'), { className: 'alpha-tones-head', textContent: text });
+  const tones = Object.assign(document.createElement('div'), { className: 'tone-tiles' });
+  for (const tone of TONE_ORDER) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'tone-tile';
+    b.append(toneCurve(tone), Object.assign(document.createElement('b'), { className: `tone-${tone}`, textContent: cap(tone) }),
+      Object.assign(document.createElement('span'), { lang: 'th', textContent: TONE_THAI[tone].replace('เสียง', '') }));
+    b.addEventListener('click', () => showTonePop(b, tone));
+    tones.append(b);
+  }
+  const marks = Object.assign(document.createElement('div'), { className: 'mark-tiles' });
+  for (const c of toneMarkCards()) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mark-tile';
+    b.append(Object.assign(document.createElement('span'), { className: 'mark-glyph', lang: 'th', textContent: c.thai }),
+      Object.assign(document.createElement('b'), { lang: 'th', textContent: c.say || '' }));
+    b.addEventListener('click', () => showMarkPop(b, c));
+    marks.append(b);
+  }
+  const table = document.createElement('table');
+  table.className = 'tone-chart';
+  const thead = document.createElement('thead');
+  const hr = document.createElement('tr');
+  hr.append(document.createElement('th'), ...CHART_CLASSES.map((cls) => Object.assign(document.createElement('th'), { className: `cls-${CLASS_NAMES[cls]}`, textContent: cap(CLASS_NAMES[cls]) })));
+  thead.append(hr);
+  const tbody = document.createElement('tbody');
+  for (const [column, label, syls] of TONE_CHART) {
+    const tr = document.createElement('tr');
+    const th = document.createElement('th');
+    th.scope = 'row';
+    const glyph = column.length === 1 ? `◌${column}` : '';
+    if (glyph) th.append(Object.assign(document.createElement('span'), { className: 'mark-glyph', lang: 'th', textContent: glyph }), ' ');
+    th.append(Object.assign(document.createElement('span'), { lang: glyph ? 'th' : undefined, textContent: label }));
+    tr.append(th, ...syls.map((syl, i) => chartCell(syl, CHART_CLASSES[i], column)));
+    tbody.append(tr);
+  }
+  table.append(thead, tbody);
+  const note = Object.assign(document.createElement('p'), { className: 'alpha-tones-note' });
+  note.textContent = 'A syllable is dead when its vowel is short with no final, or it ends in -k, -t or -p; otherwise it is live. ไม้ตรี and ไม้จัตวา go on mid-class letters only.';
+  els.alphaTones.replaceChildren(head('The five tones'), tones, head('The tone marks'), marks, head('The tone chart: class and mark'), table, note);
+}
+
+// A tone's dialog: its curve, its Thai name, how it sounds (The Five Tones), what gives it in the
+// chart, and the Read the Tone syllables with it.
+function showTonePop(anchor, tone) {
+  const card = toneCard(tone);
+  if (card) speak(cardSay(card));
+  const curve = toneCurve(tone);
+  curve.classList.add('tone-big');
+  const items = [curve];
+  if (card) items.push(playButton(cardSay(card), `Play ${card.thai}`));
+  const facts = factList();
+  if (card) facts.add('Example', Object.assign(document.createElement('span'), { lang: 'th', textContent: card.thai }), ` ${card.translit}`);
+  const how = Object.assign(document.createElement('div'), { className: 'letter-chips' });
+  for (const [column, label, syls] of TONE_CHART) {
+    syls.forEach((syl, i) => {
+      if (!syl || tableTone(CHART_CLASSES[i], column) !== tone) return;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'mark-chip';
+      b.title = `${cap(CLASS_NAMES[CHART_CLASSES[i]])} class, ${label}`;
+      // "mid + ไม้โท", or "low, dead, long"
+      const how1 = document.createElement('span');
+      how1.append(`${CLASS_NAMES[CHART_CLASSES[i]]}${column.length === 1 ? ' + ' : `, ${label.toLowerCase()}`}`);
+      if (column.length === 1) how1.append(Object.assign(document.createElement('span'), { lang: 'th', textContent: label }));
+      b.append(Object.assign(document.createElement('span'), { className: 'mark-glyph', lang: 'th', textContent: syl }), how1);
+      b.addEventListener('click', () => speak(syl));
+      how.append(b);
+    });
+  }
+  facts.add('Made by', how);
+  const words = alphaSets.tones.cards.filter((c) => toneOfTranslit(c.translit) === tone);
+  if (words.length) facts.add('Words', chipRow(words, (w) => `${w.thai}: ${w.english}`, (w) => speak(cardSay(w))));
+  items.push(facts);
+  if (card?.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), card.note));
+  openPop(anchor, TONE_THAI[tone], card ? card.english : `${tone} tone`, items);
+}
+
+// A tone mark's dialog: the mark large (tap: its name), and the tone it gives each class.
+function showMarkPop(anchor, c) {
+  speak(cardSay(c));
+  const mark = c.thai.replace('◌', '');
+  const big = document.createElement('button');
+  big.type = 'button';
+  big.className = 'letter-big';
+  big.lang = 'th';
+  big.textContent = c.thai;
+  big.title = `Say ${c.say || ''}`;
+  big.addEventListener('click', () => speak(cardSay(c)));
+  const hero = Object.assign(document.createElement('div'), { className: 'letter-hero' });
+  hero.append(big);
+  const facts = factList();
+  const row = TONE_CHART.find(([column]) => column === mark);
+  CHART_CLASSES.forEach((cls, i) => {
+    const tone = tableTone(cls, mark);
+    const syl = row?.[2][i];
+    const value = document.createElement('span');
+    if (!tone) value.textContent = 'not used';
+    else {
+      value.append(Object.assign(document.createElement('span'), { className: `tone-${tone}`, textContent: `${tone} tone` }));
+      if (syl) {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'mark-chip';
+        b.style.marginLeft = '10px';
+        b.append(Object.assign(document.createElement('span'), { className: 'mark-glyph', lang: 'th', textContent: syl }));
+        b.title = `Say ${syl}`;
+        b.addEventListener('click', () => speak(syl));
+        value.append(b);
+      }
+    }
+    facts.add(`${cap(CLASS_NAMES[cls])} class`, value);
+  });
+  const items = [hero, playButton(cardSay(c), `Play ${c.say || c.thai}`), facts];
+  if (c.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), c.note));
+  openPop(anchor, c.translit, c.english, items);
 }
 
 // The letter's dialog, in the word dialog's frame (so closing, Escape and the backdrop are its):
@@ -2158,6 +2528,7 @@ function setView(view, { section = 'words' } = {}) {
     state.answerSeq += 1;
   }
   useSection(section);
+  toggleAlphaSets(false);
   const entering = view === 'flashcards' && (!wasCards || section !== leavingSection);
   state.view = view;
   els.stage.dataset.view = view;
@@ -2567,7 +2938,11 @@ function renderLetterBoard(deck) {
 // when the rows are centred (2026-10-13, the user's call). Measured with the tiles at their own
 // width, again when the fonts arrive, the window resizes or the text size changes.
 function sizeLetterTiles() {
-  const grid = els.wordlistLetterGrid;
+  sizeTiles(els.wordlistLetterGrid);
+  if (els.alphaVowels) sizeTiles(els.alphaVowels);
+}
+
+function sizeTiles(grid) {
   if (!grid.classList.contains('letter-groups') || grid.classList.contains('letters') || !grid.offsetParent) return;
   grid.style.removeProperty('--tile-w');
   grid.classList.remove('tight');
@@ -2950,6 +3325,12 @@ function partnersOf(card) {
   return partnerIndex.get(card.key) || [];
 }
 
+// What a Recognition answer says: the Thai, or the English; a Read the Tone syllable's, its tone.
+const TONE_ANSWERS = { mid: 'mid tone', low: 'low tone', falling: 'falling tone', high: 'high tone', rising: 'rising tone' };
+const TONE_MARKS_TL = { '\u0300': 'low', '\u0302': 'falling', '\u0301': 'high', '\u030c': 'rising' };
+const toneOfTranslit = (tl) => TONE_MARKS_TL[(tl || '').normalize('NFD').match(/[\u0300\u0302\u0301\u030c]/)?.[0]] || 'mid';
+const answerText = (c, side) => (side === 'th' ? c.thai : c.alphaSet === 'tones' ? TONE_ANSWERS[toneOfTranslit(c.translit)] : c.english);
+
 function buildLearnTrial(card, deckCards, seenOverride) {
   const seen = seenOverride != null ? seenOverride : (card.seen || 0);
   const seed = hashStr(`${state.flashScopeId}::${card.key}::${seen}::${state.direction}`);
@@ -2983,11 +3364,15 @@ function buildLearnTrial(card, deckCards, seenOverride) {
     distractors.push(...pick(others, 2 - distractors.length));
   }
 
-  // Compose 3 options and shuffle deterministically.
-  const opts = [card, ...distractors].map((c) => ({
-    text: side === 'en' ? c.english : c.thai,
-    isCorrect: c.key === card.key,
-  }));
+  // Compose 3 options and shuffle deterministically. The Alphabet's Tones (Read the Tone's
+  // syllables) answer with a tone: the right one and two others.
+  const opts = side === 'en' && card.alphaSet === 'tones'
+    ? [answerText(card, side), ...pick(Object.values(TONE_ANSWERS).filter((t) => t !== answerText(card, side)), 2)]
+      .map((text, i) => ({ text, isCorrect: i === 0 }))
+    : [card, ...distractors].map((c) => ({
+      text: answerText(c, side),
+      isCorrect: c.key === card.key,
+    }));
   for (let i = opts.length - 1; i > 0; i--) {
     const j = Math.floor(rng() * (i + 1));
     [opts[i], opts[j]] = [opts[j], opts[i]];
@@ -3026,7 +3411,7 @@ function renderLearnPills() {
     els.learnPills.classList.add('locked');
     els.card.classList.add('answered');
     setFlipped(true); // show the back face (English/translit/note)
-    const correctText = trial.side === 'th' ? c.thai : c.english;
+    const correctText = answerText(c, trial.side);
     for (const p of els.learnPills.querySelectorAll('.learn-pill')) {
       if (p.textContent === correctText) {
         p.classList.add('correct');
@@ -3055,7 +3440,7 @@ function handleLearnPick(btn, isCorrect) {
     }
     // Mark the correct pill green.
     const trial = buildLearnTrial(c, distractorPool());
-    const correctText = trial.side === 'th' ? c.thai : c.english;
+    const correctText = answerText(c, trial.side);
     for (const p of els.learnPills.querySelectorAll('.learn-pill')) {
       if (p.textContent === correctText) {
         p.classList.remove('dimmed');
@@ -3117,9 +3502,10 @@ function reviewScopeDeckIds() {
 // with its progress in one direction (it: null for a word not started in it).
 function reviewPool(dir = state.direction) {
   const items = loadStore().items || {};
-  // The Alphabet's Recall: every letter, in alphabet order.
+  // The Alphabet's Recall: every card of its set, in order.
   if (state.section === 'alphabet') {
-    return alphaCards.map((c) => ({ key: cardKey(c), dir, deckId: 'alphabet', it: items[itemKeyOf(cardKey(c), dir)] || null }));
+    const { id, cards } = alphaScope();
+    return cards.map((c) => ({ key: cardKey(c), dir, deckId: id, it: items[itemKeyOf(cardKey(c), dir)] || null }));
   }
   const f = reviewFilter();
   const scopeIds = reviewScopeDeckIds();
@@ -3310,6 +3696,7 @@ const PAGE_ICONS = {
   reading: 'M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z',
   dictionary: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z',
   group: 'M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z',
+  alphabet: 'M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6',
 };
 const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4');
 
@@ -5174,7 +5561,11 @@ function bindEvents() {
   }));
 
   // Deck picker
-  els.deckButton.addEventListener('click', openDeckPicker);
+  els.deckButton.addEventListener('click', () => (onAlphabet() ? toggleAlphaSets() : openDeckPicker()));
+  els.alphaSetItems.forEach((b) => b.addEventListener('click', () => setAlphaSet(b.dataset.alphaSet)));
+  document.addEventListener('click', (e) => {
+    if (!els.alphaSetMenu.hidden && !e.target.closest('#alpha-set-menu, #deck-button')) toggleAlphaSets(false);
+  });
   els.reviewByButtons.forEach((b) => b.addEventListener('click', () => {
     setFlashcardsBy(b.dataset.reviewBy);
     if (b.dataset.reviewBy === 'all') closeDeckPicker(); // nothing more to pick
@@ -5387,6 +5778,14 @@ function bindEvents() {
       if (e.key === 'Escape') {
         e.preventDefault();
         closeDeckPicker();
+      }
+      return;
+    }
+    if (!els.alphaSetMenu.hidden) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        toggleAlphaSets(false);
+        els.deckButton.focus();
       }
       return;
     }
@@ -5691,9 +6090,9 @@ const BACKUP_FORMAT = 'learnthai-backup';
 function backupSummary(store) {
   const words = Object.keys(store.reviewWords || {}).length;
   const keys = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0]));
-  const letters = [...keys].filter((k) => k.startsWith('abc:')).length;
-  const studied = keys.size - letters;
-  return `${words} word${words === 1 ? '' : 's'} in Cards, progress on ${studied}` + (letters ? ` and ${letters} letter${letters === 1 ? '' : 's'}` : '');
+  const alpha = [...keys].filter((k) => k.startsWith('abc:')).length;
+  const studied = keys.size - alpha;
+  return `${words} word${words === 1 ? '' : 's'} in Cards, progress on ${studied}` + (alpha ? ` and ${alpha} from the Alphabet` : '');
 }
 
 async function exportBackup() {
