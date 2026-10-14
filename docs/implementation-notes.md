@@ -1394,6 +1394,34 @@ after Tone Rules: `script-leading`, 25 cards.
   word dialog's Tones panel already explains each case ("ห in front makes ม high class").
 - อย่าอยู่อย่างอยาก moved here from Clusters & Odd Spellings (one card, not two).
 
+**Poetry** (2026-10-14, the user's pick of all four suggestions: rhyme, the forms, poems to read,
+poetic synonyms).
+- **Rhyme & Alliteration** (Thai Script → Words & Spelling, 25): six rhyming sets as a board, the
+  tones mixed (ดาว ข้าว ขาว), two pairs that don't rhyme (กัน/การ on length, เรียน/เรือน on the
+  vowel), and three alliterating words. The words are existing cards with this topic's notes.
+- **Culture & Values → Language & Literature**, after Literature: Classics & Stories:
+  - **Poetry: How Verse Works** (20): the กลอนแปด line names (วรรคสดับ…ส่ง), the rhyme chain and
+    preferred end tones in the `about`, สัมผัสนอก/ใน, กาพย์ยานี, โคลงสี่สุภาพ, คำเอก/โท, ครุ/ลหุ,
+    ทำนองเสนาะ, ฉันทลักษณ์, กลอนเปล่า, นิราศ.
+  - **Poetic Words: Nature** (25) and **People & Things** (23): คำไวพจน์, several words for one
+    thing, so each gloss says how it differs (the audit forbids the same English twice in a topic:
+    "moon (lit. "hare-bearer")"). จันทร์ "the moon (literary)" is here, and the old story Grandma's
+    Lullaby now uses it (it had only the Thai Script spelling example).
+  - **Poetry: Words in the Poems** (21): the poems' words no other topic had (every story word
+    has a topic card).
+- **Four poems on the Reading page**, a line per วรรค, named "Poem: …":
+  - **First Rain** (Easy) and **The Morning Market** (Medium): กลอนแปด written for the app, one
+    and two stanzas, keeping the rhyme chain and the preferred end tones. Their descriptions point
+    out the rhymes.
+  - **O Moon, Dear Moon** (Easy): the traditional lullaby จันทร์เจ้าเอ๋ย, its widely sung opening.
+    Folk versions vary, and no authoritative text could be fetched (search 2026-10-14), so the
+    description says it's one common version.
+  - **Two Verses by Sunthorn Phu** (Harder): the ถึงบางพูด stanza from นิราศภูเขาทอง as Thai
+    Wikisource has it (from ประชุมนิราศ, 1938: "เป็นศรีศักดิ์"; ThaiPBS quotes "มีศรีศักดิ์"), and
+    the couplet รู้สิ่งไรไม่สู้รู้วิชา… from พระอภัยมณี, spelt ไร as ThaiPBS and others have it (old
+    Thai for ใด; its stanza wasn't found to check against).
+  - The voice reads verse flatly, not in ทำนองเสนาะ.
+
 **What schoolkids learn that the app didn't have: five topics** (2026-10-13). The user asked what
 Thai schools teach about script and language that the app lacked; of the gaps found, they picked
 these five. Each is in Thai Script, with an `about`:
@@ -3236,6 +3264,10 @@ Thai and English audio are **pre-generated neural-voice MP3s**, made with
 - **Caveat:** it uses the unofficial Edge "Read Aloud" endpoint, which can break or get blocked
   without warning. Because samples are generated once and kept, only *new* cards depend on it
   still working.
+  - **It did break once** (2026-10-14): every request got HTTP 403 at the websocket handshake,
+    even a single one. The clock was right; the client's Edge version string was what Microsoft
+    now refused. `pip install -U edge-tts` (7.2.8 → 7.3.1, with the user's OK) fixed it. A 403 on
+    everything means: upgrade first.
 
 ### Voices
 
