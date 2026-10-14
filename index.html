@@ -182,6 +182,7 @@
       <div class="segmented alpha-switch" role="radiogroup" aria-label="Alphabet page">
         <button type="button" role="radio" class="seg-btn" data-alpha-page="letters" aria-checked="true" aria-label="Letters" title="Letters"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></svg><span class="seg-label">Letters</span></button>
         <button type="button" role="radio" class="seg-btn" data-alpha-page="cards" aria-checked="false" aria-label="Cards" title="Cards"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg><span class="seg-label">Cards</span></button>
+        <button type="button" role="radio" class="seg-btn" data-alpha-page="write" aria-checked="false" aria-label="Write" title="Trace the letters"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg><span class="seg-label">Write</span></button>
       </div>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
         <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true"><span class="dir-long">Thai</span><span class="dir-short">TH</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
@@ -702,6 +703,32 @@
       <div class="dict-grid alpha-grid" id="alpha-grid"></div>
       <div class="letter-groups alpha-vowels" id="alpha-vowels" hidden></div> <!-- renderVowelGrid -->
       <div class="alpha-tones" id="alpha-tones" hidden></div> <!-- renderTonesPage -->
+      <!-- Write (2026-10-14): trace a consonant on the pad, then Check (renderWrite, checkWrite). -->
+      <div class="alpha-write" id="alpha-write" hidden>
+        <div class="write-head">
+          <button type="button" class="write-name" id="write-name" title="Hear its name"></button>
+        </div>
+        <!-- Trace the faint letter, or write it from memory on a blank pad (2026-10-14). -->
+        <div class="segmented write-mode" role="radiogroup" aria-label="How to write">
+          <button type="button" role="radio" class="seg-btn" data-write-mode="trace" aria-checked="true">Trace</button>
+          <button type="button" role="radio" class="seg-btn" data-write-mode="memory" aria-checked="false">From memory</button>
+        </div>
+        <div class="write-pad"><canvas id="write-canvas" aria-label="Drawing pad: trace the letter with your finger"></canvas></div>
+        <p class="write-feedback" id="write-feedback" role="status"></p>
+        <!-- ‹ › at the foot, as Cards has them (the user's call, 2026-10-14), either side of Clear and Check. -->
+        <div class="write-actions">
+          <button type="button" class="nav-btn" id="write-prev" aria-label="Previous letter" title="Previous letter">‹</button>
+          <div class="write-actions-mid">
+            <button type="button" class="ghost" id="write-clear">Clear</button>
+            <button type="button" class="round-again" id="write-check">Check</button>
+          </div>
+          <button type="button" class="nav-btn" id="write-next" aria-label="Next letter" title="Next letter">›</button>
+        </div>
+      </div>
+      <div class="alpha-write-note" id="alpha-write-note" hidden>
+        <p>Writing practice is for the consonants, for now.</p>
+        <button type="button" class="ghost" id="write-to-consonants">Switch to Consonants</button>
+      </div>
     </section>
 
     <section class="wordlist" id="wordlist-section" hidden>

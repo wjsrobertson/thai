@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
-  <rect width="400" height="400" fill="#fffaf2"/>
+  
   <g fill="none" stroke="#2b2b2b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round">
     <!-- comb -->
     <path d="M114 94 C104 72 124 64 130 84 C130 60 154 60 151 86 C160 70 178 80 162 100" fill="#e0443a"/>

@@ -49,6 +49,12 @@ const els = {
   alphaVowels: document.getElementById('alpha-vowels'),
   alphaTones: document.getElementById('alpha-tones'),
   alphaSetMenu: document.getElementById('alpha-set-menu'),
+  alphaTop: document.querySelector('.alpha-top'),
+  alphaWrite: document.getElementById('alpha-write'),
+  alphaWriteNote: document.getElementById('alpha-write-note'),
+  writeCanvas: document.getElementById('write-canvas'),
+  writeName: document.getElementById('write-name'),
+  writeFeedback: document.getElementById('write-feedback'),
   alphaSetItems: document.querySelectorAll('[data-alpha-set]'),
   alphaGrid: document.getElementById('alpha-grid'),
   alphaLegend: document.getElementById('alpha-legend'),
@@ -2017,6 +2023,15 @@ function letterFacts(c) {
 
 function renderAlphabet() {
   const set = alphaSetNow();
+  const writing = getPreferences().alphaPage === 'write';
+  els.alphaWrite.hidden = !writing || set !== 'consonants';
+  els.alphaWriteNote.hidden = !writing || set === 'consonants';
+  els.alphaTop.hidden = writing;
+  if (writing) {
+    for (const el of [els.alphaGrid, els.alphaVowels, els.alphaTones, els.alphaLegend]) el.hidden = true;
+    if (set === 'consonants') renderWrite();
+    return;
+  }
   const byClass = !!getPreferences().alphaClasses;
   els.alphaHint.textContent = ALPHA_SETS[set].hint;
   els.alphaClasses.hidden = set !== 'consonants';
@@ -2102,6 +2117,328 @@ function playButton(say, title) {
   play.addEventListener('click', () => speakerPress(play, say));
   actions.append(play);
   return actions;
+}
+
+// ---------- the Alphabet: Write ----------
+
+// Tracing (2026-10-14, the user's go-ahead after the plan): the consonant shows faintly on a square
+// pad, in the app's looped font, as large as fits; you trace it with a finger and press Check. Scored against the font's
+// own shape at WRITE_N × WRITE_N: how much of your line is on the letter (within a band either side)
+// and how much of the letter your line covers. What it missed shows red. Where a letter has one head
+// loop (found in the glyph as its one loop-sized hole), a green dot marks where to start, and starting
+// elsewhere gets a tip; letters with two such loops (ฆ ฉ ฌ ญ ฎ ฏ ฐ ฒ ณ น ม ษ ห) have no dot, which loop
+// is the head being unsure, and ก ธ have no head.
+const WRITE_N = 240;
+const WRITE_INK = 14;        // the line's width, at WRITE_N
+// Loosened 2026-10-14 after the user found the check too strict: a finger wobbles more than the
+// simulated tracing did (it was band 10, reach 6, passing at 75% on and 85% covered).
+const WRITE_BAND = 16;       // how far off the letter a line may stray
+const WRITE_REACH = 12;      // how near a line must pass to cover the letter
+const WRITE_PASS = { onLetter: 0.6, covered: 0.7 };
+const MEMORY_PASS = { f1: 0.65 }; // From memory: its score at the tolerances above, to pass
+// From memory tells letters apart at the first, tighter tolerances, or a look-alike's small part
+// (ป's tail) would vanish in the loose band: the letter asked for must be within `behind` of the best
+// match there, and a rival is named if it wins by more and scores `rival`.
+const TELL_APART = { band: 10, reach: 6, behind: 0.05, rival: 0.8 };
+const writeFont = (px) => `${px}px "Learn Thai Looped"`;
+const write = { strokes: [], drawing: false, result: null, back: [] }; // back: From memory's letters so far, for ‹
+const writeMemory = () => getPreferences().writeMode === 'memory';
+// Letters a learner mixes up when writing: the Look-alike Letters board's groups and a few more pairs.
+// From memory checks a drawing against the letter asked for and these.
+const WRITE_LOOKALIKES = [['บ', 'ป', 'ษ'], ['ผ', 'ฝ'], ['พ', 'ฟ'], ['ค', 'ศ', 'ฅ'], ['ร', 'ธ'], ['ด', 'ต', 'ค'], ['ข', 'ช', 'ซ', 'ฃ'],
+  ['ล', 'ส'], ['อ', 'ฮ'], ['ถ', 'ภ'], ['ฎ', 'ฏ'], ['ท', 'ฑ'], ['ม', 'ฆ'], ['น', 'ม'], ['ห', 'ฬ'], ['ผ', 'พ'], ['ฝ', 'ฟ']];
+const lookalikesOf = (ch) => [...new Set(WRITE_LOOKALIKES.filter((g) => g.includes(ch)).flat())].filter((x) => x !== ch);
+const writeShapes = new Map(); // letter -> { target, band, count, head }
+
+const writeIndex = () => Math.min(Math.max(getPreferences().writeIndex | 0, 0), alphaCards.length - 1);
+const writeCard = () => alphaCards[writeIndex()];
+
+// Where the letter sits on a pad `size` across: as large as fits in 80% of it, its ink centred. `scale`
+// is its font size against 62% of the pad, the size the head-loop limits were measured at.
+function placeGlyph(x, ch, size) {
+  x.textAlign = 'left';
+  x.textBaseline = 'alphabetic';
+  x.font = writeFont(100);
+  let m = x.measureText(ch);
+  const px = Math.min(size * 0.8 * 100 / (m.actualBoundingBoxAscent + m.actualBoundingBoxDescent),
+    size * 0.8 * 100 / (m.actualBoundingBoxLeft + m.actualBoundingBoxRight), size * 0.95);
+  x.font = writeFont(px);
+  m = x.measureText(ch);
+  return {
+    x: size / 2 - (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2,
+    y: size / 2 + (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2,
+    scale: px / (size * 0.62),
+  };
+}
+
+function writeMask(draw) {
+  const c = document.createElement('canvas');
+  c.width = c.height = WRITE_N;
+  const x = c.getContext('2d', { willReadFrequently: true });
+  draw(x);
+  const d = x.getImageData(0, 0, WRITE_N, WRITE_N).data;
+  const m = new Uint8Array(WRITE_N * WRITE_N);
+  for (let i = 0; i < m.length; i++) m[i] = d[i * 4 + 3] > 100 ? 1 : 0;
+  return m;
+}
+
+// The letter's shape, the band around it, and its head: the one loop-sized enclosed hole, or none.
+function writeShape(ch) {
+  if (writeShapes.has(ch)) return writeShapes.get(ch);
+  const target = writeMask((x) => { const p = placeGlyph(x, ch, WRITE_N); x.fillText(ch, p.x, p.y); });
+  const bandOf = (w) => writeMask((x) => {
+    const p = placeGlyph(x, ch, WRITE_N);
+    x.lineWidth = w * 2;
+    x.lineJoin = 'round';
+    x.strokeText(ch, p.x, p.y);
+    x.fillText(ch, p.x, p.y);
+  });
+  const band = bandOf(WRITE_BAND);
+  const bandTight = bandOf(TELL_APART.band);
+  const N = WRITE_N;
+  const k = placeGlyph(document.createElement('canvas').getContext('2d'), ch, N).scale ** 2; // the loop limits, at this size
+  const seen = new Uint8Array(N * N);
+  const loops = [];
+  for (let s = 0; s < N * N; s++) {
+    if (target[s] || seen[s]) continue;
+    let area = 0, sx = 0, sy = 0, edge = false;
+    const stack = [s];
+    seen[s] = 1;
+    while (stack.length) {
+      const p = stack.pop();
+      const px = p % N, py = (p / N) | 0;
+      area++; sx += px; sy += py;
+      if (!px || !py || px === N - 1 || py === N - 1) edge = true;
+      for (const [q, ok] of [[p - 1, px > 0], [p + 1, px < N - 1], [p - N, py > 0], [p + N, py < N - 1]]) {
+        if (ok && !target[q] && !seen[q]) { seen[q] = 1; stack.push(q); }
+      }
+    }
+    if (!edge && area >= 100 * k && area <= 150 * k) loops.push([sx / area, sy / area]); // a head-sized loop
+  }
+  let x0 = N, y0 = N, x1 = 0, y1 = 0;
+  target.forEach((v, i) => { if (v) { const x = i % N, y = (i / N) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } });
+  const shape = { target, band, bandTight, count: target.reduce((n, v) => n + v, 0), head: loops.length === 1 ? loops[0] : null, box: [x0, y0, x1, y1] };
+  writeShapes.set(ch, shape);
+  return shape;
+}
+
+// The strokes, drawn `width` wide on a pad `size` across; `fit` maps a point first (From memory's
+// drawing, scaled onto a letter's box).
+function drawStrokes(x, size, width, fit = (p) => p) {
+  x.lineWidth = width;
+  x.lineCap = 'round';
+  x.lineJoin = 'round';
+  for (const s of write.strokes) {
+    x.beginPath();
+    s.map(fit).forEach(([u, v], i) => (i ? x.lineTo(u * size, v * size) : x.moveTo(u * size, v * size)));
+    if (s.length === 1) { const [u, v] = fit(s[0]); x.lineTo(u * size + 0.01, v * size); }
+    x.stroke();
+  }
+}
+
+// From memory: the drawing, wherever and however big, scaled (keeping its shape) and centred onto a
+// letter's box on the pad, so it can be laid over the letter.
+function fitTo(shape) {
+  const pts = write.strokes.flat();
+  const ux0 = Math.min(...pts.map((p) => p[0])), ux1 = Math.max(...pts.map((p) => p[0]));
+  const uy0 = Math.min(...pts.map((p) => p[1])), uy1 = Math.max(...pts.map((p) => p[1]));
+  const [gx0, gy0, gx1, gy1] = shape.box.map((v) => v / WRITE_N);
+  const k = Math.min((gx1 - gx0) / Math.max(ux1 - ux0, 1e-3), (gy1 - gy0) / Math.max(uy1 - uy0, 1e-3));
+  const ucx = (ux0 + ux1) / 2, ucy = (uy0 + uy1) / 2, gcx = (gx0 + gx1) / 2, gcy = (gy0 + gy1) / 2;
+  return ([u, v]) => [gcx + (u - ucx) * k, gcy + (v - ucy) * k];
+}
+
+// How well the drawing (through `fit`) matches a letter: on (the line's share on it), covered (its
+// share under the line), and the two together (f1).
+function writeScore(shape, fit, tight = false) {
+  const ink = writeMask((x) => drawStrokes(x, WRITE_N, WRITE_INK, fit));
+  const reach = writeMask((x) => drawStrokes(x, WRITE_N, WRITE_INK + (tight ? TELL_APART.reach : WRITE_REACH) * 2, fit));
+  const band = tight ? shape.bandTight : shape.band;
+  let inked = 0, onLetter = 0, covered = 0;
+  const missed = new Uint8Array(ink.length);
+  for (let i = 0; i < ink.length; i++) {
+    if (ink[i]) { inked++; if (band[i]) onLetter++; }
+    if (shape.target[i]) { if (reach[i]) covered++; else missed[i] = 1; }
+  }
+  const on = inked ? onLetter / inked : 0;
+  const cov = covered / shape.count;
+  return { on, cov, f1: on + cov ? (2 * on * cov) / (on + cov) : 0, ink: inked / shape.count, missed }; // ink: the line's area against the letter's
+}
+
+// The head first: a first stroke that starts at the head should go round its loop before leaving
+// it (the start of the line, a fifth of the pad long, staying near the head). Null when there's
+// nothing to say: no head, a short line, or not started at the head anyway.
+function loopFirst(shape, fit) {
+  if (!shape.head) return null;
+  const s = write.strokes[0].map(fit).map(([u, v]) => [u * WRITE_N, v * WRITE_N]);
+  let len = 0;
+  for (let i = 1; i < s.length && len < WRITE_N * 0.2; i++) {
+    len += Math.hypot(s[i][0] - s[i - 1][0], s[i][1] - s[i - 1][1]);
+    if (Math.hypot(s[i][0] - shape.head[0], s[i][1] - shape.head[1]) > WRITE_N * 0.13) return false;
+  }
+  return len >= WRITE_N * 0.2 ? true : null;
+}
+
+function renderWrite() {
+  const c = writeCard();
+  if (!c) return;
+  document.querySelectorAll('[data-write-mode]').forEach((b) => b.setAttribute('aria-checked', b.dataset.writeMode === (writeMemory() ? 'memory' : 'trace') ? 'true' : 'false'));
+  // From memory names the letter without showing it: its picture, transliteration and meaning.
+  els.writeName.replaceChildren(...(writeMemory()
+    ? [...(c.pic ? [Object.assign(document.createElement('img'), { src: picSrc(c.pic), alt: '', width: 48, height: 48 })] : []),
+      Object.assign(document.createElement('span'), { textContent: `${c.translit} · ${c.english}` })]
+    : [Object.assign(document.createElement('b'), { lang: 'th', textContent: c.thai }),
+      Object.assign(document.createElement('span'), { lang: 'th', textContent: c.say || '' }),
+      Object.assign(document.createElement('span'), { textContent: c.translit })]));
+  document.fonts.load(writeFont(100), c.thai).then(drawWritePad);
+  drawWritePad();
+}
+
+function drawWritePad() {
+  const canvas = els.writeCanvas;
+  const W = canvas.clientWidth;
+  if (!W) return;
+  const dpr = window.devicePixelRatio || 1;
+  if (canvas.width !== Math.round(W * dpr)) canvas.width = canvas.height = Math.round(W * dpr);
+  const x = canvas.getContext('2d');
+  x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  x.clearRect(0, 0, W, W);
+  const css = getComputedStyle(document.documentElement);
+  const ch = writeCard().thai;
+  const shape = writeShape(ch);
+  const memory = writeMemory();
+  // The letter to trace, faint; From memory shows it only once checked, to compare.
+  x.globalAlpha = memory ? (write.result ? 0.35 : 0) : 0.3;
+  x.fillStyle = css.getPropertyValue('--ink').trim() || '#ccc';
+  const p = placeGlyph(x, ch, W);
+  x.fillText(ch, p.x, p.y);
+  x.globalAlpha = 1;
+  // After a Check that fell short: what the line missed, red (tracing).
+  if (write.result && !write.result.pass && !memory) {
+    const m = document.createElement('canvas');
+    m.width = m.height = WRITE_N;
+    const mx = m.getContext('2d');
+    const img = mx.createImageData(WRITE_N, WRITE_N);
+    write.result.missed.forEach((v, i) => { if (v) img.data.set([224, 68, 58, 230], i * 4); });
+    mx.putImageData(img, 0, 0);
+    x.drawImage(m, 0, 0, W, W);
+  }
+  canvas.dataset.head = shape.head ? shape.head.map(Math.round).join(',') : ''; // where the head is, at WRITE_N (for tests)
+  // Where to start (tracing).
+  if (shape.head && !memory) {
+    x.fillStyle = '#3c9d61';
+    x.beginPath();
+    x.arc(shape.head[0] * W / WRITE_N, shape.head[1] * W / WRITE_N, Math.max(6, W * 0.022), 0, Math.PI * 2);
+    x.fill();
+  }
+  // Your line.
+  x.strokeStyle = css.getPropertyValue('--accent').trim() || '#f7b733';
+  drawStrokes(x, W, WRITE_INK * W / WRITE_N);
+  if (!write.result) {
+    els.writeFeedback.className = 'write-feedback';
+    els.writeFeedback.textContent = write.strokes.length ? ''
+      : memory ? 'Write the letter for this picture and name.'
+      : shape.head ? 'Trace the letter, starting at the green dot.' : 'Trace the letter.';
+  }
+}
+
+function checkWrite() {
+  if (!write.strokes.length) return;
+  const c = writeCard();
+  const shape = writeShape(c.thai);
+  const memory = writeMemory();
+  const fit = memory ? fitTo(shape) : undefined;
+  const score = writeScore(shape, fit);
+  const [u, v] = (fit || ((p) => p))(write.strokes[0][0]);
+  const head = shape.head;
+  const startedAtHead = !head || Math.hypot(u * WRITE_N - head[0], v * WRITE_N - head[1]) <= WRITE_N * 0.12;
+  const loop = startedAtHead ? loopFirst(shape, fit || ((p) => p)) : null;
+  const tip = !startedAtHead ? ' Next time, start at the head' + (memory ? ' (its little loop).' : ' (the green dot).')
+    : loop === false ? ' Next time, draw the little loop first, then the rest.' : '';
+  let pass;
+  let text;
+  if (memory) {
+    // Which letter it looks like: against every consonant, each with the drawing fitted to its box,
+    // at the tighter tolerances.
+    const own = writeScore(shape, fit, true).f1;
+    const rivals = alphaCards.filter((o) => o.thai !== c.thai).map((o) => ({ ch: o.thai, f1: writeScore(writeShape(o.thai), fitTo(writeShape(o.thai)), true).f1 }));
+    const best = rivals.reduce((b, x) => (x.f1 > b.f1 ? x : b), { ch: c.thai, f1: own });
+    els.writeFeedback.dataset.score = JSON.stringify({ f1: +score.f1.toFixed(3), own: +own.toFixed(3), best: best.ch, bestF1: +best.f1.toFixed(3), ink: +score.ink.toFixed(2) }); // for tuning
+    // Calibrated 2026-10-14 on every consonant drawn in two other looped fonts (FreeSerif, Noto Serif
+    // Thai) as stand-ins for other hands, then loosened (MEMORY_PASS) when the user found it strict.
+    // A drawing that's mostly fill (more ink than twice the letter's) isn't a try.
+    const fair = score.ink <= 2;
+    pass = fair && score.f1 >= MEMORY_PASS.f1 && best.f1 <= own + TELL_APART.behind;
+    text = pass ? `✓ That's ${c.thai}!${tip}`
+      : fair && best.ch !== c.thai && best.f1 >= TELL_APART.rival ? `That looks more like ${best.ch} than ${c.thai}. Compare them on the pad.`
+      : `Not quite: here's ${c.thai}.`;
+  } else {
+    pass = score.on >= WRITE_PASS.onLetter && score.cov >= WRITE_PASS.covered;
+    text = pass ? `✓ Well done!${tip}`
+      : [score.cov < WRITE_PASS.covered ? 'Trace the red parts too.' : '', score.on < WRITE_PASS.onLetter ? 'Keep your line on the letter.' : ''].filter(Boolean).join(' ');
+  }
+  write.result = { pass, missed: score.missed, on: score.on, cov: score.cov, f1: score.f1, startedAtHead, loop };
+  els.writeFeedback.className = 'write-feedback ' + (pass ? 'good' : 'bad');
+  els.writeFeedback.textContent = text;
+  drawWritePad();
+}
+
+function clearWrite() {
+  write.strokes = [];
+  write.result = null;
+  drawWritePad();
+}
+
+function moveWrite(step) {
+  const n = alphaCards.length;
+  let to = (writeIndex() + step + n) % n;
+  if (writeMemory()) { // at random, so the next letter can't be guessed; ‹ goes back through them
+    if (step > 0) {
+      write.back.push(writeIndex());
+      do to = Math.floor(Math.random() * n); while (to === writeIndex() && n > 1);
+    } else if (write.back.length) to = write.back.pop();
+  }
+  setPreferences({ writeIndex: to });
+  clearWrite();
+  renderWrite();
+  speak(cardSay(writeCard()));
+}
+
+function bindWritePad() {
+  const canvas = els.writeCanvas;
+  const at = (e) => {
+    const r = canvas.getBoundingClientRect();
+    return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
+  };
+  canvas.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    try { canvas.setPointerCapture(e.pointerId); } catch { /* a pointer that can't be captured still draws */ }
+    if (write.result) { write.strokes = []; write.result = null; } // a new try after a Check
+    write.drawing = true;
+    write.strokes.push([at(e)]);
+    drawWritePad();
+  });
+  canvas.addEventListener('pointermove', (e) => {
+    if (!write.drawing) return;
+    write.strokes[write.strokes.length - 1].push(at(e));
+    drawWritePad();
+  });
+  const end = () => { write.drawing = false; };
+  canvas.addEventListener('pointerup', end);
+  canvas.addEventListener('pointercancel', end);
+  document.getElementById('write-clear').addEventListener('click', clearWrite);
+  document.getElementById('write-check').addEventListener('click', checkWrite);
+  document.getElementById('write-prev').addEventListener('click', () => moveWrite(-1));
+  document.getElementById('write-next').addEventListener('click', () => moveWrite(1));
+  els.writeName.addEventListener('click', () => speak(cardSay(writeCard())));
+  document.getElementById('write-to-consonants').addEventListener('click', () => setAlphaSet('consonants'));
+  document.querySelectorAll('[data-write-mode]').forEach((b) => b.addEventListener('click', () => {
+    setPreferences({ writeMode: b.dataset.writeMode === 'memory' ? 'memory' : 'trace' });
+    write.back = [];
+    clearWrite();
+    renderWrite();
+  }));
+  window.addEventListener('resize', () => { if (!els.alphaWrite.hidden) drawWritePad(); });
 }
 
 // ---------- the Alphabet's vowels ----------
@@ -2598,7 +2935,8 @@ function setView(view, { section = 'words' } = {}) {
   els.alphaSection.hidden = view !== 'alphabet';
   if (view === 'alphabet') renderAlphabet();
   els.studyPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.studyPage === view ? 'true' : 'false'));
-  els.alphaPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaPage === (view === 'alphabet' ? 'letters' : 'cards') ? 'true' : 'false'));
+  const alphaPage = view === 'alphabet' ? (getPreferences().alphaPage === 'write' ? 'write' : 'letters') : 'cards';
+  els.alphaPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaPage === alphaPage ? 'true' : 'false'));
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
   els.readingSection.hidden = view !== 'reading';
@@ -5723,12 +6061,13 @@ function bindEvents() {
   });
   PHONE_LAYOUT.addEventListener('change', () => closeMore());
 
-  // The Alphabet: Letters | Cards, and the grid's class colours.
+  bindWritePad();
+  // The Alphabet: Letters | Cards | Write, and the grid's class colours.
   els.alphaPageButtons.forEach((b) => b.addEventListener('click', () => {
     const page = b.dataset.alphaPage;
     setPreferences({ alphaPage: page });
     if (page === 'cards') setView('flashcards', { section: 'alphabet' });
-    else setView('alphabet');
+    else setView('alphabet'); // Letters or Write (renderAlphabet)
   }));
   els.alphaClasses.addEventListener('click', () => {
     setPreferences({ alphaClasses: !getPreferences().alphaClasses });

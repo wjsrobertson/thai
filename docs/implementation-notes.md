@@ -1598,6 +1598,60 @@ buttons.
   10–30px in Recognition (the card at its minimum): one row of controls above the card instead of
   two would fix that.
 
+## Write: tracing the consonants (2026-10-14)
+
+The user asked how writing could be checked, then said "try it" to the first step proposed: tracing.
+A third Alphabet page, **Letters | Cards | Write** (a pen icon; prefs.alphaPage `write`, the view
+still `alphabet`: renderAlphabet shows `#alpha-write` in place of the grid). Consonants only: on the
+Vowels or Tones set it says so, with a button to switch.
+- **The pad** (`#write-canvas`, square, `touch-action: none` so a finger draws rather than scrolls):
+  the letter faint in the looped font ("Learn Thai Looped"), as large as fits in 80% of the pad
+  (placeGlyph, its ink centred); your line in the accent colour. ‹ › step through the 44
+  (prefs.writeIndex), saying each name; the name above says it again when tapped.
+- **Check** (checkWrite) works at WRITE_N = 240 on masks drawn from the font, no samples or model:
+  - on the letter: the share of your line inside a band WRITE_BAND (10) either side of the
+    letter (the glyph drawn with strokeText's line as the band);
+  - covered: the share of the letter within WRITE_REACH (6) of your line;
+  - passes at 75% on and 85% covered (WRITE_PASS). Short of it, what wasn't covered shows red,
+    with "Trace the red parts too" and/or "Keep your line on the letter".
+  Simulated in headless Chromium: the whole letter painted passes, half of it or a scribble fails.
+- **The head:** a letter's head is found as its one loop-sized enclosed hole (100–150 px² at 62% of
+  the pad, scaled with the letter's size); a green dot marks it, and a pass that started more than
+  12% of the pad away gets "Next time, start at the head". Two head-sized loops (ฆ ฉ ฌ ญ ฐ ฒ ณ น ม
+  ษ ห): no dot, as which is the head couldn't be told from the shape; ก ธ have none. Checked on a
+  sheet of all 44 pads. A writing chart from the user could add the two-loop letters' heads.
+- **From memory** (the next step, the same day, "add next steps"): a Trace | From memory toggle
+  (prefs.writeMode). The pad is blank; the prompt is the letter's picture, transliteration and
+  meaning, and its name is said, not the letter shown. (‹ › moved to the foot, either side of Clear and Check, as
+  Cards has its arrows: the user's call.) The top row is one height in both modes (64px × text size;
+  the prompt at most two lines, the picture sized before it loads), so switching doesn't shift the
+  pad (the user's request). › goes to a random letter (‹ back through
+  them). Check fits the drawing, keeping its shape, onto each consonant's ink box (fitTo) and
+  scores it against all 44 (writeScore: on, covered, their f1; ink, its area against the letter's):
+  - pass: the letter asked for scores 0.80 or more and is within 0.05 of the best;
+  - "That looks more like X than Y": another letter wins by more, at 0.85 or more;
+  - "Not quite: here's Y" otherwise, or when the drawing is mostly fill (ink over 2× the letter's).
+  Calibrated on every consonant drawn in FreeSerif and Noto Serif Thai as stand-ins for other hands:
+  all 88 pass; ป or ก drawn for บ lose by about 0.14; 2 of 22 dense random scribbles still pass
+  (scribbling isn't what a learner does; real fingers on the phone may want the numbers moved).
+  After Check the right letter shows faintly behind the drawing. Look-alike groups are in
+  WRITE_LOOKALIKES (the board's and ข/ฃ, ถ/ภ, ฎ/ฏ, ท/ฑ, ม/ฆ, น/ม, ห/ฬ…), kept for messages to come;
+  the check itself uses all 44. The scores are in the feedback's data-score, for tuning.
+- **Loosened** (the user, trying it: "checking is too strict"). A finger wobbles more than the
+  simulated tracing: a letter's line is about 19px wide at WRITE_N, and the old reach covered it
+  only from a line within about 4px of its middle. Now WRITE_BAND 16 (was 10), WRITE_REACH 12
+  (was 6); Trace passes at 60% on and 70% covered (was 75%, 85%); From memory passes at f1 0.65
+  (MEMORY_PASS; was 0.80). But at the loose tolerances look-alikes merge (ป drawn for บ passed), so
+  From memory tells letters apart at the old, tight ones (TELL_APART: band 10, reach 6; a separate
+  `bandTight` per letter): the letter asked for must be within 0.05 of the best match there, and a
+  rival scoring 0.8 that beats it by more is named. Recalibrated: all 88 other-font drawings pass,
+  ป and ก for บ are still named, 3 of 22 random scribbles pass. Numbers to move again from real use.
+- **The head first** (stroke direction, the same day): in both modes, when the first stroke starts
+  at the head (single-loop letters) but leaves it within a fifth of the pad's length of line
+  (loopFirst: the line goes more than 13% of the pad from the head), a pass adds "Next time, draw
+  the little loop first, then the rest". Thai letters start with the head's loop. Tested with a
+  stroke straight down from ข's head (the tip) and one circling it first (none).
+
 ## The Dictionary in English too (2026-10-14)
 
 The user's design: Thai as before, or English, chosen by an icon switch where the Alphabet's
@@ -1695,7 +1749,11 @@ later (it's already in `fonts/`, NotoSansThai).
 - **Pictures** (`images/letters/*.svg`, LETTER_PICS): all 44 (ก ข ค ง จ ช ป first, the other 37 the
   same day, at the user's request), drawn by hand as SVG (the user liked the style): viewBox 0 0 400 400, a cream square (#fffaf2), outlines #2b2b2b at
   stroke-width 7 with round caps and joins, flat fills (white, greys, red #e0443a, yellow #f2b632,
-  green #86c98a, blue #b9e0ee). Checked by rendering in headless Chromium. The buffalo is a head
+  green #86c98a, blue #b9e0ee). Checked by rendering in headless Chromium. Transparent since
+  2026-10-14 (the cream square went: the user's pick of four versions tried on the Black, Dark and
+  Light panels); on the dark themes a CSS edge in the theme's ink (four zero-blur drop-shadows,
+  2px; 1.5px on Write's small prompt) makes each a die-cut sticker so its dark lines show; none on
+  Light. Lines in the theme's colour were tried and lost white-filled shapes' edges and the eyes. The buffalo is a head
   from the front: side on, it read as a goat. Others that needed a second go: ฉ's cymbals (a split
   ball, then headphones, before two bowls on a cord), ฐ's pedestal (with a lotus bud it was a
   birthday cake; then a stone plinth, which the user found un-Thai; now a gold Thai lotus base,

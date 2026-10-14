@@ -1560,7 +1560,27 @@ body { display: flex; flex-direction: column; }
 .alpha-set-item[aria-checked="true"] b { color: var(--accent); }
 .alpha-set-item[aria-checked="true"] .alpha-set-check { visibility: visible; }
 /* Vowels: the boards' grouped tiles, a short/long pair to a group. */
-.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-classes[hidden] { display: none; }
+.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-classes[hidden], .alpha-top[hidden], .alpha-write[hidden], .alpha-write-note[hidden] { display: none; }
+/* Write: a letter to trace on a square pad (renderWrite). */
+.alpha-write { max-width: 440px; margin: 0 auto; }
+.write-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
+/* One height for Trace's letter and name and From memory's picture and prompt, so switching doesn't
+   shift the pad (the user's request, 2026-10-14): the prompt at most two lines. */
+.write-name { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; height: calc(64px * var(--fs, 1)); padding: 4px; background: none; border: 0; color: var(--ink); font-size: calc(17px * var(--fs, 1)); overflow: hidden; }
+.write-name span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.25; text-align: left; }
+.write-name b { font-size: calc(30px * var(--fs, 1)); font-weight: 500; }
+.write-name span { color: var(--muted); }
+.write-name img { flex: none; width: calc(48px * var(--fs, 1)); height: calc(48px * var(--fs, 1)); border-radius: 10px; }
+.write-mode { display: flex; margin: 0 0 10px; }
+.write-mode .seg-btn { flex: 1; }
+.write-pad { width: 100%; aspect-ratio: 1; background: var(--panel); border: 1px solid var(--control-border); border-radius: 16px; overflow: hidden; }
+#write-canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: crosshair; } /* a finger draws, not scrolls */
+.write-feedback { min-height: 2.6em; margin: 10px 0 8px; font-size: calc(16px * var(--fs, 1)); text-align: center; }
+.write-feedback.good { color: var(--good); }
+.write-feedback.bad { color: var(--again); }
+.write-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.write-actions-mid { display: flex; gap: 12px; }
+.alpha-write-note { margin: 24px auto; color: var(--muted); text-align: center; }
 /* Tones: the five tones, the four marks, the chart. */
 .alpha-tones-head { margin: 20px 0 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; }
 .alpha-tones-head:first-child { margin-top: 4px; }
@@ -1634,6 +1654,16 @@ body { display: flex; flex-direction: column; }
 .cls-low { color: var(--cls-low); }
 .alpha-grid .dict-letter.obsolete { opacity: .45; }
 .alpha-grid:not(.by-class) .dict-letter { color: var(--ink); }
+/* The letter pictures (images/letters/) are transparent (2026-10-14, the user's pick of four tried):
+   on the dark themes a thin edge in the theme's ink round each, as a die-cut sticker, so their dark
+   outlines show; none on Light. */
+:is(.letter-pic, .card-pic) { --edge: 2px; }
+.write-name img { --edge: 1.5px; }
+:is(.letter-pic, .card-pic, .write-name img) {
+  filter: drop-shadow(var(--edge) 0 0 var(--ink)) drop-shadow(calc(-1 * var(--edge)) 0 0 var(--ink))
+    drop-shadow(0 var(--edge) 0 var(--ink)) drop-shadow(0 calc(-1 * var(--edge)) 0 var(--ink));
+}
+:root[data-theme="light"] :is(.letter-pic, .card-pic, .write-name img) { filter: none; }
 /* A letter's picture on its card's back (renderCard, presentEntry), and in its dialog. */
 .card-pic { display: block; width: min(112px, 18vh); height: auto; margin: 0 auto 6px; border-radius: 14px; }
 .card-pic[hidden] { display: none; }
