@@ -1929,6 +1929,11 @@ desktop measured identical before and after (1280px: every control's box the sam
 - **Scrolling to things:** `html { scroll-padding }` keeps rows the browser scrolls to (Reading's
   read-along, `block: 'nearest'`) out from under the pinned row (88px) and the tab bar.
   scrollToReading counts `.section-bar`'s height with `.topbar`'s (each 0 where the other is used).
+- **Settings' search as tall as the Dictionary's** (the user, the same day): the Dictionary's
+  stretches to its Thai | English switch (52px); Settings' was 48px (50px at text size 2). Now
+  `min-height: 52px` on a phone, so going between the two pages doesn't shift it.
+  And no line under it (the user's call): `.modal-search`'s border is off for the Settings page on
+  a phone, as the Dictionary's search has none; the dialog on wider screens keeps it.
 - Checked at 390px on List, Cards, Reading, Letters, Write, the Dictionary's grid and a letter's
   list, at rest and scrolled, at text sizes 1 and 2 (the row is 76px at both); the Alphabet's set
   menu opens under it while scrolled; Cards and Write still fit without scrolling.
