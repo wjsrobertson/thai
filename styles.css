@@ -1499,7 +1499,13 @@ body { display: flex; flex-direction: column; }
 /* Its letter page (view alphabet), and its cards: the Cards page with the Alphabet's cards
    (data-section alphabet). Both have the Letters | Cards switch where the topic button goes. */
 :root { --cls-mid: #4f8fd6; --cls-high: #d9534f; --cls-low: #3c9d61; } /* the classes' colours */
-/* Study's Topics | Cards | Reading, on those three pages (not the Alphabet's Cards page). */
+/* Study's Topics | Cards | Reading, on those three pages (not the Alphabet's Cards page), and the
+   Alphabet's Letters | Cards: beside the topic button, each page an icon with its name under it at
+   the tab bar's 12.5px (the user's calls, 2026-10-14, after trying labelled buttons in a row of
+   their own: the icons save that row, and the names keep them explicit). */
+:is(.study-switch, .alpha-switch) .seg-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 10px; }
+:is(.study-switch, .alpha-switch) .seg-icon { display: block; width: 20px; height: 20px; }
+:is(.study-switch, .alpha-switch) .seg-label { display: block; font-size: 12.5px; line-height: 1.1; }
 .study-switch { display: none; }
 .stage:is([data-view="wordlist"], [data-view="flashcards"], [data-view="reading"]):not([data-section="alphabet"]) .study-switch { display: inline-flex; }
 .alpha-switch { display: none; }

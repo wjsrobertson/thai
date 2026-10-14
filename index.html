@@ -182,19 +182,19 @@
         <button type="button" class="alpha-set-item" role="menuitemradio" data-alpha-set="vowels" aria-checked="false"><span class="alpha-set-text"><b>Vowels</b><span>The 30 vowels, short and long</span></span><span class="alpha-set-check" aria-hidden="true">✓</span></button>
         <button type="button" class="alpha-set-item" role="menuitemradio" data-alpha-set="tones" aria-checked="false"><span class="alpha-set-text"><b>Tones</b><span>The five tones, the marks, and reading a syllable's tone</span></span><span class="alpha-set-check" aria-hidden="true">✓</span></button>
       </div>
-      <!-- Study's three pages (2026-10-14, the user's call: one section, with labelled buttons rather
-           than icons): the topic's words, its cards, its stories. Under the topic button, as the
-           Alphabet's Letters | Cards is. -->
+      <!-- Study's three pages (2026-10-14, the user's calls: one section; its switch beside the topic
+           button, as the Alphabet's Letters | Cards is, each page an icon with its name): the topic's
+           words, its cards, its stories. -->
       <div class="segmented study-switch" role="radiogroup" aria-label="Study page">
-        <button type="button" role="radio" class="seg-btn" data-study-page="wordlist" aria-checked="true">Topics</button>
-        <button type="button" role="radio" class="seg-btn" data-study-page="flashcards" aria-checked="false">Cards</button>
-        <button type="button" role="radio" class="seg-btn" data-study-page="reading" aria-checked="false">Reading</button>
+        <button type="button" role="radio" class="seg-btn" data-study-page="wordlist" aria-checked="true" aria-label="Topics" title="Topics"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="seg-label">Topics</span></button>
+        <button type="button" role="radio" class="seg-btn" data-study-page="flashcards" aria-checked="false" aria-label="Cards" title="Cards"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg><span class="seg-label">Cards</span></button>
+        <button type="button" role="radio" class="seg-btn" data-study-page="reading" aria-checked="false" aria-label="Reading" title="Reading"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg><span class="seg-label">Reading</span></button>
       </div>
       <!-- The Alphabet's two pages (2026-10-14): its letter grid, and its own cards (the Cards page with
            the Alphabet's cards swapped in: useSection). In place of the topic button there. -->
       <div class="segmented alpha-switch" role="radiogroup" aria-label="Alphabet page">
-        <button type="button" role="radio" class="seg-btn" data-alpha-page="letters" aria-checked="true">Letters</button>
-        <button type="button" role="radio" class="seg-btn" data-alpha-page="cards" aria-checked="false">Cards</button>
+        <button type="button" role="radio" class="seg-btn" data-alpha-page="letters" aria-checked="true" aria-label="Letters" title="Letters"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" /></svg><span class="seg-label">Letters</span></button>
+        <button type="button" role="radio" class="seg-btn" data-alpha-page="cards" aria-checked="false" aria-label="Cards" title="Cards"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg><span class="seg-label">Cards</span></button>
       </div>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
         <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true"><span class="dir-long">Thai</span><span class="dir-short">TH</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>

@@ -76,7 +76,7 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 /* ---------- controls: deck button on its own row, toggles share the next ---------- */
 .deck-picker-bar { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .stage.review-only-none[data-view="flashcards"] { padding-bottom: 12px; } /* = the bar's margin */
-.deck-button { flex: 1 1 100%; max-width: none; padding: 10px 14px; }
+.deck-button { flex: 1 1 0; min-width: 0; max-width: none; padding: 10px 14px; } /* beside Study's or the Alphabet's switch (2026-10-14; it had the row to itself) */
 .deck-button-label { flex: 1; max-width: none; text-align: left; }
 .deck-picker-bar .segmented { flex: 1 1 auto; }
 .dir-long { display: none; }
@@ -189,12 +189,10 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
 
-/* Study's and the Alphabet's switches take a row of their own, under the topic button. */
-.stage:is([data-view="wordlist"], [data-view="flashcards"], [data-view="reading"]):not([data-section="alphabet"]) .study-switch { display: flex; flex: 1 1 100%; }
-.study-switch .seg-btn { flex: 1; }
-.stage[data-view="alphabet"] .alpha-switch,
-.stage[data-section="alphabet"] .alpha-switch { display: flex; flex: 1 1 100%; }
-.alpha-switch .seg-btn { flex: 1; }
+/* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
+   (.deck-button above; not styles.css's 220px, with three icons beside it). */
+.deck-picker-bar :is(.study-switch, .alpha-switch) { flex: none; } /* over .deck-picker-bar .segmented's flex: 1 */
+.deck-picker-bar :is(.study-switch, .alpha-switch) .seg-btn { flex: none; min-width: 50px; min-height: 44px; padding: 2px 6px; }
 .letter-big { font-size: 92px; }
 .letter-big.wide { font-size: 68px; }
 .tone-tile b, .mark-tile b { font-size: 13px; }

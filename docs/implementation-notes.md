@@ -1601,14 +1601,21 @@ buttons.
 ## Study: Topics, Cards and Reading as one section (2026-10-14)
 
 The user's call, after the Alphabet's picker-and-switch: the three pages already share the topic
-picker, so they're one section, **Study**, with the same shape. They asked for labelled buttons, not
-icons in the picker's row ("it isn't explicit").
+picker, so they're one section, **Study**, with the same shape. The switch went through three forms
+the same day, all the user's calls: labelled buttons in a row of their own under the topic button
+(they'd turned down bare icons: "it isn't explicit"); then, to compare, icons beside the topic button
+as a Settings choice; then icons with their names under them at the tab bar's 12.5px, which became
+the only form (the setting went). It saves a row: the Cards page's card is 499px tall, not 447px, on
+a 390px phone.
 - **Tabs:** the phone's bar is Home · Study · Alphabet · Words · More; wider screens' tabs are Study ·
   Alphabet · Words. More's list now holds only Settings (and pages to come); Alphabet and Words left
   it for the bar.
-- **The switch:** `.study-switch` (Topics | Cards | Reading) under the topic button, shown on the three
-  pages but not on the Alphabet's Cards page; a row of its own on a phone, as the Alphabet's is.
-  Reading again with a story open closes it (it was the Reading tab's job).
+- **The switch:** `.study-switch` (Topics | Cards | Reading) beside the topic button, shown on the three
+  pages but not on the Alphabet's Cards page; the Alphabet's `.alpha-switch` (Letters | Cards) is
+  the same. Each `.seg-btn` holds a `.seg-icon` and a `.seg-label` (the old tab icons; Letters is a
+  2 × 2 grid). On a phone the topic button takes what's left (`flex: 1 1 0`, about 187px with
+  Study's three), and the switch rules are scoped to `.deck-picker-bar`, or its `.segmented` flex
+  rule stretches them. Reading again with a story open closes it (it was the Reading tab's job).
 - **Code:** the views are still `wordlist`, `flashcards` and `reading`. The tab is `data-view="study"`;
   `pageNow()` calls the three `study`, so its tab lights; `goTo('study')` opens the one you were last
   on (prefs.studyPage, saved by setView); the home cards go to their pages as before.
@@ -1623,7 +1630,8 @@ the grid, letter progress apart from word progress, consonants only for now, the
 later (it's already in `fonts/`, NotoSansThai).
 - **Where:** More's first row on a phone, a top tab on wider screens (data-view `alphabet`, a line
   ก for its icon). It opens on whichever of its pages you were last on (prefs.alphaPage).
-- **Letters | Cards:** a switch in the topic button's place (`.alpha-switch`), on both pages.
+- **Letters | Cards:** a switch beside the topic button (`.alpha-switch`), on both pages: icons with
+  their names, as Study's (see Study).
 - **Letters** (`#alphabet-section`, renderAlphabet): the 44 letters in `.dict-grid` tiles, ฃ ฅ
   dimmed; Classes (prefs.alphaClasses) colours them mid blue, high red, low green (`--cls-*`,
   with a legend).
