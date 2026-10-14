@@ -43,6 +43,7 @@ const els = {
   dictBack: document.getElementById('dict-back'),
   dictHeading: document.getElementById('dict-heading'),
   dictGrid: document.getElementById('dict-grid'),
+  dictLangButtons: document.querySelectorAll('[data-dict-lang]'),
   alphaSection: document.getElementById('alphabet-section'),
   alphaHint: document.getElementById('alpha-hint'),
   alphaVowels: document.getElementById('alpha-vowels'),
@@ -65,7 +66,8 @@ const els = {
   settingsSection: document.getElementById('settings-section'),
   settingsModal: document.getElementById('settings-modal'),
   settingsButton: document.getElementById('settings-button'),
-  tabMore: document.getElementById('tab-more'), // a phone's, in the tab bar
+  tabSettings: document.getElementById('tab-settings'), // a phone's, in the tab bar (back from More's list, 2026-10-14)
+  tabMore: document.getElementById('tab-more'), // a phone's, hidden for now (index.html)
   moreMenu: document.getElementById('more-menu'), // its list
   moreItems: document.querySelectorAll('.more-item'),
   setWaitAgain: document.getElementById('setting-wait-again'),
@@ -210,7 +212,8 @@ const state = {
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
-  dictLetter: null,   // the Dictionary's letter (ก…ฮ), or null for the grid (renderDictionary)
+  dictLetter: null,   // the Dictionary's letter (ก…ฮ, or A…Z in English), or null for the grid (renderDictionary)
+  dictLang: 'th',     // the Dictionary's way in: 'th' (ก–ฮ, Thai first) or 'en' (A–Z, English first); prefs.dictLang
   dictQuery: '',      // and its search box
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
@@ -1857,9 +1860,9 @@ function closeDeckPicker() {
 
 // ---------- settings modal ----------
 
-// On a phone Settings is a page (mobile.css), opened from More's list: it stops at the tab bar,
-// whose More is lit (html.settings-open), and another tab leaves it (bindEvents). A dialog on wider
-// screens.
+// On a phone Settings is a page (mobile.css), opened from the tab bar's Settings: it stops at the bar,
+// whose Settings is lit (html.settings-open), and another tab leaves it (bindEvents). A dialog on
+// wider screens. (For a day it was in More's list, which is kept, hidden.)
 function openSettings() {
   state.settingsOpen = true;
   document.documentElement.classList.add('settings-open');
@@ -1867,7 +1870,7 @@ function openSettings() {
   els.settingsModal.hidden = false;
   setModalOpen(true);
   els.settingsSection.scrollTop = 0;
-  els.settingsButton.setAttribute('aria-expanded', 'true');
+  for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'true');
   markMore();
   renderSettings();
   if (!TOUCH_SCREEN) setTimeout(() => els.settingsSearch.focus(), 0);
@@ -1878,7 +1881,7 @@ function closeSettings() {
   document.documentElement.classList.remove('settings-open');
   els.settingsModal.hidden = true;
   setModalOpen(false);
-  els.settingsButton.setAttribute('aria-expanded', 'false');
+  for (const b of [els.settingsButton, els.tabSettings]) b.setAttribute('aria-expanded', 'false');
   markMore();
   if (state.lastFocus && typeof state.lastFocus.focus === 'function') {
     state.lastFocus.focus();
@@ -2456,6 +2459,8 @@ function showLetterPop(anchor, c) {
     all.textContent = `All ${words.length} in the Dictionary ›`;
     all.addEventListener('click', () => {
       hideWordPop();
+      state.dictLang = 'th';
+      setPreferences({ dictLang: 'th' });
       state.dictLetter = c.thai;
       state.dictQuery = '';
       setView('dictionary');
@@ -3252,8 +3257,39 @@ function buildDictionary() {
   dictKeys = new Set(seen.keys());
 }
 
+// The English way in (2026-10-14, the user's design): A–Z, each letter's words English first. A word
+// files under each of its meanings' headwords: "to have / there is" under H (have) and T (there is),
+// "(classifier) leaves…" under L; "1,000 — thousand" under T.
+let dictEnglish = null; // 'A'…'Z' -> [{ e: entry, head }], by headword
+function englishHeads(english) {
+  return english.split(/\s+\/\s+|;\s+/).map((alt) => {
+    let h = alt.replace(/^\s*(\([^)]*\)\s*)+/, '').replace(/^[\s"'“‘…]+/, '');
+    if (/^[\d,.]+\s+—\s+/.test(h)) h = h.replace(/^[\d,.]+\s+—\s+/, '');
+    return h.replace(/^(to|a|an|the)\s+/i, '').trim();
+  }).filter((h) => /^[a-z]/i.test(h.normalize('NFD')));
+}
+function buildEnglishIndex() {
+  if (dictEnglish) return;
+  buildDictionary();
+  dictEnglish = new Map();
+  for (const e of dictEntries) {
+    const filed = new Set();
+    for (const head of englishHeads(e.english)) {
+      const letter = head.normalize('NFD')[0].toUpperCase();
+      if (filed.has(letter)) continue; // once a letter, under its first meaning there
+      filed.add(letter);
+      if (!dictEnglish.has(letter)) dictEnglish.set(letter, []);
+      dictEnglish.get(letter).push({ e, head });
+    }
+  }
+  const order = new Intl.Collator('en', { sensitivity: 'base' });
+  for (const list of dictEnglish.values()) list.sort((a, b) => order.compare(a.head, b.head) || order.compare(a.e.english, b.e.english));
+}
+const LATIN_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
 function renderDictionary() {
   buildDictionary();
+  els.dictLangButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.dictLang === state.dictLang ? 'true' : 'false'));
   const q = state.dictQuery.trim();
   let rows = null;
   let heading = '';
@@ -3263,6 +3299,11 @@ function renderDictionary() {
     rows = hits.map((h) => byKey.get(h.key));
     heading = total > hits.length ? `The first ${hits.length} of ${total} matches` : `${total} match${total === 1 ? '' : 'es'}`;
     els.dictBack.textContent = '✕ Clear search';
+  } else if (state.dictLetter && state.dictLang === 'en') {
+    buildEnglishIndex();
+    rows = (dictEnglish.get(state.dictLetter) || []).map((x) => x.e);
+    heading = `${state.dictLetter} · ${rows.length} word${rows.length === 1 ? '' : 's'}`;
+    els.dictBack.textContent = '‹ All letters';
   } else if (state.dictLetter) {
     rows = dictEntries.filter((e) => e.first === state.dictLetter);
     const name = letterStep(state.dictLetter)?.show || state.dictLetter;
@@ -3280,7 +3321,7 @@ function renderDictionary() {
     return;
   }
   els.dictTable.classList.toggle('show-spaces', !!getSettings().topicWordGaps);
-  const cols = wordlistColumns();
+  const cols = state.dictLang === 'en' ? ['english', 'thai', 'translit'] : wordlistColumns(); // English first, then Thai
   const head = document.createElement('tr');
   for (const key of cols) head.append(Object.assign(document.createElement('th'), { textContent: COL_META[key].label }));
   const audioTh = document.createElement('th');
@@ -3296,7 +3337,28 @@ function renderDictionary() {
 // The 44 letters, just the letter on each (its name word and count went on 2026-10-12, the user's
 // call; they're in its tooltip). A letter with no words is greyed out.
 function renderDictGrid() {
-  if (els.dictGrid.childElementCount) return; // drawn once: the words don't change while the app's open
+  if (els.dictGrid.childElementCount && els.dictGrid.dataset.lang === state.dictLang) return; // drawn once a language: the words don't change while the app's open
+  els.dictGrid.dataset.lang = state.dictLang;
+  els.dictGrid.classList.toggle('latin', state.dictLang === 'en');
+  if (state.dictLang === 'en') {
+    buildEnglishIndex();
+    els.dictGrid.replaceChildren(...[...LATIN_LETTERS].map((ch) => {
+      const n = dictEnglish.get(ch)?.length || 0;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dict-letter';
+      b.disabled = !n;
+      b.textContent = ch;
+      b.title = `${ch}: ${n} word${n === 1 ? '' : 's'}`;
+      b.addEventListener('click', () => {
+        state.dictLetter = ch;
+        renderDictionary();
+        window.scrollTo(0, 0);
+      });
+      return b;
+    }));
+    return;
+  }
   const counts = new Map();
   for (const e of dictEntries) counts.set(e.first, (counts.get(e.first) || 0) + 1);
   els.dictGrid.replaceChildren(...[...DICT_LETTERS].map((ch) => {
@@ -3316,6 +3378,16 @@ function renderDictGrid() {
     });
     return b;
   }));
+}
+
+// The Dictionary's Thai | English: its own grid and order, starting from the grid.
+function setDictLang(lang) {
+  if (lang === state.dictLang || !['th', 'en'].includes(lang)) return;
+  state.dictLang = lang;
+  state.dictLetter = null;
+  setPreferences({ dictLang: lang });
+  renderDictionary();
+  window.scrollTo(0, 0);
 }
 
 // ---------- Learn mode ----------
@@ -5597,6 +5669,7 @@ function bindEvents() {
       renderDictionary();
     }, 150);
   });
+  els.dictLangButtons.forEach((b) => b.addEventListener('click', () => setDictLang(b.dataset.dictLang)));
   els.dictBack.addEventListener('click', () => {
     if (state.dictQuery.trim()) {
       state.dictQuery = '';
@@ -5638,6 +5711,10 @@ function bindEvents() {
 
   // Settings modal
   els.settingsButton.addEventListener('click', openSettings);
+  els.tabSettings.addEventListener('click', () => {
+    closeMore();
+    if (!state.settingsOpen) openSettings();
+  });
   // The phone's More: its tab opens and closes the list; a row picks its page.
   els.tabMore.addEventListener('click', () => (state.moreOpen ? closeMore() : openMore()));
   els.moreItems.forEach((b) => b.addEventListener('click', () => pickMore(b)));
@@ -6249,6 +6326,7 @@ async function init() {
   if (['en-th', 'th-en', 'listen'].includes(prefs.direction)) {
     state.direction = prefs.direction;
   }
+  if (prefs.dictLang === 'en') state.dictLang = 'en';
   els.directionButtons.forEach((b) => {
     b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false');
   });

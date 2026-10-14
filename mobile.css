@@ -188,10 +188,13 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 #settings-search { padding: 12px 16px; border-radius: 12px; }
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
+html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit while its page is open */
+.tab-more[hidden] { display: none; } /* More, kept for later (index.html) */
 
 /* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
    (.deck-button above; not styles.css's 220px, with three icons beside it). */
 .deck-picker-bar :is(.study-switch, .alpha-switch) { flex: none; } /* over .deck-picker-bar .segmented's flex: 1 */
+.dict-switch .seg-btn { min-width: 50px; min-height: 44px; padding: 2px 6px; }
 .deck-picker-bar :is(.study-switch, .alpha-switch) .seg-btn { flex: none; min-width: 50px; min-height: 44px; padding: 2px 6px; }
 .letter-big { font-size: 92px; }
 .letter-big.wide { font-size: 68px; }

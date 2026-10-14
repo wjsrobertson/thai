@@ -242,7 +242,7 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
    Words as a tab, and ⚙. */
 /* On a wider screen each tab has its icon, small, left of its name (2026-10-12, the user's request). */
 .tab { display: inline-flex; align-items: center; gap: 7px; }
-.tab-home, .tab-more { display: none; } /* after .tab, which would show them */
+.tab-home, .tab-settings, .tab-more { display: none; } /* after .tab, which would show them */
 .tab-svg { width: 18px; height: 18px; flex: none; }
 /* Under 700px wide (a tablet in a split view, a small window), they'd push ⚙ off the screen.
    (A phone, under 600px, has its own: mobile.css.) */
@@ -1439,6 +1439,11 @@ body { display: flex; flex-direction: column; }
   display: none !important;
 }
 .dictionary { max-width: 1000px; margin: 0 auto; }
+/* The search box and the Thai | English switch, a row as tall as the switch. */
+.dict-top { display: flex; align-items: stretch; gap: 8px; margin: 0 0 16px; }
+.dict-top .dict-search { flex: 1 1 0; min-width: 0; margin: 0; }
+.dict-switch { flex: none; }
+.dict-grid.latin .dict-letter { font-family: inherit; font-weight: 500; }
 .dictionary[hidden] { display: none; }
 .dict-search {
   width: 100%;
@@ -1504,9 +1509,10 @@ body { display: flex; flex-direction: column; }
    Alphabet's Letters | Cards: beside the topic button, each page an icon with its name under it at
    the tab bar's 12.5px (the user's calls, 2026-10-14, after trying labelled buttons in a row of
    their own: the icons save that row, and the names keep them explicit). */
-:is(.study-switch, .alpha-switch) .seg-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 10px; }
-:is(.study-switch, .alpha-switch) .seg-icon { display: block; width: 20px; height: 20px; }
-:is(.study-switch, .alpha-switch) .seg-label { display: block; font-size: 12.5px; line-height: 1.1; }
+:is(.study-switch, .alpha-switch, .dict-switch) .seg-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; padding: 4px 10px; }
+:is(.study-switch, .alpha-switch, .dict-switch) .seg-icon { display: block; width: 20px; height: 20px; }
+.seg-glyph { font-size: 19px; font-weight: 600; line-height: 20px; text-align: center; } /* the Dictionary's ก and A */
+:is(.study-switch, .alpha-switch, .dict-switch) .seg-label { display: block; font-size: 12.5px; line-height: 1.1; }
 .study-switch { display: none; }
 .stage:is([data-view="wordlist"], [data-view="flashcards"], [data-view="reading"]):not([data-section="alphabet"]) .study-switch { display: inline-flex; }
 .alpha-switch { display: none; }

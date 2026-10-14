@@ -37,9 +37,10 @@
     <!-- The pages' line icons (app.js PAGE_ICONS has the same paths) are the tabs', the home cards'
          and the topic button's (2026-10-12: the user's request, for one look; they were emoji). -->
     <!-- On a phone (mobile.css) the tabs are a bar along the bottom, each an icon over its name, and
-         there's no top bar: Home, Study, Alphabet, Words, then More (2026-10-14, the user's calls:
-         More for room to grow, holding Settings; the Topics tab (data-view "study") is the topic's
-         List, Cards and Reading in one, picked by the .study-switch). The icons, Home and More are hidden on wider screens, where ⚙
+         there's no top bar: Home, Topics, Alphabet, Dictionary, Settings (2026-10-14, the user's calls;
+         the Topics tab, data-view "study", is the topic's List, Cards and Reading in one, picked by the
+         .study-switch). More, with Settings in its list, had the last place for a day; it's hidden,
+         kept for when it's needed again. The icons, Home and More are hidden on wider screens, where ⚙
          opens Settings. -->
     <!-- The tabs say Cards and Words for the Flashcards and Dictionary pages (the user's call,
          2026-10-12: shorter, and the text a little larger). -->
@@ -48,7 +49,11 @@
       <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Topics</span></button>
       <button type="button" class="tab" role="tab" data-view="alphabet" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg><span class="tab-label">Alphabet</span></button>
       <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg><span class="tab-label">Dictionary</span></button>
-      <button type="button" class="tab tab-more" id="tab-more" aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path class="dots" d="M8 12h.01M12 12h.01M16 12h.01" /></svg><span class="tab-label">More</span></button>
+      <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
+      <!-- More (2026-10-14): hidden for now, the user's call ("we don't need More right now"), with Settings
+           back on the bar; its list (#more-menu), styles and code are kept to bring back: take away
+           `hidden` here, and put Settings back in its list in place of #tab-settings. -->
+      <button type="button" class="tab tab-more" id="tab-more" hidden aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path class="dots" d="M8 12h.01M12 12h.01M16 12h.01" /></svg><span class="tab-label">More</span></button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -681,7 +686,16 @@
     <!-- The Dictionary (renderDictionary): a search box over the ก–ฮ grid; a letter, or a search, lists
          its words in a table like the Topics page's. -->
     <section class="dictionary dictionary-only" id="dictionary-section" hidden>
-      <input type="search" class="dict-search" id="dict-search" placeholder="Search Thai, English or transliteration" autocomplete="off" spellcheck="false" aria-label="Search words" />
+      <!-- Thai or English (2026-10-14, the user's design): the grid is ก–ฮ or A–Z, and a letter's words
+           list Thai first or English first. The switch is where the Alphabet's Letters | Cards is,
+           beside the search box. -->
+      <div class="dict-top">
+        <input type="search" class="dict-search" id="dict-search" placeholder="Search Thai or English" autocomplete="off" spellcheck="false" aria-label="Search words in Thai, English or transliteration" />
+        <div class="segmented dict-switch" role="radiogroup" aria-label="Dictionary language">
+          <button type="button" role="radio" class="seg-btn" data-dict-lang="th" aria-checked="true" aria-label="Thai" title="Thai words, ก to ฮ"><span class="seg-icon seg-glyph" lang="th" aria-hidden="true">ก</span><span class="seg-label">Thai</span></button>
+          <button type="button" role="radio" class="seg-btn" data-dict-lang="en" aria-checked="false" aria-label="English" title="English words, A to Z"><span class="seg-icon seg-glyph" aria-hidden="true">A</span><span class="seg-label">English</span></button>
+        </div>
+      </div>
       <div class="dict-head" id="dict-head" hidden>
         <button type="button" class="ghost dict-back" id="dict-back"></button>
         <span class="dict-heading" id="dict-heading"></span>

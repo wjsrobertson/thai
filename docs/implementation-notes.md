@@ -1598,6 +1598,22 @@ buttons.
   10–30px in Recognition (the card at its minimum): one row of controls above the card instead of
   two would fix that.
 
+## The Dictionary in English too (2026-10-14)
+
+The user's design: Thai as before, or English, chosen by an icon switch where the Alphabet's
+Letters | Cards is.
+- **The switch:** `.dict-switch` (Thai | English: ก and A over their names, as the other switches)
+  beside the search box, in `.dict-top`; both 52px tall. The search's placeholder is now "Search
+  Thai or English" (it still finds transliterations). prefs.dictLang keeps the choice.
+- **English:** an A–Z grid (`LATIN_LETTERS`), and a letter's words listed English first, then Thai and
+  the transliteration (the word rows take any column order). `buildEnglishIndex` files each word
+  under each of its meanings' headwords: the English split at " / " and "; ", a leading "(…)",
+  quote or "…" dropped, "to", "a", "an", "the" skipped, and "1,000 — thousand" under its word.
+  So "to have / there is" is under H and T, "to eat" under E; once a letter per word. Sorted by
+  headword. About 9,000 filings for the 6,864 words; every letter has some (X 3, Z 6).
+- Searching lists English first too in English. The letter dialog's "All N in the Dictionary"
+  switches to Thai.
+
 ## The Topics section: List, Cards and Reading as one (2026-10-14)
 
 **Words is the Dictionary again** (the user's call, the same day, with Topics named): the tab and
@@ -1733,6 +1749,12 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   ⚙ on Home only; then **Settings was the bar's sixth item** (until More, 2026-10-14) (`#tab-settings`, a gear), opening the
   settings as ⚙ does rather than a page. It's a `.tab` without `data-view`, so `els.tabs` leaves it
   out. Six items get 61–70px each on 375–430px phones.
+- **More is hidden again, Settings back on the bar** (2026-10-14, later the same day, the user's
+  call: "we don't need More right now", keeping the parts for when it's needed). The bar is Home ·
+  Topics · Alphabet · Dictionary · Settings; `#tab-settings` opens the settings and is lit while
+  they're open. `#tab-more` has `hidden` (mobile.css `.tab-more[hidden]`), and its list, styles and
+  code are as below. To bring it back: take away `hidden`, and put Settings back in its list in
+  place of `#tab-settings` (or leave both).
 - **More** (2026-10-14, the user's call, so new pages fit; this replaced Words and Settings in
   the bar). The bar is Home, Topics, Cards, Reading and More, the first four always there. More
   (`#tab-more`, a circle with three dots) opens `#more-menu`, a list just above the bar of the pages
