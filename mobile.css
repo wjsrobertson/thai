@@ -301,8 +301,17 @@ html.settings-open .tab-more { color: var(--accent); }
 
 /* The word dialog: a sheet from the top of the screen, as Review's on Everything is, with no gap above
    it (the user's call, 2026-10-12; it was a card 6vh down). */
-.modal.word-modal { padding: 0 0 12px; }
-.modal-panel.word-panel { border-width: 0 0 1px; border-radius: 0 0 14px 14px; }
+.modal.word-modal { padding: 0; }
+/* …from under the pinned top row (its foot, --modal-top, set by showWordModal) to the tab bar, so
+   neither is covered (the user's call, 2026-10-14); a tap on either closes it. */
+.modal.word-modal { top: var(--modal-top, 0px); bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
+/* The page is still locked behind it by html's overflow: hidden, but body's `hidden` made body a
+   scroll box, and the pinned row then stuck to it, not the screen: scrolled away, it was gone from
+   above the dialog. `clip` makes no scroll box. */
+html.modal-open body { overflow: clip; }
+/* A page, not a sheet over one (the user's calls, 2026-10-14: no accent edge, no grey line, the page's
+   own background): all the room between the bars, as Settings has. */
+.modal-panel.word-panel { height: 100%; max-height: none; border: 0; border-radius: 0; background: var(--bg); }
 /* Review's dialog on Everything: a short sheet from the top instead of a full-screen one. */
 #deck-picker.review-all .modal-panel { align-self: flex-start; border-radius: 0 0 14px 14px; }
 

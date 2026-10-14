@@ -2094,8 +2094,7 @@ function openPop(anchor, tr, en, parts) {
   els.wordModalEn.textContent = en;
   els.wordModalBody.replaceChildren(...parts);
   if (!wordPop) wordPop = { lastFocus: document.activeElement };
-  els.wordModal.hidden = false;
-  setModalOpen(true);
+  showWordModal();
   els.wordModalBody.scrollTop = 0;
   els.wordModalClose.focus({ preventScroll: true });
 }
@@ -2814,8 +2813,7 @@ function showLetterPop(anchor, c) {
   }
   els.wordModalBody.replaceChildren(...parts);
   if (!wordPop) wordPop = { lastFocus: document.activeElement };
-  els.wordModal.hidden = false;
-  setModalOpen(true);
+  showWordModal();
   els.wordModalBody.scrollTop = 0;
   els.wordModalClose.focus({ preventScroll: true });
 }
@@ -4964,12 +4962,20 @@ function showWordPop(anchor, card) {
   const tones = toneSection(card, big);
   els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []));
   if (!wordPop) wordPop = { lastFocus: document.activeElement };
-  els.wordModal.hidden = false;
-  setModalOpen(true);
+  showWordModal();
   els.wordModalBody.scrollTop = 0;
   fitPopWord(big);
   tones?.shown();
   els.wordModalClose.focus({ preventScroll: true });
+}
+
+// On a phone the word (and letter) dialog sits between the pinned top row and the tab bar (mobile.css),
+// leaving both in sight and in reach (the user's call, 2026-10-14): it starts where the row ends.
+function showWordModal() {
+  const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .dict-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
+  els.wordModal.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
+  els.wordModal.hidden = false;
+  setModalOpen(true);
 }
 
 function hideWordPop() {
@@ -6074,6 +6080,11 @@ function bindEvents() {
   window.addEventListener('scroll', markScrolled, { passive: true });
   markScrolled();
   els.settingsSection.addEventListener('scroll', markSettingsScrolled, { passive: true });
+  // A tap on the tab bar or the pinned row, left uncovered by the word dialog on a phone, closes it and
+  // then does what it does (on pointerdown, before a tapped search box takes the focus).
+  for (const bar of document.querySelectorAll('.tabs, .section-bar, .dict-top')) {
+    bar.addEventListener('pointerdown', () => { if (wordPop) hideWordPop(); }, { capture: true });
+  }
 
   bindWritePad();
   // The Alphabet: Letters | Cards | Write, and the grid's class colours.

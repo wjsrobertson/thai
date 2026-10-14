@@ -1937,6 +1937,18 @@ desktop measured identical before and after (1280px: every control's box the sam
   user's call) the line comes back once the list scrolls under it, as on the other pages: Settings
   scrolls in its own box (`.modal-body`), so markSettingsScrolled sets `#settings-modal.scrolled`
   from its scroll, and openSettings (which scrolls it to the top) clears it.
+- **The word and letter dialog between the bars** (the user, the same day: it shouldn't cover the
+  top and bottom menus). On a phone `#word-modal` runs from the pinned row's foot to the tab bar:
+  showWordModal (its three openers) sets `--modal-top` from the visible `.section-bar` / `.dict-top`
+  (76px; 0 with none), mobile.css its `top` and `bottom`; the backdrop dims only the page between.
+  A tap on either bar closes it, then does what it does (a pointerdown listener, captured, so a
+  tapped search box keeps the focus hideWordPop would give back). `html.modal-open body` is
+  `overflow: clip` on a phone, not `hidden`: `hidden` made body a scroll box, the pinned row stuck
+  to it, and on a scrolled page it was gone from above the dialog. html's `hidden` still locks the
+  page. The deck picker and Settings still cover the page as before.
+  Then a page, not a sheet (the user's calls: not a fan of the yellow curved edge, then no grey
+  line either, the page's background): it fills the room between the bars in `--bg`, with no
+  border, as Settings does. Desktop's dialog keeps its accent border.
 - Checked at 390px on List, Cards, Reading, Letters, Write, the Dictionary's grid and a letter's
   list, at rest and scrolled, at text sizes 1 and 2 (the row is 76px at both); the Alphabet's set
   menu opens under it while scrolled; Cards and Write still fit without scrolling.
