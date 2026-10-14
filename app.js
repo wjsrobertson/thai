@@ -2453,7 +2453,7 @@ function showLetterPop(anchor, c) {
     const all = document.createElement('button');
     all.type = 'button';
     all.className = 'ghost letter-all';
-    all.textContent = `All ${words.length} in Words ›`;
+    all.textContent = `All ${words.length} in the Dictionary ›`;
     all.addEventListener('click', () => {
       hideWordPop();
       state.dictLetter = c.thai;
@@ -2549,11 +2549,11 @@ function pickMore(b) {
   goTo(b.dataset.view);
 }
 
-// Study (2026-10-14, the user's call): Topics, Cards and Reading as one section, its pages picked by
-// the .study-switch under the topic button.
+// The Topics section (2026-10-14, the user's calls; "Study" for a day, still its internal name): the
+// topic's List, Cards and Reading as one section, its pages picked by the .study-switch.
 const STUDY_VIEWS = new Set(['wordlist', 'flashcards', 'reading']);
 
-// The page a tab, a home card or More's row names: Study and the Alphabet open on whichever of their
+// The page a tab, a home card or More's row names: Topics (study) and the Alphabet open on whichever of their
 // pages you were last on.
 function goTo(view) {
   const p = getPreferences();

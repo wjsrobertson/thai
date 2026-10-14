@@ -1598,7 +1598,17 @@ buttons.
   10–30px in Recognition (the card at its minimum): one row of controls above the card instead of
   two would fix that.
 
-## Study: Topics, Cards and Reading as one section (2026-10-14)
+## The Topics section: List, Cards and Reading as one (2026-10-14)
+
+**Words is the Dictionary again** (the user's call, the same day, with Topics named): the tab and
+the home card say Dictionary, and the letter dialog's link "All N in the Dictionary ›". (It was
+"Words" from 2026-10-12; "Search words" and the like stay, being about words, not the page.)
+
+**Named Topics** (the user's pick from Topics, Learn, Lessons, Practise and Vocab, the same day; it
+was "Study" at first): the tab says Topics, with the list icon the topic picker has, and the switch
+says **List | Cards | Reading**, List with a small table icon. In the code it's still `study`
+(data-view, `.study-switch`, `STUDY_VIEWS`, prefs.studyPage); below, "Study" means this section.
+
 
 The user's call, after the Alphabet's picker-and-switch: the three pages already share the topic
 picker, so they're one section, **Study**, with the same shape. The switch went through three forms
