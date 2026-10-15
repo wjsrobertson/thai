@@ -1586,7 +1586,7 @@ body { display: flex; flex-direction: column; }
 .alpha-line-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .alpha-vowels.tight .vowel-rows .letter-tile { padding-left: 2px; padding-right: 2px; }
 .alpha-vowels.shrunk .vowel-rows .letter-tile { font-size: var(--tile-fs); }
-.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-top[hidden], .alpha-write[hidden], .alpha-write-note[hidden] { display: none; }
+.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-top[hidden], .alpha-write[hidden], .write-mode[hidden] { display: none; }
 /* Write: a letter to trace on a square pad (renderWrite). */
 .alpha-write { max-width: 440px; margin: 0 auto; }
 .write-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
@@ -1606,7 +1606,6 @@ body { display: flex; flex-direction: column; }
 .write-feedback.bad { color: var(--again); }
 .write-actions { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .write-actions-mid { display: flex; gap: 12px; }
-.alpha-write-note { margin: 24px auto; color: var(--muted); text-align: center; }
 /* Tones: the five tones, the four marks, the chart. */
 .alpha-tones-head { margin: 20px 0 10px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; }
 .alpha-tones-head:first-child { margin-top: 4px; }

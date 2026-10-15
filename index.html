@@ -631,6 +631,12 @@
               <span class="setting-help" id="about-recordings"></span>
             </div>
           </div>
+          <div class="setting-group" data-search="about handwriting write from memory model burapha dataset credit">
+            <div class="setting-row">
+              <span class="setting-label">Handwriting</span>
+              <span class="setting-help">Write → From memory recognises letters with a model trained on Burapha-TH, handwriting by over a thousand Thai writers (Onuean et al., <i>Applied Sciences</i>, 2022), used for education.</span>
+            </div>
+          </div>
           <div class="setting-group" data-search="about launch startup start time slow speed loading">
             <div class="setting-row">
               <span class="setting-label">Launch time</span>
@@ -714,7 +720,7 @@
           <button type="button" class="write-name" id="write-name" title="Hear its name"></button>
         </div>
         <!-- Trace the faint letter, or write it from memory on a blank pad (2026-10-14). -->
-        <div class="segmented write-mode" role="radiogroup" aria-label="How to write">
+        <div class="segmented write-mode" id="write-mode" role="radiogroup" aria-label="How to write"> <!-- the consonants only: From memory has their model -->
           <button type="button" role="radio" class="seg-btn" data-write-mode="trace" aria-checked="true">Trace</button>
           <button type="button" role="radio" class="seg-btn" data-write-mode="memory" aria-checked="false">From memory</button>
         </div>
@@ -729,10 +735,6 @@
           </div>
           <button type="button" class="nav-btn" id="write-next" aria-label="Next letter" title="Next letter">›</button>
         </div>
-      </div>
-      <div class="alpha-write-note" id="alpha-write-note" hidden>
-        <p>Writing practice is for the consonants, for now.</p>
-        <button type="button" class="ghost" id="write-to-consonants">Switch to Consonants</button>
       </div>
     </section>
 

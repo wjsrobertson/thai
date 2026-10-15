@@ -1490,6 +1490,72 @@ tappable thing on a 390px phone, and of the styles, found four, all fixed:
 - Not done (low priority): about 20 controls explain themselves only in hover tooltips (`title`),
   which phones never show; the important ones say the same on screen.
 
+## From memory checked by a handwriting model (2026-10-15)
+
+The user: From memory was still too strict (Trace was fine), so the neural-network route offered
+earlier: a small network trained on real Thai handwriting, run in the app in plain JavaScript.
+- **The data:** Burapha-TH (Onuean et al., "Burapha-TH: A Multi-Purpose Character, Digit, and
+  Syllable Handwriting Dataset", Applied Sciences 12(8):4083, 2022), its character set: 68 classes
+  by 1,072 writers, scanned; the 44 consonants are 41,565 training and 8,800 test images (about
+  900 and 200 a letter), the test writers apart. No license file anywhere; the only stated terms (a
+  model card quoting the team) grant research and education use, not commercial, citing the paper.
+  The app is personal and non-commercial, ships only the weights, and credits it (Settings → About
+  → Handwriting). The data is outside the repo (~/Development/datasets/burapha-th, 217 MB of zips
+  from services.informatics.buu.ac.th/datasets/Burapha-TH/character/).
+- **tools/train_writing.py** (PyTorch, already installed): `prep` (each scan: ink from the paper's
+  brightness, specks under 3% of the ink dropped, cropped, fitted into 48 × 48 with 40 on the long
+  side, the strokes' cores to full ink), `train` (24 epochs, ~100 s each on the CPU; augmented:
+  ±12° turn, size, slant, shift, strokes thicker or thinner, half made crisp like a finger's line),
+  `synth`, `tune`, `eval`, `export`. The network: two 3×3 convolutions of 24, pool, two of 48,
+  pool, one of 96, pool, 1×1 to 32, 128, 44 (BatchNorm folded in at export); 235k weights, float16,
+  **data/write-model.bin, 459 KB** (a JSON header, then the weights).
+- **The app's font:** the first model read 97.5% of the test writers right but 8 of Noto Looped's 44
+  letters wrong (ป→บ, ฟ→พ, ข→บ, ฑ→ท…): its telling parts are short where handwriting draws them
+  tall, and learners copy the app's letters. `synth` makes 6,160 letters from seven installed fonts
+  (Noto Looped and Noto Serif Thai, regular and bold; FreeSerif, bold, italic), each warped twenty
+  ways and redrawn as its centre line at 2–4.2 px; `tune` trained on 8 epochs more with them (three
+  times over) beside Burapha-TH. After: **97.3% of the test writers' letters first pick, 99.4% in
+  the top three**; all 44 letters right in Noto Looped, Noto Serif Thai and FreeSerif (drawn as
+  centre lines, as the app draws a learner's). Hardest: บ/ข, ย/ผ, ข/ช, ด/ถ. The first model is kept
+  as write-model-v1.pt beside the data.
+- **In the app** (app.js "From memory's handwriting model"): writeModel fetches and decodes the file
+  (cached offline: sw.js SHELL, v20; fetched as soon as From memory opens); writeImage redraws the
+  learner's strokes from their points, not the pad's pixels, fitted as `prep` fits a scan, at
+  WRITE_MODEL_LINE 2.8 px (the handwriting's median stroke in the 48 box; the pad still shows the
+  thick line); runWriteModel is the forward pass, ~80 lines (JS and PyTorch agree on 300 test
+  images: the same first pick for all, probabilities within 0.0006; ~120 ms a drawing in Node).
+- **The check** (MODEL_PASS): it passes if the letter asked for is the first pick or at least 10%
+  likely; another letter is named ("looks more like ป than บ") only at 60% or more; the scribble
+  guard (ink over twice the letter's) and the head and loop tips stay. Calibrated on the test split:
+  the right letter passes 98.9% (99.2% at 5%, 98.6% at 15%); another letter wrongly passes 0.2%, a
+  look-alike 3.6% (worst pair 21%). In the app (headless Chromium, the 44 letters' centre lines in
+  Noto Looped and FreeSerif at random sizes and places, and ten wrong letters): 88/88 passed, 10/10
+  named the letter drawn; a scribble "Not quite". Without the model (offline before it's cached,
+  or the file fails), the shape matching above checks as before.
+- Next (the user's call): Trace for vowels and tone marks (below), then retraining with
+  Burapha-TH's 22 vowel and mark classes for From memory.
+
+## Write: vowels and tone marks to trace (2026-10-15)
+
+The user asked how to practise writing vowels and tone marks; of the steps offered (Trace for both,
+retrain with the symbols, From memory for marks, then vowels), Trace first, after the model.
+- **Write follows the set** (writeItems): Consonants as before; **Vowels**, the 30 forms (อะ…ฤๅ);
+  **Tones**, the four tone marks from Tone Marks' cards (◌่ ◌้ ◌๊ ◌๋, named ไม้เอก…, said by their
+  `say`), each as อ่ อ้ อ๊ อ๋. Each set keeps its place (prefs writeIndex, writeVowelIndex,
+  writeToneIndex). The "Writing practice is for the consonants" note went.
+- **The carrier:** a vowel or mark is written round a placeholder อ (WRITE_CARRIER), shown at a
+  tenth of the ink, and the part to trace at the usual 0.3. eraseCarrier rubs the อ out of a drawing
+  of the whole form (destination-out, its fill and a 3 px hair), at the form's origin plus the
+  advance of what comes before it (เอือ: after เ), so the shape (target) is the vowel's own strokes;
+  the band (where a line may be) keeps the อ, so tracing it as well is no fault, but it doesn't
+  count towards coverage. ฤ ฤๅ have no carrier. The start dot is the consonants' only.
+- **The prompt:** a vowel's form and sound (เอือ ʉa); a mark on its อ, its Thai name and
+  transliteration (อ้ ไม้โท mái thoo). "Trace the vowel. The faint อ holds the consonant's place."
+- **From memory** stays the consonants' (its model knows them): the Trace | From memory switch is
+  hidden for the other sets, and writeMemory() is false there.
+- Checked in the app (each form's own part drawn as dots, as the app places it): 30/30 vowels and
+  4/4 marks pass; with the อ traced too, 28/28 and 4/4; the อ alone, 0/28 and 0/4.
+
 ## The Alphabet's vowels in three sections (2026-10-15)
 
 The user: the Vowels page was a wall of tiles; split it by group. Their call, after the options: keep

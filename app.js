@@ -51,7 +51,7 @@ const els = {
   alphaSetMenu: document.getElementById('alpha-set-menu'),
   alphaTop: document.querySelector('.alpha-top'),
   alphaWrite: document.getElementById('alpha-write'),
-  alphaWriteNote: document.getElementById('alpha-write-note'),
+  writeModeSwitch: document.getElementById('write-mode'),
   writeCanvas: document.getElementById('write-canvas'),
   writeName: document.getElementById('write-name'),
   writeFeedback: document.getElementById('write-feedback'),
@@ -2029,12 +2029,11 @@ function letterFacts(c) {
 function renderAlphabet() {
   const set = alphaSetNow();
   const writing = getPreferences().alphaPage === 'write';
-  els.alphaWrite.hidden = !writing || set !== 'consonants';
-  els.alphaWriteNote.hidden = !writing || set === 'consonants';
+  els.alphaWrite.hidden = !writing;
   els.alphaTop.hidden = writing;
   if (writing) {
     for (const el of [els.alphaGrid, els.alphaVowels, els.alphaTones]) el.hidden = true;
-    if (set === 'consonants') renderWrite();
+    renderWrite();
     return;
   }
   const lined = set !== 'tones'; // the consonants and vowels: a tap hears it (pickAlpha)
@@ -2153,14 +2152,15 @@ const WRITE_INK = 14;        // the line's width, at WRITE_N
 const WRITE_BAND = 16;       // how far off the letter a line may stray
 const WRITE_REACH = 12;      // how near a line must pass to cover the letter
 const WRITE_PASS = { onLetter: 0.6, covered: 0.7 };
-const MEMORY_PASS = { f1: 0.65 }; // From memory: its score at the tolerances above, to pass
+const MEMORY_PASS = { f1: 0.65 }; // From memory without the model: its score at the tolerances above, to pass
+const MODEL_PASS = { own: 0.1, rival: 0.6 }; // From memory with it: the letter's probability to pass; a rival's to be named
 // From memory tells letters apart at the first, tighter tolerances, or a look-alike's small part
 // (ป's tail) would vanish in the loose band: the letter asked for must be within `behind` of the best
 // match there, and a rival is named if it wins by more and scores `rival`.
 const TELL_APART = { band: 10, reach: 6, behind: 0.05, rival: 0.8 };
 const writeFont = (px) => `${px}px "Learn Thai Looped"`;
 const write = { strokes: [], drawing: false, result: null, back: [] }; // back: From memory's letters so far, for ‹
-const writeMemory = () => getPreferences().writeMode === 'memory';
+const writeMemory = () => getPreferences().writeMode === 'memory' && alphaSetNow() === 'consonants'; // the model knows the consonants
 // Letters a learner mixes up when writing: the Look-alike Letters board's groups and a few more pairs.
 // From memory checks a drawing against the letter asked for and these.
 const WRITE_LOOKALIKES = [['บ', 'ป', 'ษ'], ['ผ', 'ฝ'], ['พ', 'ฟ'], ['ค', 'ศ', 'ฅ'], ['ร', 'ธ'], ['ด', 'ต', 'ค'], ['ข', 'ช', 'ซ', 'ฃ'],
@@ -2168,8 +2168,39 @@ const WRITE_LOOKALIKES = [['บ', 'ป', 'ษ'], ['ผ', 'ฝ'], ['พ', 'ฟ'],
 const lookalikesOf = (ch) => [...new Set(WRITE_LOOKALIKES.filter((g) => g.includes(ch)).flat())].filter((x) => x !== ch);
 const writeShapes = new Map(); // letter -> { target, band, count, head }
 
-const writeIndex = () => Math.min(Math.max(getPreferences().writeIndex | 0, 0), alphaCards.length - 1);
-const writeCard = () => alphaCards[writeIndex()];
+// What Write practises, by the Alphabet's set (2026-10-15, the user's call): the consonants; the
+// vowels, written round a faint อ that holds the consonant's place; the four tone marks, on a faint
+// อ. Each set keeps its place (prefs).
+const WRITE_CARRIER = 'อ';
+let writeToneItems = null;
+function writeItems() {
+  const set = alphaSetNow();
+  if (set === 'vowels') return alphaSets.vowels.cards;
+  if (set === 'tones') {
+    return writeToneItems ||= (state.decks.find((d) => d.id === 'script-marks')?.cards || [])
+      .filter((c) => /^◌[่้๊๋]$/.test(c.thai)).map((c) => ({ ...c, thai: c.thai.replace('◌', WRITE_CARRIER) }));
+  }
+  return alphaCards;
+}
+const WRITE_INDEX_PREF = { consonants: 'writeIndex', vowels: 'writeVowelIndex', tones: 'writeToneIndex' };
+const writeIndexPref = () => WRITE_INDEX_PREF[alphaSetNow()] || 'writeIndex';
+const writeIndex = () => Math.min(Math.max(getPreferences()[writeIndexPref()] | 0, 0), writeItems().length - 1);
+const writeCard = () => writeItems()[writeIndex()];
+// Where a vowel's or mark's carrier อ is in its form (เอือ: 1), or -1 (the consonants; ฤ ฤๅ).
+const writeCarrierAt = (ch) => (alphaSetNow() !== 'consonants' && ch.length > 1 ? ch.indexOf(WRITE_CARRIER) : -1);
+// The carrier rubbed out of a drawing of the whole form (its fill and a hair round it), so only
+// the vowel's or mark's own strokes are left: at the form's origin plus the advance of what's before it.
+function eraseCarrier(x, ch, at, p) {
+  if (at < 0) return;
+  x.save();
+  x.globalCompositeOperation = 'destination-out';
+  x.lineWidth = 3;
+  x.lineJoin = 'round';
+  const dx = x.measureText(ch.slice(0, at)).width;
+  x.fillText(WRITE_CARRIER, p.x + dx, p.y);
+  x.strokeText(WRITE_CARRIER, p.x + dx, p.y);
+  x.restore();
+}
 
 // Where the letter sits on a pad `size` across: as large as fits in 80% of it, its ink centred. `scale`
 // is its font size against 62% of the pad, the size the head-loop limits were measured at.
@@ -2202,14 +2233,16 @@ function writeMask(draw) {
 
 // The letter's shape, the band around it, and its head: the one loop-sized enclosed hole, or none.
 function writeShape(ch) {
-  if (writeShapes.has(ch)) return writeShapes.get(ch);
-  const target = writeMask((x) => { const p = placeGlyph(x, ch, WRITE_N); x.fillText(ch, p.x, p.y); });
+  const at = writeCarrierAt(ch);
+  const key = `${ch}|${at}`;
+  if (writeShapes.has(key)) return writeShapes.get(key);
+  const target = writeMask((x) => { const p = placeGlyph(x, ch, WRITE_N); x.fillText(ch, p.x, p.y); eraseCarrier(x, ch, at, p); });
   const bandOf = (w) => writeMask((x) => {
     const p = placeGlyph(x, ch, WRITE_N);
     x.lineWidth = w * 2;
     x.lineJoin = 'round';
     x.strokeText(ch, p.x, p.y);
-    x.fillText(ch, p.x, p.y);
+    x.fillText(ch, p.x, p.y); // the carrier's place too: tracing the faint อ as well is no fault
   });
   const band = bandOf(WRITE_BAND);
   const bandTight = bandOf(TELL_APART.band);
@@ -2235,8 +2268,9 @@ function writeShape(ch) {
   }
   let x0 = N, y0 = N, x1 = 0, y1 = 0;
   target.forEach((v, i) => { if (v) { const x = i % N, y = (i / N) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } });
-  const shape = { target, band, bandTight, count: target.reduce((n, v) => n + v, 0), head: loops.length === 1 ? loops[0] : null, box: [x0, y0, x1, y1] };
-  writeShapes.set(ch, shape);
+  const head = alphaSetNow() === 'consonants' && loops.length === 1 ? loops[0] : null; // where to start: consonants' heads
+  const shape = { target, band, bandTight, count: target.reduce((n, v) => n + v, 0), head, box: [x0, y0, x1, y1] };
+  writeShapes.set(key, shape);
   return shape;
 }
 
@@ -2252,6 +2286,125 @@ function drawStrokes(x, size, width, fit = (p) => p) {
     if (s.length === 1) { const [u, v] = fit(s[0]); x.lineTo(u * size + 0.01, v * size); }
     x.stroke();
   }
+}
+
+// ---------- From memory's handwriting model (tools/train_writing.py, 2026-10-15) ----------
+// A small network trained on Burapha-TH, real handwriting of the 44 consonants by over a thousand
+// Thai writers (the user's call, when the shape matching proved too strict): it says which letter a
+// drawing is, as a probability for each. data/write-model.bin: a header (the layers, their weights'
+// places) and float16 weights; run here in plain JavaScript (a few tens of milliseconds).
+const WRITE_MODEL_LINE = 2.8; // the lines' width in its 48 box: the handwriting's median (train_writing.py prep)
+let writeModelLoad = null;
+function writeModel() {
+  writeModelLoad ||= fetch('data/write-model.bin').then((r) => {
+    if (!r.ok) throw new Error(`write model: ${r.status}`);
+    return r.arrayBuffer();
+  }).then((buf) => {
+    const len = new DataView(buf).getUint32(0, true);
+    const head = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 4, len)));
+    const half = new Uint16Array(buf, 4 + len);
+    const f16 = (h) => {
+      const e = (h >> 10) & 31, f = h & 1023, s = h & 0x8000 ? -1 : 1;
+      return e === 0 ? s * f * 2 ** -24 : e === 31 ? (f ? NaN : s * Infinity) : s * (1 + f / 1024) * 2 ** (e - 15);
+    };
+    const take = ({ offset, shape }) => Float32Array.from(half.subarray(offset, offset + shape.reduce((a, b) => a * b, 1)), f16);
+    head.layers = head.layers.map((l) => (l.w ? { ...l, shape: l.w.shape, w: take(l.w), b: take(l.b) } : l));
+    return head;
+  });
+  writeModelLoad.catch(() => { writeModelLoad = null; }); // try again next time
+  return writeModelLoad;
+}
+
+// The model on one image (size × size, 0..1): a probability per letter (model.letters' order).
+function runWriteModel(m, input) {
+  let x = input;
+  let c = 1;
+  let h = m.size;
+  let w = m.size;
+  for (const l of m.layers) {
+    if (l.type === 'conv') {
+      const [co, ci, k] = l.shape;
+      const r = (k - 1) / 2;
+      const out = new Float32Array(co * h * w);
+      for (let o = 0; o < co; o++) {
+        const ob = o * h * w;
+        out.fill(l.b[o], ob, ob + h * w);
+        for (let i = 0; i < ci; i++) {
+          const ib = i * h * w;
+          for (let ky = 0; ky < k; ky++) {
+            for (let kx = 0; kx < k; kx++) {
+              const wt = l.w[((o * ci + i) * k + ky) * k + kx];
+              if (!wt) continue;
+              const dy = ky - r, dx = kx - r;
+              const y0 = Math.max(0, -dy), y1 = Math.min(h, h - dy), x0 = Math.max(0, -dx), x1 = Math.min(w, w - dx);
+              for (let y = y0; y < y1; y++) {
+                const orow = ob + y * w, irow = ib + (y + dy) * w + dx;
+                for (let xx = x0; xx < x1; xx++) out[orow + xx] += wt * x[irow + xx];
+              }
+            }
+          }
+        }
+      }
+      x = out;
+      c = co;
+    } else if (l.type === 'relu') {
+      for (let i = 0; i < x.length; i++) if (x[i] < 0) x[i] = 0;
+    } else if (l.type === 'pool') {
+      const h2 = h >> 1, w2 = w >> 1;
+      const out = new Float32Array(c * h2 * w2);
+      for (let i = 0; i < c; i++) {
+        for (let y = 0; y < h2; y++) {
+          for (let xx = 0; xx < w2; xx++) {
+            const a = i * h * w + 2 * y * w + 2 * xx;
+            out[(i * h2 + y) * w2 + xx] = Math.max(x[a], x[a + 1], x[a + w], x[a + w + 1]);
+          }
+        }
+      }
+      x = out;
+      h = h2;
+      w = w2;
+    } else if (l.type === 'dense') {
+      const [no, ni] = l.shape;
+      const out = new Float32Array(no);
+      for (let o = 0; o < no; o++) {
+        let s = l.b[o];
+        for (let i = 0; i < ni; i++) s += l.w[o * ni + i] * x[i];
+        out[o] = s;
+      }
+      x = out;
+      c = no;
+      h = w = 1;
+    }
+  }
+  const top = Math.max(...x);
+  const e = Array.from(x, (v) => Math.exp(v - top));
+  const sum = e.reduce((a, b) => a + b, 0);
+  return e.map((v) => v / sum);
+}
+
+// The drawing as the model sees it (train_writing.py normalize): cropped to its ink, fitted into the
+// model's box with `inner` on the long side, centred, shape kept, its lines WRITE_MODEL_LINE wide.
+function writeImage(m) {
+  const pts = write.strokes.flat();
+  const ux0 = Math.min(...pts.map((p) => p[0])), ux1 = Math.max(...pts.map((p) => p[0]));
+  const uy0 = Math.min(...pts.map((p) => p[1])), uy1 = Math.max(...pts.map((p) => p[1]));
+  const k = (m.inner - WRITE_MODEL_LINE) / Math.max(ux1 - ux0, uy1 - uy0, 1e-3);
+  const cx = (ux0 + ux1) / 2, cy = (uy0 + uy1) / 2;
+  const canvas = Object.assign(document.createElement('canvas'), { width: m.size, height: m.size });
+  const x = canvas.getContext('2d');
+  x.strokeStyle = '#000';
+  x.lineWidth = WRITE_MODEL_LINE;
+  x.lineCap = 'round';
+  x.lineJoin = 'round';
+  const at = ([u, v]) => [(u - cx) * k + m.size / 2, (v - cy) * k + m.size / 2];
+  for (const s of write.strokes) {
+    x.beginPath();
+    s.map(at).forEach(([u, v], i) => (i ? x.lineTo(u, v) : x.moveTo(u, v)));
+    if (s.length === 1) { const [u, v] = at(s[0]); x.lineTo(u + 0.01, v); }
+    x.stroke();
+  }
+  const d = x.getImageData(0, 0, m.size, m.size).data;
+  return Float32Array.from({ length: m.size * m.size }, (_, i) => d[i * 4 + 3] / 255);
 }
 
 // From memory: the drawing, wherever and however big, scaled (keeping its shape) and centred onto a
@@ -2300,14 +2453,19 @@ function loopFirst(shape, fit) {
 function renderWrite() {
   const c = writeCard();
   if (!c) return;
+  const set = alphaSetNow();
+  els.writeModeSwitch.hidden = set !== 'consonants'; // vowels and marks: Trace (From memory's model is the consonants')
   document.querySelectorAll('[data-write-mode]').forEach((b) => b.setAttribute('aria-checked', b.dataset.writeMode === (writeMemory() ? 'memory' : 'trace') ? 'true' : 'false'));
+  if (writeMemory()) writeModel().catch(() => {}); // ready by the first Check
   // From memory names the letter without showing it: its picture, transliteration and meaning.
   els.writeName.replaceChildren(...(writeMemory()
     ? [...(c.pic ? [Object.assign(document.createElement('img'), { src: picSrc(c.pic), alt: '', width: 48, height: 48 })] : []),
       Object.assign(document.createElement('span'), { textContent: `${c.translit} · ${c.english}` })]
     : [Object.assign(document.createElement('b'), { lang: 'th', textContent: c.thai }),
-      Object.assign(document.createElement('span'), { lang: 'th', textContent: c.say || '' }),
-      Object.assign(document.createElement('span'), { textContent: c.translit })]));
+      // A consonant's name in Thai and its transliteration; a vowel's sound; a mark's name in both.
+      ...(set === 'vowels' ? [Object.assign(document.createElement('span'), { textContent: c.english.split(' — ')[0] })]
+        : [Object.assign(document.createElement('span'), { lang: 'th', textContent: c.say || '' }),
+          Object.assign(document.createElement('span'), { textContent: c.translit })])]));
   document.fonts.load(writeFont(100), c.thai).then(drawWritePad);
   drawWritePad();
 }
@@ -2325,11 +2483,31 @@ function drawWritePad() {
   const ch = writeCard().thai;
   const shape = writeShape(ch);
   const memory = writeMemory();
-  // The letter to trace, faint; From memory shows it only once checked, to compare.
-  x.globalAlpha = memory ? (write.result ? 0.35 : 0) : 0.3;
-  x.fillStyle = css.getPropertyValue('--ink').trim() || '#ccc';
+  // The letter to trace, faint; From memory shows it only once checked, to compare. A vowel's or a
+  // mark's carrier อ fainter still: it only holds the place (eraseCarrier: the rest drawn on its own).
+  const ink = css.getPropertyValue('--ink').trim() || '#ccc';
+  const at = writeCarrierAt(ch);
+  x.fillStyle = ink;
   const p = placeGlyph(x, ch, W);
-  x.fillText(ch, p.x, p.y);
+  if (at < 0) {
+    x.globalAlpha = memory ? (write.result ? 0.35 : 0) : 0.3;
+    x.fillText(ch, p.x, p.y);
+  } else {
+    x.globalAlpha = 0.1;
+    x.fillText(ch, p.x, p.y);
+    const part = document.createElement('canvas');
+    part.width = part.height = canvas.width;
+    const px = part.getContext('2d');
+    px.setTransform(dpr, 0, 0, dpr, 0, 0);
+    px.fillStyle = ink;
+    const q = placeGlyph(px, ch, W);
+    px.fillText(ch, q.x, q.y);
+    eraseCarrier(px, ch, at, q);
+    x.setTransform(1, 0, 0, 1, 0, 0);
+    x.globalAlpha = 0.3;
+    x.drawImage(part, 0, 0);
+    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
   x.globalAlpha = 1;
   // After a Check that fell short: what the line missed, red (tracing).
   if (write.result && !write.result.pass && !memory) {
@@ -2356,15 +2534,20 @@ function drawWritePad() {
     els.writeFeedback.className = 'write-feedback';
     els.writeFeedback.textContent = write.strokes.length ? ''
       : memory ? 'Write the letter for this picture and name.'
-      : shape.head ? 'Trace the letter, starting at the green dot.' : 'Trace the letter.';
+      : shape.head ? 'Trace the letter, starting at the green dot.'
+      : alphaSetNow() === 'tones' ? 'Trace the tone mark. The faint อ holds the consonant\'s place.'
+      : at >= 0 ? 'Trace the vowel. The faint อ holds the consonant\'s place.'
+      : alphaSetNow() === 'vowels' ? 'Trace the vowel.' : 'Trace the letter.';
   }
 }
 
-function checkWrite() {
+async function checkWrite() {
   if (!write.strokes.length) return;
   const c = writeCard();
-  const shape = writeShape(c.thai);
   const memory = writeMemory();
+  const model = memory ? await writeModel().catch(() => null) : null; // without it (offline, first time), the shapes
+  if (!write.strokes.length || writeCard() !== c) return; // cleared, or moved on, meanwhile
+  const shape = writeShape(c.thai);
   const fit = memory ? fitTo(shape) : undefined;
   const score = writeScore(shape, fit);
   const [u, v] = (fit || ((p) => p))(write.strokes[0][0]);
@@ -2375,7 +2558,20 @@ function checkWrite() {
     : loop === false ? ' Next time, draw the little loop first, then the rest.' : '';
   let pass;
   let text;
-  if (memory) {
+  if (model) {
+    // The handwriting model: the letter asked for passes if it's the model's first pick or likely
+    // enough (MODEL_PASS); another letter is named only when the model is sure of it. A drawing
+    // that's mostly fill (more ink than twice the letter's) isn't a try.
+    const probs = runWriteModel(model, writeImage(model));
+    const ranked = [...model.letters].map((ch, i) => ({ ch, p: probs[i] })).sort((a, b) => b.p - a.p);
+    const own = probs[model.letters.indexOf(c.thai)] || 0;
+    const fair = score.ink <= 2;
+    els.writeFeedback.dataset.score = JSON.stringify({ model: 1, own: +own.toFixed(3), best: ranked[0].ch, bestP: +ranked[0].p.toFixed(3), next: ranked[1].ch, nextP: +ranked[1].p.toFixed(3), ink: +score.ink.toFixed(2) }); // for tuning
+    pass = fair && (ranked[0].ch === c.thai || own >= MODEL_PASS.own);
+    text = pass ? `✓ That's ${c.thai}!${tip}`
+      : fair && ranked[0].p >= MODEL_PASS.rival ? `That looks more like ${ranked[0].ch} than ${c.thai}. Compare them on the pad.`
+      : `Not quite: here's ${c.thai}.`;
+  } else if (memory) {
     // Which letter it looks like: against every consonant, each with the drawing fitted to its box,
     // at the tighter tolerances.
     const own = writeScore(shape, fit, true).f1;
@@ -2408,7 +2604,7 @@ function clearWrite() {
 }
 
 function moveWrite(step) {
-  const n = alphaCards.length;
+  const n = writeItems().length;
   let to = (writeIndex() + step + n) % n;
   if (writeMemory()) { // at random, so the next letter can't be guessed; ‹ goes back through them
     if (step > 0) {
@@ -2416,7 +2612,7 @@ function moveWrite(step) {
       do to = Math.floor(Math.random() * n); while (to === writeIndex() && n > 1);
     } else if (write.back.length) to = write.back.pop();
   }
-  setPreferences({ writeIndex: to });
+  setPreferences({ [writeIndexPref()]: to });
   clearWrite();
   renderWrite();
   speak(cardSay(writeCard()));
@@ -2449,7 +2645,6 @@ function bindWritePad() {
   document.getElementById('write-prev').addEventListener('click', () => moveWrite(-1));
   document.getElementById('write-next').addEventListener('click', () => moveWrite(1));
   els.writeName.addEventListener('click', () => speak(cardSay(writeCard())));
-  document.getElementById('write-to-consonants').addEventListener('click', () => setAlphaSet('consonants'));
   document.querySelectorAll('[data-write-mode]').forEach((b) => b.addEventListener('click', () => {
     setPreferences({ writeMode: b.dataset.writeMode === 'memory' ? 'memory' : 'trace' });
     write.back = [];
