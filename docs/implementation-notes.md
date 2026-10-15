@@ -1490,6 +1490,41 @@ tappable thing on a 390px phone, and of the styles, found four, all fixed:
 - Not done (low priority): about 20 controls explain themselves only in hover tooltips (`title`),
   which phones never show; the important ones say the same on screen.
 
+## English Loan Endings topic (2026-10-15)
+
+The user asked how English loans' endings map onto Thai's (s → t, f → p…), then asked for it as a
+topic: Thai Script → Tones & Reading, after Final Sound Families: `script-loan-endings`, 23 cards.
+- **The map in the `about`:** a line per row (-p -b -f -v → -p; -t -d -s -z -sh -ch -j -th → -t;
+  -k -g → -k; -l → -n, often -w; -r not said; -m -n -ng kept; extra consonants silenced with ์),
+  the Royal Institute's transcription rules (หลักเกณฑ์การทับศัพท์ภาษาอังกฤษ) named, and the two
+  habits the rules don't cover: newer loans keeping a real f or s, and the high tone on -p/-t/-k loans.
+- **The cards** are all words the app had (แอป, กราฟ, เสิร์ฟ, กอล์ฟ, ลิฟต์, เน็ต, การ์ด, เทนนิส,
+  แก๊ส, โค้ช, บลูทูธ, เค้ก, บล็อก, บิล, อีเมล, ไฟล์, ไลน์, เบอร์, คอมพิวเตอร์, เกม, แบรนด์, ฟิล์ม,
+  เฟซบุ๊ก), with their English and transliteration, so no new Words entries; the notes give each
+  ending's rule. The existing transliterations refined the answer given in chat: ลิฟต์ is líf (a
+  real f kept) and อีเมล ii-meeo (-l as -w), so the notes say both.
+- **A tile board** in eight groups of two or three, by the ending Thai gives. Groups of five or six
+  made the tiles (all the widest one's width, no wider than the biggest group allows) too narrow for
+  บลูทูธ or คอมพิวเตอร์; คอมพิวเตอร์ and เกม are left off it.
+- 8 new recordings: Thai in the notes and `about` (คลับ, บุ๊ก, ร์, ล์, ด์, น์, ก ค, the rules' name).
+
+## Borrowed from Further Afield topic (2026-10-15)
+
+The user asked which other languages Thai borrows from, then for a companion to Native or Borrowed
+(which covers Pali, Sanskrit, Khmer, Chinese, English): `script-loanwords-more`, Thai Script →
+Words & Spelling, after it, 24 cards in language order: Malay 7 (ทุเรียน มังคุด มะละกอ กุญแจ ราคา
+โจรสลัด ภูเก็ต), Persian 3 (องุ่น กุหลาบ ฝรั่ง), Arabic 2 (มัสยิด มุสลิม), Portuguese 4 (สบู่ ขนมปัง
+บาทหลวง เหรียญ), French 3 (กาแฟ ฝรั่งเศส บุฟเฟต์), Tamil 2 (แกงกะหรี่ เนย), Japanese 2 (สุกี้
+คาราโอเกะ), Lao 1 (กระติบ). Each note gives the source word.
+- **Checked against Wiktionary** (its "Thai terms borrowed from X" categories and each entry's
+  etymology), since Wikipedia's list of Thai loanwords is flagged unsourced. Two examples given in
+  chat couldn't be confirmed there and aren't used: เลหลัง from Portuguese, and แซ่บ from Lao/Isan
+  (not in either list). The `about` names Wiktionary.
+- 16 words had cards (same English and transliteration); 8 are new: โจรสลัด, องุ่น, มัสยิด, บาทหลวง,
+  บุฟเฟต์, แกงกะหรี่, เนย, กระติบ (pronunciations from Wiktionary). The curry is แกงกะหรี่, not
+  กะหรี่: the app's กะหรี่ card is the offensive slang (another source, Hindi chokrī), which the note
+  says. บุฟเฟต์ búp-fêe is in tools/tone_exceptions.txt (rules give low and mid).
+
 ## One card per meaning across topics (2026-10-13)
 
 The user asked why ยังไง was listed twice on the Words page: Question Words had it as "how

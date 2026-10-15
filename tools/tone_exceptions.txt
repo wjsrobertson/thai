@@ -148,3 +148,5 @@
 ไลฟ์ lái         # ไลฟ์ lái: rules mid, said high
 รัล rân          # ไวรัล wai-rân: rules mid, said falling
 ดอล dɔ̂n         # ไอดอล ai-dɔ̂n: rules mid, said falling
+บุฟ búp          # บุฟเฟต์ búp-fêe: rules low, said high (Wiktionary: บุ๊บ-เฟ่)
+เฟต์ fêe         # บุฟเฟต์ búp-fêe: rules mid, said falling
