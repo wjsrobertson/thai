@@ -61,6 +61,18 @@ def spoken_text(text, lang):
         # The obsolete letters ฦ and ฦๅ (in a note) get no audio at all from the voice: read them
         # as they sound, lʉ and lʉʉ, as the ฤๅ card's 'say' does for its sibling.
         text = {'ฦ': 'ลึ', 'ฦๅ': 'ลือ'}.get(text, text)
+        # The voice sounds out ยักษ์'s silent ษ์ as a second syllable (yák-sà; 570 ms against ยัก's
+        # 190 ms; the user heard "yaw yak yai" for ยอ ยักษ์, 2026-10-15): say it as it sounds, ยัก.
+        # It reads other ษ์ words right (อนุรักษ์ the same length either way).
+        text = text.replace('ยักษ์', 'ยัก')
+        # The voice says ผอ in two pulses, phɔ̌… ɔɔ (the user heard "paw aw pung" for ผอ ผึ้ง; alone,
+        # its loudness falls to a fifth and rises again, where ขอ, สอ, ถอ and ฝอ swell once). With ๋
+        # it says one rising syllable (its pitch dips and rises, as ขอ's), but in the name, run into
+        # ผึ้ง, it clips it short and level; after a comma it keeps the rise, at the cost of a pause.
+        text = {'ผอ': 'ผ๋อ', 'ผอ ผึ้ง': 'ผ๋อ, ผึ้ง'}.get(text, text)
+        # The voice reads เณร without its n: its เณร and its เอน are the same sound, loudness and
+        # spectrum (the user heard "naw ain" for นอ เณร), in สามเณร too. เนน sounds as เณร should.
+        text = text.replace('เณร', 'เนน')
         # The Thai voice all but skips Thai digits (๐–๙) but reads Arabic ones in Thai.
         return text.translate(THAI_DIGITS)
     # English glosses list alternatives as "a / b", which the voice runs together with no pause.

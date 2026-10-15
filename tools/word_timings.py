@@ -66,14 +66,23 @@ async def words_of(said, voice, rate, attempts):
     return None, None, err
 
 
-def placed(said, words):
-    """[c, start, end, …]: each word's position in the sentence, found in order."""
+def placed(said, words, sentence=None):
+    """[c, start, end, …]: each word's position in the sentence, found in order. Found in what the
+    voice was given (`said`), and taken back to the sentence when that was respelled for the voice
+    (gen_audio's spoken_text: ยักษ์ said ยัก, 2026-10-15), so the words after it light up in place."""
+    import difflib
+    back = None
+    if sentence is not None and sentence != said:
+        back = [len(sentence)] * (len(said) + 1)
+        for tag, i1, i2, j1, j2 in difflib.SequenceMatcher(None, sentence, said, autojunk=False).get_opcodes():
+            for k in range(j1, j2):  # what was said, matched one for one, or respelled (its start)
+                back[k] = i1 + (k - j1 if tag == 'equal' else 0)
     out, at = [], 0
     for text, start, end in words:
         c = said.find(text, at)
         if c < 0:
             continue  # the voice said it differently (a number read out): no light for it
-        out += [c, start, end]
+        out += [back[c] if back else c, start, end]
         at = c + len(text)
     return out
 
@@ -121,7 +130,7 @@ async def main():
             tmp.write_bytes(audio)
             tmp.replace(clip)
             replaced += 1
-        have[text] = placed(said, words)
+        have[text] = placed(said, words, text)
         if done % 100 == 0 or done == len(sentences):
             save(data)
             print(f'{done}/{len(sentences)} done, {replaced} clips replaced, {len(failed)} failed')

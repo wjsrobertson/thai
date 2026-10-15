@@ -1490,6 +1490,31 @@ tappable thing on a 390px phone, and of the styles, found four, all fixed:
 - Not done (low priority): about 20 controls explain themselves only in hover tooltips (`title`),
   which phones never show; the important ones say the same on screen.
 
+## ยักษ์ said with a syllable too many (2026-10-15)
+
+The user: ย sounded "yaw yak yai". The voice (th-TH-NiwatNeural) sounds out ยักษ์'s silent ษ์ as a
+second syllable: 570 ms of speech for ยักษ์ against 190 ms for ยัก (and ปลาหมึกยักษ์ 860 ms
+against 500). It reads other ษ์ words right (อนุรักษ์ the same length either way; ฤกษ์ one syllable).
+- gen_audio's spoken_text says ยักษ์ as ยัก (only what the voice is given; the Thai shown is the
+  same). Sample names hash what's said, so the 17 clips with it were made again: ยอ ยักษ์ (ย's name,
+  now 380 ms), ยักษ์, ปลาหมึกยักษ์, notes, and 12 story lines.
+- word_timings' placed() finds each word in what was said and now takes its position back to the
+  sentence (difflib's matching blocks) when the two differ, or every word after ยักษ์ would light two
+  characters early; the 12 lines' timings were made again.
+- **ผอ in two pulses** (the user, next: "paw pung" sounded "paw aw pung"): alone, the voice's ผอ
+  falls to a fifth of its loudness and rises again (phɔ̌… ɔɔ, its pitch broken between), where ขอ,
+  สอ, ถอ, ฝอ, พอ swell once. Respelt for the voice: ผอ as ผ๋อ (one rising syllable, its pitch
+  dipping and rising as ขอ's), and the name ผอ ผึ้ง as ผ๋อ, ผึ้ง (run into ผึ้ง, ผ๋อ came out short
+  and level; after a comma it keeps the rise, at the cost of a short pause). Exact matches only
+  (ผอม is untouched). Three clips again: the name, and the spelling parts ผอ and ผอ ผึ้ง.
+- **เณร without its n** (the user, next: "naw nain" sounded "naw ain"): the voice's เณร is its
+  เอน, the same loudness and spectrum frame for frame, with no nasal start (in สามเณร too). Said as
+  เนน, which sounds as เณร should (neen, mid): the four clips with it (the name, the word, a note, a
+  story line, whose timings were made again).
+- **Checked for others:** each letter's syllable said alone (the spelling parts: all 44, and 136
+  other short parts ending in อ), by its loudness: none else in two pulses. (In the names, said
+  whole, the two syllables run together too closely for that count.)
+
 ## From memory checked by a handwriting model (2026-10-15)
 
 The user: From memory was still too strict (Trace was fine), so the neural-network route offered
