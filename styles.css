@@ -1579,6 +1579,7 @@ body { display: flex; flex-direction: column; }
 .alpha-line-glyph { flex: none; min-width: 1.1em; color: var(--ink); font-size: calc(42px * var(--fs, 1)); line-height: 1; text-align: center; } /* larger (the user's call; it was 26px); the text after it starts in one place for most letters */
 .alpha-line-text { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; color: var(--ink); line-height: 1.3; }
 .alpha-line-more { flex: none; }
+.alpha-hint-text { padding: 0 16px; } /* the instructions in from the edges (the user's call); a letter's line keeps its place */
 .alpha-line-tr { color: var(--accent); font-style: italic; } /* as transliterations are everywhere (.pop-tr) */
 /* A consonant's: its name, its sound and picture word, its class, a line each ("…" if it must). */
 .alpha-line-row { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

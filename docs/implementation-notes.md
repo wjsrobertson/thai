@@ -1677,6 +1677,12 @@ the middle).
   "…" (CSS). The letter is 42px × text size (it was 26px). A vowel's line likewise (the user's
   call): its sound in yellow ("ʉa"), then what it is ("short (almost unused)"), the card's English
   split at its dash; that may take two lines.
+- **The Tones page's hint too** (the user: the pages should look the same when switching): its row
+  gets `.line-hint` and `.line-top` as the others', one height (60 px × text size) and pinned on a
+  phone, so the content starts at the same place on all three (157 px at 390 px, 260 on desktop).
+  Its hint lost " The cards: read a syllable's tone." (the user's call).
+  The hint's text is in a `.alpha-hint-text` box with 16 px either side, so it sits in from the
+  edges (the user's call); a letter's line, which replaces it, keeps its place (Write's matches it).
 - **The line pinned** (the user, next: it should stay as the vowels scroll, like the top menu, and be
   one height for the hint and a vowel). On a phone `.alpha-top.vowel-top` (renderAlphabet sets it
   for the Vowels set) is sticky at `--pinned-h` (76px, the section row's height, now a variable),

@@ -1910,7 +1910,7 @@ function closeSettings() {
 const ALPHA_SETS = {
   consonants: { label: 'Consonants', topics: ['script-consonants-all'], hint: 'Tap a letter to hear its name. Hold it for its details.' },
   vowels: { label: 'Vowels', topics: ['script-vowels', 'script-diphthongs'], hint: 'Tap a vowel to hear it. Hold it for its details.' },
-  tones: { label: 'Tones', topics: ['script-read-tone'], hint: 'Tap a tone or a mark to learn it, or a syllable in the chart to hear it. The cards: read a syllable\'s tone.' },
+  tones: { label: 'Tones', topics: ['script-read-tone'], hint: 'Tap a tone or a mark to learn it, or a syllable in the chart to hear it.' },
 };
 // Every letter's picture (images/letters/, SVG; all 44 since 2026-10-14). A letter without one would show none.
 const LETTER_PICS = {
@@ -2036,10 +2036,11 @@ function renderAlphabet() {
     renderWrite();
     return;
   }
-  const lined = set !== 'tones'; // the consonants and vowels: a tap hears it (pickAlpha)
-  els.alphaHint.textContent = ALPHA_SETS[set].hint;
-  els.alphaHint.classList.toggle('line-hint', lined); // one height, the hint or a letter's line
-  els.alphaTop.classList.toggle('line-top', lined); // pinned on a phone (mobile.css)
+  els.alphaHint.replaceChildren(Object.assign(document.createElement('span'), { className: 'alpha-hint-text', textContent: ALPHA_SETS[set].hint }));
+  // One height for the hint or a letter's line (the consonants and vowels: pickAlpha), and the Tones
+  // page's hint too, so the pages line up when switching (the user's call); pinned on a phone.
+  els.alphaHint.classList.add('line-hint');
+  els.alphaTop.classList.add('line-top');
   els.alphaGrid.hidden = set !== 'consonants';
   els.alphaVowels.hidden = set !== 'vowels';
   els.alphaTones.hidden = set !== 'tones';
