@@ -1556,6 +1556,46 @@ retrain with the symbols, From memory for marks, then vowels), Trace first, afte
 - Checked in the app (each form's own part drawn as dots, as the app places it): 30/30 vowels and
   4/4 marks pass; with the อ traced too, 28/28 and 4/4; the อ alone, 0/28 and 0/4.
 
+## Write: vowels and tone marks from memory; the model's 68 shapes (2026-10-15)
+
+The user: "commit then do the next steps" (retrain with the symbols, From memory for marks, then
+vowels).
+- **The model, second version:** Burapha-TH's other 24 characters added (SYMBOLS: ฤ ฦ ฯ, ะ ั า ำ
+  ิ ี ึ ื ุ ู เ แ โ ใ ไ ็, ่ ้ ๊ ๋, ์): `extend` gave the consonants' model 68 outputs (its weights
+  kept; the consonants-only model kept as write-model-v2.pt), `synth` drew all 68 from the fonts
+  (symbols at 400 px, alone: Pillow here has no shaping, so no placeholder circle), `tune` 10 epochs
+  at 2e-3 (~205 s each) on 63,327 + 3 × 9,520. Asked as the app asks (among the consonants for a
+  consonant, the symbols for a symbol): consonants 97.3% first pick (as before), symbols 97.8%; all
+  44 consonants right in the three fonts. data/write-model.bin is 466 KB. The consonant check now
+  weighs only the consonants (renormalised): the right letter passes 98.8%, another 0.2%, as before.
+- **From memory for a vowel or mark** (checkParts): the pad shows only the faint อ; the prompt is
+  the line's rows (a vowel's sound and what it is; a mark's name, transliteration, "tone mark 2").
+  The strokes that touch are joined into parts (joinTouching: a point within 1.5% of the pad), each
+  part placed against the อ's box (partSlot: middle left of it, before; all of it over its top,
+  above, wherever across, as a tone mark sits over its right edge; all of it under its foot, below;
+  middle right of it, after; else the อ itself, set aside); ำ's circle, with nothing wanted above,
+  goes with the ำ after. A place's strokes are split into its parts at the widest gaps (splitParts:
+  เอือะ's อ and ะ), each read by the model: it passes at 10% of the model's whole belief (PART_PASS;
+  among a place's few shapes a scribble would score ~25%), or first among the place's shapes at a
+  quarter of that; another shape is named at 60% among the place's shapes. Feedback per part: "The
+  part above should be ◌ี; that looks like ◌ิ", "Missing: the เ in front", "A tone mark goes above
+  the consonant". ฤ ฤๅ (no carrier): ฤ read among the consonants and ฤ ฦ; ๅ, unknown to the
+  model, only has to be there. Calibrated on the test split, per place at 10%: the right part
+  passes 98.2% (below) to 99.8% (after, tone marks), a look-alike there 0–0.7%.
+- **Checked in the app** (each form's parts drawn as lines, nearest point next, at 4× the pad's
+  resolution, as the app places them): tone marks 4/4 right, 4/4 look-alikes named, 4/4 drawn
+  under the อ told "A tone mark goes above the consonant"; vowels 30/30 right, 18/19 look-alikes
+  caught (the one, แอะ for เอะ, a test artefact: แอะ's own layout put แ's second stroke on เอะ's อ).
+  The first runs, with each pixel a stroke and placed by its middle, failed on placement, not on
+  reading: why parts are joined first and placed as wholes.
+- **Write's top is the Letters page's line** (the user's call): alphaLineText and fillAlphaText
+  (shared with pickAlpha) give the rows; the letter, vowel or mark on the left at 42 px; From memory,
+  a consonant's picture (52 px) in its place, a vowel's or mark's an empty dashed box. 60 px × text
+  size, the same in every set and mode, so the pad doesn't move.
+- **Home** (the user's wording): Topics' rows shortened ("Every word in a topic. Tap ⟲ to add one to
+  Cards.", "Browse, Recognition and Recall", "Short stories that use the topic's words"), and the
+  Dictionary's "Browse or search in Thai, English or transliteration".
+
 ## The Alphabet's vowels in three sections (2026-10-15)
 
 The user: the Vowels page was a wall of tiles; split it by group. Their call, after the options: keep

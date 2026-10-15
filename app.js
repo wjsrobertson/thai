@@ -2061,18 +2061,7 @@ function renderAlphabet() {
     b.setAttribute('aria-pressed', 'false');
     // The line: its name in the transliteration's yellow, its sound and picture word, and its class
     // in the class's colour, as the dialog has it (2026-10-15, the user's request).
-    // Three lines (the user's calls): its name, its sound and picture word, its class (no ●). Each one
-    // line: the English too long for it (ฑ's "(Ramakien queen)") goes without the bracket, then "…".
-    const line = (short) => {
-      const name = CLASS_NAMES[f.cls];
-      const span = (className, ...kids) => { const s = Object.assign(document.createElement('span'), { className }); s.append(...kids); return s; };
-      return [
-        span('alpha-line-row alpha-line-tr', c.translit),
-        span('alpha-line-row', short ? c.english.replace(/ \(.*\)$/, '') : c.english),
-        ...(name ? [span(`alpha-line-row cls-${name}`, `${name} class`)] : []), // lower case: "mid class"
-      ];
-    };
-    b.addEventListener('click', () => pickAlpha(els.alphaGrid, b, c, line, () => showLetterPop(b, c)));
+    b.addEventListener('click', () => pickAlpha(els.alphaGrid, b, c, 'consonants', () => showLetterPop(b, c)));
     onLongPress(b, () => showLetterPop(b, c));
     return b;
   }));
@@ -2160,7 +2149,7 @@ const MODEL_PASS = { own: 0.1, rival: 0.6 }; // From memory with it: the letter'
 const TELL_APART = { band: 10, reach: 6, behind: 0.05, rival: 0.8 };
 const writeFont = (px) => `${px}px "Learn Thai Looped"`;
 const write = { strokes: [], drawing: false, result: null, back: [] }; // back: From memory's letters so far, for ‹
-const writeMemory = () => getPreferences().writeMode === 'memory' && alphaSetNow() === 'consonants'; // the model knows the consonants
+const writeMemory = () => getPreferences().writeMode === 'memory';
 // Letters a learner mixes up when writing: the Look-alike Letters board's groups and a few more pairs.
 // From memory checks a drawing against the letter asked for and these.
 const WRITE_LOOKALIKES = [['บ', 'ป', 'ษ'], ['ผ', 'ฝ'], ['พ', 'ฟ'], ['ค', 'ศ', 'ฅ'], ['ร', 'ธ'], ['ด', 'ต', 'ค'], ['ข', 'ช', 'ซ', 'ฃ'],
@@ -2269,7 +2258,15 @@ function writeShape(ch) {
   let x0 = N, y0 = N, x1 = 0, y1 = 0;
   target.forEach((v, i) => { if (v) { const x = i % N, y = (i / N) | 0; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y); } });
   const head = alphaSetNow() === 'consonants' && loops.length === 1 ? loops[0] : null; // where to start: consonants' heads
-  const shape = { target, band, bandTight, count: target.reduce((n, v) => n + v, 0), head, box: [x0, y0, x1, y1] };
+  // The carrier's box, 0..1 (From memory sorts a vowel's strokes by where they are against it).
+  let carrierBox = null;
+  if (at >= 0) {
+    const cm = writeMask((x) => { const p = placeGlyph(x, ch, WRITE_N); x.fillText(WRITE_CARRIER, p.x + x.measureText(ch.slice(0, at)).width, p.y); });
+    let cx0 = N, cy0 = N, cx1 = 0, cy1 = 0;
+    cm.forEach((v, i) => { if (v) { const x = i % N, y = (i / N) | 0; cx0 = Math.min(cx0, x); cx1 = Math.max(cx1, x); cy0 = Math.min(cy0, y); cy1 = Math.max(cy1, y); } });
+    carrierBox = [cx0 / N, cy0 / N, cx1 / N, cy1 / N];
+  }
+  const shape = { target, band, bandTight, count: target.reduce((n, v) => n + v, 0), head, box: [x0, y0, x1, y1], carrierBox };
   writeShapes.set(key, shape);
   return shape;
 }
@@ -2384,8 +2381,8 @@ function runWriteModel(m, input) {
 
 // The drawing as the model sees it (train_writing.py normalize): cropped to its ink, fitted into the
 // model's box with `inner` on the long side, centred, shape kept, its lines WRITE_MODEL_LINE wide.
-function writeImage(m) {
-  const pts = write.strokes.flat();
+function writeImage(m, strokes = write.strokes) {
+  const pts = strokes.flat();
   const ux0 = Math.min(...pts.map((p) => p[0])), ux1 = Math.max(...pts.map((p) => p[0]));
   const uy0 = Math.min(...pts.map((p) => p[1])), uy1 = Math.max(...pts.map((p) => p[1]));
   const k = (m.inner - WRITE_MODEL_LINE) / Math.max(ux1 - ux0, uy1 - uy0, 1e-3);
@@ -2397,7 +2394,7 @@ function writeImage(m) {
   x.lineCap = 'round';
   x.lineJoin = 'round';
   const at = ([u, v]) => [(u - cx) * k + m.size / 2, (v - cy) * k + m.size / 2];
-  for (const s of write.strokes) {
+  for (const s of strokes) {
     x.beginPath();
     s.map(at).forEach(([u, v], i) => (i ? x.lineTo(u, v) : x.moveTo(u, v)));
     if (s.length === 1) { const [u, v] = at(s[0]); x.lineTo(u + 0.01, v); }
@@ -2405,6 +2402,133 @@ function writeImage(m) {
   }
   const d = x.getImageData(0, 0, m.size, m.size).data;
   return Float32Array.from({ length: m.size * m.size }, (_, i) => d[i * 4 + 3] / 255);
+}
+
+// The model's probabilities for some strokes, as a map from character to probability (all of its
+// classes: the consonants' model has 44, the second 68).
+function modelProbs(model, strokes) {
+  const p = runWriteModel(model, writeImage(model, strokes));
+  return new Map([...model.letters].map((ch, i) => [ch, p[i]]));
+}
+
+// ---------- From memory: vowels and tone marks (2026-10-15) ----------
+// Written round the faint อ: the strokes sorted by where they are against it (before, above, below,
+// after; on it, the carrier itself, set aside), each place's strokes read by the model, and the
+// parts compared with the form's. A part passes if the model gives it PART_PASS of its whole
+// belief (all 68 shapes: among a place's few, a scribble would score); another shape is named only
+// when the model is sure of it among those that go there.
+const PART_SLOT = (ch) => ('เแโใไ'.includes(ch) ? 'before' : 'ัิีึื็่้๊๋์'.includes(ch) ? 'above' : 'ุู'.includes(ch) ? 'below' : 'after');
+const SLOT_SHAPES = { before: 'เแโใไ', above: 'ัิีึื็่้๊๋์', below: 'ุู', after: 'ะาำอยว' };
+const SLOT_WORDS = { before: 'in front', above: 'above', below: 'below', after: 'after the อ' };
+const TONE_MARKS = '่้๊๋';
+const PART_PASS = { own: 0.1, rival: 0.6 };
+const partName = (ch) => ('ัิีึื็่้๊๋์ุู'.includes(ch) ? `◌${ch}` : ch);
+const writeParts = (form) => {
+  const at = form.indexOf(WRITE_CARRIER);
+  return [...form].filter((_, i) => i !== at).map((ch) => ({ ch, slot: PART_SLOT(ch) }));
+};
+const strokeBox = (s) => [Math.min(...s.map((p) => p[0])), Math.min(...s.map((p) => p[1])), Math.max(...s.map((p) => p[0])), Math.max(...s.map((p) => p[1]))];
+
+// Strokes that touch (a point of one within `gap` of the other's) are one part, however many pieces
+// it was drawn in, and its place is the whole part's.
+function joinTouching(strokes, gap = 0.015) {
+  const parent = strokes.map((_, i) => i);
+  const find = (i) => (parent[i] === i ? i : (parent[i] = find(parent[i])));
+  const near = (a, b) => a.some((p) => b.some((q) => Math.abs(p[0] - q[0]) < gap && Math.abs(p[1] - q[1]) < gap));
+  for (let i = 0; i < strokes.length; i++) {
+    for (let j = i + 1; j < strokes.length; j++) if (find(i) !== find(j) && near(strokes[i], strokes[j])) parent[find(i)] = find(j);
+  }
+  const parts = new Map();
+  strokes.forEach((s, i) => parts.set(find(i), [...(parts.get(find(i)) || []), s]));
+  return [...parts.values()];
+}
+
+// A part's place against the carrier's box: its middle left of it is before (เ แ โ ใ ไ, tall,
+// beside the อ); all of it over the อ's top is above, wherever across (a tone mark sits over the
+// อ's right edge); all of it under the อ's foot is below; its middle right of it is after; the rest
+// is the carrier itself (a learner who writes the อ too).
+function partSlot(strokes, b) {
+  const [x0, y0, x1, y1] = strokeBox(strokes.flat());
+  const cx = (x0 + x1) / 2;
+  const w = b[2] - b[0], h = b[3] - b[1];
+  if (cx < b[0]) return 'before';
+  if (y1 < b[1] + h * 0.15) return 'above';
+  if (y0 > b[3] - h * 0.15) return 'below';
+  if (cx > b[2] - w * 0.15) return 'after';
+  return 'carrier';
+}
+
+// Strokes in a place, split into `n` parts at the widest gaps between them, left to right.
+function splitParts(strokes, n) {
+  if (n <= 1 || strokes.length <= 1) return [strokes];
+  const sorted = [...strokes].sort((a, b) => strokeBox(a)[0] - strokeBox(b)[0]);
+  let right = strokeBox(sorted[0])[2];
+  const gaps = [];
+  for (let i = 1; i < sorted.length; i++) {
+    const [x0, , x1] = strokeBox(sorted[i]);
+    gaps.push({ i, gap: x0 - right });
+    right = Math.max(right, x1);
+  }
+  const cuts = gaps.sort((a, b) => b.gap - a.gap).slice(0, n - 1).map((g) => g.i).sort((a, b) => a - b);
+  const bounds = [0, ...cuts, sorted.length];
+  return bounds.slice(0, -1).map((from, k) => sorted.slice(from, bounds[k + 1]));
+}
+
+// { pass, text, detail } for a vowel's or tone mark's drawing (the set's form c.thai, its shape).
+function checkParts(c, shape, model) {
+  const tones = alphaSetNow() === 'tones';
+  const parts = writeParts(c.thai);
+  const read = (strokes, shapes) => {
+    const probs = modelProbs(model, strokes);
+    const among = [...shapes].map((ch) => ({ ch, p: probs.get(ch) || 0 }));
+    const sum = among.reduce((a, x) => a + x.p, 0) || 1;
+    return { probs, best: among.sort((a, b) => b.p - a.p)[0], sure: among[0].p / sum };
+  };
+  // ฤ and ฤๅ have no carrier: the first part read among the consonants and ฤ ฦ; ๅ, which the model
+  // doesn't know, only has to be there.
+  if (!shape.carrierBox) {
+    const groups = splitParts(write.strokes, parts.length);
+    const r = read(groups[0], [...model.letters].filter((ch) => alphaCards.some((a) => a.thai === ch) || 'ฤฦ'.includes(ch)).join(''));
+    const own = r.probs.get(parts[0].ch) || 0;
+    if (own < PART_PASS.own && r.best.ch !== parts[0].ch) return { pass: false, text: `Not quite: here's ${c.thai}.`, detail: { own } };
+    if (groups.length < parts.length) return { pass: false, text: `Nearly: ${c.thai} also needs ${parts[1].ch} after it.`, detail: { own } };
+    return { pass: true, text: `✓ That's ${c.thai}!`, detail: { own } };
+  }
+  const bySlot = { before: [], above: [], below: [], after: [] };
+  for (const part of joinTouching(write.strokes)) {
+    const slot = partSlot(part, shape.carrierBox);
+    if (slot !== 'carrier') bySlot[slot].push(...part);
+  }
+  const want = (slot) => parts.filter((p) => p.slot === slot);
+  // ำ's circle sits over the อ's right edge: with nothing wanted above, it's part of ำ.
+  if (!want('above').length && want('after').some((p) => p.ch === 'ำ')) bySlot.after.push(...bySlot.above.splice(0));
+  const problems = [];
+  const detail = {};
+  for (const slot of ['before', 'above', 'below', 'after']) {
+    const wanted = want(slot);
+    const strokes = bySlot[slot];
+    if (!wanted.length) {
+      if (strokes.length) problems.push(tones ? 'A tone mark goes above the consonant.' : `${c.thai} has nothing ${SLOT_WORDS[slot]}.`);
+      continue;
+    }
+    if (!strokes.length) {
+      problems.push(tones ? 'Write the tone mark above the อ.' : `Missing: the ${wanted.map((p) => partName(p.ch)).join(' ')} ${SLOT_WORDS[slot]}.`);
+      continue;
+    }
+    const groups = splitParts(strokes, wanted.length);
+    wanted.forEach((p, k) => {
+      if (!groups[k]) { problems.push(`Missing: the ${partName(p.ch)} ${SLOT_WORDS[slot]}.`); return; }
+      const r = read(groups[k], tones ? TONE_MARKS : SLOT_SHAPES[slot]);
+      const own = r.probs.get(p.ch) || 0;
+      detail[p.ch] = { own: +own.toFixed(3), best: r.best.ch, sure: +r.sure.toFixed(2) };
+      if (own >= PART_PASS.own || r.best.ch === p.ch && own >= PART_PASS.own / 4) return;
+      problems.push(r.best.ch !== p.ch && r.sure >= PART_PASS.rival
+        ? `The part ${SLOT_WORDS[slot]} should be ${partName(p.ch)}; that looks like ${partName(r.best.ch)}.`
+        : `The part ${SLOT_WORDS[slot]} should be ${partName(p.ch)}.`);
+    });
+  }
+  const pass = !problems.length;
+  return { pass, text: pass ? `✓ That's ${tones ? `${c.say} (${partName(parts[0].ch)})` : c.thai}!` : problems.slice(0, 2).join(' '), detail };
 }
 
 // From memory: the drawing, wherever and however big, scaled (keeping its shape) and centred onto a
@@ -2454,18 +2578,18 @@ function renderWrite() {
   const c = writeCard();
   if (!c) return;
   const set = alphaSetNow();
-  els.writeModeSwitch.hidden = set !== 'consonants'; // vowels and marks: Trace (From memory's model is the consonants')
   document.querySelectorAll('[data-write-mode]').forEach((b) => b.setAttribute('aria-checked', b.dataset.writeMode === (writeMemory() ? 'memory' : 'trace') ? 'true' : 'false'));
   if (writeMemory()) writeModel().catch(() => {}); // ready by the first Check
-  // From memory names the letter without showing it: its picture, transliteration and meaning.
-  els.writeName.replaceChildren(...(writeMemory()
-    ? [...(c.pic ? [Object.assign(document.createElement('img'), { src: picSrc(c.pic), alt: '', width: 48, height: 48 })] : []),
-      Object.assign(document.createElement('span'), { textContent: `${c.translit} · ${c.english}` })]
-    : [Object.assign(document.createElement('b'), { lang: 'th', textContent: c.thai }),
-      // A consonant's name in Thai and its transliteration; a vowel's sound; a mark's name in both.
-      ...(set === 'vowels' ? [Object.assign(document.createElement('span'), { textContent: c.english.split(' — ')[0] })]
-        : [Object.assign(document.createElement('span'), { lang: 'th', textContent: c.say || '' }),
-          Object.assign(document.createElement('span'), { textContent: c.translit })])]));
+  // The Letters page's line (alphaLineText), the user's call (2026-10-15): the letter, then its rows.
+  // From memory names it without showing it: a consonant's picture in the letter's place; a vowel or
+  // mark, which have none, an empty box.
+  const glyph = writeMemory()
+    ? (c.pic ? Object.assign(document.createElement('img'), { className: 'alpha-line-pic', src: picSrc(c.pic), alt: '', width: 52, height: 52 })
+      : Object.assign(document.createElement('span'), { className: 'alpha-line-glyph write-blank' }))
+    : Object.assign(document.createElement('span'), { className: 'alpha-line-glyph', lang: 'th', textContent: c.thai });
+  const words = Object.assign(document.createElement('span'), { className: 'alpha-line-text' });
+  els.writeName.replaceChildren(glyph, words);
+  fillAlphaText(words, c, set);
   document.fonts.load(writeFont(100), c.thai).then(drawWritePad);
   drawWritePad();
 }
@@ -2492,7 +2616,7 @@ function drawWritePad() {
   if (at < 0) {
     x.globalAlpha = memory ? (write.result ? 0.35 : 0) : 0.3;
     x.fillText(ch, p.x, p.y);
-  } else {
+  } else if (!memory || write.result) { // From memory: the อ alone until checked
     x.globalAlpha = 0.1;
     x.fillText(ch, p.x, p.y);
     const part = document.createElement('canvas');
@@ -2507,6 +2631,9 @@ function drawWritePad() {
     x.globalAlpha = 0.3;
     x.drawImage(part, 0, 0);
     x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  } else {
+    x.globalAlpha = 0.1;
+    x.fillText(WRITE_CARRIER, p.x + x.measureText(ch.slice(0, at)).width, p.y);
   }
   x.globalAlpha = 1;
   // After a Check that fell short: what the line missed, red (tracing).
@@ -2533,6 +2660,8 @@ function drawWritePad() {
   if (!write.result) {
     els.writeFeedback.className = 'write-feedback';
     els.writeFeedback.textContent = write.strokes.length ? ''
+      : memory && alphaSetNow() === 'vowels' ? (at >= 0 ? 'Write this vowel round the faint อ.' : 'Write this vowel.')
+      : memory && alphaSetNow() === 'tones' ? 'Write this tone mark on the faint อ.'
       : memory ? 'Write the letter for this picture and name.'
       : shape.head ? 'Trace the letter, starting at the green dot.'
       : alphaSetNow() === 'tones' ? 'Trace the tone mark. The faint อ holds the consonant\'s place.'
@@ -2548,6 +2677,16 @@ async function checkWrite() {
   const model = memory ? await writeModel().catch(() => null) : null; // without it (offline, first time), the shapes
   if (!write.strokes.length || writeCard() !== c) return; // cleared, or moved on, meanwhile
   const shape = writeShape(c.thai);
+  if (memory && alphaSetNow() !== 'consonants') { // a vowel or tone mark (checkParts)
+    const r = model && model.letters.length > alphaCards.length ? checkParts(c, shape, model)
+      : { pass: false, text: 'Checking vowels and tone marks needs the handwriting model, which hasn\'t loaded. Try again online.' };
+    els.writeFeedback.dataset.score = JSON.stringify(r.detail || {}); // for tuning
+    write.result = { pass: r.pass, missed: new Uint8Array(WRITE_N * WRITE_N) };
+    els.writeFeedback.className = 'write-feedback ' + (r.pass ? 'good' : 'bad');
+    els.writeFeedback.textContent = r.text;
+    drawWritePad();
+    return;
+  }
   const fit = memory ? fitTo(shape) : undefined;
   const score = writeScore(shape, fit);
   const [u, v] = (fit || ((p) => p))(write.strokes[0][0]);
@@ -2562,9 +2701,12 @@ async function checkWrite() {
     // The handwriting model: the letter asked for passes if it's the model's first pick or likely
     // enough (MODEL_PASS); another letter is named only when the model is sure of it. A drawing
     // that's mostly fill (more ink than twice the letter's) isn't a try.
-    const probs = runWriteModel(model, writeImage(model));
-    const ranked = [...model.letters].map((ch, i) => ({ ch, p: probs[i] })).sort((a, b) => b.p - a.p);
-    const own = probs[model.letters.indexOf(c.thai)] || 0;
+    // Among the consonants only (the second model knows vowels and marks too).
+    const probs = modelProbs(model, write.strokes);
+    const cons = alphaCards.map((a) => a.thai).filter((ch) => probs.has(ch));
+    const sum = cons.reduce((a, ch) => a + probs.get(ch), 0) || 1;
+    const ranked = cons.map((ch) => ({ ch, p: probs.get(ch) / sum })).sort((a, b) => b.p - a.p);
+    const own = (probs.get(c.thai) || 0) / sum;
     const fair = score.ink <= 2;
     els.writeFeedback.dataset.score = JSON.stringify({ model: 1, own: +own.toFixed(3), best: ranked[0].ch, bestP: +ranked[0].p.toFixed(3), next: ranked[1].ch, nextP: +ranked[1].p.toFixed(3), ink: +score.ink.toFixed(2) }); // for tuning
     pass = fair && (ranked[0].ch === c.thai || own >= MODEL_PASS.own);
@@ -2710,15 +2852,7 @@ function renderVowelGrid() {
         b.title = `${c.translit}: ${c.english}`;
         b.dataset.say = cardSay(c); // lit while it plays (markSpeakers)
         b.setAttribute('aria-pressed', 'false');
-        // Its sound in the transliteration's yellow, then what it is, on a line of their own (the
-        // user's call): the card's English split at its dash ("ʉa — short (almost unused)").
-        const line = (short) => {
-          const [sound, ...rest] = c.english.split(' — ');
-          const what = rest.join(' — ');
-          const span = (className, text) => Object.assign(document.createElement('span'), { className, textContent: text });
-          return what ? [span('alpha-line-row alpha-line-tr', sound), span('alpha-line-desc', short ? what.replace(/ \(.*\)$/, '') : what)] : [c.english];
-        };
-        b.addEventListener('click', () => pickAlpha(els.alphaVowels, b, c, line, () => showVowelPop(b, c)));
+        b.addEventListener('click', () => pickAlpha(els.alphaVowels, b, c, 'vowels', () => showVowelPop(b, c)));
         onLongPress(b, () => showVowelPop(b, c));
         g.append(b);
       }
@@ -2729,13 +2863,40 @@ function renderVowelGrid() {
   }));
 }
 
+// The line a consonant, vowel or tone mark gets, on the Letters page (pickAlpha) and atop Write
+// (renderWrite), as rows (the user's calls, 2026-10-15): a consonant's transliteration (yellow, as
+// everywhere), its sound and picture word, its class in its colour ("mid class", no ●); a vowel's
+// sound (yellow), then what it is (the card's English split at its dash: "ʉa — short (almost
+// unused)"); a mark's Thai name, transliteration, what it is. `short`: without the English's bracket.
+function alphaLineText(c, set, short) {
+  const span = (className, ...kids) => { const el = Object.assign(document.createElement('span'), { className }); el.append(...kids); return el; };
+  const trim = (t) => (short ? t.replace(/ \(.*\)$/, '') : t);
+  if (set === 'vowels') {
+    const [sound, ...rest] = c.english.split(' — ');
+    const what = rest.join(' — ');
+    return what ? [span('alpha-line-row alpha-line-tr', sound), span('alpha-line-desc', trim(what))] : [c.english];
+  }
+  if (set === 'tones') return [span('alpha-line-row', c.say || ''), span('alpha-line-row alpha-line-tr', c.translit), span('alpha-line-row', c.english)];
+  const name = CLASS_NAMES[letterFacts(c).cls];
+  return [span('alpha-line-row alpha-line-tr', c.translit), span('alpha-line-row', trim(c.english)), ...(name ? [span(`alpha-line-row cls-${name}`, `${name} class`)] : [])];
+}
+
+// Fills a line's text box (in the page already, to be measured): the full text, or, if it doesn't
+// fit (ฑ's "(Ramakien queen)" at the larger text sizes), without the bracket; then "…" (CSS).
+function fillAlphaText(words, c, set) {
+  const fill = (short) => words.replaceChildren(...alphaLineText(c, set, short));
+  fill(false);
+  const over = () => words.scrollHeight > words.clientHeight + 1 || [...words.querySelectorAll('.alpha-line-row')].some((r) => r.scrollWidth > r.clientWidth + 1)
+    || [...words.querySelectorAll('.alpha-line-desc')].some((r) => r.scrollHeight > r.clientHeight + 1);
+  if (over()) fill(true);
+}
+
 // A vowel or consonant tapped (2026-10-15, the user's calls: usually just to hear it; the vowels,
 // then the consonants): it's said (a letter's name) and its tile marked, and the line above the grid
-// becomes it and `text` (a string, text and elements, or a function giving them, given `short` when the
-// full ones don't fit the line), with Details, which calls `open` (its dialog). A long press opens the
+// becomes it (alphaLineText), with Details, which calls `open` (its dialog). A long press opens the
 // dialog straight away (onLongPress). No picture for a consonant: too small to see there (the user's
-// call, 2026-10-15); the dialog has it.
-function pickAlpha(grid, b, c, text, open) {
+// call); the dialog has it.
+function pickAlpha(grid, b, c, set, open) {
   speakerPress(b, cardSay(c));
   grid.querySelectorAll('.letter-tile[aria-pressed="true"]').forEach((t) => t.setAttribute('aria-pressed', 'false'));
   b.setAttribute('aria-pressed', 'true');
@@ -2746,12 +2907,8 @@ function pickAlpha(grid, b, c, text, open) {
   details.type = 'button';
   details.addEventListener('click', open);
   const words = el('span', 'alpha-line-text');
-  const fill = (short) => words.replaceChildren(...[typeof text === 'function' ? text(short) : text].flat());
-  fill(false);
   els.alphaHint.replaceChildren(glyph, words, details);
-  const over = () => words.scrollHeight > words.clientHeight + 1 || [...words.querySelectorAll('.alpha-line-row')].some((r) => r.scrollWidth > r.clientWidth + 1)
-    || [...words.querySelectorAll('.alpha-line-desc')].some((r) => r.scrollHeight > r.clientHeight + 1);
-  if (typeof text === 'function' && over()) fill(true);
+  fillAlphaText(words, c, set);
 }
 
 // Every vowel tile one width, the widest one's (so the columns line up from section to section), no

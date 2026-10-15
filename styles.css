@@ -1592,11 +1592,11 @@ body { display: flex; flex-direction: column; }
 .write-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
 /* One height for Trace's letter and name and From memory's picture and prompt, so switching doesn't
    shift the pad (the user's request, 2026-10-14): the prompt at most two lines. */
-.write-name { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; height: calc(64px * var(--fs, 1)); padding: 4px; background: none; border: 0; color: var(--ink); font-size: calc(17px * var(--fs, 1)); overflow: hidden; }
-.write-name span { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; line-height: 1.25; text-align: left; }
-.write-name b { font-size: calc(30px * var(--fs, 1)); font-weight: 500; }
-.write-name span { color: var(--muted); }
-.write-name img { flex: none; width: calc(48px * var(--fs, 1)); height: calc(48px * var(--fs, 1)); border-radius: 10px; }
+.write-name { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; height: calc(60px * var(--fs, 1)); padding: 0; background: none; border: 0; color: var(--ink); font-size: calc(15px * var(--fs, 1)); text-align: left; overflow: hidden; }
+/* Write's top is the Letters page's line (alpha-line-*, 2026-10-15); From memory, a consonant's
+   picture in the letter's place, or for a vowel or mark (no picture) an empty box. */
+.alpha-line-pic { flex: none; width: calc(52px * var(--fs, 1)); height: calc(52px * var(--fs, 1)); }
+.write-blank { width: 1.1em; height: 1em; border: 2px dashed var(--border); border-radius: 10px; }
 .write-mode { display: flex; margin: 0 0 10px; }
 .write-mode .seg-btn { flex: 1; }
 .write-pad { width: 100%; aspect-ratio: 1; background: var(--panel); border: 1px solid var(--control-border); border-radius: 16px; overflow: hidden; }
@@ -1681,12 +1681,12 @@ body { display: flex; flex-direction: column; }
    on the dark themes a thin edge in the theme's ink round each, as a die-cut sticker, so their dark
    outlines show; none on Light. */
 :is(.letter-pic, .card-pic) { --edge: 2px; }
-.write-name img { --edge: 1.5px; }
-:is(.letter-pic, .card-pic, .write-name img) {
+.alpha-line-pic { --edge: 1.5px; }
+:is(.letter-pic, .card-pic, .alpha-line-pic) {
   filter: drop-shadow(var(--edge) 0 0 var(--ink)) drop-shadow(calc(-1 * var(--edge)) 0 0 var(--ink))
     drop-shadow(0 var(--edge) 0 var(--ink)) drop-shadow(0 calc(-1 * var(--edge)) 0 var(--ink));
 }
-:root[data-theme="light"] :is(.letter-pic, .card-pic, .write-name img) { filter: none; }
+:root[data-theme="light"] :is(.letter-pic, .card-pic, .alpha-line-pic) { filter: none; }
 /* A letter's picture on its card's back (renderCard, presentEntry), and in its dialog. */
 .card-pic { display: block; width: min(112px, 18vh); height: auto; margin: 0 auto 6px; border-radius: 14px; }
 .card-pic[hidden] { display: none; }

@@ -12,6 +12,11 @@ never the images. The 44 consonants, about 900 training and 200 test samples eac
   python3 -u tools/train_writing.py tune      # the model trained on, Burapha-TH and synth together
   python3 -u tools/train_writing.py eval      # the test split, and the letters in installed fonts
   python3 -u tools/train_writing.py export    # -> data/write-model.bin, for app.js (writeModel)
+  python3 -u tools/train_writing.py extend    # the consonants' model given the 24 symbol classes too
+
+Since 2026-10-15 (the second model) it knows all 68 of Burapha-TH's characters: the 44 consonants,
+ฤ ฦ, and the vowel symbols and marks (SYMBOLS), for From memory's vowels and tone marks; app.js
+weighs only the classes a check could be (the consonants, or a vowel's or mark's possible parts).
 
 DATA is ~/Development/datasets/burapha-th (or $BURAPHA_TH), holding the unzipped
 character-train/ and character-test/ (20210306-train.zip, 20210306-test.zip from the page above).
@@ -34,6 +39,9 @@ OUT = ROOT / 'data' / 'write-model.bin'
 SIZE, INNER = 48, 40
 # The 44 consonants, in alphabet order; Burapha-TH's folders are named by TIS-620 code (A1 = ก).
 LETTERS = 'กขฃคฅฆงจฉชซฌญฎฏฐฑฒณดตถทธนบปผฝพฟภมยรลวศษสหฬอฮ'
+# The rest of Burapha-TH's characters, in its order: ฤ ฦ, ฯ, the vowel symbols, ็, the tone marks, ์.
+SYMBOLS = 'ฤฦฯะัาำิีึืุูเแโใไ็่้๊๋์'
+CLASSES = LETTERS + SYMBOLS
 
 
 def normalize(ink):
@@ -73,7 +81,7 @@ def scan_ink(path):
 def folders(split):
     root = DATA / f'character-{split}' / split
     by_code = {d.split('-')[2]: root / d for d in os.listdir(root)}
-    return [by_code[f'{0xA0 + ord(ch) - 0x0E00:02X}'] for ch in LETTERS]
+    return [by_code[f'{0xA0 + ord(ch) - 0x0E00:02X}'] for ch in CLASSES]
 
 
 def prep():
@@ -86,7 +94,7 @@ def prep():
         arrays[f'x_{split}'] = (np.stack(xs) * 255).astype(np.uint8)
         arrays[f'y_{split}'] = np.array([i for i, _ in jobs], np.int64)
         print(split, arrays[f'x_{split}'].shape)
-    np.savez_compressed(DATA / 'consonants48.npz', **arrays)
+    np.savez_compressed(DATA / 'chars48.npz', **arrays)
     # The strokes' thickness in the 48 box, which app.js draws a drawing's lines at (WRITE_MODEL_LINE):
     # ink area over skeleton length.
     from skimage.morphology import skeletonize
@@ -99,7 +107,7 @@ def _prep_one(path):
     return normalize(scan_ink(path))
 
 
-def net(n=len(LETTERS)):
+def net(n=len(CLASSES)):
     import torch.nn as nn
     conv = lambda i, o: [nn.Conv2d(i, o, 3, padding=1, bias=False), nn.BatchNorm2d(o), nn.ReLU()]
     return nn.Sequential(
@@ -135,7 +143,7 @@ def train(epochs=24):
     import torch
     import torch.nn.functional as F
     torch.manual_seed(0)
-    d = np.load(DATA / 'consonants48.npz')
+    d = np.load(DATA / 'chars48.npz')
     xt = torch.tensor(d['x_train'], dtype=torch.float32)[:, None] / 255
     yt = torch.tensor(d['y_train'])
     xv = torch.tensor(d['x_test'], dtype=torch.float32)[:, None] / 255
@@ -211,7 +219,7 @@ def centre_line(ink, width, rng=None):
 
 def synth():
     from concurrent.futures import ProcessPoolExecutor
-    jobs = [(f, i, k) for f in SYNTH_FONTS if Path(f).exists() for i in range(len(LETTERS)) for k in range(SYNTH_EACH)]
+    jobs = [(f, i, k) for f in SYNTH_FONTS if Path(f).exists() for i in range(len(CLASSES)) for k in range(SYNTH_EACH)]
     with ProcessPoolExecutor() as pool:
         xs = list(pool.map(_synth_one, jobs, chunksize=16))
     np.savez_compressed(DATA / 'synth48.npz', x=(np.stack(xs) * 255).astype(np.uint8), y=np.array([i for _, i, _ in jobs], np.int64))
@@ -221,20 +229,20 @@ def synth():
 def _synth_one(job):
     f, i, k = job
     rng = np.random.default_rng(hash((f, i, k)) % 2 ** 32)
-    return centre_line(font_ink(LETTERS[i], f), rng.uniform(2.0, 4.2), rng)
+    ch = CLASSES[i]
+    return centre_line(font_ink(ch, f, big=ch in SYMBOLS), rng.uniform(2.0, 4.2), rng)
 
 
-def tune(epochs=8):
+def tune(epochs=int(os.environ.get('EPOCHS', 8)), lr=float(os.environ.get('LR', 1e-3))):
     """The trained model, trained on further with Burapha-TH and the synthetic letters together (the
-    synthetic ones three times over, about a seventh of each epoch); the model before is kept as
-    write-model-v1.pt. Saved each epoch the Burapha-TH test accuracy holds within 0.5% of its best."""
+    synthetic ones three times over, about a third of each epoch). Saved each epoch the Burapha-TH
+    test accuracy holds within 0.5% of its best. (The first model, consonants only, untuned, is
+    write-model-v1.pt; the tuned consonants' model write-model-v2.pt.)"""
     import shutil
     import torch
     import torch.nn.functional as F
     torch.manual_seed(1)
-    if not (DATA / 'write-model-v1.pt').exists():
-        shutil.copy(DATA / 'write-model.pt', DATA / 'write-model-v1.pt')
-    d = np.load(DATA / 'consonants48.npz')
+    d = np.load(DATA / 'chars48.npz')
     sy = np.load(DATA / 'synth48.npz')
     xt = torch.tensor(np.concatenate([d['x_train']] + [sy['x']] * 3), dtype=torch.float32)[:, None] / 255
     yt = torch.tensor(np.concatenate([d['y_train']] + [sy['y']] * 3))
@@ -242,7 +250,7 @@ def tune(epochs=8):
     yv = torch.tensor(d['y_test'])
     model = load().train()
     opt = torch.optim.AdamW(model.parameters(), 5e-4, weight_decay=1e-4)
-    sched = torch.optim.lr_scheduler.OneCycleLR(opt, 1e-3, total_steps=epochs * ((len(xt) + 255) // 256))
+    sched = torch.optim.lr_scheduler.OneCycleLR(opt, lr, total_steps=epochs * ((len(xt) + 255) // 256))
     best = accuracy(model, xv, yv)
     print(f'before: test accuracy {best:.4f}')
     for ep in range(epochs):
@@ -263,30 +271,61 @@ def tune(epochs=8):
             torch.save(model.state_dict(), DATA / 'write-model.pt')
 
 
+def extend():
+    """The consonants' model (44 outputs) given all 68: its weights kept, the new classes' rows of the
+    last layer new; the consonants' model kept as write-model-v2.pt. Then `tune`."""
+    import shutil
+    import torch
+    old = torch.load(DATA / 'write-model.pt')
+    if old[[k for k in old if k.endswith('weight')][-1]].shape[0] != len(LETTERS):
+        sys.exit('write-model.pt is not the consonants-only model')
+    shutil.copy(DATA / 'write-model.pt', DATA / 'write-model-v2.pt')
+    model = net()
+    new = model.state_dict()
+    for k, v in old.items():
+        if new[k].shape == v.shape:
+            new[k] = v
+        else:  # the last layer: the consonants' rows as they were
+            new[k][:v.shape[0]] = v
+    model.load_state_dict(new)
+    torch.save(model.state_dict(), DATA / 'write-model.pt')
+    print('extended to', len(CLASSES), 'classes')
+
+
 FONTS = ['/usr/share/fonts/truetype/noto/NotoLoopedThai-Regular.ttf', '/usr/share/fonts/truetype/noto/NotoSerifThai-Regular.ttf',
          '/usr/share/fonts/truetype/freefont/FreeSerif.ttf', str(ROOT / 'fonts' / 'LearnThaiLooped.woff2')]
 
 
-def font_ink(ch, font_path):
-    f = ImageFont.truetype(font_path, 160)
-    im = Image.new('L', (300, 300), 0)
-    ImageDraw.Draw(im).text((70, 40), ch, font=f, fill=255)
+def font_ink(ch, font_path, big=False):
+    """A character drawn white on black. `big` for the symbols, which are small (marks drawn alone,
+    without a placeholder circle: Pillow here has no shaping)."""
+    size, room, at = (400, 700, (150, 100)) if big else (160, 300, (70, 40))
+    f = ImageFont.truetype(font_path, size)
+    im = Image.new('L', (room, room), 0)
+    ImageDraw.Draw(im).text(at, ch, font=f, fill=255)
     return np.asarray(im, np.float32) / 255
 
 
 def eval_():
     import torch
     model = load()
-    d = np.load(DATA / 'consonants48.npz')
+    d = np.load(DATA / 'chars48.npz')
     xv = torch.tensor(d['x_test'], dtype=torch.float32)[:, None] / 255
     yv = torch.tensor(d['y_test'])
     with torch.no_grad():
-        p = torch.cat([model(xv[i:i + 1024]).softmax(1) for i in range(0, len(xv), 1024)])
-    pred = p.argmax(1)
-    print(f'test split: {(pred == yv).float().mean().item():.4f} top-1, '
-          f'{(p.topk(3, 1).indices == yv[:, None]).any(1).float().mean().item():.4f} top-3 ({len(yv)} samples)')
-    worst = np.argsort([(pred[yv == i] == i).float().mean().item() for i in range(len(LETTERS))])[:8]
-    print('hardest:', ', '.join(f'{LETTERS[i]} {(pred[yv == i] == i).float().mean().item():.2f} (often {LETTERS[torch.mode(pred[(yv == i) & (pred != i)]).values.item()] if ((yv == i) & (pred != i)).any() else "-"})' for i in worst))
+        logits = torch.cat([model(xv[i:i + 1024]) for i in range(0, len(xv), 1024)])
+    # As app.js asks: among the consonants for a consonant, among the symbols for a symbol.
+    for name, lo, hi in [('consonants', 0, len(LETTERS)), ('symbols', len(LETTERS), len(CLASSES))]:
+        sel = (yv >= lo) & (yv < hi)
+        if not sel.any() or logits.shape[1] < hi:
+            continue
+        p = logits[sel][:, lo:hi].softmax(1)
+        y = yv[sel] - lo
+        pred = p.argmax(1)
+        print(f'{name}: {(pred == y).float().mean().item():.4f} top-1, {(p.topk(3, 1).indices == y[:, None]).any(1).float().mean().item():.4f} top-3 ({len(y)} samples)')
+        chars = CLASSES[lo:hi]
+        worst = np.argsort([(pred[y == i] == i).float().mean().item() for i in range(hi - lo)])[:8]
+        print('  hardest:', ', '.join(f'{chars[i]} {(pred[y == i] == i).float().mean().item():.2f} (often {chars[torch.mode(pred[(y == i) & (pred != i)]).values.item()] if ((y == i) & (pred != i)).any() else "-"})' for i in worst))
     for path in FONTS:
         if not Path(path).exists():
             continue
@@ -295,7 +334,7 @@ def eval_():
         except OSError:
             continue
         with torch.no_grad():
-            q = model(x).softmax(1)
+            q = model(x)[:, :len(LETTERS)].softmax(1)
         ok = (q.argmax(1) == torch.arange(len(LETTERS))).float().mean().item()
         miss = [f'{ch}→{LETTERS[q[i].argmax()]}' for i, ch in enumerate(LETTERS) if q[i].argmax() != i]
         print(f'{Path(path).stem}: {ok:.2f}', ' '.join(miss))
@@ -338,8 +377,9 @@ def export():
         elif isinstance(m, nn.Linear):
             layers.append({'type': 'dense', 'w': add(m.weight.detach().numpy()), 'b': add(m.bias.detach().numpy())})
         i += 1  # Flatten (C, H, W order, as app.js keeps it) and Dropout need nothing
-    header = json.dumps({'size': SIZE, 'inner': INNER, 'letters': LETTERS, 'layers': layers,
-                         'source': 'Burapha-TH (Onuean et al., Applied Sciences 2022), consonants; tools/train_writing.py'},
+    n = layers[-1]['w']['shape'][0]
+    header = json.dumps({'size': SIZE, 'inner': INNER, 'letters': CLASSES[:n], 'layers': layers,
+                         'source': 'Burapha-TH (Onuean et al., Applied Sciences 2022); tools/train_writing.py'},
                         ensure_ascii=False).encode()
     pad = (-(4 + len(header))) % 2
     OUT.write_bytes(len(header + b' ' * pad).to_bytes(4, 'little') + header + b' ' * pad + b''.join(blobs))
@@ -348,4 +388,4 @@ def export():
 
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else ''
-    {'prep': prep, 'train': train, 'synth': synth, 'tune': tune, 'eval': eval_, 'export': export}.get(cmd, lambda: print(__doc__))()
+    {'prep': prep, 'train': train, 'synth': synth, 'tune': tune, 'extend': extend, 'eval': eval_, 'export': export}.get(cmd, lambda: print(__doc__))()
