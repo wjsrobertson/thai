@@ -1508,6 +1508,50 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Write fits the screen (2026-10-15)
+
+The user, on an iPhone 12 Pro: on Vowels → Write the ‹ Check › row went under the tab bar. Measured
+at 390 × 664 (Safari with its bars): the pad was 364 px (the full width), the feedback two lines,
+the buttons at 644–700 with the tab bar from 608. Their pick of the two fixes offered:
+- **The pad as big as the room left** (sizeWritePad, on render and resize): its width, or less, so
+  the feedback and buttons end 12 px above the tab bar (on a phone) or the window's foot, the page at
+  its top; at least 200 px. At 664 it's 292 px; at 763 (the installed app) and up, the full 362.
+  Strokes are kept 0..1 of the pad, so its size doesn't change a check.
+- **The feedback one short line**, always the line's height (no jump), "…" if it must: the start-at-
+  the-head and loop-first tips went (loopFirst with them; the green dot still shows where to start),
+  and the words: "✓ ธ · 97%", "Not quite · 14%", "Looks more like ฃ than ข", "✓ Well done", "Trace the
+  red parts too", "Above: ◌ี, not ◌ิ", "Missing เ in front", "Nothing goes after the อ", "A tone mark
+  goes above", "✓ ไม้โท · 100%"; a vowel's or mark's first problem only. The prompts: "Trace it,
+  starting at the green dot", "Write this vowel round the faint อ"…
+- Checked at 390 × 664, 763, 844 and desktop; consonants 88/88 pass, 10/10 wrong fail; tone marks
+  4/4, look-alikes and marks below caught; the user's loose ธ "Not quite · 14%".
+- **The feedback on the pad** (the user, after seeing the two side by side): a label on the pad's
+  foot (#write-feedback inside .write-pad, absolute, its own ground over the strokes, no pointer
+  events, gone while empty), so the pad gets its line: 318 px at 664 (was 292).
+- **The pad grows as Cards' card does** (the user, after trying the buttons centred in the room under
+  the pad for a day: Cards' way works better): on a phone the pad is the full width and as tall as
+  the room down to the buttons, which sit 24 px under it and 12 px above the tab bar, as Cards' card
+  and its ‹ ›; on a wider screen it's square. The letter, the strokes and the checks are in its
+  drawing square, the largest that fits, in its middle (writeSquare: drawWritePad translates to it,
+  the pointer is mapped into it; a stroke beyond it is beyond 0..1, off the letter in Trace, no
+  matter From memory, which fits the drawing's own box). Matched Cards at 390 × 664, 763, 844 and 926
+  to the pixel (the pad 204–516/615/696/778 against the card's 204–515/615/695/778).
+- **The ‹ › row in the middle of the room under the card or pad** (the user: a few pixels higher),
+  on Cards and Write: 18 px above and 18 below (it was 24 and 12). Cards: the row 6 px up into its
+  gap (margin-top −6) and the stage 6 px more padding under it, so sizeCards leaves the card as tall
+  as before; not in Recognition, whose answers have the foot. Write: sizeWritePad and .write-foot
+  with 18 and 18. Measured at 390 × 664 and 844: card and pad unchanged, the row 18 / 18 (Cards 18 /
+  19).
+- **A thinner line** (the user: too thick, "something like half"): the pad shows the strokes at
+  WRITE_LINE, 7 at WRITE_N (was 14); the checks still take them at WRITE_INK, 14, as they were tuned.
+- **Write lines up with Cards** (the user: going between them was jarring): the letter row is 52 px,
+  as Cards' direction row (it was 60 × text size), with 12 px gaps as Cards' (they were 10), so
+  Trace | From memory sits where Browse | Recognition | Recall does (140–192 at 390 × 664) and the
+  pad starts where the card does (204), at any text size: Cards' rows don't grow with it, so neither
+  do these. The three lines are 14 px at 1.2 (50 px), the letter 40 px, a picture 48; the Letters
+  page's row the same, so it still matches Write. Checked: all 44 consonants' and 30 vowels' lines
+  whole at text sizes 0 and 2.
+
 ## ยักษ์ said with a syllable too many (2026-10-15)
 
 The user: ย sounded "yaw yak yai". The voice (th-TH-NiwatNeural) sounds out ยักษ์'s silent ษ์ as a

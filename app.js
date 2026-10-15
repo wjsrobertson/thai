@@ -52,6 +52,7 @@ const els = {
   alphaTop: document.querySelector('.alpha-top'),
   alphaWrite: document.getElementById('alpha-write'),
   writeModeSwitch: document.getElementById('write-mode'),
+  writeActions: document.querySelector('.write-actions'),
   writeCanvas: document.getElementById('write-canvas'),
   writeName: document.getElementById('write-name'),
   writeFeedback: document.getElementById('write-feedback'),
@@ -2139,7 +2140,8 @@ function playButton(say, title) {
 // elsewhere gets a tip; letters with two such loops (ฆ ฉ ฌ ญ ฎ ฏ ฐ ฒ ณ น ม ษ ห) have no dot, which loop
 // is the head being unsure, and ก ธ have no head.
 const WRITE_N = 240;
-const WRITE_INK = 14;        // the line's width, at WRITE_N
+const WRITE_INK = 14;        // the line's width as the checks take it, at WRITE_N
+const WRITE_LINE = 7;        // the line as the pad shows it: half that (2026-10-15, the user's call: too thick)
 // Loosened 2026-10-14 after the user found the check too strict: a finger wobbles more than the
 // simulated tracing did (it was band 10, reach 6, passing at 75% on and 85% covered).
 const WRITE_BAND = 16;       // how far off the letter a line may stray
@@ -2162,7 +2164,7 @@ const WRITE_CHECK = {
     help: 'First choice and very sure, and its shape must match the letter\'s.' },
 };
 const writeCheck = () => WRITE_CHECK[getSettings().writeCheck] || WRITE_CHECK.normal;
-const surePct = (p) => ` · ${Math.round(p * 100)}% sure`;
+const surePct = (p) => ` · ${Math.round(p * 100)}%`;
 // From memory tells letters apart at the first, tighter tolerances, or a look-alike's small part
 // (ป's tail) would vanish in the loose band: the letter asked for must be within `behind` of the best
 // match there, and a rival is named if it wins by more and scores `rival`.
@@ -2440,6 +2442,7 @@ function modelProbs(model, strokes) {
 const PART_SLOT = (ch) => ('เแโใไ'.includes(ch) ? 'before' : 'ัิีึื็่้๊๋์'.includes(ch) ? 'above' : 'ุู'.includes(ch) ? 'below' : 'after');
 const SLOT_SHAPES = { before: 'เแโใไ', above: 'ัิีึื็่้๊๋์', below: 'ุู', after: 'ะาำอยว' };
 const SLOT_WORDS = { before: 'in front', above: 'above', below: 'below', after: 'after the อ' };
+const SLOT_HEADS = { before: 'In front', above: 'Above', below: 'Below', after: 'After' };
 const TONE_MARKS = '่้๊๋';
 const PART_PASS = { rival: 0.6 }; // another shape named at this, among its place's; to pass, WRITE_CHECK's `part`
 const partName = (ch) => ('ัิีึื็่้๊๋์ุู'.includes(ch) ? `◌${ch}` : ch);
@@ -2514,9 +2517,9 @@ function checkParts(c, shape, model) {
     const own = r.probs.get(parts[0].ch) || 0;
     const first = r.best.ch === parts[0].ch;
     const ok = rule.either ? first || own >= rule.whole : first && r.share(parts[0].ch) >= rule.place && own >= rule.whole;
-    if (!ok) return { pass: false, text: `Not quite: here's ${c.thai}.`, detail: { own } };
-    if (groups.length < parts.length) return { pass: false, text: `Nearly: ${c.thai} also needs ${parts[1].ch} after it.`, detail: { own } };
-    return { pass: true, text: `✓ That's ${c.thai}!${surePct(r.share(parts[0].ch))}`, detail: { own } };
+    if (!ok) return { pass: false, text: 'Not quite', detail: { own } };
+    if (groups.length < parts.length) return { pass: false, text: `Missing ${parts[1].ch} after`, detail: { own } };
+    return { pass: true, text: `✓ ${c.thai}${surePct(r.share(parts[0].ch))}`, detail: { own } };
   }
   const bySlot = { before: [], above: [], below: [], after: [] };
   for (const part of joinTouching(write.strokes)) {
@@ -2532,16 +2535,16 @@ function checkParts(c, shape, model) {
     const wanted = want(slot);
     const strokes = bySlot[slot];
     if (!wanted.length) {
-      if (strokes.length) problems.push(tones ? 'A tone mark goes above the consonant.' : `${c.thai} has nothing ${SLOT_WORDS[slot]}.`);
+      if (strokes.length) problems.push(tones ? 'A tone mark goes above' : `Nothing goes ${SLOT_WORDS[slot]}`);
       continue;
     }
     if (!strokes.length) {
-      problems.push(tones ? 'Write the tone mark above the อ.' : `Missing: the ${wanted.map((p) => partName(p.ch)).join(' ')} ${SLOT_WORDS[slot]}.`);
+      problems.push(tones ? 'Write the mark above the อ' : `Missing ${wanted.map((p) => partName(p.ch)).join(' ')} ${SLOT_WORDS[slot]}`);
       continue;
     }
     const groups = splitParts(strokes, wanted.length);
     wanted.forEach((p, k) => {
-      if (!groups[k]) { problems.push(`Missing: the ${partName(p.ch)} ${SLOT_WORDS[slot]}.`); return; }
+      if (!groups[k]) { problems.push(`Missing ${partName(p.ch)} ${SLOT_WORDS[slot]}`); return; }
       const r = read(groups[k], tones ? TONE_MARKS : SLOT_SHAPES[slot]);
       const own = r.probs.get(p.ch) || 0;
       const share = r.share(p.ch);
@@ -2550,12 +2553,12 @@ function checkParts(c, shape, model) {
       const first = r.best.ch === p.ch;
       if (rule.either ? own >= rule.whole || first && own >= rule.whole / 4 : first && share >= rule.place && own >= rule.whole) return;
       problems.push(r.best.ch !== p.ch && r.sure >= PART_PASS.rival
-        ? `The part ${SLOT_WORDS[slot]} should be ${partName(p.ch)}; that looks like ${partName(r.best.ch)}.`
-        : `The part ${SLOT_WORDS[slot]} should be ${partName(p.ch)}.`);
+        ? `${SLOT_HEADS[slot]}: ${partName(p.ch)}, not ${partName(r.best.ch)}`
+        : `${SLOT_HEADS[slot]}: should be ${partName(p.ch)}`);
     });
   }
   const pass = !problems.length;
-  return { pass, text: pass ? `✓ That's ${tones ? `${c.say} (${partName(parts[0].ch)})` : c.thai}!${surePct(least)}` : problems.slice(0, 2).join(' '), detail };
+  return { pass, text: pass ? `✓ ${tones ? c.say : c.thai}${surePct(least)}` : problems[0], detail }; // the first problem: one line
 }
 
 // From memory: the drawing, wherever and however big, scaled (keeping its shape) and centred onto a
@@ -2587,20 +2590,6 @@ function writeScore(shape, fit, tight = false) {
   return { on, cov, f1: on + cov ? (2 * on * cov) / (on + cov) : 0, ink: inked / shape.count, missed }; // ink: the line's area against the letter's
 }
 
-// The head first: a first stroke that starts at the head should go round its loop before leaving
-// it (the start of the line, a fifth of the pad long, staying near the head). Null when there's
-// nothing to say: no head, a short line, or not started at the head anyway.
-function loopFirst(shape, fit) {
-  if (!shape.head) return null;
-  const s = write.strokes[0].map(fit).map(([u, v]) => [u * WRITE_N, v * WRITE_N]);
-  let len = 0;
-  for (let i = 1; i < s.length && len < WRITE_N * 0.2; i++) {
-    len += Math.hypot(s[i][0] - s[i - 1][0], s[i][1] - s[i - 1][1]);
-    if (Math.hypot(s[i][0] - shape.head[0], s[i][1] - shape.head[1]) > WRITE_N * 0.13) return false;
-  }
-  return len >= WRITE_N * 0.2 ? true : null;
-}
-
 function renderWrite() {
   const c = writeCard();
   if (!c) return;
@@ -2627,19 +2616,49 @@ function renderWrite() {
   details.addEventListener('click', () => (set === 'vowels' ? showVowelPop(details, c) : set === 'tones' ? showMarkPop(details, c.card) : showLetterPop(details, c)));
   els.writeName.replaceChildren(slot, words, details);
   fillAlphaText(words, c, set);
+  sizeWritePad();
   document.fonts.load(writeFont(100), c.thai).then(drawWritePad);
   drawWritePad();
 }
 
+// The pad as big as the screen leaves (2026-10-15, the user's reports: on an iPhone 12 Pro in Safari
+// the ‹ Check › row sat under the tab bar; then, as Cards' card does): on a phone the width it has and
+// the height down to the buttons, which sit 12 px above the tab bar (taller than wide on a tall screen,
+// shorter on a short one; the buttons 18 px under it and 18 above the tab bar, as Cards'); on a wider screen, square. Its drawing square, the largest that fits, is
+// in its middle (writeSquare): the letter, the strokes and the checks are in that square's terms.
+function sizeWritePad() {
+  const pad = els.writeCanvas.parentElement;
+  if (els.alphaWrite.hidden || !pad.offsetParent) return;
+  pad.style.height = '';
+  const full = pad.clientWidth;
+  if (!PHONE_LAYOUT.matches) { pad.style.height = `${full}px`; return; }
+  const floor = document.querySelector('.tabs').getBoundingClientRect().top;
+  const top = pad.getBoundingClientRect().top + window.scrollY; // where it sits with the page at its top
+  pad.style.height = `${Math.max(200, Math.floor(floor - top - 18 - els.writeActions.offsetHeight - 18))}px`; // the buttons in the middle of 36 px, as Cards'
+}
+
+// The pad's drawing square: its side and where it starts in the pad (CSS pixels).
+function writeSquare(w, h) {
+  const S = Math.min(w, h);
+  return { S, ox: (w - S) / 2, oy: (h - S) / 2 };
+}
+
 function drawWritePad() {
   const canvas = els.writeCanvas;
-  const W = canvas.clientWidth;
-  if (!W) return;
+  const PW = canvas.clientWidth, PH = canvas.clientHeight;
+  if (!PW || !PH) return;
   const dpr = window.devicePixelRatio || 1;
-  if (canvas.width !== Math.round(W * dpr)) canvas.width = canvas.height = Math.round(W * dpr);
+  if (canvas.width !== Math.round(PW * dpr) || canvas.height !== Math.round(PH * dpr)) {
+    canvas.width = Math.round(PW * dpr);
+    canvas.height = Math.round(PH * dpr);
+  }
   const x = canvas.getContext('2d');
   x.setTransform(dpr, 0, 0, dpr, 0, 0);
-  x.clearRect(0, 0, W, W);
+  x.clearRect(0, 0, PW, PH);
+  // Everything from here in the drawing square, W across (writeSquare).
+  const { S: W, ox, oy } = writeSquare(PW, PH);
+  const toSquare = () => x.setTransform(dpr, 0, 0, dpr, ox * dpr, oy * dpr);
+  toSquare();
   const css = getComputedStyle(document.documentElement);
   const ch = writeCard().thai;
   const shape = writeShape(ch);
@@ -2659,7 +2678,7 @@ function drawWritePad() {
     x.globalAlpha = 0.1;
     x.fillText(ch, p.x, p.y);
     const part = document.createElement('canvas');
-    part.width = part.height = canvas.width;
+    part.width = part.height = Math.round(W * dpr);
     const px = part.getContext('2d');
     px.setTransform(dpr, 0, 0, dpr, 0, 0);
     px.fillStyle = ink;
@@ -2668,8 +2687,8 @@ function drawWritePad() {
     eraseCarrier(px, ch, at, q);
     x.setTransform(1, 0, 0, 1, 0, 0);
     x.globalAlpha = 0.3;
-    x.drawImage(part, 0, 0);
-    x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    x.drawImage(part, Math.round(ox * dpr), Math.round(oy * dpr));
+    toSquare();
   } else {
     x.globalAlpha = 0.1;
     x.fillText(WRITE_CARRIER, p.x + x.measureText(ch.slice(0, at)).width, p.y);
@@ -2695,17 +2714,18 @@ function drawWritePad() {
   }
   // Your line.
   x.strokeStyle = css.getPropertyValue('--accent').trim() || '#f7b733';
-  drawStrokes(x, W, WRITE_INK * W / WRITE_N);
+  drawStrokes(x, W, WRITE_LINE * W / WRITE_N);
   if (!write.result) {
     els.writeFeedback.className = 'write-feedback';
+    // One short line (2026-10-15, the user's call: the feedback pushed the buttons under the tab bar).
     els.writeFeedback.textContent = write.strokes.length ? ''
-      : memory && alphaSetNow() === 'vowels' ? (at >= 0 ? 'Write this vowel round the faint อ.' : 'Write this vowel.')
-      : memory && alphaSetNow() === 'tones' ? 'Write this tone mark on the faint อ.'
-      : memory ? 'Write the letter for this picture and name.'
-      : shape.head ? 'Trace the letter, starting at the green dot.'
-      : alphaSetNow() === 'tones' ? 'Trace the tone mark. The faint อ holds the consonant\'s place.'
-      : at >= 0 ? 'Trace the vowel. The faint อ holds the consonant\'s place.'
-      : alphaSetNow() === 'vowels' ? 'Trace the vowel.' : 'Trace the letter.';
+      : memory && alphaSetNow() === 'vowels' ? (at >= 0 ? 'Write this vowel round the faint อ' : 'Write this vowel')
+      : memory && alphaSetNow() === 'tones' ? 'Write this tone mark on the faint อ'
+      : memory ? 'Write the letter for this picture'
+      : shape.head ? 'Trace it, starting at the green dot'
+      : alphaSetNow() === 'tones' ? 'Trace the tone mark'
+      : at >= 0 ? 'Trace the vowel round the faint อ'
+      : alphaSetNow() === 'vowels' ? 'Trace the vowel' : 'Trace the letter';
   }
 }
 
@@ -2718,7 +2738,7 @@ async function checkWrite() {
   const shape = writeShape(c.thai);
   if (memory && alphaSetNow() !== 'consonants') { // a vowel or tone mark (checkParts)
     const r = model && model.letters.length > alphaCards.length ? checkParts(c, shape, model)
-      : { pass: false, text: 'Checking vowels and tone marks needs the handwriting model, which hasn\'t loaded. Try again online.' };
+      : { pass: false, text: 'Needs the handwriting model: try online' };
     els.writeFeedback.dataset.score = JSON.stringify(r.detail || {}); // for tuning
     write.result = { pass: r.pass, missed: new Uint8Array(WRITE_N * WRITE_N) };
     els.writeFeedback.className = 'write-feedback ' + (r.pass ? 'good' : 'bad');
@@ -2728,12 +2748,8 @@ async function checkWrite() {
   }
   const fit = memory ? fitTo(shape) : undefined;
   const score = writeScore(shape, fit);
-  const [u, v] = (fit || ((p) => p))(write.strokes[0][0]);
-  const head = shape.head;
-  const startedAtHead = !head || Math.hypot(u * WRITE_N - head[0], v * WRITE_N - head[1]) <= WRITE_N * 0.12;
-  const loop = startedAtHead ? loopFirst(shape, fit || ((p) => p)) : null;
-  const tip = !startedAtHead ? ' Next time, start at the head' + (memory ? ' (its little loop).' : ' (the green dot).')
-    : loop === false ? ' Next time, draw the little loop first, then the rest.' : '';
+  // The head and loop-first tips went with the long feedback (2026-10-15, the user's call); the green
+  // dot still shows where to start.
   let pass;
   let text;
   if (model) {
@@ -2751,9 +2767,9 @@ async function checkWrite() {
     const level = writeCheck();
     const first = ranked[0].ch === c.thai;
     pass = fair && (level.either ? first || own >= level.own : first && own >= level.own && (!level.shape || score.f1 >= level.shape));
-    text = pass ? `✓ That's ${c.thai}!${surePct(own)}${tip}`
-      : fair && ranked[0].ch !== c.thai && ranked[0].p >= MODEL_PASS.rival ? `That looks more like ${ranked[0].ch} than ${c.thai}. Compare them on the pad.`
-      : `Not quite: here's ${c.thai}.${first ? surePct(own) : ''}`;
+    text = pass ? `✓ ${c.thai}${surePct(own)}`
+      : fair && ranked[0].ch !== c.thai && ranked[0].p >= MODEL_PASS.rival ? `Looks more like ${ranked[0].ch} than ${c.thai}`
+      : `Not quite${first ? surePct(own) : ''}`;
   } else if (memory) {
     // Which letter it looks like: against every consonant, each with the drawing fitted to its box,
     // at the tighter tolerances.
@@ -2766,15 +2782,15 @@ async function checkWrite() {
     // A drawing that's mostly fill (more ink than twice the letter's) isn't a try.
     const fair = score.ink <= 2;
     pass = fair && score.f1 >= MEMORY_PASS.f1 && best.f1 <= own + TELL_APART.behind;
-    text = pass ? `✓ That's ${c.thai}!${tip}`
-      : fair && best.ch !== c.thai && best.f1 >= TELL_APART.rival ? `That looks more like ${best.ch} than ${c.thai}. Compare them on the pad.`
-      : `Not quite: here's ${c.thai}.`;
+    text = pass ? `✓ ${c.thai}`
+      : fair && best.ch !== c.thai && best.f1 >= TELL_APART.rival ? `Looks more like ${best.ch} than ${c.thai}`
+      : 'Not quite';
   } else {
     pass = score.on >= WRITE_PASS.onLetter && score.cov >= WRITE_PASS.covered;
-    text = pass ? `✓ Well done!${tip}`
-      : [score.cov < WRITE_PASS.covered ? 'Trace the red parts too.' : '', score.on < WRITE_PASS.onLetter ? 'Keep your line on the letter.' : ''].filter(Boolean).join(' ');
+    const missed = score.cov < WRITE_PASS.covered, off = score.on < WRITE_PASS.onLetter;
+    text = pass ? '✓ Well done' : missed && off ? 'Trace the red parts; keep to the letter' : missed ? 'Trace the red parts too' : 'Keep your line on the letter';
   }
-  write.result = { pass, missed: score.missed, on: score.on, cov: score.cov, f1: score.f1, startedAtHead, loop };
+  write.result = { pass, missed: score.missed, on: score.on, cov: score.cov, f1: score.f1 };
   els.writeFeedback.className = 'write-feedback ' + (pass ? 'good' : 'bad');
   els.writeFeedback.textContent = text;
   drawWritePad();
@@ -2803,9 +2819,10 @@ function moveWrite(step) {
 
 function bindWritePad() {
   const canvas = els.writeCanvas;
-  const at = (e) => {
+  const at = (e) => { // in the drawing square's terms, 0..1 (writeSquare); outside it, beyond them
     const r = canvas.getBoundingClientRect();
-    return [(e.clientX - r.left) / r.width, (e.clientY - r.top) / r.height];
+    const { S, ox, oy } = writeSquare(r.width, r.height);
+    return [(e.clientX - r.left - ox) / S, (e.clientY - r.top - oy) / S];
   };
   canvas.addEventListener('pointerdown', (e) => {
     e.preventDefault();
@@ -2833,7 +2850,7 @@ function bindWritePad() {
     clearWrite();
     renderWrite();
   }));
-  window.addEventListener('resize', () => { if (!els.alphaWrite.hidden) drawWritePad(); });
+  window.addEventListener('resize', () => { if (!els.alphaWrite.hidden) { sizeWritePad(); drawWritePad(); } });
 }
 
 // ---------- the Alphabet's vowels ----------

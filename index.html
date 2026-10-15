@@ -740,9 +740,11 @@
           <button type="button" role="radio" class="seg-btn" data-write-mode="trace" aria-checked="true">Trace</button>
           <button type="button" role="radio" class="seg-btn" data-write-mode="memory" aria-checked="false">From memory</button>
         </div>
-        <div class="write-pad"><canvas id="write-canvas" aria-label="Drawing pad: trace the letter with your finger"></canvas></div>
-        <p class="write-feedback" id="write-feedback" role="status"></p>
-        <!-- ‹ › at the foot, as Cards has them (the user's call, 2026-10-14), either side of Clear and Check. -->
+        <!-- The feedback on the pad, a label along its foot (the user's call, 2026-10-15): the pad gets its line. -->
+        <div class="write-pad"><canvas id="write-canvas" aria-label="Drawing pad: trace the letter with your finger"></canvas><p class="write-feedback" id="write-feedback" role="status"></p></div>
+        <!-- ‹ › at the foot, as Cards has them (the user's call, 2026-10-14), either side of Clear and Check,
+             under the pad, which grows to them (sizeWritePad), as Cards' card does. -->
+        <div class="write-foot" id="write-foot">
         <div class="write-actions">
           <button type="button" class="nav-btn" id="write-prev" aria-label="Previous letter" title="Previous letter">‹</button>
           <div class="write-actions-mid">
@@ -750,6 +752,7 @@
             <button type="button" class="round-again" id="write-check">Check</button>
           </div>
           <button type="button" class="nav-btn" id="write-next" aria-label="Next letter" title="Next letter">›</button>
+        </div>
         </div>
       </div>
     </section>

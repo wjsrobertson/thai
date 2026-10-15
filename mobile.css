@@ -64,6 +64,11 @@ body { padding-top: env(safe-area-inset-top, 0px); }
 .tab[aria-selected="true"]:hover { color: var(--accent); }
 /* Flashcards' last buttons sit 12px above the tab bar (the stage's usual 24px, less: the card gets it). */
 .stage[data-view="flashcards"] { padding-bottom: 12px; }
+/* ‹ › in the middle of the room under the card, 18 px above and below (2026-10-15, the user's call;
+   it was 24 above, 12 below): the row 6 px up into its gap, the page 6 px more under it, so the card
+   (sizeCards) keeps its height. Not Recognition, whose answers have the foot. Write's the same. */
+.stage[data-view="flashcards"]:not([data-order="test"]) { padding-bottom: 18px; }
+.stage[data-view="flashcards"]:not([data-order="test"]) :is(#prev-btn, #next-btn) { margin-top: -6px; }
 /* The page is the visible height, not Safari's 100vh (its height with the toolbars hidden), so a
    page that fits (Flashcards, sized by sizeCards) doesn't scroll. */
 html, body { min-height: 100dvh; }
