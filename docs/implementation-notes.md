@@ -1511,6 +1511,15 @@ against 500). It reads other ษ์ words right (อนุรักษ์ the sa
   เอน, the same loudness and spectrum frame for frame, with no nasal start (in สามเณร too). Said as
   เนน, which sounds as เณร should (neen, mid): the four clips with it (the name, the word, a note, a
   story line, whose timings were made again).
+- **The vowels measured** (the user can't check them by ear): each of the 30 recordings' length,
+  ending and pitch, and its first two formants (LPC, the vowel's middle; a diphthong's start and
+  end). All nine pairs sit where they should on the vowel chart and each pair together (อิ/อี F1
+  ~280 Hz, F2 ~2,300–2,450: high front; อุ/อู ~290/700: high back; อะ/อา ~840/1,500: open; เออะ/เออ
+  ~420/1,475: mid central…); every short form shorter (110–140 ms against 190–250) and cut off where
+  its long one fades; เอีย, เอือ, อัว glide from i, ʉ, u towards a; ไอ/ใอ a → i, เอา a → u, อำ a → m;
+  ฤ, ฤๅ (รึ, รือ) ʉ. The one wrong: **อัวะ was อัว**, frame for frame. The voice drops ะ after ัว
+  (its ผัวะ is its ผัว too); said as อั่ว (อัวะ's low tone) it's 150 ms, cut off and lower. The card's
+  clip and its spelling part again. Real ัวะ words (ผัวะ, ยัวะ) are left: each needs its own tone mark.
 - **Checked for others:** each letter's syllable said alone (the spelling parts: all 44, and 136
   other short parts ending in อ), by its loudness: none else in two pulses. (In the names, said
   whole, the two syllables run together too closely for that count.)

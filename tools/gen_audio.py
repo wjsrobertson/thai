@@ -73,6 +73,10 @@ def spoken_text(text, lang):
         # The voice reads เณร without its n: its เณร and its เอน are the same sound, loudness and
         # spectrum (the user heard "naw ain" for นอ เณร), in สามเณร too. เนน sounds as เณร should.
         text = text.replace('เณร', 'เนน')
+        # The voice drops ะ after ัว (ผัวะ is its ผัว): its อัวะ, the vowel's card, was its อัว frame for
+        # frame (2026-10-15, found measuring the vowels for the user, who can't check them by ear).
+        # อั่ว, with the low tone อัวะ has, comes out short and cut off (150 ms against 190) and lower.
+        text = {'อัวะ': 'อั่ว'}.get(text, text)
         # The Thai voice all but skips Thai digits (๐–๙) but reads Arabic ones in Thai.
         return text.translate(THAI_DIGITS)
     # English glosses list alternatives as "a / b", which the voice runs together with no pause.
