@@ -1596,7 +1596,12 @@ body { display: flex; flex-direction: column; }
 /* Write's top is the Letters page's line (alpha-line-*, 2026-10-15); From memory, a consonant's
    picture in the letter's place, or for a vowel or mark (no picture) an empty box. */
 .alpha-line-pic { flex: none; width: calc(52px * var(--fs, 1)); height: calc(52px * var(--fs, 1)); }
-.write-blank { width: 1.1em; height: 1em; border: 2px dashed var(--border); border-radius: 10px; }
+.write-blank { width: calc(46px * var(--fs, 1)); height: calc(42px * var(--fs, 1)); border: 2px dashed var(--border); border-radius: 10px; }
+/* The letter's room, the same Trace or From memory (the user's report: the picture, wider, pushed
+   the rows right): at least the picture's width; From memory the letter hidden in it, the picture or
+   box laid over its middle. */
+.write-slot { position: relative; flex: none; display: flex; align-items: center; justify-content: center; min-width: calc(52px * var(--fs, 1)); }
+.write-cover { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .write-mode { display: flex; margin: 0 0 10px; }
 .write-mode .seg-btn { flex: 1; }
 .write-pad { width: 100%; aspect-ratio: 1; background: var(--panel); border: 1px solid var(--control-border); border-radius: 16px; overflow: hidden; }

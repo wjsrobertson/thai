@@ -2582,13 +2582,18 @@ function renderWrite() {
   if (writeMemory()) writeModel().catch(() => {}); // ready by the first Check
   // The Letters page's line (alphaLineText), the user's call (2026-10-15): the letter, then its rows.
   // From memory names it without showing it: a consonant's picture in the letter's place; a vowel or
-  // mark, which have none, an empty box.
-  const glyph = writeMemory()
-    ? (c.pic ? Object.assign(document.createElement('img'), { className: 'alpha-line-pic', src: picSrc(c.pic), alt: '', width: 52, height: 52 })
-      : Object.assign(document.createElement('span'), { className: 'alpha-line-glyph write-blank' }))
-    : Object.assign(document.createElement('span'), { className: 'alpha-line-glyph', lang: 'th', textContent: c.thai });
+  // mark, which have none, an empty box. The letter keeps its room either way (hidden From memory,
+  // its slot at least the picture's width), so the rows don't move between Trace and From memory.
+  const slot = Object.assign(document.createElement('span'), { className: 'write-slot' });
+  const glyph = Object.assign(document.createElement('span'), { className: 'alpha-line-glyph', lang: 'th', textContent: c.thai });
+  slot.append(glyph);
+  if (writeMemory()) {
+    glyph.style.visibility = 'hidden';
+    slot.append(c.pic ? Object.assign(document.createElement('img'), { className: 'alpha-line-pic write-cover', src: picSrc(c.pic), alt: '', width: 52, height: 52 })
+      : Object.assign(document.createElement('span'), { className: 'write-blank write-cover' }));
+  }
   const words = Object.assign(document.createElement('span'), { className: 'alpha-line-text' });
-  els.writeName.replaceChildren(glyph, words);
+  els.writeName.replaceChildren(slot, words);
   fillAlphaText(words, c, set);
   document.fonts.load(writeFont(100), c.thai).then(drawWritePad);
   drawWritePad();
@@ -2903,11 +2908,13 @@ function pickAlpha(grid, b, c, set, open) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const glyph = el('span', 'alpha-line-glyph', c.thai);
   glyph.lang = 'th';
+  const slot = el('span', 'write-slot'); // the room Write gives it, so going there doesn't shift the line
+  slot.append(glyph);
   const details = el('button', 'ghost alpha-line-more', 'Details ›');
   details.type = 'button';
   details.addEventListener('click', open);
   const words = el('span', 'alpha-line-text');
-  els.alphaHint.replaceChildren(glyph, words, details);
+  els.alphaHint.replaceChildren(slot, words, details);
   fillAlphaText(words, c, set);
 }
 

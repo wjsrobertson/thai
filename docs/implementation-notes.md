@@ -1591,7 +1591,12 @@ vowels).
 - **Write's top is the Letters page's line** (the user's call): alphaLineText and fillAlphaText
   (shared with pickAlpha) give the rows; the letter, vowel or mark on the left at 42 px; From memory,
   a consonant's picture (52 px) in its place, a vowel's or mark's an empty dashed box. 60 px × text
-  size, the same in every set and mode, so the pad doesn't move.
+  size, the same in every set and mode, so the pad doesn't move. The letter sits in `.write-slot`,
+  at least the picture's width, and stays there hidden From memory with the picture or box laid over
+  its middle, so the rows don't jump right when switching (the user's report). The Letters page's line puts its
+  letter in the same slot (pickAlpha), so going from Letters to Write keeps the row, the letter and
+  the text where they were (measured: the same to the pixel for ท and เอือ; only the text is
+  narrower on Letters, for Details).
 - **Home** (the user's wording): Topics' rows shortened ("Every word in a topic. Tap ⟲ to add one to
   Cards.", "Browse, Recognition and Recall", "Short stories that use the topic's words"), and the
   Dictionary's "Browse or search in Thai, English or transliteration".
