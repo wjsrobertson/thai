@@ -1490,6 +1490,49 @@ tappable thing on a 390px phone, and of the styles, found four, all fixed:
 - Not done (low priority): about 20 controls explain themselves only in hover tooltips (`title`),
   which phones never show; the important ones say the same on screen.
 
+## The Alphabet's vowels in three sections (2026-10-15)
+
+The user: the Vowels page was a wall of tiles; split it by group. Their call, after the options: keep
+the order Thai schools teach (อะ อา, อิ อี … เออะ เออ, the diphthongs, อำ ใอ ไอ เอา, ฤ ฤๅ), which reads
+straight through the sections, rather than a 3×3 chart by the mouth (offered; it would move อะ อา to
+the middle).
+- **VOWEL_SECTIONS** (app.js): The nine vowels · short and long (nine pairs, three to a row, a CSS
+  grid), Diphthongs · two vowels in one (three pairs), Extra vowels (สระเกิน) · four with a final
+  built in, and two from Sanskrit (อำ ใอ ไอ เอา and ฤ ฤๅ, a row). VOWEL_GROUPS (the vowel dialog's
+  partner) is their groups. Headings as the word dialog's "The tone table".
+- **One tile width** for all 30 (sizeVowelTiles, in place of sizeTiles here): the widest's, no wider
+  than lets three pairs fit; then less side padding (.tight); then, if เอือะ still doesn't fit, every
+  tile's text a little smaller (.shrunk, `--tile-fs`): at 390px tiles are 52px with 25px text, at
+  430px 59px and 27px; desktop is unchanged (81px, 30px). mobile.css's 64px min-width is lifted for them.
+- **A tap hears it** (the user, next: usually they just want the sound; their pick of the options,
+  with long press): a tile says its vowel (speakerPress, lit while it plays) and is marked
+  (aria-pressed), and the line above the grid (#alpha-hint, `.vowel-hint`, 52px for the hint or the
+  line, so the grid doesn't move) becomes the vowel, its sound (the card's English) and **Details ›**,
+  which opens the dialog. Considered and not used: tap again for details (no replaying), a Hear |
+  Details switch (modes get forgotten).
+- **Long press** (onLongPress, by speakerPress; LONG_PRESS_MS 450): held without moving 10px, it
+  opens the dialog at once; the click its release makes is swallowed wherever it lands (the dialog is
+  under the finger by then), through a document-level capture listener while `longPressHeld` and for
+  400ms after. Right-click and Android's long-press menu (`contextmenu`) open it too. Tiles have no
+  text selection or iOS callout. Tested: tap (sound, line, no dialog), Details, hold (dialog stays
+  open after the release), a press that slides (nothing).
+- **The consonants too** (the user, next: "do the same for consonants"): pickVowel became
+  pickAlpha(grid, tile, card, text, open), shared; a consonant tile says its name (its card's `say`,
+  กอ ไก่) and the line is the letter, "gɔɔ gài · g — chicken" and Details › (showLetterPop); a long
+  press opens it. Its picture was in the line for a day, 36px, and went (the user's call: too small
+  to see clearly there; the dialog has it). The tiles are `.letter-tile` now
+  (lit while playing), and the line and its pinning are `.line-hint` / `.line-top`, set for both
+  sets (not Tones). Hint: "Tap a letter to hear its name. Hold it for its details."
+- **The line pinned** (the user, next: it should stay as the vowels scroll, like the top menu, and be
+  one height for the hint and a vowel). On a phone `.alpha-top.vowel-top` (renderAlphabet sets it
+  for the Vowels set) is sticky at `--pinned-h` (76px, the section row's height, now a variable),
+  taking the gutters; once the page scrolls it has the page's colour and the hairline, and the
+  section row above drops its own (`:has`), so the two read as one band. The line is a fixed height
+  now (52px × text size; it was a minimum), the hint shortened to "Tap a vowel to hear it. Hold it
+  for its details." so it fits two lines at any size. Checked at 390×664 (Safari with its bars):
+  the hint and a vowel's line the same height at text sizes 1–3, the band in place when scrolled,
+  a tap there updating the line (no dialog). At 390×844 the page fits without scrolling.
+
 ## English Loan Endings topic (2026-10-15)
 
 The user asked how English loans' endings map onto Thai's (s → t, f → p…), then asked for it as a
@@ -1761,8 +1804,9 @@ later (it's already in `fonts/`, NotoSansThai).
 - **Letters | Cards:** a switch beside the topic button (`.alpha-switch`), on both pages: icons with
   their names, as Study's (see Study).
 - **Letters** (`#alphabet-section`, renderAlphabet): the 44 letters in `.dict-grid` tiles, ฃ ฅ
-  dimmed; Classes (prefs.alphaClasses) colours them mid blue, high red, low green (`--cls-*`,
-  with a legend).
+  dimmed. Classes (prefs.alphaClasses, colouring them by class with a legend) was removed on
+  2026-10-15 (the user's call); the letter dialog still gives each one's class. Since the same day
+  a tap says the letter's name and a long press opens its dialog: see the vowels' section below.
 - **The letter dialog** (showLetterPop) uses the word dialog's frame (#word-modal: close, Escape,
   backdrop): the letter large (tap: its name), its picture, play; Name, Class, Sound (start and
   final, from the card's note: "Final: -k", "Never a final", "No longer used"), Same sound (other

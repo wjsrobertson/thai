@@ -1562,7 +1562,26 @@ body { display: flex; flex-direction: column; }
 .alpha-set-item[aria-checked="true"] b { color: var(--accent); }
 .alpha-set-item[aria-checked="true"] .alpha-set-check { visibility: visible; }
 /* Vowels: the boards' grouped tiles, a short/long pair to a group. */
-.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-classes[hidden], .alpha-top[hidden], .alpha-write[hidden], .alpha-write-note[hidden] { display: none; }
+/* The vowels in three sections (renderVowelGrid): a heading as the word dialog's tone table has, then
+   the pairs, three to a row (the nine), one row (the diphthongs, the extras). */
+.vowel-section + .vowel-section { margin-top: 22px; }
+.vowel-head { margin: 0 0 10px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; text-align: center; }
+.vowel-head-note { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.vowel-rows { display: grid; grid-template-columns: repeat(3, auto); justify-content: center; }
+.vowel-rows.vowel-extras { display: flex; flex-wrap: wrap; }
+.alpha-vowels .vowel-rows .letter-tile { width: var(--tile-w, auto); min-width: 0; } /* over mobile.css's 64px: three pairs to a row */
+/* A tap hears it, a long press opens its dialog (onLongPress): no text selection or iOS callout. */
+:is(.alpha-vowels, .alpha-grid) .letter-tile { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+:is(.alpha-vowels, .alpha-grid) .letter-tile[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+/* The line above the consonants and vowels: the hint, then the one last tapped (pickAlpha), one
+   height for both. */
+.alpha-hint.line-hint { display: flex; align-items: center; gap: 10px; height: calc(52px * var(--fs, 1)); overflow: hidden; }
+.alpha-line-glyph { flex: none; color: var(--ink); font-size: calc(26px * var(--fs, 1)); }
+.alpha-line-text { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--ink); line-height: 1.3; }
+.alpha-line-more { flex: none; }
+.alpha-vowels.tight .vowel-rows .letter-tile { padding-left: 2px; padding-right: 2px; }
+.alpha-vowels.shrunk .vowel-rows .letter-tile { font-size: var(--tile-fs); }
+.alpha-vowels[hidden], .alpha-tones[hidden], .alpha-top[hidden], .alpha-write[hidden], .alpha-write-note[hidden] { display: none; }
 /* Write: a letter to trace on a square pad (renderWrite). */
 .alpha-write { max-width: 440px; margin: 0 auto; }
 .write-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 0 10px; }
@@ -1649,13 +1668,11 @@ body { display: flex; flex-direction: column; }
 .alphabet[hidden] { display: none; }
 .alpha-top { display: flex; align-items: center; gap: 12px; margin: 0 0 12px; }
 .alpha-hint { flex: 1; margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
-.alpha-legend { display: flex; gap: 16px; margin: 0 0 12px; font-size: calc(15px * var(--fs, 1)); font-weight: 600; }
-.alpha-legend[hidden] { display: none; }
 .cls-mid { color: var(--cls-mid); }
 .cls-high { color: var(--cls-high); }
 .cls-low { color: var(--cls-low); }
 .alpha-grid .dict-letter.obsolete { opacity: .45; }
-.alpha-grid:not(.by-class) .dict-letter { color: var(--ink); }
+.alpha-grid .dict-letter { color: var(--ink); } /* Classes, which coloured them by class, went 2026-10-15 (the user's call) */
 /* The letter pictures (images/letters/) are transparent (2026-10-14, the user's pick of four tried):
    on the dark themes a thin edge in the theme's ink round each, as a die-cut sticker, so their dark
    outlines show; none on Light. */

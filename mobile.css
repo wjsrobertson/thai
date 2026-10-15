@@ -33,6 +33,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 body { padding-top: env(safe-area-inset-top, 0px); }
 
 :root { --tabbar-h: 56px; } /* without the home-indicator strip */
+:root { --pinned-h: 76px; } /* the pinned section row (.section-bar, .dict-top): 12 + 52 + 12 */
 .tabs {
   position: fixed;
   left: 0;
@@ -118,6 +119,18 @@ body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px));
 .section-bar { display: flex; gap: 8px; }
 .dict-top { margin-bottom: 4px; } /* with its padding, the 16px it had */
 html.scrolled :is(.section-bar, .dict-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
+/* The consonants' and vowels' line (the hint, or the one last tapped: pickAlpha) pinned under the
+   section's row too (2026-10-15, the user's requests), the two one band: the hairline under the
+   line, not between them. It takes the gutters, and the 12px under it is split around its padding. */
+.alpha-top.line-top {
+  position: sticky;
+  top: var(--pinned-h);
+  z-index: 8;
+  margin: 0 -12px 4px;
+  padding: 0 12px 8px;
+}
+html.scrolled .alpha-top.line-top { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
+html.scrolled .stage[data-view="alphabet"]:has(.line-top:not([hidden])) .section-bar { box-shadow: none; }
 .bar-rest { display: flex; flex-wrap: wrap; gap: 0 8px; }
 .bar-rest > * { margin-bottom: 12px; } /* under a row, none when they're all hidden */
 html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px) + 8px); }

@@ -57,8 +57,6 @@ const els = {
   writeFeedback: document.getElementById('write-feedback'),
   alphaSetItems: document.querySelectorAll('[data-alpha-set]'),
   alphaGrid: document.getElementById('alpha-grid'),
-  alphaLegend: document.getElementById('alpha-legend'),
-  alphaClasses: document.getElementById('alpha-classes'),
   alphaPageButtons: document.querySelectorAll('[data-alpha-page]'),
   studyPageButtons: document.querySelectorAll('[data-study-page]'),
   cardPic: document.getElementById('card-pic'),
@@ -1910,8 +1908,8 @@ function closeSettings() {
 // The Alphabet's sets (2026-10-14, the user's call): the topic button picks one for both its pages.
 // Each set's cards come from Thai Script topics, with their own progress (cardKey).
 const ALPHA_SETS = {
-  consonants: { label: 'Consonants', topics: ['script-consonants-all'], hint: 'Tap a letter for its name, picture, class and sound.' },
-  vowels: { label: 'Vowels', topics: ['script-vowels', 'script-diphthongs'], hint: 'Tap a vowel for its sound, its partner and the marks it\'s written with.' },
+  consonants: { label: 'Consonants', topics: ['script-consonants-all'], hint: 'Tap a letter to hear its name. Hold it for its details.' },
+  vowels: { label: 'Vowels', topics: ['script-vowels', 'script-diphthongs'], hint: 'Tap a vowel to hear it. Hold it for its details.' },
   tones: { label: 'Tones', topics: ['script-read-tone'], hint: 'Tap a tone or a mark to learn it, or a syllable in the chart to hear it. The cards: read a syllable\'s tone.' },
 };
 // Every letter's picture (images/letters/, SVG; all 44 since 2026-10-14). A letter without one would show none.
@@ -2035,22 +2033,20 @@ function renderAlphabet() {
   els.alphaWriteNote.hidden = !writing || set === 'consonants';
   els.alphaTop.hidden = writing;
   if (writing) {
-    for (const el of [els.alphaGrid, els.alphaVowels, els.alphaTones, els.alphaLegend]) el.hidden = true;
+    for (const el of [els.alphaGrid, els.alphaVowels, els.alphaTones]) el.hidden = true;
     if (set === 'consonants') renderWrite();
     return;
   }
-  const byClass = !!getPreferences().alphaClasses;
+  const lined = set !== 'tones'; // the consonants and vowels: a tap hears it (pickAlpha)
   els.alphaHint.textContent = ALPHA_SETS[set].hint;
-  els.alphaClasses.hidden = set !== 'consonants';
-  els.alphaClasses.setAttribute('aria-pressed', byClass ? 'true' : 'false');
-  els.alphaLegend.hidden = set !== 'consonants' || !byClass;
+  els.alphaHint.classList.toggle('line-hint', lined); // one height, the hint or a letter's line
+  els.alphaTop.classList.toggle('line-top', lined); // pinned on a phone (mobile.css)
   els.alphaGrid.hidden = set !== 'consonants';
   els.alphaVowels.hidden = set !== 'vowels';
   els.alphaTones.hidden = set !== 'tones';
-  els.alphaGrid.classList.toggle('by-class', byClass);
   if (set === 'vowels') {
     if (!els.alphaVowels.childElementCount) renderVowelGrid();
-    sizeTiles(els.alphaVowels);
+    sizeVowelTiles();
   }
   if (set === 'tones' && !els.alphaTones.childElementCount) renderTonesPage();
   if (set !== 'consonants' || els.alphaGrid.childElementCount) return; // drawn once
@@ -2058,11 +2054,14 @@ function renderAlphabet() {
     const f = letterFacts(c);
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = `dict-letter cls-${CLASS_NAMES[f.cls] || 'mid'}` + (f.obsolete ? ' obsolete' : '');
+    b.className = 'dict-letter letter-tile' + (f.obsolete ? ' obsolete' : '');
     b.lang = 'th';
     b.textContent = c.thai;
     b.title = `${c.thai} ${c.say?.split(' ')[1] || ''}: ${c.english}`;
-    b.addEventListener('click', () => showLetterPop(b, c));
+    b.dataset.say = cardSay(c); // lit while it plays (markSpeakers)
+    b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => pickAlpha(els.alphaGrid, b, c, `${c.translit} · ${c.english}`, () => showLetterPop(b, c)));
+    onLongPress(b, () => showLetterPop(b, c));
     return b;
   }));
 }
@@ -2449,9 +2448,17 @@ function bindWritePad() {
 
 // ---------- the Alphabet's vowels ----------
 
-// The grid's groups: short and long pairs, then the four with a final built in, and ฤ ฤๅ.
-const VOWEL_GROUPS = [['อะ', 'อา'], ['อิ', 'อี'], ['อึ', 'อือ'], ['อุ', 'อู'], ['เอะ', 'เอ'], ['แอะ', 'แอ'], ['โอะ', 'โอ'],
-  ['เอาะ', 'ออ'], ['เออะ', 'เออ'], ['เอียะ', 'เอีย'], ['เอือะ', 'เอือ'], ['อัวะ', 'อัว'], ['อำ', 'ใอ', 'ไอ', 'เอา'], ['ฤ', 'ฤๅ']];
+// The grid's sections (2026-10-15, the user's call: split by kind, in the order Thai schools teach,
+// which reads straight through them): the nine short and long pairs, three to a row; the diphthongs;
+// the extra vowels, the four with a final built in and ฤ ฤๅ.
+const VOWEL_SECTIONS = [
+  { title: 'The nine vowels', note: 'short and long',
+    groups: [['อะ', 'อา'], ['อิ', 'อี'], ['อึ', 'อือ'], ['อุ', 'อู'], ['เอะ', 'เอ'], ['แอะ', 'แอ'], ['โอะ', 'โอ'], ['เอาะ', 'ออ'], ['เออะ', 'เออ']] },
+  { title: 'Diphthongs', note: 'two vowels in one', groups: [['เอียะ', 'เอีย'], ['เอือะ', 'เอือ'], ['อัวะ', 'อัว']] },
+  { title: 'Extra vowels (สระเกิน)', note: 'four with a final built in, and two from Sanskrit',
+    groups: [['อำ', 'ใอ', 'ไอ', 'เอา'], ['ฤ', 'ฤๅ']], cls: 'vowel-extras' },
+];
+const VOWEL_GROUPS = VOWEL_SECTIONS.flatMap((s) => s.groups);
 const VOWEL_LIVE_SHORT = new Set(['อำ', 'ใอ', 'ไอ', 'เอา']); // short, but ending in -m, -i, -o: live
 const vowelShort = (v) => v.endsWith('ะ') || ['อิ', 'อึ', 'อุ', 'ฤ'].includes(v) || VOWEL_LIVE_SHORT.has(v);
 // The marks a vowel is written with (Vowel Symbol Names' names). ◌ึ: only the part that's sure.
@@ -2476,24 +2483,77 @@ const markGlyph = (name) => {
 function renderVowelGrid() {
   const byThai = new Map(alphaSets.vowels.cards.map((c) => [c.thai, c]));
   const placed = new Set(VOWEL_GROUPS.flat());
-  const groups = [...VOWEL_GROUPS, alphaSets.vowels.cards.map((c) => c.thai).filter((v) => !placed.has(v))].filter((g) => g.length);
-  els.alphaVowels.replaceChildren(...groups.map((group) => {
-    const g = document.createElement('div');
-    g.className = 'letter-group';
-    for (const v of group) {
-      const c = byThai.get(v);
-      if (!c) continue;
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'dict-letter letter-tile';
-      b.lang = 'th';
-      b.textContent = v;
-      b.title = `${c.translit}: ${c.english}`;
-      b.addEventListener('click', () => showVowelPop(b, c));
-      g.append(b);
-    }
-    return g;
+  const rest = alphaSets.vowels.cards.map((c) => c.thai).filter((v) => !placed.has(v)); // any the sections miss
+  const sections = [...VOWEL_SECTIONS, ...(rest.length ? [{ title: 'Others', groups: [rest] }] : [])];
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  els.alphaVowels.replaceChildren(...sections.map((s) => {
+    const section = el('section', 'vowel-section');
+    const head = el('h3', 'vowel-head', s.title);
+    if (s.note) head.append(el('span', 'vowel-head-note', ` · ${s.note}`));
+    const rows = el('div', `letter-groups vowel-rows ${s.cls || ''}`.trim());
+    rows.append(...s.groups.map((group) => {
+      const g = el('div', 'letter-group');
+      for (const v of group) {
+        const c = byThai.get(v);
+        if (!c) continue;
+        const b = el('button', 'dict-letter letter-tile', v);
+        b.type = 'button';
+        b.lang = 'th';
+        b.title = `${c.translit}: ${c.english}`;
+        b.dataset.say = cardSay(c); // lit while it plays (markSpeakers)
+        b.setAttribute('aria-pressed', 'false');
+        b.addEventListener('click', () => pickAlpha(els.alphaVowels, b, c, c.english, () => showVowelPop(b, c)));
+        onLongPress(b, () => showVowelPop(b, c));
+        g.append(b);
+      }
+      return g;
+    }));
+    section.append(head, rows);
+    return section;
   }));
+}
+
+// A vowel or consonant tapped (2026-10-15, the user's calls: usually just to hear it; the vowels,
+// then the consonants): it's said (a letter's name) and its tile marked, and the line above the grid
+// becomes it and `text`, with Details, which calls `open` (its dialog). A long press opens the
+// dialog straight away (onLongPress). No picture for a consonant: too small to see there (the user's
+// call, 2026-10-15); the dialog has it.
+function pickAlpha(grid, b, c, text, open) {
+  speakerPress(b, cardSay(c));
+  grid.querySelectorAll('.letter-tile[aria-pressed="true"]').forEach((t) => t.setAttribute('aria-pressed', 'false'));
+  b.setAttribute('aria-pressed', 'true');
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  const glyph = el('span', 'alpha-line-glyph', c.thai);
+  glyph.lang = 'th';
+  const details = el('button', 'ghost alpha-line-more', 'Details ›');
+  details.type = 'button';
+  details.addEventListener('click', open);
+  els.alphaHint.replaceChildren(glyph, el('span', 'alpha-line-text', text), details);
+}
+
+// Every vowel tile one width, the widest one's (so the columns line up from section to section), no
+// wider than lets a row of three pairs fit; then their side padding shrinks (.tight), and if the
+// widest (เอือะ) still doesn't fit, every tile's text a little smaller (.shrunk; on a phone).
+function sizeVowelTiles() {
+  const box = els.alphaVowels;
+  if (box.hidden || !box.offsetParent) return;
+  box.style.removeProperty('--tile-w');
+  box.style.removeProperty('--tile-fs');
+  box.classList.remove('tight', 'shrunk');
+  const widest = Math.ceil(Math.max(...[...box.querySelectorAll('.letter-tile')].map((t) => t.getBoundingClientRect().width)));
+  const rows = box.querySelector('.vowel-rows');
+  if (!(widest > 0) || !rows) return;
+  const groupGap = parseFloat(getComputedStyle(rows).columnGap) || 0;
+  const pairGap = parseFloat(getComputedStyle(rows.firstElementChild).columnGap) || 0;
+  const room = Math.floor((rows.clientWidth - 2 * groupGap - 3 * pairGap) / 6);
+  box.style.setProperty('--tile-w', `${Math.min(widest, room)}px`);
+  box.classList.toggle('tight', room < widest);
+  const tiles = [...box.querySelectorAll('.letter-tile')];
+  const over = Math.max(...tiles.map((t) => t.scrollWidth / t.clientWidth));
+  if (over > 1) {
+    box.style.setProperty('--tile-fs', `${Math.floor(parseFloat(getComputedStyle(tiles[0]).fontSize) / over) - 1}px`);
+    box.classList.add('shrunk');
+  }
 }
 
 // A vowel's dialog: the vowel large (tap: its sound), its sound and length, its partner, the marks
@@ -3341,7 +3401,7 @@ function renderLetterBoard(deck) {
 // width, again when the fonts arrive, the window resizes or the text size changes.
 function sizeLetterTiles() {
   sizeTiles(els.wordlistLetterGrid);
-  if (els.alphaVowels) sizeTiles(els.alphaVowels);
+  if (els.alphaVowels) sizeVowelTiles();
 }
 
 function sizeTiles(grid) {
@@ -5917,6 +5977,45 @@ async function speakAndWait(text, lang) {
 // A speaker button plays its word, or, pressed while that word is playing (the button's lit), stops
 // it, as the spell button does (the user's request, 2026-10-08). Pressed during Read all, the lit
 // row's speaker stops the reading.
+// A press held LONG_PRESS_MS without moving calls fn, and the click its release would make is
+// swallowed wherever it lands (the dialog fn opens may be under the finger by then). Right-click,
+// and Android's long-press menu, call it too.
+const LONG_PRESS_MS = 450;
+let longPressHeld = false;   // fired, the finger not yet up
+let swallowClickUntil = 0;
+document.addEventListener('click', (e) => {
+  if (longPressHeld || performance.now() < swallowClickUntil) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}, true);
+for (const type of ['pointerup', 'pointercancel']) {
+  document.addEventListener(type, () => {
+    if (!longPressHeld) return;
+    longPressHeld = false;
+    swallowClickUntil = performance.now() + 400;
+  }, true);
+}
+function onLongPress(el, fn) {
+  let timer = null;
+  let start = null;
+  const stop = () => { clearTimeout(timer); timer = null; };
+  el.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0) return;
+    start = [e.clientX, e.clientY];
+    timer = setTimeout(() => { timer = null; longPressHeld = true; fn(); }, LONG_PRESS_MS);
+  });
+  el.addEventListener('pointermove', (e) => {
+    if (timer && Math.hypot(e.clientX - start[0], e.clientY - start[1]) > 10) stop();
+  });
+  el.addEventListener('pointerup', stop);
+  el.addEventListener('pointercancel', stop);
+  el.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    if (!longPressHeld && !timer) fn();
+  });
+}
+
 function speakerPress(btn, thai) {
   if (!btn.classList.contains('playing')) {
     speak(thai);
@@ -6076,10 +6175,6 @@ function bindEvents() {
     if (page === 'cards') setView('flashcards', { section: 'alphabet' });
     else setView('alphabet'); // Letters or Write (renderAlphabet)
   }));
-  els.alphaClasses.addEventListener('click', () => {
-    setPreferences({ alphaClasses: !getPreferences().alphaClasses });
-    renderAlphabet();
-  });
   els.settingsModal.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeSettings();
   });
