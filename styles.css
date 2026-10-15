@@ -1575,10 +1575,15 @@ body { display: flex; flex-direction: column; }
 :is(.alpha-vowels, .alpha-grid) .letter-tile[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
 /* The line above the consonants and vowels: the hint, then the one last tapped (pickAlpha), one
    height for both. */
-.alpha-hint.line-hint { display: flex; align-items: center; gap: 10px; height: calc(52px * var(--fs, 1)); overflow: hidden; }
-.alpha-line-glyph { flex: none; color: var(--ink); font-size: calc(26px * var(--fs, 1)); }
-.alpha-line-text { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; color: var(--ink); line-height: 1.3; }
+.alpha-hint.line-hint { display: flex; align-items: center; gap: 10px; height: calc(60px * var(--fs, 1)); overflow: hidden; } /* three lines of text */
+.alpha-line-glyph { flex: none; min-width: 1.1em; color: var(--ink); font-size: calc(42px * var(--fs, 1)); line-height: 1; text-align: center; } /* larger (the user's call; it was 26px); the text after it starts in one place for most letters */
+.alpha-line-text { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; color: var(--ink); line-height: 1.3; }
 .alpha-line-more { flex: none; }
+.alpha-line-tr { color: var(--accent); font-style: italic; } /* as transliterations are everywhere (.pop-tr) */
+/* A consonant's: its name, its sound and picture word, its class, a line each ("…" if it must). */
+.alpha-line-row { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* A vowel's: its sound, then what it is, which may take two lines. */
+.alpha-line-desc { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
 .alpha-vowels.tight .vowel-rows .letter-tile { padding-left: 2px; padding-right: 2px; }
 .alpha-vowels.shrunk .vowel-rows .letter-tile { font-size: var(--tile-fs); }
 .alpha-vowels[hidden], .alpha-tones[hidden], .alpha-top[hidden], .alpha-write[hidden], .alpha-write-note[hidden] { display: none; }

@@ -1523,6 +1523,15 @@ the middle).
   to see clearly there; the dialog has it). The tiles are `.letter-tile` now
   (lit while playing), and the line and its pinning are `.line-hint` / `.line-top`, set for both
   sets (not Tones). Hint: "Tap a letter to hear its name. Hold it for its details."
+  Then (the user's requests) the line gives its class too, as the dialog does (● Mid class, in the
+  class's colour), on a second line of its own, and the transliteration in the accent yellow and
+  italic (`.alpha-line-tr`, as `.pop-tr`), and then (the user's calls) a line each: "gɔɔ gài",
+  "g — chicken", "mid class" (no ●, lower case; the colour says it). The row is three lines tall now, 60px ×
+  text size (it was 52px), for the hint and the vowels too. A line too long for the width goes
+  without the English's bracket (pickAlpha takes the text as a function of `short`), then ends in
+  "…" (CSS). The letter is 42px × text size (it was 26px). A vowel's line likewise (the user's
+  call): its sound in yellow ("ʉa"), then what it is ("short (almost unused)"), the card's English
+  split at its dash; that may take two lines.
 - **The line pinned** (the user, next: it should stay as the vowels scroll, like the top menu, and be
   one height for the hint and a vowel). On a phone `.alpha-top.vowel-top` (renderAlphabet sets it
   for the Vowels set) is sticky at `--pinned-h` (76px, the section row's height, now a variable),

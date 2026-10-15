@@ -2060,7 +2060,20 @@ function renderAlphabet() {
     b.title = `${c.thai} ${c.say?.split(' ')[1] || ''}: ${c.english}`;
     b.dataset.say = cardSay(c); // lit while it plays (markSpeakers)
     b.setAttribute('aria-pressed', 'false');
-    b.addEventListener('click', () => pickAlpha(els.alphaGrid, b, c, `${c.translit} · ${c.english}`, () => showLetterPop(b, c)));
+    // The line: its name in the transliteration's yellow, its sound and picture word, and its class
+    // in the class's colour, as the dialog has it (2026-10-15, the user's request).
+    // Three lines (the user's calls): its name, its sound and picture word, its class (no ●). Each one
+    // line: the English too long for it (ฑ's "(Ramakien queen)") goes without the bracket, then "…".
+    const line = (short) => {
+      const name = CLASS_NAMES[f.cls];
+      const span = (className, ...kids) => { const s = Object.assign(document.createElement('span'), { className }); s.append(...kids); return s; };
+      return [
+        span('alpha-line-row alpha-line-tr', c.translit),
+        span('alpha-line-row', short ? c.english.replace(/ \(.*\)$/, '') : c.english),
+        ...(name ? [span(`alpha-line-row cls-${name}`, `${name} class`)] : []), // lower case: "mid class"
+      ];
+    };
+    b.addEventListener('click', () => pickAlpha(els.alphaGrid, b, c, line, () => showLetterPop(b, c)));
     onLongPress(b, () => showLetterPop(b, c));
     return b;
   }));
@@ -2502,7 +2515,15 @@ function renderVowelGrid() {
         b.title = `${c.translit}: ${c.english}`;
         b.dataset.say = cardSay(c); // lit while it plays (markSpeakers)
         b.setAttribute('aria-pressed', 'false');
-        b.addEventListener('click', () => pickAlpha(els.alphaVowels, b, c, c.english, () => showVowelPop(b, c)));
+        // Its sound in the transliteration's yellow, then what it is, on a line of their own (the
+        // user's call): the card's English split at its dash ("ʉa — short (almost unused)").
+        const line = (short) => {
+          const [sound, ...rest] = c.english.split(' — ');
+          const what = rest.join(' — ');
+          const span = (className, text) => Object.assign(document.createElement('span'), { className, textContent: text });
+          return what ? [span('alpha-line-row alpha-line-tr', sound), span('alpha-line-desc', short ? what.replace(/ \(.*\)$/, '') : what)] : [c.english];
+        };
+        b.addEventListener('click', () => pickAlpha(els.alphaVowels, b, c, line, () => showVowelPop(b, c)));
         onLongPress(b, () => showVowelPop(b, c));
         g.append(b);
       }
@@ -2515,7 +2536,8 @@ function renderVowelGrid() {
 
 // A vowel or consonant tapped (2026-10-15, the user's calls: usually just to hear it; the vowels,
 // then the consonants): it's said (a letter's name) and its tile marked, and the line above the grid
-// becomes it and `text`, with Details, which calls `open` (its dialog). A long press opens the
+// becomes it and `text` (a string, text and elements, or a function giving them, given `short` when the
+// full ones don't fit the line), with Details, which calls `open` (its dialog). A long press opens the
 // dialog straight away (onLongPress). No picture for a consonant: too small to see there (the user's
 // call, 2026-10-15); the dialog has it.
 function pickAlpha(grid, b, c, text, open) {
@@ -2528,7 +2550,13 @@ function pickAlpha(grid, b, c, text, open) {
   const details = el('button', 'ghost alpha-line-more', 'Details ›');
   details.type = 'button';
   details.addEventListener('click', open);
-  els.alphaHint.replaceChildren(glyph, el('span', 'alpha-line-text', text), details);
+  const words = el('span', 'alpha-line-text');
+  const fill = (short) => words.replaceChildren(...[typeof text === 'function' ? text(short) : text].flat());
+  fill(false);
+  els.alphaHint.replaceChildren(glyph, words, details);
+  const over = () => words.scrollHeight > words.clientHeight + 1 || [...words.querySelectorAll('.alpha-line-row')].some((r) => r.scrollWidth > r.clientWidth + 1)
+    || [...words.querySelectorAll('.alpha-line-desc')].some((r) => r.scrollHeight > r.clientHeight + 1);
+  if (typeof text === 'function' && over()) fill(true);
 }
 
 // Every vowel tile one width, the widest one's (so the columns line up from section to section), no
