@@ -1490,6 +1490,24 @@ tappable thing on a 390px phone, and of the styles, found four, all fixed:
 - Not done (low priority): about 20 controls explain themselves only in hover tooltips (`title`),
   which phones never show; the important ones say the same on screen.
 
+## From memory: how strict, a setting (2026-10-15)
+
+The user sent a screenshot: a loose ธ passed. Replayed in the app (its yellow line taken from the
+screenshot, cut to its centre line, drawn on the pad as ธ): the model was **14% sure** of ธ, its
+first pick by a little (อ 10%), and the rule then, first pick or 10%, passed it.
+- **Settings → Writing → Check** (settings.writeCheck, WRITE_CHECK): **Lenient** is that rule;
+  **Normal** (the default now) the first pick and 60% sure (a part: first among its place's shapes,
+  80% of their share, and 10% of the whole belief); **Strict** 85% (a part 90% and 20%), and the
+  drawing's shape on the letter's too (writeScore's f1 ≥ 0.6). The help line under it says which.
+  Calibrated on Burapha-TH's test writers: right consonants pass 98.8% / 95.6% / ~89% (the model is
+  97.9% sure of a right one in the median, over 83% for nine in ten); right parts 98.5% / 97.2% / 95.0%.
+- **The feedback says how sure:** "✓ That's ธ! · 97% sure", "Not quite: here's ธ. · 14% sure" (when
+  it was the first pick but not sure enough); for a vowel or mark, its least sure part.
+- Checked: the screenshot's ธ passes Lenient and fails Normal and Strict; the font letters (88) pass
+  Normal and Strict, the wrong ones (10) fail; tone marks 4/4 and vowels 30/30 at Normal, look-alikes
+  caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
+  shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
+
 ## ยักษ์ said with a syllable too many (2026-10-15)
 
 The user: ย sounded "yaw yak yai". The voice (th-TH-NiwatNeural) sounds out ยักษ์'s silent ษ์ as a
@@ -1629,8 +1647,13 @@ vowels).
   at least the picture's width, and stays there hidden From memory with the picture or box laid over
   its middle, so the rows don't jump right when switching (the user's report). The Letters page's line puts its
   letter in the same slot (pickAlpha), so going from Letters to Write keeps the row, the letter and
-  the text where they were (measured: the same to the pixel for ท and เอือ; only the text is
-  narrower on Letters, for Details).
+  the text where they were (measured: the same to the pixel for ท and เอือ, the text's width too
+  now that Write has Details).
+- **Details on Write** (the user's call): the row (#write-name, a div now, not a button) ends in
+  Details ›, which opens the item's dialog: showLetterPop, showVowelPop, or for a tone mark
+  showMarkPop with the mark's own card (the Write item keeps it as `card`). The letter's slot is the
+  button that says it. From memory, Details would give the answer away: it keeps its room but is
+  hidden until the drawing is checked (drawWritePad), and again when the pad is cleared.
 - **Home** (the user's wording): Topics' rows shortened ("Every word in a topic. Tap ⟲ to add one to
   Cards.", "Browse, Recognition and Recall", "Short stories that use the topic's words"), and the
   Dictionary's "Browse or search in Thai, English or transliteration".

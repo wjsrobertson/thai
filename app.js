@@ -125,6 +125,8 @@ const els = {
   resetSettings: document.getElementById('reset-settings'),
   resetReview: document.getElementById('reset-review'),
   setAudioSource: document.getElementById('setting-audio-source'),
+  setWriteCheck: document.getElementById('setting-write-check'),
+  writeCheckHelp: document.getElementById('setting-write-check-help'),
   audioSourceHelp: document.getElementById('setting-audio-source-help'),
   aboutRecordings: document.getElementById('about-recordings'),
   setThaiSpeed: document.getElementById('setting-thai-speed'),
@@ -202,6 +204,7 @@ const DEFAULT_SETTINGS = {
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
   readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
+  writeCheck: 'normal',           // Write → From memory: how sure the model must be, 'lenient' | 'normal' | 'strict' (WRITE_CHECK)
 };
 
 const state = {
@@ -2143,7 +2146,23 @@ const WRITE_BAND = 16;       // how far off the letter a line may stray
 const WRITE_REACH = 12;      // how near a line must pass to cover the letter
 const WRITE_PASS = { onLetter: 0.6, covered: 0.7 };
 const MEMORY_PASS = { f1: 0.65 }; // From memory without the model: its score at the tolerances above, to pass
-const MODEL_PASS = { own: 0.1, rival: 0.6 }; // From memory with it: the letter's probability to pass; a rival's to be named
+const MODEL_PASS = { rival: 0.6 }; // From memory with it: another letter named at this; to pass, WRITE_CHECK
+// How strict From memory is (Settings → Writing, 2026-10-15, the user's call: Lenient, the first rule,
+// passed a loose ธ). A consonant: the model's first pick (among the consonants) at `own`, or Lenient's
+// first pick or 10%; Strict, the drawing's shape on the letter's (writeScore's f1) too. A vowel's or
+// mark's part: first among its place's shapes at `place` of them, and `whole` of the model's belief.
+// Calibrated on Burapha-TH's test writers: right consonants pass 98.8% / 95.6% / ~89%, another
+// letter 0.2% / 0.03% / 0.01%; right parts 98.5% / 97.2% / 95.0%.
+const WRITE_CHECK = {
+  lenient: { own: 0.1, either: true, part: { whole: 0.1, either: true },
+    help: 'Your letter passes if the model thinks it at all likely: a loose drawing can pass.' },
+  normal: { own: 0.6, part: { place: 0.8, whole: 0.1 },
+    help: 'It must be the model\'s first choice, and fairly sure of it.' },
+  strict: { own: 0.85, shape: 0.6, part: { place: 0.9, whole: 0.2 },
+    help: 'First choice and very sure, and its shape must match the letter\'s.' },
+};
+const writeCheck = () => WRITE_CHECK[getSettings().writeCheck] || WRITE_CHECK.normal;
+const surePct = (p) => ` · ${Math.round(p * 100)}% sure`;
 // From memory tells letters apart at the first, tighter tolerances, or a look-alike's small part
 // (ป's tail) would vanish in the loose band: the letter asked for must be within `behind` of the best
 // match there, and a rival is named if it wins by more and scores `rival`.
@@ -2168,7 +2187,7 @@ function writeItems() {
   if (set === 'vowels') return alphaSets.vowels.cards;
   if (set === 'tones') {
     return writeToneItems ||= (state.decks.find((d) => d.id === 'script-marks')?.cards || [])
-      .filter((c) => /^◌[่้๊๋]$/.test(c.thai)).map((c) => ({ ...c, thai: c.thai.replace('◌', WRITE_CARRIER) }));
+      .filter((c) => /^◌[่้๊๋]$/.test(c.thai)).map((c) => ({ ...c, thai: c.thai.replace('◌', WRITE_CARRIER), card: c })); // card: for its dialog
   }
   return alphaCards;
 }
@@ -2422,7 +2441,7 @@ const PART_SLOT = (ch) => ('เแโใไ'.includes(ch) ? 'before' : 'ัิ�
 const SLOT_SHAPES = { before: 'เแโใไ', above: 'ัิีึื็่้๊๋์', below: 'ุู', after: 'ะาำอยว' };
 const SLOT_WORDS = { before: 'in front', above: 'above', below: 'below', after: 'after the อ' };
 const TONE_MARKS = '่้๊๋';
-const PART_PASS = { own: 0.1, rival: 0.6 };
+const PART_PASS = { rival: 0.6 }; // another shape named at this, among its place's; to pass, WRITE_CHECK's `part`
 const partName = (ch) => ('ัิีึื็่้๊๋์ุู'.includes(ch) ? `◌${ch}` : ch);
 const writeParts = (form) => {
   const at = form.indexOf(WRITE_CARRIER);
@@ -2483,17 +2502,21 @@ function checkParts(c, shape, model) {
     const probs = modelProbs(model, strokes);
     const among = [...shapes].map((ch) => ({ ch, p: probs.get(ch) || 0 }));
     const sum = among.reduce((a, x) => a + x.p, 0) || 1;
-    return { probs, best: among.sort((a, b) => b.p - a.p)[0], sure: among[0].p / sum };
+    return { probs, best: among.sort((a, b) => b.p - a.p)[0], sure: among[0].p / sum, share: (ch) => (probs.get(ch) || 0) / sum };
   };
+  const rule = writeCheck().part;
+  let least = 1; // the least sure part, for the feedback
   // ฤ and ฤๅ have no carrier: the first part read among the consonants and ฤ ฦ; ๅ, which the model
   // doesn't know, only has to be there.
   if (!shape.carrierBox) {
     const groups = splitParts(write.strokes, parts.length);
     const r = read(groups[0], [...model.letters].filter((ch) => alphaCards.some((a) => a.thai === ch) || 'ฤฦ'.includes(ch)).join(''));
     const own = r.probs.get(parts[0].ch) || 0;
-    if (own < PART_PASS.own && r.best.ch !== parts[0].ch) return { pass: false, text: `Not quite: here's ${c.thai}.`, detail: { own } };
+    const first = r.best.ch === parts[0].ch;
+    const ok = rule.either ? first || own >= rule.whole : first && r.share(parts[0].ch) >= rule.place && own >= rule.whole;
+    if (!ok) return { pass: false, text: `Not quite: here's ${c.thai}.`, detail: { own } };
     if (groups.length < parts.length) return { pass: false, text: `Nearly: ${c.thai} also needs ${parts[1].ch} after it.`, detail: { own } };
-    return { pass: true, text: `✓ That's ${c.thai}!`, detail: { own } };
+    return { pass: true, text: `✓ That's ${c.thai}!${surePct(r.share(parts[0].ch))}`, detail: { own } };
   }
   const bySlot = { before: [], above: [], below: [], after: [] };
   for (const part of joinTouching(write.strokes)) {
@@ -2521,15 +2544,18 @@ function checkParts(c, shape, model) {
       if (!groups[k]) { problems.push(`Missing: the ${partName(p.ch)} ${SLOT_WORDS[slot]}.`); return; }
       const r = read(groups[k], tones ? TONE_MARKS : SLOT_SHAPES[slot]);
       const own = r.probs.get(p.ch) || 0;
-      detail[p.ch] = { own: +own.toFixed(3), best: r.best.ch, sure: +r.sure.toFixed(2) };
-      if (own >= PART_PASS.own || r.best.ch === p.ch && own >= PART_PASS.own / 4) return;
+      const share = r.share(p.ch);
+      least = Math.min(least, share);
+      detail[p.ch] = { own: +own.toFixed(3), share: +share.toFixed(3), best: r.best.ch, sure: +r.sure.toFixed(2) };
+      const first = r.best.ch === p.ch;
+      if (rule.either ? own >= rule.whole || first && own >= rule.whole / 4 : first && share >= rule.place && own >= rule.whole) return;
       problems.push(r.best.ch !== p.ch && r.sure >= PART_PASS.rival
         ? `The part ${SLOT_WORDS[slot]} should be ${partName(p.ch)}; that looks like ${partName(r.best.ch)}.`
         : `The part ${SLOT_WORDS[slot]} should be ${partName(p.ch)}.`);
     });
   }
   const pass = !problems.length;
-  return { pass, text: pass ? `✓ That's ${tones ? `${c.say} (${partName(parts[0].ch)})` : c.thai}!` : problems.slice(0, 2).join(' '), detail };
+  return { pass, text: pass ? `✓ That's ${tones ? `${c.say} (${partName(parts[0].ch)})` : c.thai}!${surePct(least)}` : problems.slice(0, 2).join(' '), detail };
 }
 
 // From memory: the drawing, wherever and however big, scaled (keeping its shape) and centred onto a
@@ -2585,7 +2611,8 @@ function renderWrite() {
   // From memory names it without showing it: a consonant's picture in the letter's place; a vowel or
   // mark, which have none, an empty box. The letter keeps its room either way (hidden From memory,
   // its slot at least the picture's width), so the rows don't move between Trace and From memory.
-  const slot = Object.assign(document.createElement('span'), { className: 'write-slot' });
+  const slot = Object.assign(document.createElement('button'), { type: 'button', className: 'write-slot', title: 'Hear it' });
+  slot.addEventListener('click', () => speak(cardSay(c)));
   const glyph = Object.assign(document.createElement('span'), { className: 'alpha-line-glyph', lang: 'th', textContent: c.thai });
   slot.append(glyph);
   if (writeMemory()) {
@@ -2594,7 +2621,11 @@ function renderWrite() {
       : Object.assign(document.createElement('span'), { className: 'write-blank write-cover' }));
   }
   const words = Object.assign(document.createElement('span'), { className: 'alpha-line-text' });
-  els.writeName.replaceChildren(slot, words);
+  // Details, as on the Letters page (the user's call): its dialog. From memory it would give the
+  // answer away, so it's there (taking its room) only once the drawing is checked (drawWritePad).
+  const details = Object.assign(document.createElement('button'), { type: 'button', className: 'ghost alpha-line-more', textContent: 'Details ›' });
+  details.addEventListener('click', () => (set === 'vowels' ? showVowelPop(details, c) : set === 'tones' ? showMarkPop(details, c.card) : showLetterPop(details, c)));
+  els.writeName.replaceChildren(slot, words, details);
   fillAlphaText(words, c, set);
   document.fonts.load(writeFont(100), c.thai).then(drawWritePad);
   drawWritePad();
@@ -2617,6 +2648,8 @@ function drawWritePad() {
   // mark's carrier อ fainter still: it only holds the place (eraseCarrier: the rest drawn on its own).
   const ink = css.getPropertyValue('--ink').trim() || '#ccc';
   const at = writeCarrierAt(ch);
+  const details = els.writeName.querySelector('.alpha-line-more');
+  if (details) details.style.visibility = memory && !write.result ? 'hidden' : ''; // From memory: once checked
   x.fillStyle = ink;
   const p = placeGlyph(x, ch, W);
   if (at < 0) {
@@ -2715,10 +2748,12 @@ async function checkWrite() {
     const own = (probs.get(c.thai) || 0) / sum;
     const fair = score.ink <= 2;
     els.writeFeedback.dataset.score = JSON.stringify({ model: 1, own: +own.toFixed(3), best: ranked[0].ch, bestP: +ranked[0].p.toFixed(3), next: ranked[1].ch, nextP: +ranked[1].p.toFixed(3), ink: +score.ink.toFixed(2) }); // for tuning
-    pass = fair && (ranked[0].ch === c.thai || own >= MODEL_PASS.own);
-    text = pass ? `✓ That's ${c.thai}!${tip}`
-      : fair && ranked[0].p >= MODEL_PASS.rival ? `That looks more like ${ranked[0].ch} than ${c.thai}. Compare them on the pad.`
-      : `Not quite: here's ${c.thai}.`;
+    const level = writeCheck();
+    const first = ranked[0].ch === c.thai;
+    pass = fair && (level.either ? first || own >= level.own : first && own >= level.own && (!level.shape || score.f1 >= level.shape));
+    text = pass ? `✓ That's ${c.thai}!${surePct(own)}${tip}`
+      : fair && ranked[0].ch !== c.thai && ranked[0].p >= MODEL_PASS.rival ? `That looks more like ${ranked[0].ch} than ${c.thai}. Compare them on the pad.`
+      : `Not quite: here's ${c.thai}.${first ? surePct(own) : ''}`;
   } else if (memory) {
     // Which letter it looks like: against every consonant, each with the drawing fitted to its box,
     // at the tighter tolerances.
@@ -2792,7 +2827,6 @@ function bindWritePad() {
   document.getElementById('write-check').addEventListener('click', checkWrite);
   document.getElementById('write-prev').addEventListener('click', () => moveWrite(-1));
   document.getElementById('write-next').addEventListener('click', () => moveWrite(1));
-  els.writeName.addEventListener('click', () => speak(cardSay(writeCard())));
   document.querySelectorAll('[data-write-mode]').forEach((b) => b.addEventListener('click', () => {
     setPreferences({ writeMode: b.dataset.writeMode === 'memory' ? 'memory' : 'trace' });
     write.back = [];
@@ -3460,6 +3494,8 @@ function renderSettings() {
   for (const box of els.confirmSettings) box.checked = s[box.dataset.confirmSetting] !== false;
 
   els.setAudioSource.value = s.audioSource;
+  els.setWriteCheck.value = WRITE_CHECK[s.writeCheck] ? s.writeCheck : 'normal';
+  els.writeCheckHelp.textContent = WRITE_CHECK[els.setWriteCheck.value].help;
   els.audioSourceHelp.textContent = audioSourceHelpText(s.audioSource);
   els.aboutRecordings.textContent = recordingsText();
   els.setThaiSpeed.value = String(s.thaiSpeed);
@@ -3500,6 +3536,10 @@ function bindSettings() {
     setSettings({ [box.dataset.confirmSetting]: box.checked });
   }));
 
+  els.setWriteCheck.addEventListener('change', () => {
+    setSettings({ writeCheck: els.setWriteCheck.value });
+    els.writeCheckHelp.textContent = WRITE_CHECK[els.setWriteCheck.value].help;
+  });
   els.setAudioSource.addEventListener('change', () => {
     setSettings({ audioSource: els.setAudioSource.value });
     const deck = currentScope();

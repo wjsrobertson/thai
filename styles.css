@@ -1602,6 +1602,7 @@ body { display: flex; flex-direction: column; }
    the rows right): at least the picture's width; From memory the letter hidden in it, the picture or
    box laid over its middle. */
 .write-slot { position: relative; flex: none; display: flex; align-items: center; justify-content: center; min-width: calc(52px * var(--fs, 1)); }
+button.write-slot { padding: 0; background: none; border: 0; color: inherit; font: inherit; cursor: pointer; } /* Write's: tap to hear it */
 .write-cover { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .write-mode { display: flex; margin: 0 0 10px; }
 .write-mode .seg-btn { flex: 1; }
