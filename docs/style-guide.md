@@ -75,7 +75,7 @@ The phone page, top to bottom, at 390 × 664:
 | Letter row (Alphabet: Letters, Write) | 76–128 | 52 | as Cards' direction row |
 | Second switch (Cards' mode; Write's Trace / From memory) | 140–192 | 52 | 12 gaps |
 | The card or the pad | 204–515 | the room left | grows (`sizeCards`, `sizeWritePad`) |
-| ‹ › | 533–589 | 56 | in the middle of the room under the card: 18 above, 18 below |
+| ‹ ›; Recognition's answers; Recall's grades | 533–589 | 56 | in the middle of the room under the card: 18 above, 18 below, so the card is one shape in every mode |
 | Tab bar | 608–664 | 56 + safe area | fixed |
 
 - **Gutters 12** (the stage's padding), gaps between rows **12**. A pinned row takes the gutters too
@@ -114,6 +114,8 @@ The phone page, top to bottom, at 390 × 664:
   letter row's three lines at 14 px, Cards' and Write's switches) keep their size, so the pages stay
   aligned; check they still fit at 1.3. ([WCAG 1.4.4 Resize Text](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html):
   the browser's zoom still scales everything.)
+- **Recognition's answers** (56 tall): two lines of English at 17, or three at 12 (line 1.2; Thai
+  keeps 1.3 for its marks); a longer one shrinks to fit (`fitPills`), never under 12.
 - **Inputs at 16 or more** on a phone: iOS Safari zooms the page into a focused input under 16.
 - **Transliteration** is the accent colour in italic everywhere (`.pop-tr`, `.alpha-line-tr`); a
   long line drops its English bracket before it clips, then ends in "…".
@@ -187,7 +189,8 @@ in a rule. ([Apple: Dark Mode](https://developer.apple.com/design/human-interfac
 1. Tap targets 44 × 44 at least; 8 between neighbours where it's tight.
 2. Measured at 390 × 664, 763 and 844 (and desktop): nothing under the tab bar or the pinned row,
    no sideways scroll (`scrollWidth` = the width).
-3. Moving to and from the pages around it, nothing shifts: the same rows at the same y.
+3. Moving to and from the pages around it, nothing shifts: the same rows at the same y. Run
+   `python3 -u tools/check_layout.py`, and add a check for anything new that must line up.
 4. Every theme: text 4.5:1, controls 3:1 (the table's script); the Light theme especially.
 5. Text sizes 0.8 and 1.3: nothing clipped (a long line drops its bracket, then "…").
 6. Reduced motion; a screen reader hears the feedback; focus shows with a keyboard.
