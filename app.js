@@ -2206,7 +2206,7 @@ const surePct = (p) => ` · ${Math.round(p * 100)}%`;
 // match there, and a rival is named if it wins by more and scores `rival`.
 const TELL_APART = { band: 10, reach: 6, behind: 0.05, rival: 0.8 };
 const writeFont = (px) => `${px}px "Learn Thai Looped"`;
-const write = { strokes: [], drawing: false, result: null, back: [] }; // back: From memory's letters so far, for ‹
+const write = { strokes: [], drawing: false, result: null, back: [], shown: null }; // back: From memory's letters so far, for ‹; shown: the set and item drawn on (renderWrite)
 const writeMemory = () => getPreferences().writeMode === 'memory';
 // Letters a learner mixes up when writing: the Look-alike Letters board's groups and a few more pairs.
 // From memory checks a drawing against the letter asked for and these.
@@ -2630,6 +2630,17 @@ function renderWrite() {
   const c = writeCard();
   if (!c) return;
   const set = alphaSetNow();
+  // Another item (another set, or any way but ‹ ›, which clear it themselves): a clean pad (2026-10-16,
+  // the user's report: a vowel traced stayed on the pad over the consonant after switching sets).
+  // From memory's ‹ history is the set's places, so it goes with the set.
+  const shown = `${set}:${c.thai}`;
+  if (write.shown !== shown) {
+    if (write.shown?.split(':')[0] !== set) write.back = [];
+    write.strokes = [];
+    write.result = null;
+    write.drawing = false;
+    write.shown = shown;
+  }
   document.querySelectorAll('[data-write-mode]').forEach((b) => b.setAttribute('aria-checked', b.dataset.writeMode === (writeMemory() ? 'memory' : 'trace') ? 'true' : 'false'));
   if (writeMemory()) writeModel().catch(() => {}); // ready by the first Check
   // The Letters page's line (alphaLineText), the user's call (2026-10-15): the letter, then its rows.

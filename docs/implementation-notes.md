@@ -1508,6 +1508,16 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Write: a clean pad for another item (2026-10-16)
+
+The user: a vowel traced on Vowels → Trace stayed on the pad after switching to Consonants. Write
+keeps one set of strokes (`write.strokes`), and only ‹ ›, Clear and the Trace | From memory switch
+emptied it; a set switch re-renders through renderAlphabet → renderWrite without. renderWrite now
+remembers the set and item it drew on (`write.shown`, "vowels:อะ") and, when that changes, clears the
+strokes and any Check result (the hint line comes back); a set change also empties From memory's ‹
+history (`write.back`, places in the old set's list). The same item again (the set re-picked, or
+Letters and back) keeps the drawing. Tested: vowels → consonants → tones → vowels, each clean.
+
 ## Letters: a speaker on the letter's row, where Write's is (2026-10-16)
 
 The user asked for Write's speaker on the Letters page's row too. pickAlpha (the consonants' and the
