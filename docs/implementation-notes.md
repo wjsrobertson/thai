@@ -1508,6 +1508,19 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Alphabet cards: a tap on the back opens the Alphabet's dialog (2026-10-16)
+
+The user asked whether the word dialog's Add to Cards and Spell did anything for a letter card
+(tapping the back's letter or its name opened the word dialog, made for Topics' words). They
+didn't: the Alphabet's Cards hold every letter whatever is in Cards (reviewOnlyCards), so Add to
+Cards only wrote a `abc:ก` key nothing read (and the backup summary counted it as a word in Cards);
+and Spell on one consonant said its name again. `showCardDialog(card)` (from tapCardText and
+tapCardThai's back) now opens a consonant's **letter dialog** (showLetterPop: its picture, class,
+sound, words) and a vowel's **vowel dialog** (showVowelPop); a Tones card's syllable (a real word,
+ข้าว) keeps the word dialog with Spell, and showWordPop leaves out Add to Cards for any `card.alpha`.
+The word dialog's other callers (the letter dialog's words, word lists, stories) are Topics' words
+and keep it.
+
 ## Alphabet cards: the back's letter, picture and words in proportion (2026-10-16)
 
 The user sent a screenshot: on an Alphabet card's back, a large picture and a tiny letter, the words

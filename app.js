@@ -5486,7 +5486,7 @@ function showWordPop(anchor, card) {
     toast(added ? `✓ Added ${card.thai} to Cards` : `Removed ${card.thai} from Cards`, { tone: added ? 'good' : '' });
     paintReview();
   });
-  actions.append(rv);
+  if (!card.alpha) actions.append(rv); // the Alphabet's Cards hold every letter: nothing to add
   if (spellingFor(card)) {
     const sp = document.createElement('button');
     sp.type = 'button';
@@ -5834,8 +5834,18 @@ function tapCardText(els, e, card) {
     const r = CARD_TAP_REACH;
     return [...range.getClientRects()].some((b) => e.clientX >= b.left - r && e.clientX <= b.right + r && e.clientY >= b.top - r && e.clientY <= b.bottom + r);
   });
-  if (on) showWordPop(null, card);
+  if (on) showCardDialog(card);
   return on;
+}
+
+// A card back's dialog: the word dialog, or for the Alphabet's cards their own (2026-10-16, the
+// user's call: the word dialog's Add to Cards did nothing for them, as the Alphabet's Cards hold
+// every letter, and Spell only said a letter's name again): a consonant's letter dialog, a vowel's
+// vowel dialog; a Tones card's syllable keeps the word dialog, without Add to Cards (showWordPop).
+function showCardDialog(card) {
+  if (card.alpha && card.alphaSet === 'consonants') return showLetterPop(null, alphaCards.find((a) => a.thai === card.thai) || card);
+  if (card.alpha && card.alphaSet === 'vowels') return showVowelPop(null, alphaSets.vowels.cards.find((v) => v.thai === card.thai) || card);
+  return showWordPop(null, card);
 }
 
 function tapCardThai(el, e, card, { back = false } = {}) {
@@ -5843,7 +5853,7 @@ function tapCardThai(el, e, card, { back = false } = {}) {
   const hit = tappedPart(el, card, e.clientX, e.clientY, CARD_TAP_REACH);
   if (!hit) return false;
   if (back && card) {
-    showWordPop(null, card);
+    showCardDialog(card);
     return true;
   }
   speak(hit.say, 'sp');
