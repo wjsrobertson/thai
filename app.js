@@ -1031,16 +1031,25 @@ function sizeCards() {
   }
 }
 
-// Recognition's answers keep to the three lines a phone gives them room for (mobile.css): a longer
-// one shrinks, down to 70%, so the card (sizeCards) keeps its height for it.
+// Recognition's answers and Recall's grades keep to the band a phone gives them, ‹ ›'s 56 px (two
+// lines of an answer; mobile.css): a longer one shrinks, down to 12 px, the style guide's least for
+// reading (2026-10-16; it was 70% of three lines' room), so the card (sizeCards) keeps Browse's height
+// for it. The few longer still (27 of the 16,800 answers) make the row taller, the card shorter.
 function fitPills() {
-  for (const pill of els.learnPills.children) {
-    pill.style.fontSize = '';
-    if (!PHONE_LAYOUT.matches || !pill.offsetParent) continue;
+  const rows = [els.learnPills, els.reviewGrades];
+  const pills = rows.flatMap((row) => [...row.children]);
+  pills.forEach((pill) => { pill.style.fontSize = ''; });
+  if (!PHONE_LAYOUT.matches) return;
+  // Each its own height while measured: a row stretches its buttons to the tallest, so an answer
+  // shrank, to the floor, until the longest one beside it fitted (2026-10-16).
+  rows.forEach((row) => { row.style.alignItems = 'flex-start'; });
+  for (const pill of pills) {
+    if (!pill.offsetParent) continue;
     const room = parseFloat(getComputedStyle(pill).minHeight);
     const base = parseFloat(getComputedStyle(pill).fontSize);
-    for (let k = 0.94; k > 0.69 && pill.getBoundingClientRect().height > room + 0.5; k -= 0.06) pill.style.fontSize = `${base * k}px`;
+    for (let k = 0.96; base * k >= 12 && pill.getBoundingClientRect().height > room + 0.5; k -= 0.04) pill.style.fontSize = `${base * k}px`;
   }
+  rows.forEach((row) => { row.style.alignItems = ''; });
 }
 
 // The back scrolls when there's too much on it, but on a phone the longest idioms went just over
@@ -4798,7 +4807,12 @@ function closeConfirm(ok) {
 // (renderReviewOnly).
 function renderToday() {
   if (!state.cardIndex.size) return; // decks not loaded yet
+  const was = els.review.hidden;
   els.review.hidden = !state.review;
+  // Shown only now (a stream started on coming to Cards in Recall: enterReview's presentEntry fitted
+  // it while hidden): sized now (2026-10-16, the user's report: after a reload, or once a stream had
+  // ended, the card kept the stylesheet's height, its foot too low, until a mode switch).
+  if (was && !els.review.hidden && state.view === 'flashcards') fitCardText();
 }
 
 // The next card in the stream. With no words left (all taken out of Review), the stream stops and

@@ -1508,6 +1508,70 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## What lines up: tools/check_layout.py (2026-10-16)
+
+The user asked for a list of everything they'd asked to line up, match or stay put, and for it all
+to be checked after each new request. `python3 -u tools/check_layout.py` (the server on :8765) checks
+each at 390 × 664, 763, 844 and 430 × 932 (or the sizes given; `--text-size 2` for the largest text),
+with real taps through CDP, and exits 1 on a failure; screenshots go to
+~/snap/chromium/common/learnthai-shots-out/layout. It measures relationships (as tall as, level
+with, where the other is), not pixels, so it holds at any phone size. What it keeps, with when the
+user asked:
+- **The top row:** the topic or set picker as tall as the page switch, tops level (10-14); the
+  Dictionary's Thai | English where the Alphabet's Letters | Cards | Write is (10-14); Settings'
+  search where the Dictionary's is, as tall (10-14); the row pinned as Topics, a Dictionary letter
+  and Settings scroll, its line only once scrolled (10-14); the word dialog between the top row and
+  the tab bar (10-14).
+- **Alphabet → Letters:** the hint / letter row pinned (10-15); one height for the hint and a
+  letter's line, the grid not moving (10-15); one height on Consonants, Vowels and Tones (10-15); the
+  hint 16 px in from each end (10-15); every vowel tile one width (10-15).
+- **Write's row:** as the Letters row, part for part (10-15); Trace → From memory moves nothing
+  (10-14, 10-15); the speaker at the right end, Details before it (10-16), as on Letters (10-16).
+- **Write and Cards:** Trace | From memory level with Browse | Recognition | Recall (10-15); the pad
+  where the card is (10-15); ‹ › where Cards' are (10-14), 18 px above and below, clear of the tab bar
+  (10-15).
+- **Cards:** the card one shape in Browse, Recognition and Recall, the answers and grades where ‹ ›
+  are, the card's size held question to question with answers at 12 px or more, Recall's card the
+  same arriving from elsewhere (10-16); a letter or
+  short word filling the card's front, long text inside it (10-16); an Alphabet card's back whole,
+  the letter twice the words (10-16).
+- **Tile boards:** the Thai Script topics' rows centred, tiles one width (10-13).
+- And no script errors, no sideways scroll.
+A new request of the kind gets a check here.
+
+## Cards: one shape in Browse, Recognition and Recall (2026-10-16)
+
+The user: on Topics → Cards the card should be the same shape in all three modes; Recognition's
+buttons (and Recall's) seemed large, better made smaller than Browse's room made bigger. Measured
+at 390 × 664: the card 366 wide in all three, but 311 tall in Browse (‹ › 56 tall, 18 above and
+below), 287 in Recognition (the answers 92 tall, room for three lines) and 301 in Recall (the grades
+72). Now the answers and the grades are in ‹ ›'s band: 56 px tall, 18 under the card (the card's
+12 px gap and 6 of margin) and 18 over the tab bar (the stage's padding, now in every mode), so
+sizeCards leaves the card Browse's size: 311 at 664, 491 at 844, in all three, Alphabet too.
+- **Answers:** two lines of English at 17 px, or three at 12 (the line 1.2, not 1.3, for English;
+  Thai keeps 1.3 for its marks). fitPills shrinks a longer one down to 12 px, the style guide's
+  least for reading. Measured over every card's English and Thai: 7,094 of 8,508 English answers fit
+  at full size, 8,487 at 12 px or more; Thai 8,285 of 8,291. The 27 longer still make the row taller
+  and the card shorter for that question, 12 of them in Tone Chants (its card 284–311 there); the
+  rest are one each: rule topics' notes and long glosses ("(classifier) machines, devices,
+  instruments", "condo management office (juristic person)").
+- **fitPills measured the row, not the button:** the row stretches its buttons to the tallest, so
+  an answer beside a long one shrank to the floor (10 px) though it fitted at 14. Now the rows are
+  `align-items: flex-start` while it measures. (Already so before; three lines' room hid it.)
+- **Grades** the same: 56 px, `margin-top: 6px`, fitted by fitPills too (for the larger text sizes).
+- **Recall arriving unsized** (the user's report: coming to Cards in Recall from elsewhere, the card's
+  foot too low until a switch to another mode and back). setView fits the cards, then starts Recall's
+  stream (enterReview), whose presentEntry fits again, but both before renderToday un-hides #review:
+  with no stream running (after a reload, or once one had ended) the card kept the stylesheet's
+  height (46vh, which iOS Safari takes of the screen without its bars, so too tall). renderToday now
+  fits the cards when it shows Recall. Measured at 390 × 664 and 844: 311 / 491 from List, Home,
+  Alphabet, a reload and the switch alike. check_layout.py has it (a reload, then the tab).
+- **Found by the checks on the way:** ก's back overflowed at 390 × 763 in the full run (310 px of
+  content in 235), though it fitted when tried alone. fitBack had laid it out before the picture
+  loaded, when the `<img>` had no height, so it fitted stacked; nothing re-fitted when the picture
+  came. `.card-pic` is now `aspect-ratio: 1` (every letter's picture is 400 × 400), so it has its
+  height from the start.
+
 ## Write: a clean pad for another item (2026-10-16)
 
 The user: a vowel traced on Vowels → Trace stayed on the pad after switching to Consonants. Write
