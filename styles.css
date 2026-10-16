@@ -1606,6 +1606,11 @@ body { display: flex; flex-direction: column; }
    box laid over its middle. */
 .write-slot { position: relative; flex: none; display: flex; align-items: center; justify-content: center; min-width: 48px; }
 button.write-slot { padding: 0; background: none; border: 0; color: inherit; font: inherit; cursor: pointer; } /* Write's: tap to hear it */
+/* Write's speaker, before Details: 44 round, as the word tables' (.row-speak). */
+.write-speak { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0;
+  background: transparent; border: 0; border-radius: 50%; color: var(--muted); cursor: pointer; }
+.write-speak .speaker-icon { width: 26px; height: 26px; }
+.write-speak:hover, .write-speak.playing { color: var(--accent); }
 .write-cover { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
 .write-mode { display: flex; margin: 0 0 12px; }
 .write-mode .seg-btn { flex: 1; }

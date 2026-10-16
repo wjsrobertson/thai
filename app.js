@@ -2038,6 +2038,9 @@ function renderAlphabet() {
   if (writing) {
     for (const el of [els.alphaGrid, els.alphaVowels, els.alphaTones]) el.hidden = true;
     renderWrite();
+    // Arriving (a tab, the page switch, another set): its name or sound, as moving to it does (the
+    // user's call, 2026-10-15). Only straight after a tap: not when the app opens on Write.
+    if (navigator.userActivation?.isActive ?? true) speak(cardSay(writeCard()));
     return;
   }
   els.alphaHint.replaceChildren(Object.assign(document.createElement('span'), { className: 'alpha-hint-text', textContent: ALPHA_SETS[set].hint }));
@@ -2612,9 +2615,16 @@ function renderWrite() {
   const words = Object.assign(document.createElement('span'), { className: 'alpha-line-text' });
   // Details, as on the Letters page (the user's call): its dialog. From memory it would give the
   // answer away, so it's there (taking its room) only once the drawing is checked (drawWritePad).
+  // A speaker (the user's call, 2026-10-15): the name or sound again; lit while it plays (markSpeakers).
+  // At the row's right end, so it stays put From memory, where Details waits hidden before it.
+  const say = Object.assign(document.createElement('button'), { type: 'button', className: 'row-speak write-speak', title: 'Hear it' });
+  say.setAttribute('aria-label', 'Hear it');
+  say.dataset.say = cardSay(c);
+  say.append(speakerIcon());
+  say.addEventListener('click', () => speakerPress(say, cardSay(c)));
   const details = Object.assign(document.createElement('button'), { type: 'button', className: 'ghost alpha-line-more', textContent: 'Details ›' });
   details.addEventListener('click', () => (set === 'vowels' ? showVowelPop(details, c) : set === 'tones' ? showMarkPop(details, c.card) : showLetterPop(details, c)));
-  els.writeName.replaceChildren(slot, words, details);
+  els.writeName.replaceChildren(slot, words, details, say); // the speaker at the right, Details before it (the user's call)
   fillAlphaText(words, c, set);
   sizeWritePad();
   document.fonts.load(writeFont(100), c.thai).then(drawWritePad);

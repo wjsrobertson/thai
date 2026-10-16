@@ -1508,6 +1508,19 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Style guide (2026-10-16)
+
+The user asked for a style guide with size and positioning best practice, the standards linked:
+**docs/style-guide.md**. Screens and heights to test (390–430 wide; 664, 763, 844, 926 tall), tap
+targets (44, Apple HIG and WCAG 2.5.5; WCAG 2.5.8's 24; Material's 48), the phone page's rows and
+their y, the rules learnt this session (pages line up, nothing jumps, fill don't float, pinned rows),
+type, the colour tokens and **a contrast table measured from the five themes' tokens**: text,
+muted, accent, feedback, tones and control borders pass WCAG AA everywhere; **the class colours as
+text don't** (high in Dark and Charcoal, low in Charcoal, all three in Light), noted there to fix.
+Every link was checked to resolve (2026-10-16).
+A project **CLAUDE.md** (the user's call, the same day) points sessions at the notes and the guide,
+with the working rules, the data pipeline and where the model and screenshot tools live.
+
 ## Write fits the screen (2026-10-15)
 
 The user, on an iPhone 12 Pro: on Vowels → Write the ‹ Check › row went under the tab bar. Measured
@@ -1542,6 +1555,14 @@ the buttons at 644–700 with the tab bar from 608. Their pick of the two fixes 
   as before; not in Recognition, whose answers have the foot. Write: sizeWritePad and .write-foot
   with 18 and 18. Measured at 390 × 664 and 844: card and pad unchanged, the row 18 / 18 (Cards 18 /
   19).
+- **Its sound on arriving, and a speaker** (the user's calls): renderAlphabet, on Write, says the
+  item's name or sound, as moving to it does: from a tab, the Letters | Cards | Write switch, or
+  another set. Only while the page has the user's tap (`navigator.userActivation.isActive`), so not
+  when the app opens on Write (and browsers block sound without one anyway); not when switching
+  Trace | From memory. The row has a speaker (`.write-speak`, 44 round, as the word tables'
+  `.row-speak`, lit while it plays) at the row's right end, Details before it (the user's call: between
+  the text and Details it looked odd From memory, where Details waits hidden). Checked with real taps (CDP mouse
+  events) and a count of plays: 0 opening, 1 for each arrival and the speaker, 0 for the switch.
 - **A thinner line** (the user: too thick, "something like half"): the pad shows the strokes at
   WRITE_LINE, 7 at WRITE_N (was 14); the checks still take them at WRITE_INK, 14, as they were tuned.
 - **Write lines up with Cards** (the user: going between them was jarring): the letter row is 52 px,
