@@ -13,7 +13,8 @@ Used mostly on an iPhone (installed to the home screen, or in Safari) and in Fir
 
 ## Working here
 
-- Work and commit on `master`; branch only when asked. Commit or push only when asked.
+- Work on `master`; branch only when asked. Commit each finished change as you go (unless told
+  otherwise at the time); push only when asked.
 - It's in development: topic ids, card keys and saved progress or settings can change freely.
 - Phones are 390–430 wide; iPhone SE widths (320, 375) aren't supported. Test heights 664 (Safari
   with its bars), 763 (installed) and 844.
