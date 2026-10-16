@@ -1508,6 +1508,14 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Letters: a speaker on the letter's row, where Write's is (2026-10-16)
+
+The user asked for Write's speaker on the Letters page's row too. pickAlpha (the consonants' and the
+vowels' Letters pages; the tones' page has no such row) now ends the row with the same button
+(`.row-speak.write-speak`, data-say, speakerPress: lit while it plays) after Details. Measured at
+390 × 664 and 844: Letters' and Write's rows identical, the speaker at 334, 80 (44 × 44), Details
+and the text where they were; a press plays the item once and opens nothing.
+
 ## Alphabet cards: a tap on the back opens the Alphabet's dialog (2026-10-16)
 
 The user asked whether the word dialog's Add to Cards and Spell did anything for a letter card

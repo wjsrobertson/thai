@@ -2993,7 +2993,7 @@ function fillAlphaText(words, c, set) {
 
 // A vowel or consonant tapped (2026-10-15, the user's calls: usually just to hear it; the vowels,
 // then the consonants): it's said (a letter's name) and its tile marked, and the line above the grid
-// becomes it (alphaLineText), with Details, which calls `open` (its dialog). A long press opens the
+// becomes it (alphaLineText), with Details, which calls `open` (its dialog), and a speaker. A long press opens the
 // dialog straight away (onLongPress). No picture for a consonant: too small to see there (the user's
 // call); the dialog has it.
 function pickAlpha(grid, b, c, set, open) {
@@ -3008,8 +3008,17 @@ function pickAlpha(grid, b, c, set, open) {
   const details = el('button', 'ghost alpha-line-more', 'Details ›');
   details.type = 'button';
   details.addEventListener('click', open);
+  // A speaker at the right end, where Write's is (2026-10-16, the user's call): the name or sound
+  // again without hunting for the tile; lit while it plays (markSpeakers).
+  const say = el('button', 'row-speak write-speak');
+  say.type = 'button';
+  say.title = 'Hear it';
+  say.setAttribute('aria-label', 'Hear it');
+  say.dataset.say = cardSay(c);
+  say.append(speakerIcon());
+  say.addEventListener('click', () => speakerPress(say, cardSay(c)));
   const words = el('span', 'alpha-line-text');
-  els.alphaHint.replaceChildren(slot, words, details);
+  els.alphaHint.replaceChildren(slot, words, details, say);
   fillAlphaText(words, c, set);
 }
 
