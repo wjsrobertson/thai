@@ -1710,7 +1710,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 }
 :root[data-theme="light"] :is(.letter-pic, .card-pic, .alpha-line-pic) { filter: none; }
 /* A letter's picture on its card's back (renderCard, presentEntry), and in its dialog. */
-.card-pic { display: block; width: min(112px, 18vh); height: auto; margin: 0 auto 6px; border-radius: 14px; }
+/* Square (every letter's picture is, 400 × 400) before it has loaded too, so fitBack lays the back out
+   for its real height: with none, ก's back fitted stacked, then overflowed when the picture came
+   (2026-10-16, caught by tools/check_layout.py). */
+.card-pic { display: block; width: min(112px, 18vh); height: auto; aspect-ratio: 1; margin: 0 auto 6px; border-radius: 14px; }
 .card-pic[hidden] { display: none; }
 /* No room for the picture over the words (fitBack): beside them, the words in a column to its right. */
 .card .face-body.pic-beside { display: grid; grid-template-columns: auto auto; justify-content: center; align-content: center; column-gap: 16px; }
