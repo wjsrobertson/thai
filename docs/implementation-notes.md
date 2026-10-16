@@ -1508,6 +1508,18 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Cards: a letter or a short word fills the card (2026-10-16)
+
+The user: on Cards (the Alphabet's most, Topics' too) a single letter or short word looked lost on
+the card. The front's text (`.thai`, `clamp(46px, 8vw, 92px)`) was 46 px on a phone, in a card about
+366 × 311. fitText now **grows** a front that fits on one line: as large as fits the face's room
+(inside its padding, the corner buttons' bands on a phone: 334 × 143 at 390 × 664, 334 × 323 at 844),
+still one line, up to CARD_TEXT_MAX 150 px (a binary search); text that doesn't fit shrinks as
+before. The fit is measured against the face's room, not the text's own box: a word with nowhere to
+break (ขอบคุณ) widened its box past the card. Measured: every consonant and vowel form 122 px at 664
+and 149 at 844 (เอียะ the widest, 252 / 307 wide); ไป 122 / 149; สวัสดี 122 / 138; สวัสดีครับ 77,
+ขอบคุณ 95, ขอบคุณมาก 62 (as wide as the card); all inside the room.
+
 ## Style guide (2026-10-16)
 
 The user asked for a style guide with size and positioning best practice, the standards linked:

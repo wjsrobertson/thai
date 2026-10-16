@@ -1059,6 +1059,10 @@ function fitBack(el) {
   }
 }
 
+// The card's front, sized to the card: a letter or a short word grows to fill it (2026-10-16, the
+// user's call: a single letter looked lost on the card), as large as fits between the corner
+// buttons' bands (the face's padding) on one line, up to CARD_TEXT_MAX; long text shrinks, as before.
+const CARD_TEXT_MAX = 150;
 function fitText(el) {
   el.style.fontSize = '';
   const face = el.closest('.face');
@@ -1066,7 +1070,23 @@ function fitText(el) {
   const cs = getComputedStyle(face);
   const room = face.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   const base = parseFloat(getComputedStyle(el).fontSize);
-  for (let k = 0.94; k > 0.69 && (el.scrollWidth > el.clientWidth + 1 || el.offsetHeight > room + 1); k -= 0.06) {
+  const width = face.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+  const lineAt = (px) => (parseFloat(getComputedStyle(el).lineHeight) || px * 1.15);
+  // Against the face's room: a word with nowhere to break (ขอบคุณ) widens its own box past the card.
+  const fits = () => el.scrollWidth <= width + 1 && el.offsetWidth <= width + 1 && el.offsetHeight <= room + 1;
+  const oneLine = (px) => el.offsetHeight <= lineAt(px) * 1.5;
+  if (fits() && oneLine(base)) {
+    let lo = base, hi = Math.min(CARD_TEXT_MAX, room / 1.15);
+    for (let i = 0; i < 9 && hi - lo > 1; i++) {
+      const mid = (lo + hi) / 2;
+      el.style.fontSize = `${mid}px`;
+      if (fits() && oneLine(mid)) lo = mid;
+      else hi = mid;
+    }
+    el.style.fontSize = lo > base + 1 ? `${Math.floor(lo)}px` : '';
+    return;
+  }
+  for (let k = 0.94; k > 0.69 && !fits(); k -= 0.06) {
     el.style.fontSize = `${base * k}px`;
   }
 }
