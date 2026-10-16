@@ -1048,11 +1048,24 @@ function fitPills() {
 // it fits. Backs that fit are untouched. All its lines shrink together (the Thai again, the
 // transliteration, the answer, the note) since 2026-10-12: the card sized to fit the screen
 // (sizeCards) is shorter at Largest text, and shrinking the answer alone left them over.
+// A letter's back (the Alphabet's cards, with its picture: 2026-10-16, the user's report: a large
+// picture and a tiny letter, the words cut off): the letter 2.5 times the English's size; when the letter,
+// the picture and the words don't fit one above another (an iPhone in Safari: 135 px of room), the
+// picture beside the words (.pic-beside), then without the note (.no-note); then, as for any back,
+// the words smaller until they fit.
 function fitBack(el) {
   const body = el.closest('.face-body');
   const lines = [...body.children];
   for (const line of lines) line.style.fontSize = '';
+  body.classList.remove('pic-beside', 'no-note');
   if (!body.offsetParent || !el.textContent) return;
+  const pic = body.querySelector('.card-pic:not([hidden])');
+  const letter = pic && body.querySelector('.back-script:not([hidden])');
+  if (letter) letter.style.fontSize = `${parseFloat(getComputedStyle(letter).fontSize) * 2.5}px`;
+  if (pic && body.scrollHeight > body.clientHeight + 1) body.classList.add('pic-beside');
+  // Still too tall beside it: the letter's note goes (its class and sound are in its dialog), rather
+  // than everything shrinking.
+  if (pic && body.scrollHeight > body.clientHeight + 1) body.classList.add('no-note');
   const bases = lines.map((line) => parseFloat(getComputedStyle(line).fontSize));
   for (let k = 0.94; k > 0.69 && body.scrollHeight > body.clientHeight + 1; k -= 0.06) {
     lines.forEach((line, i) => { line.style.fontSize = `${bases[i] * k}px`; });

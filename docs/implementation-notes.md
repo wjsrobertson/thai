@@ -1508,6 +1508,19 @@ first pick by a little (อ 10%), and the rule then, first pick or 10%, passed i
   caught as before. The fonts' letters warped hard still read 100% first: the model sees through a
   shaky line, so it's a loose letter's low confidence, not its wobble, that fails it.
 
+## Alphabet cards: the back's letter, picture and words in proportion (2026-10-16)
+
+The user sent a screenshot: on an Alphabet card's back, a large picture and a tiny letter, the words
+cut off. Measured at 390 × 664: the back has 135 px between the corner buttons' bands and needed
+213 (the letter, the 112 px picture, the name, the meaning, the note), so fitBack shrank every line
+to 70% (the letter 14 px) and it still overflowed; at 844, 315 px fitted, but the letter was 20.
+fitBack, for a back with a picture (the consonants'): the letter **2.5 times** the English's size
+(50 px); if the column doesn't fit, the picture goes **beside** the words (`.pic-beside`, a grid);
+if it still doesn't, the note goes (`.no-note`: the class and sound are in the letter's dialog);
+then the usual shrinking. Measured: 664, beside, no note, everything ~94% (the letter 47); 763,
+beside with the note, full size; 844, stacked with the note, full size. Vowels, tones and Topics'
+cards have no picture and are as they were.
+
 ## Cards: a letter or a short word fills the card (2026-10-16)
 
 The user: on Cards (the Alphabet's most, Topics' too) a single letter or short word looked lost on
