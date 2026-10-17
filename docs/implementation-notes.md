@@ -1539,6 +1539,27 @@ user asked:
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
+## Mute (2026-10-17)
+
+The user asked for a mute in Settings, the first Audio setting: for somewhere quiet, or with music
+playing on the phone; no sound at all while it's on. **Settings → Audio → Mute** (`settings.muted`,
+off by default), a switch, the help line "No sound at all: for somewhere quiet, or with music playing."
+- **Where it's kept quiet:** every sound goes through `playSample()` (the recordings) or `ttsAndWait()`
+  (the browser's voice). Muted, both resolve at once without touching the player or
+  `speechSynthesis`, so nothing in the app can make a sound: speakers, auto-play, the spell buttons,
+  Read all, Reading's Read, the Thai speed preview. The player is never started, so it shouldn't stop
+  another app's music either.
+- **What shows it:** `data-muted` on `<html>` (applyMute; index.html sets it before first paint, as
+  it does the theme) swaps every speaker's two waves for a cross (`.mute-x`, the usual muted-speaker
+  icon), so a speaker that's pressed and says nothing explains itself. Cards' Listen button shows it too.
+- **Read all, Reading's Read and Read all, and the spell buttons** would only light their lines in
+  silence, so muted they don't start and the toast says "Muted: Settings → Audio" (mutedNotice).
+  Tap-to-hear surfaces with no speaker (letter tiles, a word's syllables) just keep quiet.
+- **Turning it on** stops what's playing and any Read or Read all that's running.
+- Tested headless (a spy on `play()` and `speechSynthesis.speak()`): muted, a list's speakers, Read
+  all, the Alphabet card's appearing, speaker, spell and turn made no call; unmuted, the same made
+  sound; a Read all running stopped when it was turned on; it held over a reload.
+
 ## Cards: one shape in Browse, Recognition and Recall (2026-10-16)
 
 The user: on Topics → Cards the card should be the same shape in all three modes; Recognition's
@@ -4077,6 +4098,8 @@ python3 -u tools/gen_audio.py --help     # --th-voice, --en-voice, --rate, --job
 - **Playback:** `speakAndWait(text, lang)` plays the sample when the setting is `samples` and the
   manifest has the text. If there's no sample, or the file fails to load, it falls back to
   `ttsAndWait()` (browser TTS).
+- **Mute** (Settings → Audio, 2026-10-17): `playSample()` and `ttsAndWait()` resolve at once and
+  play nothing; see "Mute (2026-10-17)".
 - **Stopping:** there's one shared `Audio` element (`sampleAudio`). `finishSample` holds the
   resolver for the in-flight playback, and `stopAudio()` (used by `speak()` and `stopReadAloud()`)
   pauses it and resolves the pending promise, so the Read-all loop can't hang when stopped

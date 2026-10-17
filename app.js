@@ -125,6 +125,7 @@ const els = {
   resetAll: document.getElementById('reset-all'),
   resetSettings: document.getElementById('reset-settings'),
   resetReview: document.getElementById('reset-review'),
+  setMuted: document.getElementById('setting-muted'),
   setAudioSource: document.getElementById('setting-audio-source'),
   setWriteCheck: document.getElementById('setting-write-check'),
   writeCheckHelp: document.getElementById('setting-write-check-help'),
@@ -188,6 +189,7 @@ const DEFAULT_SETTINGS = {
   retention: 0.9,                 // FSRS desired retention
   confirmAddAll: true,            // Topics page "Add all to Flashcards" asks first (Settings → List)
   confirmRemoveAll: true,         // Topics page "✓ All in Flashcards" (remove all) asks first
+  muted: false,                   // Settings → Audio → Mute: no sound at all (isMuted)
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
   thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
   theme: 'dark',                  // Settings → Display → Theme: dark | charcoal | light | night | black
@@ -3567,6 +3569,22 @@ function applyTheme() {
   els.themeColorMeta?.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--bg').trim());
 }
 
+// Mute (Settings → Audio, 2026-10-17, the user's request: somewhere quiet, or music playing on the
+// phone): no sound at all. playSample and ttsAndWait, which every sound goes through, keep quiet;
+// data-muted on <html> crosses out every speaker (styles.css). index.html applies it before first paint.
+const isMuted = () => getSettings().muted === true;
+function applyMute() {
+  document.documentElement.toggleAttribute('data-muted', isMuted());
+}
+
+// Read, Read all and the spell buttons would only light their lines in silence: muted, they say
+// so instead. True if muted.
+function mutedNotice() {
+  if (!isMuted()) return false;
+  toast('Muted: Settings → Audio');
+  return true;
+}
+
 // The Thai font: data-thai-font on <html> switches --thai-font in styles.css (looped is the default,
 // with no attribute). index.html applies the saved one before first paint.
 function applyThaiFont() {
@@ -3582,6 +3600,7 @@ function renderSettings() {
   els.setRetention.value = String(s.retention);
   for (const box of els.confirmSettings) box.checked = s[box.dataset.confirmSetting] !== false;
 
+  els.setMuted.checked = s.muted === true;
   els.setAudioSource.value = s.audioSource;
   els.setWriteCheck.value = WRITE_CHECK[s.writeCheck] ? s.writeCheck : 'normal';
   els.writeCheckHelp.textContent = WRITE_CHECK[els.setWriteCheck.value].help;
@@ -3628,6 +3647,15 @@ function bindSettings() {
   els.setWriteCheck.addEventListener('change', () => {
     setSettings({ writeCheck: els.setWriteCheck.value });
     els.writeCheckHelp.textContent = WRITE_CHECK[els.setWriteCheck.value].help;
+  });
+  // Muting stops what's playing, and a Read or Read all, which would only light their lines in silence.
+  els.setMuted.addEventListener('change', () => {
+    setSettings({ muted: els.setMuted.checked });
+    applyMute();
+    if (!els.setMuted.checked) return;
+    if (state.reading.active) stopReadAloud();
+    if (storyRunOn()) stopReadStories();
+    stopAudio();
   });
   els.setAudioSource.addEventListener('change', () => {
     setSettings({ audioSource: els.setAudioSource.value });
@@ -4716,9 +4744,9 @@ function spellIcon() {
 // The "add to Review" icon: Home's 🔁 as a line icon, so it matches the muted controls around it.
 // The play-sound icon: a speaker in the text colour, like the app's other line icons (the 🔊 emoji
 // it replaced, 2026-10-08, came in each device's own colours: blue on some). Its two sound waves
-// are separate paths, so they can pulse while the word plays (markSpeakers). index.html has the
-// same SVG inline.
-const SPEAKER_PATHS = ['M11 5 6 9H3v6h3l5 4z', 'M15.5 8.5a5 5 0 0 1 0 7', 'M18.5 5.5a9.5 9.5 0 0 1 0 13'];
+// are separate paths, so they can pulse while the word plays (markSpeakers); a cross takes their
+// place when muted (applyMute). index.html has the same SVG inline.
+const SPEAKER_PATHS = ['M11 5 6 9H3v6h3l5 4z', 'M15.5 8.5a5 5 0 0 1 0 7', 'M18.5 5.5a9.5 9.5 0 0 1 0 13', 'M16 9l6 6M22 9l-6 6'];
 
 function speakerIcon() {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
@@ -4728,7 +4756,7 @@ function speakerIcon() {
   SPEAKER_PATHS.forEach((d, i) => {
     const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
     path.setAttribute('d', d);
-    if (i) path.setAttribute('class', `wave wave${i}`);
+    if (i) path.setAttribute('class', i < 3 ? `wave wave${i}` : 'mute-x');
     svg.append(path);
   });
   return svg;
@@ -5352,6 +5380,7 @@ const storyRunOn = () => state.storyReading.active || !!state.storyReading.pause
 
 // Starts a run from `btn`, or carries on a paused one (`from`: { ids, idx, line }; line -1 is the title).
 async function readStories(btn, from = null) {
+  if (mutedNotice()) return;
   const all = btn === els.readingReadAll;
   const ids = from?.ids ?? (all ? [...els.readingList.querySelectorAll('.reading-entry')].map((e) => e.dataset.id)
     : state.readingId ? [state.readingId] : []);
@@ -5976,7 +6005,7 @@ function phraseWords(card) {
 // ---------- wordlist read-aloud ----------
 
 async function startReadAloud() {
-  if (state.reading.active) return;
+  if (state.reading.active || mutedNotice()) return;
   const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
   if (rows.length === 0) return;
 
@@ -6102,6 +6131,7 @@ async function resetSettings() {
   applyTextSize();
   applyTheme();
   applyThaiFont();
+  applyMute();
   renderSettings();
   renderSpelling();
   syncReviewOnly();
@@ -6384,7 +6414,7 @@ async function speakSpelling(card, buttons = [], { onStep } = {}) {
     return;
   }
   const groups = spellingFor(card);
-  if (!groups) return;
+  if (!groups || mutedNotice()) return;
   stopAudio();
   const run = spellRun;
   spelling = { key, run, buttons };
@@ -6444,8 +6474,10 @@ function speedFor(lang) {
   return lang === 'en' ? 1 : getSettings().thaiSpeed; // th, and sp (Thai spelling parts)
 }
 
-// Resolves true once the sample has played (or been stopped), false if it couldn't load.
+// Resolves true once the sample has played (or been stopped), false if it couldn't load. Muted, at
+// once, without touching the player.
 function playSample(url, speed) {
+  if (isMuted()) return Promise.resolve(true);
   if (finishSample) finishSample(true);
   return new Promise((resolve) => {
     const finish = (ok) => {
@@ -6579,7 +6611,7 @@ function markSpeakers() {
 
 function ttsAndWait(text, lang) {
   return new Promise((resolve) => {
-    if (!('speechSynthesis' in window)) { resolve(); return; }
+    if (isMuted() || !('speechSynthesis' in window)) { resolve(); return; }
     try {
       const u = makeUtterance(text, lang);
       u.onend = () => resolve();
@@ -7263,6 +7295,7 @@ async function init() {
   applyTextSize(); // before anything renders, so the text never jumps size
   applyTheme();
   applyThaiFont();
+  applyMute();
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));

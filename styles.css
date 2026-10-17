@@ -2465,6 +2465,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .playing .speaker-icon .wave2 { animation-delay: .2s; }
 @keyframes speakerWave { 50% { opacity: .15; } }
 @media (prefers-reduced-motion: reduce) { .playing .speaker-icon .wave { animation: none; } }
+/* Muted (Settings → Audio → Mute, applyMute): a cross where the waves were, on every speaker. */
+.speaker-icon .mute-x { display: none; }
+:root[data-muted] .speaker-icon .wave { display: none; }
+:root[data-muted] .speaker-icon .mute-x { display: inline; }
 /* The "add to Review" icon (reviewIcon): Home's 🔁 as a line icon in the text colour. */
 .review-icon {
   width: 1.05em;

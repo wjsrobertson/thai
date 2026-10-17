@@ -15,6 +15,8 @@
         if (['charcoal', 'light', 'night', 'black'].includes(settings.theme)) document.documentElement.dataset.theme = settings.theme;
         // And the Thai font (Settings → Display → Thai font; app.js applyThaiFont()).
         if (settings.thaiFont === 'loopless') document.documentElement.dataset.thaiFont = 'loopless';
+        // And Mute's crossed-out speakers (Settings → Audio → Mute; app.js applyMute()).
+        if (settings.muted === true) document.documentElement.setAttribute('data-muted', '');
       } catch (e) { /* no saved settings: the default dark theme and looped font */ }
       // The first frame, for Settings → App → Launch time.
       requestAnimationFrame(function () { window.firstFrameAt = performance.now(); });
@@ -191,7 +193,7 @@
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card direction">
         <button type="button" role="radio" class="seg-btn" data-direction="th-en" aria-checked="true"><span class="dir-long">Thai</span><span class="dir-short">TH</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
         <button type="button" role="radio" class="seg-btn" data-direction="en-th" aria-checked="false"><span class="dir-long">English</span><span class="dir-short">EN</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">Thai</span><span class="dir-short">TH</span></button>
-        <button type="button" role="radio" class="seg-btn" data-direction="listen" aria-checked="false" title="Hear the Thai, without the script"><span class="dir-long">Listen</span><span class="dir-short" aria-label="Listen"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
+        <button type="button" role="radio" class="seg-btn" data-direction="listen" aria-checked="false" title="Hear the Thai, without the script"><span class="dir-long">Listen</span><span class="dir-short" aria-label="Listen"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg></span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">English</span><span class="dir-short">EN</span></button>
       </div>
       <div class="segmented flashcards-only" role="radiogroup" aria-label="Card order">
         <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Browse</button> <!-- "Learn" until 2026-10-08 (a placeholder name) -->
@@ -200,12 +202,12 @@
       </div>
       <div class="wordlist-only wordlist-bar-right">
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Cards</button>
-        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
+        <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg>Read all</button>
       </div>
       <!-- Reading's Read all (readStories): where Topics has its Read all, in the same style. Read, for
            the open story, sits in that story's title row (placeReader). -->
       <div class="reading-only wordlist-bar-right reading-bar-right">
-        <button type="button" id="reading-read-all" class="ghost read-aloud" title="Play every story in the list, line by line"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read all</button>
+        <button type="button" id="reading-read-all" class="ghost read-aloud" title="Play every story in the list, line by line"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg>Read all</button>
       </div>
       </div>
     </div>
@@ -215,7 +217,7 @@
       <div class="reading-library" id="reading-library">
         <div id="reading-list"></div>
         <!-- Read: moved into the open story's title row (placeReader). -->
-        <button type="button" id="reading-read" class="ghost read-aloud" title="Play the open story, line by line" hidden><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Read</button>
+        <button type="button" id="reading-read" class="ghost read-aloud" title="Play the open story, line by line" hidden><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg>Read</button>
       </div>
       <!-- The open story's reader: moved under its title in the list (placeReader), an accordion. -->
       <section class="reader" id="reader" hidden>
@@ -239,7 +241,7 @@
           <div class="face front">
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
-              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg></button>
               <!-- Auto-play on/off (renderAutoBadges): A on the speaker's edge. Off, the card keeps quiet
                    until its speaker is pressed, so the sound doesn't give the answer away. -->
               <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
@@ -251,7 +253,7 @@
           <div class="face back">
             <div class="face-overlay">
               <div class="pos-badge stat-pos">—</div>
-              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <button type="button" class="speak speak-btn" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg></button>
               <!-- Auto-play on/off (renderAutoBadges): A on the speaker's edge. Off, the card keeps quiet
                    until its speaker is pressed, so the sound doesn't give the answer away. -->
               <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
@@ -291,7 +293,7 @@
         <div class="card review-card" id="review-card" role="button" tabindex="0" aria-label="Recall card. Tap or press Enter to turn it over.">
           <div class="face front">
             <div class="face-overlay">
-              <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <button type="button" class="speak review-speak" id="review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg></button>
               <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <!-- In place of Show (2026-10-08): yellow until the card's been turned, then Learn's grey ⟳. -->
               <button type="button" class="flip-btn review-flip reveal" id="review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
@@ -301,7 +303,7 @@
           </div>
           <div class="face back">
             <div class="face-overlay">
-              <button type="button" class="speak review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg></button>
+              <button type="button" class="speak review-speak" aria-label="Play Thai audio" title="Play Thai audio"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg></button>
               <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <button type="button" class="flip-btn review-flip" aria-label="Turn the card over" title="Turn the card over">⟳</button>
               <button type="button" class="spell-btn review-spell" id="review-spell-back" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
@@ -387,6 +389,14 @@
       <details class="settings-cat" data-cat="audio">
         <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9.5 9.5 0 0 1 0 13" /></svg>Audio</summary>
         <div class="setting-list">
+          <!-- Mute first (2026-10-17, the user's request): somewhere quiet, or music on the phone. -->
+          <div class="setting-group" data-search="mute muted silent silence quiet sound off volume music no audio">
+            <label class="setting-row">
+              <span class="setting-label">Mute</span>
+              <input type="checkbox" id="setting-muted" />
+              <span class="setting-help">No sound at all: for somewhere quiet, or with music playing.</span>
+            </label>
+          </div>
           <div class="setting-group" data-search="voice audio source thai english samples recorded mp3 browser tts text to speech speech synthesis">
             <label class="setting-row">
               <span class="setting-label">Voice</span>
