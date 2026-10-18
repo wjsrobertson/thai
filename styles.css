@@ -1530,6 +1530,9 @@ body { display: flex; flex-direction: column; }
    so the switch keeps its width. A phone keeps it beside the topic button (mobile.css). */
 @media (min-width: 601px) {
   html { scrollbar-gutter: stable; } /* a page that scrolls no longer shifts everything sideways */
+  /* The switch 16px under the top bar, as the bar's own padding (it was the page's 32: "too much dead
+     space", the user, 2026-10-18). Every page but Home has a switch. */
+  .stage:not([data-view="home"]) { padding-top: 16px; }
   .deck-picker-bar, .dict-top { position: relative; padding-top: 60px; }
   :is(.study-switch, .alpha-switch, .dict-switch) { position: absolute; top: 0; left: 0; right: 0; width: fit-content; margin: 0 auto; }
   :is(.study-switch, .alpha-switch, .dict-switch) .seg-btn { flex-direction: row; gap: 7px; height: 36px; padding: 0 14px; }

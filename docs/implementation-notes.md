@@ -1538,8 +1538,8 @@ user asked:
 - **Tile boards:** the Thai Script topics' rows centred, tiles one width (10-13).
 - **A wider screen** (1280 × 800, `web_checks`): each section's switch in one place on all its pages,
   in a row of its own above the topic button, the three centred alike at one height; the topic
-  button in one place on every page, scrolling or not; each page's name beside its icon at 16 px
-  (10-18).
+  button in one place on every page, scrolling or not; each page's name beside its icon at 16 px;
+  the switches 16 px under the top bar (10-18).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -1560,6 +1560,9 @@ phone left as it was.
   its 18px icon with a 16px name beside it, 36px tall, as the tabs above are (a 17px name there); the
   selected page isn't bolder, so the switch keeps its width. `scrollbar-gutter: stable` on `<html>`
   keeps the page from shifting when it scrolls.
+- **Less space above it** (the same day: "too much dead space between the top menu divider and the
+  new sub menu"): the page's top padding is 16px on every page but Home (it was 32), so the switch
+  sits 16px under the top bar, as the bar's own padding.
 - **Side effects:** the topic button is 42px tall on the web (it stretched to the old switch's 52);
   the Dictionary's search is its own 49px. The Alphabet's set menu still opens under the topic
   button (it's placed from the button's offsets).

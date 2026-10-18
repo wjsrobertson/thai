@@ -106,10 +106,11 @@ def web_checks(ws, size):
     C('Web: the topic button in one place on every page that has it (no sideways shift when a page scrolls)',
       all(same(pk, pk0, 'lt') for _, _, pk in topics + alpha), ' / '.join(f'{n} {fmt(pk)}' for n, _, pk in topics + alpha))
     open_page(ws, 'dictionary')
-    d, t0, a0 = R(ws, '.dict-switch'), topics[0][1], alpha[0][1]
+    d, t0, a0, bar = R(ws, '.dict-switch'), topics[0][1], alpha[0][1], R(ws, '.topbar')
     C("Web: the three sections' switches centred alike, at one height (the Dictionary's Thai | English too)",
       near(centre(t0), centre(a0), 1.5) and near(centre(t0), centre(d), 1.5) and same(t0, a0, 't') and same(t0, d, 't'),
       f'{fmt(t0)} / {fmt(a0)} / {fmt(d)}')
+    C('Web: the switches 16 px under the top bar (10-18)', bar and near(d['t'] - bar['b'], 16, 1.5), bar and f"top bar ends {bar['b']:.0f}, switch at {d['t']:.0f}")
     lab = json.loads(js(ws, "JSON.stringify((() => { const b = document.querySelector('.dict-switch .seg-btn'), i = b.querySelector('.seg-icon').getBoundingClientRect(), l = b.querySelector('.seg-label').getBoundingClientRect();"
                             " return { px: parseFloat(getComputedStyle(b.querySelector('.seg-label')).fontSize), beside: i.right <= l.left && i.bottom > l.top && i.top < l.bottom }; })())"))
     open_page(ws, 'study', studyPage='wordlist')
