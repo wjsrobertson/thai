@@ -1539,6 +1539,40 @@ user asked:
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
+## Classifiers: patterns, packs, monks and films (2026-10-18)
+
+The user asked whether the app had enough on classifiers. There were two topics (37 cards) with
+rules of thumb, but nothing on how a classifier is used, and many everyday ones had only their noun
+card. Of the three gaps offered, the user chose the first two (the third, each noun's classifier on
+its card, is still open).
+- **Group:** the five classifier topics are now the Grammar group **Classifiers**: People, Animals &
+  Objects; Food, Vehicles, Places & Time; then the three new ones.
+- **Classifiers: This One, How Many & Each** (`classifiers-patterns`, 21 cards): phrase cards with
+  `words`, each note giving the pattern, as in Sentence Patterns. This, that and which
+  (หนังสือเล่มนี้, รถคันนั้น, เสื้อตัวไหน); "a cat" against "one cat" (แมวตัวหนึ่ง, แมวหนึ่งตัว); นึง, เดียว,
+  อีก; กี่, ทุก (the existing ทุกคน card), แต่ละ, หลาย, บาง, สองสาม, ทั้งสอง; the ordinal ที่; prices
+  with ละ and คนละ; the classifier standing for the noun (เอาตัวสีแดง); nouns that count themselves
+  (ห้องสองห้อง).
+- **Classifiers: Shops, Packs & Bunches** (`classifiers-shops-packs`, 21): ชาม, ถุง, กล่อง, กระป๋อง,
+  ห่อ, ซอง, แพ็ก (spelt like แพ็กเกจ; the note gives แพ็ค), ลัง, แผง, โหล, หลอด, หวี, หัว, กำ, เส้น,
+  ด้าม, and the existing พวง, ช่อ, แผ่น, ก้อน and แท่ง cards.
+- **Classifiers: Monks, Films & More** (`classifiers-monks-films-more`, 16): ท่าน, รูป, the existing
+  องค์, นาย, เชือก, เรื่อง, ตอน, เพลง, ข้อ, บท, บาน, ชั้น, วง, เรือน, ข้าง, ขบวน.
+- **A classifier card sits beside the noun's** (ถุง "bag" and "(classifier) bags (of)"), as ห้อง and
+  แก้ว already did. The audit lists the pairs under "one gloss broader than the other".
+- **Eight new Easy stories:** Saturday Market, How Many of You?, The Wedding Shirt, The Talking Cat,
+  Morning Alms, The New Condo, Two Films or a Series? and A Quick Shop. A phrase card only matches
+  a story that uses it whole, so the first five carry at least two of the patterns each. The other
+  two topics have 9 and 37 stories, counted by Thai as `storiesFor` counts.
+- **34 older stories now take the classifier card where they used one.** Some showed the wrong
+  meaning: ประตูทุกบาน and เช็ดกระจกทุกบาน had บาน "to bloom", ข้อแรก had "joint", ขาข้างหนึ่ง had "side",
+  and ทุกท่าน had the pronoun. Others: หนังเรื่องนี้, ถนนเส้นนี้, ชามละสี่สิบ, อีกกล่อง, สองถุง and
+  รถไฟ…ขบวนหนึ่ง. Only stories where the word had no other use changed, since a story holds one card
+  per word. Left alone: เรื่องนี้ "this matter", ตอนนี้ "now", ชั้น as "floor / storey", and เพลง, which
+  counts itself with its noun card.
+- **Checked:** audit 0 errors; `stories.py check` 0 problems; coverage has no new topic under 5
+  stories (the four Poetry topics were already short).
+
 ## Mute (2026-10-17)
 
 The user asked for a mute in Settings, the first Audio setting: for somewhere quiet, or with music
@@ -4561,6 +4595,9 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
 - **More decks.** The user often asks for specific topics.
 - **Persist Test-mode locked answers across sessions?** They're session-only at the moment.
 - **English→Thai auto-play** in deck mode still gives away the answer (Today's review doesn't).
+- **Each noun's classifier on its card** ("counted with เล่ม"), as Thai dictionaries give it: offered
+  on 2026-10-18 with the classifier topics, not chosen yet. A field on noun cards and a line on the
+  card, common nouns first.
 - **Story audio keeps growing.** Every story sentence is its own recording, on top of each card's,
   so each new story adds about six. data/audio was 273 MB on 2026-10-08 and 412 MB (about 32K
   files) on 2026-10-18. The user (2026-10-08): "we need to do something about the story samples.
