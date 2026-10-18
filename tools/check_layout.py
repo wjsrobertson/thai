@@ -3,10 +3,10 @@
     python3 -u tools/check_layout.py [WxH ...] [--text-size N] [--shots DIR]
 
 Needs the server on :8765. Default sizes 390x664 (Safari with its bars), 390x763 (installed),
-390x844 and 430x932. Prints a line per check and exits 1 if any fails; screenshots go to --shots
-(default ~/snap/chromium/common/learnthai-shots-out/layout). Each check names the request it keeps
-(the user's, 2026-10-13 to 10-16; the user asked on 2026-10-16 for them all to be checked after
-each new request): see docs/implementation-notes.md, "What lines up".
+390x844 and 430x932, at the app's default text size (1, Larger). Prints a line per check and exits
+1 if any fails; screenshots go to --shots (default ~/snap/chromium/common/learnthai-shots-out/layout).
+Each check names the request it keeps (the user's, 2026-10-13 to 10-16; the user asked on 2026-10-16
+for them all to be checked after each new request): see docs/implementation-notes.md, "What lines up".
 """
 import json, os, sys, time
 
@@ -17,7 +17,7 @@ PROFILE = os.path.expanduser('~/snap/chromium/common/learnthai-layout-profile') 
 CHROME = '/snap/chromium/current/usr/lib/chromium-browser/chrome'  # the snap's binary: works when `chromium` won't start
 
 args = sys.argv[1:]
-TEXT_SIZE = int(args[args.index('--text-size') + 1]) if '--text-size' in args else 0
+TEXT_SIZE = int(args[args.index('--text-size') + 1]) if '--text-size' in args else 1  # the app's default (Larger) since 2026-10-18
 SHOTS = args[args.index('--shots') + 1] if '--shots' in args else os.path.expanduser('~/snap/chromium/common/learnthai-shots-out/layout')
 SIZES = [tuple(map(int, a.split('x'))) for a in args if 'x' in a and a[0].isdigit()] or [(390, 664), (390, 763), (390, 844), (430, 932)]
 
@@ -59,7 +59,9 @@ def tap(ws, sel, n=0, wait=0.6):
 
 
 def open_page(ws, tab, **prefs):
-    store = {'prefs': {'currentDeckId': 'verbs', **prefs}, 'settings': {'confirmAddAll': False, 'textSize': TEXT_SIZE}}
+    # The migration that moves a saved size of 0 to 1 counts as run, so --text-size 0 tests 0.
+    store = {'prefs': {'currentDeckId': 'verbs', **prefs}, 'settings': {'confirmAddAll': False, 'textSize': TEXT_SIZE},
+             'settingsMigrations': ['text-size-larger']}
     js(ws, f"localStorage.setItem('learnthai:v1', {json.dumps(json.dumps(store))}); location.reload()")
     time.sleep(1.6)
     tap(ws, f'.tab[data-view={tab}]', wait=1.2)

@@ -191,11 +191,11 @@ const DEFAULT_SETTINGS = {
   confirmRemoveAll: true,         // Topics page "✓ All in Flashcards" (remove all) asks first
   muted: false,                   // Settings → Audio → Mute: no sound at all (isMuted)
   audioSource: 'samples',         // 'samples' (data/audio MP3s, TTS fallback) | 'browser' (always TTS); Thai and English
-  thaiSpeed: 1,                   // playback speed multiplier for Thai audio (samples and TTS), 0.5–1
+  thaiSpeed: 0.7,                 // playback speed multiplier for Thai audio (samples and TTS), 0.5–1 (1 until 2026-10-18)
   theme: 'dark',                  // Settings → Display → Theme: dark | charcoal | light | night | black
   thaiFont: 'looped',             // Settings → Display → Thai font: 'looped' (Noto Looped Thai) | 'loopless' (Noto Sans Thai)
   spellingStyle: 'vowels',        // the spell-aloud buttons: 'vowels' (names, vowels whole) | 'letters' (names, as written) | 'school' (sounds)
-  textSize: 0,                    // -2..2 steps around the default text size (see TEXT_SCALES)
+  textSize: 1,                    // -2..2 steps (see TEXT_SCALES); Larger by default (0 until 2026-10-18)
   offlineAudio: false,            // user chose "Download all audio": keep every clip cached
   readRepeats: 2,                 // times Read all says each word (Settings → List; 1 until 2026-10-08)
   readPauseSec: 1.5,              // seconds of silence between words
@@ -311,6 +311,9 @@ const SETTINGS_MIGRATIONS = [
   }],
   // 2026-10-08: Read all says each word twice by default (it was once).
   ['read-repeats-2', (s) => (s.readRepeats === 1 ? { readRepeats: 2 } : null)],
+  // 2026-10-18: Thai plays at 0.7× and text is a step larger (Larger) by default (the user's call).
+  ['thai-speed-0.7', (s) => (s.thaiSpeed === 1 ? { thaiSpeed: 0.7 } : null)],
+  ['text-size-larger', (s) => (s.textSize === 0 ? { textSize: 1 } : null)],
 ];
 
 function migrateSettings() {
@@ -7292,6 +7295,7 @@ async function loadBackup(file) {
 // ---------- boot ----------
 
 async function init() {
+  migrateSettings(); // first, so a moved default (the text size, 2026-10-18) shows on this load
   applyTextSize(); // before anything renders, so the text never jumps size
   applyTheme();
   applyThaiFont();
@@ -7310,7 +7314,6 @@ async function init() {
 
   bindEvents();
 
-  migrateSettings();
   migrateLeitnerToItems();
   migrateCardRenames();
 

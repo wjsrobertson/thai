@@ -1539,6 +1539,20 @@ user asked:
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
+## Defaults: Thai at 0.7×, text Larger (2026-10-18)
+
+The user asked for 0.7× to be the default audio speed, and Larger the default text size.
+- **Defaults:** `thaiSpeed: 0.7` (it was 1) and `textSize: 1` (it was 0). English still plays at 1×.
+- **Saved settings move too:** settings are saved in full, so a browser that saved before holds
+  the old defaults. `SETTINGS_MIGRATIONS` gains `thai-speed-0.7` (1 → 0.7) and `text-size-larger`
+  (0 → 1), each once per browser, so a size or speed picked afterwards sticks.
+- **`migrateSettings()` now runs first in `init()`,** before `applyTextSize()`. It ran after the data
+  loaded, so the first load after the update would have kept the old size until the next one.
+- **Labels:** Text size's step 0 was "Default"; it's now "Medium", and step 1 is "Larger (default)".
+  Thai speed's 0.7× says "(default)".
+- **`tools/check_layout.py`** now checks at text size 1 unless told otherwise. Its saved store marks
+  `text-size-larger` as run, so `--text-size 0` still checks 0.
+
 ## Classifiers: patterns, packs, monks and films (2026-10-18)
 
 The user asked whether the app had enough on classifiers. There were two topics (37 cards) with
@@ -3838,8 +3852,9 @@ and in the inline script.
   - The card's height grew with `--fs`, so the longest card (เหี้ย, about 175 characters) still
     cleared the corner buttons at the largest size. Since 2026-10-12 a phone's card is sized to the
     screen instead (sizeCards; see "Flashcards fit a phone screen"), and the text shrinks to fit it.
-- **Default:** step 0 is the size the user picked on 2026-10-03, after notes and descriptions
-  went from 12–13px to 14–16px.
+- **Default:** step 1, Larger (1.15), since 2026-10-18 (the user's call; see "Defaults: Thai at
+  0.7×, text Larger"). Step 0, now called Medium, was the default from 2026-10-03, after notes and
+  descriptions went from 12–13px to 14–16px.
 
 **To add a setting:**
 
@@ -4181,7 +4196,7 @@ python3 -u tools/gen_audio.py --help     # --th-voice, --en-voice, --rate, --job
   - **Memory cap:** an LRU cache of 600 clips (about 7 MB, roughly six decks); removed clips have
     their blob URLs revoked, except the one currently loaded in the player.
   - **Tests:** 11 Node checks against stub fetch and URL functions.
-- **Thai speed:** `settings.thaiSpeed` is a multiplier from 0.5 to 1 (default 1), set under
+- **Thai speed:** `settings.thaiSpeed` is a multiplier from 0.5 to 1 (default 0.7 since 2026-10-18; 1 before), set under
   Settings → Audio → Thai speed. Changing it plays the current card as a preview.
   - Samples use `playbackRate`, which the browser applies without lowering the pitch. Loading a
     new `src` resets `playbackRate` to `defaultPlaybackRate`, so `playSample()` sets both.

@@ -109,7 +109,7 @@ The phone page, top to bottom, at 390 × 664:
   Apple's smallest is 11 pt ([Apple: Typography](https://developer.apple.com/design/human-interface-guidelines/typography));
   reading text here is 12 or more. The 10–11 px in styles.css are the ▾ carets and chevrons, glyphs
   used as icons.
-- **Text size setting:** `--fs` = 0.8, 0.9, 1, 1.15 or 1.3 (`TEXT_SCALES`), and most sizes are
+- **Text size setting:** `--fs` = 0.8, 0.9, 1, 1.15 or 1.3 (`TEXT_SCALES`; 1.15, Larger, is the default since 2026-10-18), and most sizes are
   `calc(Npx * var(--fs))`. **Exceptions, on purpose:** rows that must line up across pages (the
   letter row's three lines at 14 px, Cards' and Write's switches) keep their size, so the pages stay
   aligned; check they still fit at 1.3. ([WCAG 1.4.4 Resize Text](https://www.w3.org/WAI/WCAG22/Understanding/resize-text.html):
