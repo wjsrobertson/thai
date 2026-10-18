@@ -1748,6 +1748,32 @@ against 500). It reads other ษ์ words right (อนุรักษ์ the sa
   other short parts ending in อ), by its loudness: none else in two pulses. (In the names, said
   whole, the two syllables run together too closely for that count.)
 
+## สระ said sà in every vowel's name (2026-10-18)
+
+The user: the vowels' names said "sa ee", not "sara ee", all of them. สระ is two words, sà ("pond",
+"to wash (hair)") and sà-rà ("vowel"), and the voice reads sà every time: its สระ was its สะ frame
+for frame (347 ms), its สระอี its สะอี (590 ms against 554), where สะหระอี is three syllables (738).
+The same in every line about vowels: all 20 tried (names, notes, rule cards, story lines).
+- gen_audio's spoken_text says สระ as สะหระ (the สระ homograph card's say already did), except in
+  อิสระ, which the voice reads right (ìt-sà-rà, three syllables), and where it's the pool or the
+  hair: before ผม, ว่ายน้ำ, น้ำ, บัว or ไดร์ and after ลง (`SARA`). A new line with the pool any
+  other way (ในสระ) needs adding there.
+- **The bare spelling part สระ** was both: the word sà-rà (ครูสอนสระ, the two rule cards) and the
+  syllable sà (สระผม, ยาสระผม, สระว่ายน้ำ). It's now the word; spell.js's syllable sà still shows
+  สระ but says สะ (its `said` too, for the tones popup), as a hidden vowel's syllable is written out.
+- **The swim story's สระ** (ลงสระ, into the pool) held the "vowel" card, sà-rà, the only สระ card
+  but the homograph's, which says both. A pool card (สระ, sà, "pool / pond", say สะ) went into Gym:
+  Exercises & Equipment, after ว่ายน้ำ, and the story picks it.
+- **สระอัวะ was สระอัว** frame for frame, as อัวะ alone was (2026-10-15), and so was สะหระอัวะ: the
+  name is said สระอั่ว, as the card is.
+- **สระเออะ was สระเอะ**, the same clip before and after: run on in the name, เออะ is said เอะ (the
+  vowel's F2 2,040 Hz, front, against 1,510 alone). Said สะหระ เออะ, with a space, it's ə (1,525)
+  after a short pause. Every name was measured so (F1 and F2 of its last vowel, run on, after a
+  space and alone): the others are the same run on as after a space, and where they should be.
+- Recordings again (58): 28 spelling parts (สระ and the 27 vowel names), 29 Thai (the สระ cards,
+  notes, rule cards, 11 story lines) and the pool card's English. The 11 lines' word timings were
+  made again. The old clips are left, as before (`--prune` would drop them).
+
 ## From memory checked by a handwriting model (2026-10-15)
 
 The user: From memory was still too strict (Trace was fine), so the neural-network route offered

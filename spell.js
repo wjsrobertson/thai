@@ -337,7 +337,10 @@ function syllableSteps(syl) {
   if (syl.hiddenA) base = syl.onset.letters + 'ะ';
   else if (syl.hiddenAw) base = syl.onset.letters + 'อ';
   else base = stripTone(syl.text);
-  say(base);
+  // สระ read as one syllable, sà (สระผม), says สะ: the recording of สระ is the word for vowel, sà-rà,
+  // which the voice is told to say (tools/gen_audio.py, 2026-10-18).
+  if (base === 'สระ') steps.push({ show: base, say: (base = 'สะ') });
+  else say(base);
   if (syl.tone) {
     say(TONE_MARKS[syl.tone]);
     say(syl.text);

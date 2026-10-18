@@ -43,6 +43,9 @@ FIELDS = {'th': 'thai', 'en': 'english'}
 
 THAI_DIGITS = str.maketrans('๐๑๒๓๔๕๖๗๘๙', '0123456789')
 
+# สระ meaning vowel (sà-rà), for spoken_text: not อิสระ, and not the pool or hair-washing (sà).
+SARA = re.compile('(?<!อิ)(?<!ลง)สระ(?!ผม|ว่ายน้ำ|น้ำ|บัว|ไดร์)')
+
 
 # A letter and its name word, as notes write it ("ณ เณร"), to the letter's name as its card says it
 # ("นอ เณร"): read verbatim, the voice can take a lone letter for a word (ณ as ná). Filled from the
@@ -76,7 +79,17 @@ def spoken_text(text, lang):
         # The voice drops ะ after ัว (ผัวะ is its ผัว): its อัวะ, the vowel's card, was its อัว frame for
         # frame (2026-10-15, found measuring the vowels for the user, who can't check them by ear).
         # อั่ว, with the low tone อัวะ has, comes out short and cut off (150 ms against 190) and lower.
-        text = {'อัวะ': 'อั่ว'}.get(text, text)
+        # Its name too: สะหระอัวะ was สะหระอัว frame for frame, and สะหระอั่ว is shorter (2026-10-18).
+        # In its name, run on, เออะ is said เอะ: the same clip as สระเอะ, its F2 2,040 Hz (front)
+        # against 1,510 alone. After a space it's ə again (1,525); the other names are the same
+        # either way (2026-10-18).
+        text = {'อัวะ': 'อั่ว', 'สระอัวะ': 'สระอั่ว', 'สระเออะ': 'สระ เออะ'}.get(text, text)
+        # The voice reads สระ as sà, "pond" or "to wash (hair)", every time: its สระอี was its สะอี
+        # (590 ms against 554, and สระ alone was สะ frame for frame; the user heard "sa ee",
+        # 2026-10-18). The word for vowel is sà-rà, as in every vowel's name and the lines about
+        # vowels, so say it สะหระ, as the สระ homograph card's say does. Pools and hair-washing stay
+        # sà (สระผม, สระว่ายน้ำ, ลงสระ, the swim story's card says สะ), and อิสระ it reads right.
+        text = SARA.sub('สะหระ', text)
         # The Thai voice all but skips Thai digits (๐–๙) but reads Arabic ones in Thai.
         return text.translate(THAI_DIGITS)
     # English glosses list alternatives as "a / b", which the voice runs together with no pause.
