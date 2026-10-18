@@ -1772,7 +1772,8 @@ The same in every line about vowels: all 20 tried (names, notes, rule cards, sto
   space and alone): the others are the same run on as after a space, and where they should be.
 - Recordings again (58): 28 spelling parts (สระ and the 27 vowel names), 29 Thai (the สระ cards,
   notes, rule cards, 11 story lines) and the pool card's English. The 11 lines' word timings were
-  made again. The old clips are left, as before (`--prune` would drop them).
+  made again. Then pruned (the user's call): 387 clips nothing used, 4.7 MB, these and earlier
+  fixes' (`gen_audio.py --prune`).
 
 ## From memory checked by a handwriting model (2026-10-15)
 
