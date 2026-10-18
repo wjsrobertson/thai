@@ -1662,6 +1662,12 @@ Every link was checked to resolve (2026-10-16).
 A project **CLAUDE.md** (the user's call, the same day) points sessions at the notes and the guide,
 with the working rules, the data pipeline and where the model and screenshot tools live.
 
+**From memory into the repo (2026-10-18):** the user asked which rules lived only in Claude's
+memory, so a fresh session or a clone would miss them. Moved: the checklist for natural Thai (now
+**docs/thai-writing.md**, linked from CLAUDE.md), no installs without asking and dev tools in
+`tools/` (CLAUDE.md), and the growth of story audio (Backlog). The memories CLAUDE.md and these
+notes already covered were deleted.
+
 ## Write fits the screen (2026-10-15)
 
 The user, on an iPhone 12 Pro: on Vowels → Write the ‹ Check › row went under the tab bar. Measured
@@ -4555,3 +4561,9 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
 - **More decks.** The user often asks for specific topics.
 - **Persist Test-mode locked answers across sessions?** They're session-only at the moment.
 - **English→Thai auto-play** in deck mode still gives away the answer (Today's review doesn't).
+- **Story audio keeps growing.** Every story sentence is its own recording, on top of each card's,
+  so each new story adds about six. data/audio was 273 MB on 2026-10-08 and 412 MB (about 32K
+  files) on 2026-10-18. The user (2026-10-08): "we need to do something about the story samples.
+  We may need to trim and reuse words — not yet though." Don't change the scheme until they pick
+  it up. Options to raise then: play a sentence by chaining its word clips, trim the silence,
+  drop clips for short sentences, prune stories that add no new words.

@@ -10,12 +10,19 @@ Used mostly on an iPhone (installed to the home screen, or in Safari) and in Fir
   that touch your work, and add to it with every change.
 - **docs/style-guide.md:** sizes, positions, type and colour, with the standards behind them (Apple
   HIG, WCAG 2.2). Follow it for anything on screen, and run its checklist before calling UI done.
+- **docs/thai-writing.md:** the mistakes AI-written Thai keeps making. Check every Thai line you
+  write or approve (stories, cards, phrases) against it.
 
 ## Working here
 
 - Work on `master`; branch only when asked. Commit each finished change as you go (unless told
   otherwise at the time); push only when asked.
 - It's in development: topic ids, card keys and saved progress or settings can change freely.
+- No installs (`sudo`, `npm`/`pip install`, `apt`, `npx … install`) without asking each time. If a
+  tool is missing, say so rather than installing it.
+- Reusable dev tools (builders, checkers, merge scripts) go in `tools/`, never a session scratchpad:
+  the story builder was lost when one was wiped (2026-10-11). The scratchpad scripts the notes
+  name are gone; don't go looking for them.
 - Phones are 390–430 wide; iPhone SE widths (320, 375) aren't supported. Test heights 664 (Safari
   with its bars), 763 (installed) and 844.
 - Colours come from the theme tokens on `:root` in styles.css (five themes); never hard-code one.
