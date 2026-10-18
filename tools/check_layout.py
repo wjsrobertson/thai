@@ -1,12 +1,14 @@
-"""Checks that what the user asked to line up, match or stay put still does, at phone sizes.
+"""Checks that what the user asked to line up, match or stay put still does, at phone sizes and on a
+wider screen.
 
     python3 -u tools/check_layout.py [WxH ...] [--text-size N] [--shots DIR]
 
 Needs the server on :8765. Default sizes 390x664 (Safari with its bars), 390x763 (installed),
-390x844 and 430x932, at the app's default text size (1, Larger). Prints a line per check and exits
-1 if any fails; screenshots go to --shots (default ~/snap/chromium/common/learnthai-shots-out/layout).
-Each check names the request it keeps (the user's, 2026-10-13 to 10-16; the user asked on 2026-10-16
-for them all to be checked after each new request): see docs/implementation-notes.md, "What lines up".
+390x844 and 430x932, at the app's default text size (1, Larger), then 1280x800 (a wider screen,
+which has its own checks: web_checks). Prints a line per check and exits 1 if any fails;
+screenshots go to --shots (default ~/snap/chromium/common/learnthai-shots-out/layout). Each check
+names the request it keeps (the user's, 2026-10-13 to 10-18; the user asked on 2026-10-16 for them
+all to be checked after each new request): see docs/implementation-notes.md, "What lines up".
 """
 import json, os, sys, time
 
@@ -19,7 +21,7 @@ CHROME = '/snap/chromium/current/usr/lib/chromium-browser/chrome'  # the snap's 
 args = sys.argv[1:]
 TEXT_SIZE = int(args[args.index('--text-size') + 1]) if '--text-size' in args else 1  # the app's default (Larger) since 2026-10-18
 SHOTS = args[args.index('--shots') + 1] if '--shots' in args else os.path.expanduser('~/snap/chromium/common/learnthai-shots-out/layout')
-SIZES = [tuple(map(int, a.split('x'))) for a in args if 'x' in a and a[0].isdigit()] or [(390, 664), (390, 763), (390, 844), (430, 932)]
+SIZES = [tuple(map(int, a.split('x'))) for a in args if 'x' in a and a[0].isdigit()] or [(390, 664), (390, 763), (390, 844), (430, 932), (1280, 800)]
 
 RECT = ("(s) => { const e = typeof s === 'string' ? document.querySelector(s) : s; if (!e || !e.getClientRects().length) return null;"
         " const r = e.getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height, r: r.right, b: r.bottom }; }")
@@ -76,8 +78,53 @@ def scrolled_by(ws, box=None, by=300):
     return js(ws, f"(() => {{ window.scrollTo(0, {by}); return window.scrollY; }})()")
 
 
+def web_checks(ws, size):
+    """A wider screen (2026-10-18, the user's request): each section's page switch in a row of its own,
+    centred, in one place on every page; the topic button in one place too; each page's name beside
+    its icon."""
+    W, H = size
+    C = lambda name, ok, detail='': check(size, name, ok, detail)
+    centre = lambda r: r and r['l'] + r['w'] / 2
+
+    def pages(tab, switch, attr, names, **prefs):
+        open_page(ws, tab, **prefs)
+        out = []
+        for name in names:
+            tap(ws, f'[{attr}={name}]', wait=1.0)
+            js(ws, 'window.scrollTo(0, 0)'); time.sleep(0.3)
+            out.append((name, R(ws, switch), R(ws, '#deck-button')))
+        shot(ws, os.path.join(SHOTS, f'{W}x{H}-{tab}.png'))
+        return out
+
+    topics = pages('study', '.study-switch', 'data-study-page', ('wordlist', 'flashcards', 'reading'), studyPage='wordlist')
+    alpha = pages('alphabet', '.alpha-switch', 'data-alpha-page', ('letters', 'cards', 'write'), alphaPage='letters')
+    for label, seen in (("Topics' List | Cards | Reading", topics), ("The Alphabet's Letters | Cards | Write", alpha)):
+        sw0 = seen[0][1]
+        C(f'Web: {label} in one place on all three pages, in a row of its own above the topic button',
+          all(same(sw, sw0) and sw['b'] <= pk['t'] for _, sw, pk in seen), ' / '.join(f'{n} {fmt(sw)}' for n, sw, _ in seen))
+    pk0 = topics[0][2]
+    C('Web: the topic button in one place on every page that has it (no sideways shift when a page scrolls)',
+      all(same(pk, pk0, 'lt') for _, _, pk in topics + alpha), ' / '.join(f'{n} {fmt(pk)}' for n, _, pk in topics + alpha))
+    open_page(ws, 'dictionary')
+    d, t0, a0 = R(ws, '.dict-switch'), topics[0][1], alpha[0][1]
+    C("Web: the three sections' switches centred alike, at one height (the Dictionary's Thai | English too)",
+      near(centre(t0), centre(a0), 1.5) and near(centre(t0), centre(d), 1.5) and same(t0, a0, 't') and same(t0, d, 't'),
+      f'{fmt(t0)} / {fmt(a0)} / {fmt(d)}')
+    lab = json.loads(js(ws, "JSON.stringify((() => { const b = document.querySelector('.dict-switch .seg-btn'), i = b.querySelector('.seg-icon').getBoundingClientRect(), l = b.querySelector('.seg-label').getBoundingClientRect();"
+                            " return { px: parseFloat(getComputedStyle(b.querySelector('.seg-label')).fontSize), beside: i.right <= l.left && i.bottom > l.top && i.top < l.bottom }; })())"))
+    open_page(ws, 'study', studyPage='wordlist')
+    lab2 = json.loads(js(ws, "JSON.stringify((() => { const b = document.querySelector('.study-switch .seg-btn'), i = b.querySelector('.seg-icon').getBoundingClientRect(), l = b.querySelector('.seg-label').getBoundingClientRect();"
+                             " return { px: parseFloat(getComputedStyle(b.querySelector('.seg-label')).fontSize), beside: i.right <= l.left && i.bottom > l.top && i.top < l.bottom }; })())"))
+    C("Web: each page's name beside its icon, at 16 px", all(x['beside'] and near(x['px'], 16, 0.1) for x in (lab, lab2)), f'{lab} / {lab2}')
+    errs = json.loads(js(ws, 'JSON.stringify(window.__errs || [])'))
+    C('No script errors', not errs, '; '.join(errs)[:200])
+    C('No sideways scroll', js(ws, 'document.documentElement.scrollWidth') <= W, f"{js(ws, 'document.documentElement.scrollWidth')} wide")
+
+
 def checks(ws, size):
     W, H = size
+    if W > 600:  # the phone's checks are for mobile.css's layout; a wider screen has its own
+        return web_checks(ws, size)
     tag = f'{W}x{H}'
     C = lambda name, ok, detail='': check(size, name, ok, detail)
     snap = lambda name: shot(ws, os.path.join(SHOTS, f'{tag}-{name}.png'))

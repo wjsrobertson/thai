@@ -1522,6 +1522,22 @@ body { display: flex; flex-direction: column; }
 .alpha-switch { display: none; }
 .stage[data-view="alphabet"] .alpha-switch,
 .stage[data-section="alphabet"] .alpha-switch { display: inline-flex; }
+/* On a wider screen (the user's call, 2026-10-18: "they look terrible and make the app jump around"):
+   each section's switch has a row of its own, centred at the top of the page, so it sits in the
+   same place on every page instead of moving with the controls beside it; each page is its icon with
+   its name beside it, as the tabs above are. Its row is the bar's padding (36px buttons + 3 + 3 + 2
+   borders = 44, then 16); the switch is placed in it. The selected page isn't bolder, as a tab isn't,
+   so the switch keeps its width. A phone keeps it beside the topic button (mobile.css). */
+@media (min-width: 601px) {
+  html { scrollbar-gutter: stable; } /* a page that scrolls no longer shifts everything sideways */
+  .deck-picker-bar, .dict-top { position: relative; padding-top: 60px; }
+  :is(.study-switch, .alpha-switch, .dict-switch) { position: absolute; top: 0; left: 0; right: 0; width: fit-content; margin: 0 auto; }
+  :is(.study-switch, .alpha-switch, .dict-switch) .seg-btn { flex-direction: row; gap: 7px; height: 36px; padding: 0 14px; }
+  :is(.study-switch, .alpha-switch, .dict-switch) .seg-btn[aria-checked="true"] { font-weight: inherit; }
+  :is(.study-switch, .alpha-switch, .dict-switch) .seg-icon { width: 18px; height: 18px; }
+  :is(.study-switch, .alpha-switch, .dict-switch) .seg-label { font-size: 16px; line-height: 1; }
+  .dict-switch .seg-glyph { font-size: 17px; line-height: 18px; }
+}
 .stage[data-view="alphabet"] .card-wrap,
 .stage[data-view="alphabet"] .flashcards-only,
 .stage[data-view="alphabet"] .wordlist-only,

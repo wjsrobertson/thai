@@ -86,7 +86,10 @@ The phone page, top to bottom, at 390 × 664:
 - **Nothing jumps.** A row whose content changes (a letter's line or the hint; Write's feedback; the
   Write header in Trace and From memory) has a fixed height; a letter keeps its room (`.write-slot`);
   Details is hidden but still in place (visibility, not display) when it mustn't be used; the
-  vowels' line, Write's header and the hint are one height on every set.
+  vowels' line, Write's header and the hint are one height on every set. On a wider screen a
+  section's page switch has a row of its own, centred, so it's in one place on every page, and the
+  page keeps its scrollbar gutter (`scrollbar-gutter: stable`) so scrolling shifts nothing sideways
+  (2026-10-18).
 - **Fill, don't float:** on a phone the card and pad grow into the height there is, and the buttons
   stay at the foot, as Cards does; on a short screen they shrink first. No empty bands.
 - **Pinned rows** (`position: sticky`): clear at rest, then the page's colour and a 1 px hairline

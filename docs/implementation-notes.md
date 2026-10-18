@@ -1536,8 +1536,37 @@ user asked:
   short word filling the card's front, long text inside it (10-16); an Alphabet card's back whole,
   the letter twice the words (10-16).
 - **Tile boards:** the Thai Script topics' rows centred, tiles one width (10-13).
+- **A wider screen** (1280 × 800, `web_checks`): each section's switch in one place on all its pages,
+  in a row of its own above the topic button, the three centred alike at one height; the topic
+  button in one place on every page, scrolling or not; each page's name beside its icon at 16 px
+  (10-18).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
+
+## The page switches on a wider screen (2026-10-18)
+
+The user: on the web, Topics' List | Cards | Reading, the Alphabet's Letters | Cards | Write and the
+Dictionary's Thai | English "look terrible and cause the app to jump around when navigating". They
+asked for the switch in a row of its own, each page an icon with larger text beside it, and the
+phone left as it was.
+- **Why it jumped:** the switch was one item in a wrapping row with the page's other controls (Add
+  all and Read all on List, the direction and order switches on Cards), so it landed somewhere else
+  on each page: at 1280 wide, x 577, 522 and 479 on List, Cards and Reading, and 994, 455 and 986 on
+  the Alphabet's three. And a page tall enough to scroll gained a scrollbar, moving everything
+  centred 7 px (the topic button between x 107 and 114).
+- **Now, above 600px (styles.css, after the Alphabet switch rules):** the bar (and the Dictionary's
+  search row) has a 60px top padding, and the section's switch is placed in it, centred: x 483 on
+  every Topics and Alphabet page at 1280, the Dictionary's centred on the same line. Each button is
+  its 18px icon with a 16px name beside it, 36px tall, as the tabs above are (a 17px name there); the
+  selected page isn't bolder, so the switch keeps its width. `scrollbar-gutter: stable` on `<html>`
+  keeps the page from shifting when it scrolls.
+- **Side effects:** the topic button is 42px tall on the web (it stretched to the old switch's 52);
+  the Dictionary's search is its own 49px. The Alphabet's set menu still opens under the topic
+  button (it's placed from the button's offsets).
+- **The phone is unchanged:** every rule is inside `@media (min-width: 601px)`, and mobile.css (up to
+  600px) keeps the switch beside the topic button; `check_layout.py` passes at the phone sizes.
+- **Checked:** `check_layout.py` now runs `web_checks` at 1280 × 800 (see What lines up); measured at
+  640 and 800 wide too.
 
 ## Defaults: Thai at 0.7×, text Larger (2026-10-18)
 
