@@ -1545,8 +1545,23 @@ user asked:
   the switches 16 px under the top bar (10-18).
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
+- **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
+
+## The new-version bar, one line and prominent (2026-10-19)
+
+The user's screenshot: "A new version is ready." wrapped to three lines beside a 32 px Reload, in a
+pill in the middle of the screen: cramped, not prominent. It was centred with `left: 50%` and a
+transform, which leaves a fixed box half the screen to wrap in.
+- **Centred by its two edges** (`left` / `right` 16, `width: fit-content`, `margin: 0 auto`); on a
+  phone the page's width, in the 12 px gutters, 12 over the tab bar, the words left and Reload right.
+- **More prominent:** the words 16 px bold, a 2 px accent border, the card radius (14) rather than a
+  pill, and Reload 44 tall (the app's least for a tap) in 16 px bold.
+- **A toast shows above it**, 12 clear: on a phone the old 104 px put it over the bar, so it's the
+  tab bar + 88 there (the bar's 12 + 64 + 12).
+- **Checked:** `check_layout.py` shows the bar on a phone and measures it (one line, the button 44,
+  12 in each side, 12 over the tab bar).
 
 ## A field's keyboard hides the tab bar (2026-10-19)
 

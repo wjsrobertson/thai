@@ -79,6 +79,10 @@ html, body { min-height: 100dvh; }
 body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
 .toast { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom, 0px)); }
 .update-bar { bottom: calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom, 0px)); }
+/* The new-version bar the page's width, in its gutters (2026-10-19), and a toast above it: the bar's
+   12 over the tab bar, its 64 (8 + 44 + 8 and the border), and 12. */
+.update-bar { left: 12px; right: 12px; width: auto; }
+.update-bar:not([hidden]) ~ .toast { bottom: calc(var(--tabbar-h) + 88px + env(safe-area-inset-bottom, 0px)); }
 /* A field's keyboard up (html.kb: app.js, syncKeyboardUp): the bar goes, as an app's does under its
    keyboard, and what kept clear of it reaches the foot. iOS leaves the bar at the foot of the page's
    full height, so results scrolled with the keyboard up showed it halfway up the screen (the

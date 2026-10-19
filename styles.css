@@ -2440,33 +2440,42 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .home-card .inline-icon { white-space: nowrap; color: var(--ink); }
 .home-card .review-icon { margin: 0 1px; vertical-align: -0.18em; }
 
-/* "A new version is ready" (sw.js found an update) */
+/* "A new version is ready" (sw.js found an update). Centred by its two edges: it was left: 50% and
+   a transform, which left it half the screen to wrap in, three lines on a phone and the button 32
+   tall (the user's screenshot, 2026-10-19: cramped, not prominent). Now one line in 16 px bold, a
+   2 px accent border, the button 44 tall (the app's least) and 16 px; on a phone the page's width
+   (mobile.css). */
 .update-bar {
   position: fixed;
-  left: 50%;
+  left: 16px;
+  right: 16px;
   bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-  transform: translateX(-50%);
   z-index: 50;
   display: flex;
   align-items: center;
-  gap: 12px;
-  max-width: calc(100% - 32px);
-  padding: 10px 12px 10px 16px;
+  justify-content: space-between;
+  gap: 16px;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 8px 8px 8px 18px;
   background: var(--panel-2);
   color: var(--ink);
-  border: 1px solid var(--accent);
-  border-radius: 999px;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
-  font-size: 15px;
+  font-size: 16px;
+  font-weight: 600;
 }
 .update-bar[hidden] { display: none; }
 .update-bar button {
+  min-height: 44px;
+  padding: 0 22px;
   background: var(--accent);
   color: var(--on-accent);
   border: 0;
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 /* ---------- adding words to Review by hand ---------- */

@@ -382,6 +382,17 @@ def checks(ws, size):
     w = json.loads(js(ws, "JSON.stringify([...new Set([...document.querySelectorAll('#alpha-vowels .letter-tile')].map((e) => Math.round(e.getBoundingClientRect().width)))])"))
     C('Letters (vowels): every vowel tile one width, so the columns line up section to section', w and max(w) - min(w) <= 1, f"widths {w}")
 
+    # ---- The new-version bar (2026-10-19: three cramped lines, the user's screenshot) ----
+    # Shown by hand: one line, the button 44 tall, the page's width in the gutters, 12 over the tab bar.
+    u = json.loads(js(ws, """JSON.stringify((() => { const bar = document.getElementById('update-bar'); bar.hidden = false;
+      const r = bar.getBoundingClientRect(), t = bar.querySelector('span').getBoundingClientRect(), b = bar.querySelector('button').getBoundingClientRect(),
+        tabs = document.querySelector('.tabs').getBoundingClientRect(), line = parseFloat(getComputedStyle(bar).lineHeight) || 22;
+      bar.hidden = true;
+      return { l: r.left, r: innerWidth - r.right, gap: tabs.top - r.bottom, textH: t.height, line, btnH: b.height }; })())"""))
+    C('The new-version bar: one line, its button 44 tall, the page\'s width (12 in), 12 over the tab bar',
+      u['textH'] < 1.5 * u['line'] and u['btnH'] >= 44 and near(u['l'], 12) and near(u['r'], 12) and near(u['gap'], 12),
+      f"text {u['textH']:.0f} tall, button {u['btnH']:.0f}, {u['l']:.0f} / {u['r']:.0f} in, {u['gap']:.0f} over the bar")
+
     errs = json.loads(js(ws, 'JSON.stringify(window.__errs || [])'))
     C('No script errors', not errs, '; '.join(errs)[:200])
     C('No sideways scroll', js(ws, 'document.documentElement.scrollWidth') <= W, f"{js(ws, 'document.documentElement.scrollWidth')} wide")
