@@ -1606,6 +1606,13 @@ learning the keys came first, the same day; the user didn't like it, and it's ke
     72, so a back with a note fits (137 of a 265 card). The sizing waits for the keyboard (the
     visible height under 80% of what it was at the focus), so the card doesn't first grow. The rest
     comes back when the keyboard goes (Done, over it).
+  - **The page held at its top** (the user's screenshot, 2026-10-19): with the keyboard up iOS lets
+    the page be dragged by as much as the keyboard covers, though it all fits over it, and scrolled
+    it 80 px itself after an answer, the card's top under the clock and a gap over the keyboard.
+    While it's up a drag is stopped (`touchmove` → `preventDefault`, not in the box or on a back
+    long enough to scroll; the listener only then, so it doesn't slow scrolling elsewhere) and a
+    scroll put back (`holdTop`, on the window's and `visualViewport`'s scrolls). `sizeCards` measures
+    from the page's own top rather than adding `scrollY`, so it holds however iOS has scrolled.
 - **Words elsewhere:** Home's Cards line names Type; Settings' "Recognition" list is "Recognition
   and Type" (Type uses its card order and pauses), and the schedule's help says how typed answers
   count.

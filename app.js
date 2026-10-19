@@ -1041,9 +1041,10 @@ function sizeCards() {
     card.style.height = '';
     if (!PHONE_LAYOUT.matches || state.view !== 'flashcards' || !card.offsetParent) continue;
     const floor = keyboard ? room : document.querySelector('.tabs').getBoundingClientRect().top;
-    // The lowest of the stage's parts, and the stage's padding under it, in page coordinates.
+    // The lowest of the stage's parts, and the stage's padding under it, in page coordinates: from
+    // the page's own top, which holds however iOS has scrolled it with the keyboard up.
     const bottom = Math.max(...[...els.stage.children].filter((e) => e.getClientRects().length)
-      .map((e) => e.getBoundingClientRect().bottom)) + window.scrollY;
+      .map((e) => e.getBoundingClientRect().bottom)) - document.documentElement.getBoundingClientRect().top;
     const spare = floor - parseFloat(getComputedStyle(els.stage).paddingBottom) - bottom;
     card.style.height = `${Math.max(keyboard ? CARD_MIN_H_TYPING : CARD_MIN_H, Math.floor(card.offsetHeight + spare))}px`;
   }
@@ -4752,6 +4753,21 @@ function fitTypeKeyboard() {
   fitCardText();
 }
 
+// With the keyboard up iOS lets the page be dragged, by as much as the keyboard covers though it
+// all fits over it, and scrolls it itself, after an answer too (the user's screenshot, 2026-10-19:
+// the card's top under the clock, a gap over the keyboard). So it's held at its top: a drag is
+// stopped (not in the box, or on a back long enough to scroll), and a scroll put back.
+function holdStill(e) {
+  if (e.target === els.typeBox) return;
+  const back = e.target.closest?.('.face-body');
+  if (back && back.scrollHeight > back.clientHeight) return;
+  e.preventDefault();
+}
+function holdTop() {
+  if (!document.documentElement.classList.contains('type-kb')) return;
+  if (window.scrollY || window.visualViewport?.offsetTop) window.scrollTo(0, 0);
+}
+
 // ---------- Review mode: a continuous stream ----------
 // Since 2026-10-08 (the user's request) Review has no start or end: a stream of cards from the
 // words you've added, in Flashcards' scope and direction, ordered to help recall. Every card is
@@ -7039,16 +7055,20 @@ function bindEvents() {
     // The page's height without the keyboard: iOS keeps the layout viewport's when it opens.
     typingFrom = Math.max(window.visualViewport?.height ?? 0, document.documentElement.clientHeight);
     document.documentElement.classList.add('type-kb');
+    document.addEventListener('touchmove', holdStill, { passive: false }); // only while it's up
     fitTypeKeyboard();
   });
   els.typeBox.addEventListener('blur', () => {
     if (!document.documentElement.classList.contains('type-kb')) return;
     document.documentElement.classList.remove('type-kb');
+    document.removeEventListener('touchmove', holdStill, { passive: false });
     fitCardText();
   });
   window.visualViewport?.addEventListener('resize', () => {
     if (document.documentElement.classList.contains('type-kb')) fitTypeKeyboard();
   });
+  window.addEventListener('scroll', holdTop);
+  window.visualViewport?.addEventListener('scroll', holdTop);
 
   els.directionButtons.forEach((btn) => {
     btn.addEventListener('click', () => setDirection(btn.dataset.direction));

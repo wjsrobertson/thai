@@ -308,6 +308,15 @@ def checks(ws, size):
     C(f'Type, the keyboard up ({H - 307} px left): the card and the box above it, 12 px under each, the box still focused',
       card and box and near(card['t'], 12) and near(box['t'], card['b'] + 12) and near(box['b'], H - 307 - 12, 1.5) and focus == 'type-box',
       f"card {fmt(card)}, box {fmt(box)}, focus on {focus or 'nothing'}")
+    # Held at its top (the user's screenshot, 2026-10-19: iOS scrolled it 80 px after an answer): a
+    # drag on the card stopped, a scroll put back. The page is made taller to have room to scroll.
+    held = js(ws, """(() => { const e = new TouchEvent('touchmove', { bubbles: true, cancelable: true });
+      document.getElementById('card').dispatchEvent(e); return e.defaultPrevented; })()""")
+    js(ws, "document.body.style.minHeight = '2000px'; window.scrollTo(0, 80)"); time.sleep(0.3)
+    top = js(ws, 'window.scrollY')
+    js(ws, "document.body.style.minHeight = ''")
+    C('Type, the keyboard up: the page held at its top (a drag on the card stopped, a scroll put back)',
+      held is True and top == 0, f'drag stopped: {held}, scrolled to {top}')
     ws.call('Emulation.setDeviceMetricsOverride', width=W, height=H, deviceScaleFactor=2, mobile=True)
     ws.call('Emulation.setTouchEmulationEnabled', enabled=False)
     js(ws, 'location.reload()'); time.sleep(1.8)
