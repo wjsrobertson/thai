@@ -1534,7 +1534,8 @@ user asked:
 - **Cards:** the card one shape in Browse, Recognition and Recall, the answers and grades where ‹ ›
   are, the card's size held question to question with answers at 12 px or more, Recall's card the
   same arriving from elsewhere (10-16); Type's card and box the same (10-19), and with a phone's
-  keyboard up the card and box above it, the box keeping the focus (10-19); a letter or
+  keyboard up the card and box above it, the box keeping the focus, the page held at its top
+  (10-19); a letter or
   short word filling the card's front, long text inside it (10-16); an Alphabet card's back whole,
   the letter twice the words (10-16).
 - **Tile boards:** the Thai Script topics' rows centred, tiles one width (10-13).
@@ -1542,8 +1543,27 @@ user asked:
   in a row of its own above the topic button, the three centred alike at one height; the topic
   button in one place on every page, scrolling or not; each page's name beside its icon at 16 px;
   the switches 16 px under the top bar (10-18).
+- **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
+  10-19).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
+
+## A field's keyboard hides the tab bar (2026-10-19)
+
+The user's screenshot: in the Dictionary, scrolling the results with the search's keyboard still
+up, the tab bar showed halfway up the screen, over the words. iOS doesn't shrink the page for the
+keyboard, only the part of it that shows, so a `position: fixed` bar stays at the foot of the full
+height and comes into view part way up as the page scrolls.
+- **While a field has the keyboard** (a text, search or number box, or a textarea, on a touch
+  screen: `syncKeyboardUp`, on `focusin` / `focusout`), `html.kb` hides the bar, as an app's goes
+  under its keyboard, and sets `--tabbar-h` to 0, so the page's room for it, the toasts and the
+  sheets that end above it (Settings, the word dialog) reach the foot. Focus stands for the keyboard
+  because on a touch screen no field is focused but by a tap (`TOUCH_SCREEN`).
+- **What's sized to the bar keeps its size** while it's hidden (`sizeCards`, `sizeWritePad`), and the
+  cards fit again when it's back. Type's own keyboard layout (`html.type-kb`, below) is set too and
+  sizes the card to the keyboard as before.
+- **Checked:** `check_layout.py` taps the Dictionary's search with a touch screen emulated (the bar
+  hidden), then lets it go (the bar back). Not yet on the iPhone.
 
 ## Cards: Type, the answer typed in Thai (2026-10-19), `typing.js`
 

@@ -79,6 +79,12 @@ html, body { min-height: 100dvh; }
 body { padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom, 0px)); }
 .toast { bottom: calc(var(--tabbar-h) + 16px + env(safe-area-inset-bottom, 0px)); }
 .update-bar { bottom: calc(var(--tabbar-h) + 12px + env(safe-area-inset-bottom, 0px)); }
+/* A field's keyboard up (html.kb: app.js, syncKeyboardUp): the bar goes, as an app's does under its
+   keyboard, and what kept clear of it reaches the foot. iOS leaves the bar at the foot of the page's
+   full height, so results scrolled with the keyboard up showed it halfway up the screen (the
+   Dictionary, the user's screenshot, 2026-10-19). */
+html.kb { --tabbar-h: 0px; }
+html.kb .tabs { display: none; }
 
 .stage { padding: 12px 12px 24px; }
 

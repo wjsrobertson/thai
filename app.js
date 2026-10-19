@@ -1035,8 +1035,11 @@ let typingFrom = 0; // the visible height when Type's box took the focus, before
 function sizeCards() {
   // Type with a phone's keyboard up (html.type-kb): down to the keyboard, the tab bar hidden.
   const keyboard = document.documentElement.classList.contains('type-kb');
+  // Another field's keyboard (html.kb, syncKeyboardUp), the tab bar hidden: as it was till then.
+  const otherKeyboard = !keyboard && document.documentElement.classList.contains('kb');
   const room = window.visualViewport?.height ?? window.innerHeight;
   for (const card of [els.card, els.reviewCard]) {
+    if (otherKeyboard) continue;
     if (keyboard && room > 0.8 * typingFrom) continue; // the keyboard's still coming: as it was till then
     card.style.height = '';
     if (!PHONE_LAYOUT.matches || state.view !== 'flashcards' || !card.offsetParent) continue;
@@ -1895,6 +1898,20 @@ function showWordInTopic(key, deckId) {
 // fixed-position sheet shifts the page underneath, after which the sheet can stop scrolling.
 const TOUCH_SCREEN = window.matchMedia('(pointer: coarse)').matches;
 
+// With none focused but by a tap, a touch screen's field has the keyboard just while it has the
+// focus, and while it does the phone's tab bar goes, as an app's does under its keyboard (html.kb, mobile.css). iOS keeps the bar
+// at the foot of the page's full height, which the keyboard doesn't shrink, so the Dictionary's
+// results scrolled with the keyboard up showed it halfway up the screen (the user's screenshot,
+// 2026-10-19). What's sized to the bar (sizeCards, sizeWritePad) keeps its size meanwhile, and
+// the cards fit again when it's back.
+const KEYBOARD_FIELDS = 'input[type=text], input[type=search], input[type=number], textarea';
+function syncKeyboardUp(field) {
+  const up = TOUCH_SCREEN && !!field?.matches?.(KEYBOARD_FIELDS);
+  if (up === document.documentElement.classList.contains('kb')) return;
+  document.documentElement.classList.toggle('kb', up);
+  if (!up) fitCardText();
+}
+
 // While a modal is open the page behind it is locked (html.modal-open), so scrolls stay in the sheet.
 function setModalOpen(open) {
   document.documentElement.classList.toggle('modal-open', open);
@@ -2720,6 +2737,7 @@ function renderWrite() {
 function sizeWritePad() {
   const pad = els.writeCanvas.parentElement;
   if (els.alphaWrite.hidden || !pad.offsetParent) return;
+  if (document.documentElement.classList.contains('kb')) return; // a field's keyboard up, the tab bar hidden: as it was
   pad.style.height = '';
   const full = pad.clientWidth;
   if (!PHONE_LAYOUT.matches) { pad.style.height = `${full}px`; return; }
@@ -7069,6 +7087,9 @@ function bindEvents() {
   });
   window.addEventListener('scroll', holdTop);
   window.visualViewport?.addEventListener('scroll', holdTop);
+  // Any field's keyboard: the tab bar hidden while it's up (syncKeyboardUp).
+  document.addEventListener('focusin', (e) => syncKeyboardUp(e.target));
+  document.addEventListener('focusout', (e) => syncKeyboardUp(e.relatedTarget));
 
   els.directionButtons.forEach((btn) => {
     btn.addEventListener('click', () => setDirection(btn.dataset.direction));

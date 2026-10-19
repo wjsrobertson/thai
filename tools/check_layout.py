@@ -318,6 +318,16 @@ def checks(ws, size):
     C('Type, the keyboard up: the page held at its top (a drag on the card stopped, a scroll put back)',
       held is True and top == 0, f'drag stopped: {held}, scrolled to {top}')
     ws.call('Emulation.setDeviceMetricsOverride', width=W, height=H, deviceScaleFactor=2, mobile=True)
+    # Any field's keyboard: the tab bar hidden while it's up, and back when it goes (the user's
+    # screenshot, 2026-10-19: the Dictionary's results scrolled, iOS showed it halfway up the screen).
+    js(ws, 'document.activeElement.blur()'); time.sleep(0.3)  # Type's box, whose keyboard hides the bar too
+    tap(ws, '.tab[data-view=dictionary]', wait=1.0)
+    tap(ws, '#dict-search', wait=0.5)
+    bar_up = js(ws, "getComputedStyle(document.querySelector('.tabs')).display")
+    js(ws, 'document.activeElement.blur()'); time.sleep(0.3)
+    bar_down = js(ws, "getComputedStyle(document.querySelector('.tabs')).display")
+    C("A field's keyboard up (the Dictionary's search): the tab bar hidden, and back when it goes",
+      bar_up == 'none' and bar_down not in (None, 'none'), f'up: {bar_up}, gone: {bar_down}')
     ws.call('Emulation.setTouchEmulationEnabled', enabled=False)
     js(ws, 'location.reload()'); time.sleep(1.8)
     tap(ws, '.tab[data-view=study]', wait=1.5)
