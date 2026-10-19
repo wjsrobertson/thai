@@ -71,6 +71,7 @@ body { padding-top: env(safe-area-inset-top, 0px); }
 .stage[data-view="flashcards"] { padding-bottom: 18px; }
 .stage[data-view="flashcards"]:not([data-order="test"]) :is(#prev-btn, #next-btn) { margin-top: -6px; }
 .stage[data-order="test"] .learn-pills { margin-top: 6px; } /* after the card's 12 px gap: 18 */
+.stage[data-order="type"] .type-bar { margin-top: 6px; } /* Type's box (2026-10-19), as the answers */
 /* The page is the visible height, not Safari's 100vh (its height with the toolbars hidden), so a
    page that fits (Flashcards, sized by sizeCards) doesn't scroll. */
 html, body { min-height: 100dvh; }
@@ -160,7 +161,7 @@ html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom,
 .learn-pills { grid-area: pills; gap: 8px; }
 #prev-btn { grid-area: prev; justify-self: start; }
 /* Recognition has no ‹ ›: no row for them, or its gap would take 12px from the card. */
-.stage[data-order="test"] .card-wrap { grid-template-areas: "card card" "pills pills"; }
+.stage:is([data-order="test"], [data-order="type"]) .card-wrap { grid-template-areas: "card card" "pills pills"; }
 #next-btn { grid-area: next; justify-self: end; }
 .nav-btn { width: 56px; height: 56px; font-size: 26px; }
 
@@ -192,6 +193,33 @@ html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom,
 .learn-pill { min-height: 56px; padding: 4px 6px; font-size: calc(17px * var(--fs, 1)); border-radius: 10px; }
 .learn-pill:not(.thai-pill) { line-height: 1.2; }
 .learn-pill.thai-pill { font-size: calc(27px * var(--fs, 1)); }
+
+/* Type's box and button in the answers' 56 px band; the box's text 16 px or more (iOS zooms into
+   a smaller one). What was typed over it, and a note, fit two lines at Largest text. */
+.type-bar { grid-area: pills; gap: 8px; }
+.type-box { height: 56px; padding: 0 10px; border-radius: 10px; font-size: calc(26px * var(--fs, 1)); }
+.type-box::placeholder { font-size: 16px; }
+.type-said { font-size: calc(20px * var(--fs, 1)); }
+.type-note { font-size: 12px; }
+.type-check { width: 76px; height: 56px; border-radius: 10px; font-size: 16px; }
+.type-hint { bottom: 14px; max-width: calc(100% - 184px); font-size: 14px; }
+
+/* Type with the keyboard up (html.type-kb, while the box has it: app.js, fitTypeKeyboard): the
+   page is the card and the box, down to the keyboard; the rest comes back when it goes. */
+html.type-kb :is(.section-bar, .bar-rest, .tabs) { display: none; }
+html.type-kb body { padding-bottom: 0; }
+html.type-kb .stage { padding-top: 12px; padding-bottom: 12px; }
+html.type-kb .stage[data-order="type"] .type-bar { margin-top: 0; }
+/* The card's corners smaller (52, still over 44), so the word has room: 137 of a 265 card in Safari
+   (357 left), where the 72 px corners left too little for a back with a note. */
+html.type-kb #card .face { padding: 64px 16px; }
+html.type-kb #card :is(.speak, .flip-btn, .spell-btn) { width: 52px; height: 52px; }
+html.type-kb #card .speak { top: 8px; right: 8px; font-size: 25px; }
+html.type-kb #card :is(.flip-btn, .spell-btn) { bottom: 8px; }
+html.type-kb #card .spell-btn { left: 8px; font-size: 24px; }
+html.type-kb #card .flip-btn { right: 8px; font-size: 29px; }
+html.type-kb #card .auto-badge { top: 19px; right: 68px; }
+html.type-kb #card .type-hint { bottom: 8px; max-width: calc(100% - 136px); }
 
 /* ---------- modals become full-screen sheets ---------- */
 .modal { padding: 0; align-items: stretch; }

@@ -136,7 +136,7 @@
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</span>
         <span class="home-card-list">
           <span class="home-card-row"><b>List</b><span>Every word in a topic. Tap <span class="inline-icon" role="img" aria-label="Add to Cards"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> to add one to Cards.</span></span>
-          <span class="home-card-row"><b>Cards</b><span>Browse, Recognition and Recall</span></span>
+          <span class="home-card-row"><b>Cards</b><span>Browse, Recognition, Recall and Type</span></span>
           <span class="home-card-row"><b>Reading</b><span>Short stories that use the topic's words</span></span>
         </span>
       </button>
@@ -199,6 +199,7 @@
         <button type="button" role="radio" class="seg-btn" data-order="practice" aria-checked="true">Browse</button> <!-- "Learn" until 2026-10-08 (a placeholder name) -->
         <button type="button" role="radio" class="seg-btn" data-order="test" aria-checked="false">Recognition</button> <!-- "Test" until 2026-10-08 -->
         <button type="button" role="radio" class="seg-btn" data-order="review" aria-checked="false">Recall</button> <!-- "Review" until 2026-10-08 -->
+        <button type="button" role="radio" class="seg-btn" data-order="type" aria-checked="false">Type</button> <!-- 2026-10-19: Recognition, the answer typed in Thai -->
       </div>
       <div class="wordlist-only wordlist-bar-right">
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg>Add all to Cards</button>
@@ -247,6 +248,8 @@
               <button type="button" class="auto-badge" aria-pressed="true" aria-label="Auto-play">A</button>
               <button type="button" class="flip-btn" aria-label="Flip card" title="Flip card">⟳</button>
               <button type="button" class="spell-btn" id="card-spell-front" aria-label="Spell it aloud" title="Spell it aloud" hidden><span class="spell-icon" aria-hidden="true">ก<svg class="spell-waves" viewBox="0 0 10 24" aria-hidden="true"><path d="M2 9.5a3.5 3.5 0 0 1 0 5M5 6.5a7.5 7.5 0 0 1 0 11" /></svg></span></button>
+              <!-- Type: the wrong keyboard, said as soon as it types (onTypeInput). -->
+              <div class="type-hint" id="type-hint" role="status" hidden></div>
             </div>
             <div class="thai" id="card-thai"></div>
           </div>
@@ -274,6 +277,19 @@
       </div>
 
       <div class="learn-pills" id="learn-pills" hidden></div>
+
+      <!-- Type (2026-10-19): the answer typed in Thai, in the answers' place. The box's attributes keep
+           the iPhone's suggestion bar away (the keyboard probe); once answered, what was typed shows
+           over it, marked (showTyped). The button is Show, Check, then Next. -->
+      <form class="type-bar" id="type-bar" autocomplete="off" hidden>
+        <div class="type-field" id="type-field">
+          <input type="text" class="type-box" id="type-box" lang="th" autocomplete="off" autocorrect="off"
+            autocapitalize="off" spellcheck="false" writingsuggestions="false" enterkeyhint="go"
+            aria-label="Your answer, in Thai" aria-describedby="type-result">
+          <div class="type-result" id="type-result" role="status" hidden></div>
+        </div>
+        <button type="submit" class="type-check" id="type-check">Show</button>
+      </form>
 
     </section>
 
@@ -521,10 +537,11 @@
         <!-- 2026-10-14: these cover the Alphabet's cards too (the same engine), so a line says so. -->
         <p class="setting-cat-note">These apply to the Alphabet's cards too.</p>
         <!-- Three parts since 2026-10-08: Test, Review, and the schedule both of them feed (a wrong
-             Test answer counts as Very Hard, a right one as Hard). Smart order went the same day. -->
-        <p class="setting-list-head">Recognition</p>
+             Test answer counts as Very Hard, a right one as Hard). Smart order went the same day.
+             Type (2026-10-19) goes as Recognition does, so it shares these. -->
+        <p class="setting-list-head">Recognition and Type</p>
         <div class="setting-list">
-          <div class="setting-group" data-search="flashcards recognition test mode card order random shuffle deck order sequence list topic">
+          <div class="setting-group" data-search="flashcards recognition test type typing mode card order random shuffle deck order sequence list topic">
             <label class="setting-row">
               <span class="setting-label">Card order</span>
               <select id="setting-test-order">
@@ -534,14 +551,14 @@
               <span class="setting-help">Random starts with words you haven't answered. A wrong one comes back a few cards later.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="flashcards recognition test mode auto progress advance move on next pause seconds answer right">
+          <div class="setting-group" data-search="flashcards recognition test type typing mode auto progress advance move on next pause seconds answer right">
             <label class="setting-row">
               <span class="setting-label">Pause after a right answer</span>
               <input type="number" min="0" max="5" step="0.1" id="setting-learn-pause" />
               <span class="setting-help">Seconds before the next card.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="flashcards recognition test mode auto progress advance move on next pause seconds answer wrong">
+          <div class="setting-group" data-search="flashcards recognition test type typing mode auto progress advance move on next pause seconds answer wrong">
             <label class="setting-row">
               <span class="setting-label">Pause after a wrong answer</span>
               <input type="number" min="0" max="10" step="0.1" id="setting-wrong-pause" />
@@ -555,21 +572,21 @@
             <label class="setting-row">
               <span class="setting-label">Very Hard: wait (minutes)</span>
               <input type="number" min="1" max="1440" step="1" id="setting-wait-again" />
-              <span class="setting-help">For a word marked Very Hard, or wrong in Recognition.</span>
+              <span class="setting-help">For a word marked Very Hard, or wrong in Recognition or Type.</span>
             </label>
           </div>
           <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits hard delay interval days first new word">
             <label class="setting-row">
               <span class="setting-label">Hard: first wait (days)</span>
               <input type="number" min="1" max="60" step="1" id="setting-wait-hard" />
-              <span class="setting-help">A right answer in Recognition counts as Hard.</span>
+              <span class="setting-help">A right answer in Recognition counts as Hard, as does one typed in Listen.</span>
             </label>
           </div>
           <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits easy delay interval days first new word">
             <label class="setting-row">
               <span class="setting-label">Easy: first wait (days)</span>
               <input type="number" min="1" max="60" step="1" id="setting-wait-easy" />
-              <span class="setting-help">First waits are for a new word. Each right answer after makes the wait longer.</span>
+              <span class="setting-help">A word typed right in English → Thai counts as Easy. First waits are for a new word. Each right answer after makes the wait longer.</span>
             </label>
           </div>
           <div class="setting-group" data-search="flashcards scheduling desired retention fsrs intervals remember percent recognition test recall review">

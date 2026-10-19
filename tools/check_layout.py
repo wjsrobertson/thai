@@ -273,6 +273,10 @@ def checks(ws, size):
             hs.append(q['h']); fonts += q['f']
             js(ws, "document.querySelector('#learn-pills .learn-pill').click()"); time.sleep(0.4)
             js(ws, "document.getElementById('next-btn').click()"); time.sleep(0.6)
+        tap(ws, '[data-order=type]', wait=1.2)
+        ty, box = R(ws, '#card'), R(ws, '#type-bar')
+        C(f"{label}: Type's card the same shape, its box where ‹ › are (top and height)", same(b, ty) and same(box, nav, 'th'),
+          f"card {fmt(ty)} / {fmt(b)}, box {fmt(box)}, ‹ › {fmt(nav)}")
         tap(ws, '[data-order=review]', wait=1.2)
         rc, grades = R(ws, '#review-card'), R(ws, '#review-grades')
         snap(f"{label.split()[0].lower().strip(':')}-recall")
@@ -288,6 +292,27 @@ def checks(ws, size):
         C(f'{label}: Recall\'s card the same arriving from elsewhere (a reload, then the tab)', same(rc2, b), f"{fmt(rc2)} / {fmt(b)}")
         tap(ws, '[data-order=practice]', wait=1.0)
     modes("Topics' Cards", 'study')
+
+    # ---- Type with a phone's keyboard up (2026-10-19) ----
+    # A touch screen (TOUCH_SCREEN is read as the page loads), then the visible height the keyboard
+    # leaves: 307 px less, as the iPhone in Safari at 664 (the keyboard probe).
+    ws.call('Emulation.setTouchEmulationEnabled', enabled=True, maxTouchPoints=5)
+    js(ws, 'location.reload()'); time.sleep(1.8)
+    tap(ws, '.tab[data-view=study]', wait=1.5)
+    tap(ws, '[data-order=type]', wait=1.0)
+    ws.call('Emulation.setDeviceMetricsOverride', width=W, height=H - 307, deviceScaleFactor=2, mobile=True)
+    time.sleep(0.8)
+    card, box = R(ws, '#card'), R(ws, '#type-bar')
+    focus = js(ws, 'document.activeElement.id')
+    snap('type-keyboard')
+    C(f'Type, the keyboard up ({H - 307} px left): the card and the box above it, 12 px under each, the box still focused',
+      card and box and near(card['t'], 12) and near(box['t'], card['b'] + 12) and near(box['b'], H - 307 - 12, 1.5) and focus == 'type-box',
+      f"card {fmt(card)}, box {fmt(box)}, focus on {focus or 'nothing'}")
+    ws.call('Emulation.setDeviceMetricsOverride', width=W, height=H, deviceScaleFactor=2, mobile=True)
+    ws.call('Emulation.setTouchEmulationEnabled', enabled=False)
+    js(ws, 'location.reload()'); time.sleep(1.8)
+    tap(ws, '.tab[data-view=study]', wait=1.5)
+    tap(ws, '[data-order=practice]', wait=1.0)  # as modes() leaves it, for the checks below
 
     # ---- Card text in proportion (2026-10-16) ----
     FRONT = """JSON.stringify((() => { const t = document.getElementById('card-thai'), f = t.closest('.face'), cs = getComputedStyle(f), r = t.getBoundingClientRect(), fr = f.getBoundingClientRect();

@@ -37,6 +37,7 @@ mobile.css            phone overrides (see Phone layout)
 app.js                all JS (ES module); imports spell.js
 spell.js              spelling a Thai word aloud: school method and letter names (see Spelling)
 tones.js              each syllable's tone and the rule that gives it (see Tones)
+typing.js             Cards' Type: the Thai keyboard's layout and the typed-answer checker (see Cards: Type)
 sw.js                 service worker (see Offline & install)
 app.webmanifest       web app manifest; icons/ holds its icons
 data/decks.json       all vocabulary
@@ -1532,7 +1533,8 @@ user asked:
   (10-15).
 - **Cards:** the card one shape in Browse, Recognition and Recall, the answers and grades where ‹ ›
   are, the card's size held question to question with answers at 12 px or more, Recall's card the
-  same arriving from elsewhere (10-16); a letter or
+  same arriving from elsewhere (10-16); Type's card and box the same (10-19), and with a phone's
+  keyboard up the card and box above it, the box keeping the focus (10-19); a letter or
   short word filling the card's front, long text inside it (10-16); an Alphabet card's back whole,
   the letter twice the words (10-16).
 - **Tile boards:** the Thai Script topics' rows centred, tiles one width (10-13).
@@ -1542,6 +1544,81 @@ user asked:
   the switches 16 px under the top bar (10-18).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
+
+## Cards: Type, the answer typed in Thai (2026-10-19), `typing.js`
+
+The user's idea: a fourth mode beside Browse, Recognition and Recall, on Topics' and the Alphabet's
+Cards, "like Recognition, but it has a text input bar instead of button select", working in all
+three directions with the answer in Thai in each (the user's call). (A section of its own for
+learning the keys came first, the same day; the user didn't like it, and it's kept on the branch
+`2026-10-19-typing`, with the keyboard probe page that found what's below.)
+- **What each direction asks:** English → Thai, the Thai from memory; Listen, what you hear;
+  Thai → English, the Thai shown copied, which is practice at finding the keys.
+- **Progress** (the user's call, after the difference was explained: what Recall schedules, what
+  Recognition puts first, Known): English → Thai is graded as a recall, right Easy, wrong Very
+  Hard; Listen as Recognition grades it (`mode: 'mc'`, a right answer Hard), as spelling what you hear
+  isn't knowing what it means; Thai → English saves nothing, as copying a word says nothing of its
+  meaning.
+- **A card** goes as Recognition's do (the same stream, `requeueRecognition`, the pauses in
+  Settings), with the box (`#type-box`) and one button in the answers' place:
+  - right **as soon as the box matches**, with no return needed (`onTypeInput`). Also right: a word
+    in scope with the same sound (Listen: ค่า, ข้า and ฆ่า; 57 cards have one in their own topic)
+    or the same English (English → Thai, which only Everything can have), and an Alphabet vowel
+    without the อ that holds its place (ะ for อะ). Each says so in a note.
+  - the button is **Show** with the box empty (a miss, the answer shown), **Check** once something's
+    typed, **Next** once answered (on without the pause). The return key is the button.
+  - **once answered**, what was typed is drawn over the box (`showTyped`): ✓ and it, or ✗ and it
+    with the rest in red from the letter where it went wrong (with its marks: `clusters`), and a
+    note under it. The card turns over to the answer, as Recognition's does. A right answer with a
+    note waits the wrong answer's pause, so the note can be read.
+  - **Latin letters** (the phone's keyboard not on Thai) are said at once, on the card's front
+    between its bottom corners: "That's not Thai: switch keyboards with 🌐".
+- **The checker** (`typing.js`, no page code) compares after tidying both sides (`tidy`):
+  - only Thai and digits count, Thai digits as 0–9: not spaces (ช้า ๆ or ช้าๆ), zero-width spaces,
+    a pattern's … (ขอ … หน่อย), full stops (พ.ศ.), or the Latin in ฝุ่น PM2.5 (13 cards have Latin
+    or digits, 304 spaces, 310 ๆ);
+  - ํ + า as ำ: they look the same but aren't. The user's first น้ำ on the iPhone was ํ (shift)
+    then า, as ำ's own key (row 2, third) is easy to take for า;
+  - a tone mark typed before a vowel above or below (◌้ั for ◌ั้), or after ำ (นำ้ for น้ำ).
+
+  `tidiedNote` says which ("ำ is one key: row 2, between ไ and พ"). `firstWrong` finds the first
+  letter that differs, and its note says where the key wanted is, by its neighbours (`keyHint`:
+  "ศ: ⇧, then row 3, between ษ and ซ"), or that ำ is one key.
+- **The layout is Kedmanee** (`KEDMANEE`, TIS 820-2538) on computers and, key for key, on the
+  iPhone (the user's screenshots of its two layers). The iPhone has ฃ and ฅ at the end of its third
+  row, and _ where a computer has -.
+- **On a computer** a key is read by where it is (`onTypeKey`, `KeyboardEvent.code`), so an
+  English layout types Thai with no Thai set up; a Thai layout, already typing Thai, is left alone,
+  as are Ctrl, Alt and ⌘. Arriving on Cards in Type, or choosing it, focuses the box.
+- **On the iPhone** its own Thai keyboard, read as text after each change: the probe showed the
+  letters arrive as text, not keys. The box's attributes (`autocorrect`, `autocomplete`,
+  `autocapitalize` off, `spellcheck` and `writingsuggestions` false, `lang="th"`) kept the
+  suggestion bar away in the probe.
+  - **The keyboard opens** when Type or a direction is tapped, as the box is focused in the tap's
+    own handler (iOS opens it for no other focus); arriving from elsewhere it waits for a tap on the
+    box.
+  - **It stays up from card to card**: the box is never re-made or hidden, and a press on the card
+    or the button doesn't take the focus (`mousedown` → `preventDefault`).
+  - **With it up**, 390 × 357 was left of Safari's 664 (the probe). So while the box has it
+    (`html.type-kb`), the page is the card and the box: the top row, the switches and the tab bar
+    hidden, the page scrolled back to its top, the card down to 12 px over the box, the box 12 px
+    over the keyboard (`sizeCards`, on `visualViewport` resizes). The card's corners are 52, not
+    72, so a back with a note fits (137 of a 265 card). The sizing waits for the keyboard (the
+    visible height under 80% of what it was at the focus), so the card doesn't first grow. The rest
+    comes back when the keyboard goes (Done, over it).
+- **Words elsewhere:** Home's Cards line names Type; Settings' "Recognition" list is "Recognition
+  and Type" (Type uses its card order and pauses), and the schedule's help says how typed answers
+  count.
+- **The phone's band:** the box and the button in the answers' 56 px, 18 under the card, so the card
+  is Browse's shape (check_layout.py has it). On a wider screen the box is 60 tall under the 16:9
+  card, so the page still fits 1280 × 800.
+- **Checked** in headless Chromium at 390 × 664 and 763 (a touch screen, the keyboard's room
+  simulated) and 1280 × 800, at text sizes 1 and 2: each direction, right, a tidied match, wrong,
+  Show, Next, Latin, a sound-alike, an Alphabet consonant and a vowel without its อ, Type →
+  Recognition → Type mid-pause, leaving the page (the box lets go), d k on an English layout
+  typing กา, the progress saved per direction. Not yet on the iPhone: whether iOS keeps the
+  keyboard up through a press on the card or the button, scrolls as expected, and sends
+  `visualViewport` resizes as Chromium does.
 
 ## The page switches on a wider screen (2026-10-18)
 

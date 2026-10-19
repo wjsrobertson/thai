@@ -1,5 +1,6 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable, consonantClass } from './spell.js';
 import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
+import { KEDMANEE, sameThai, tidy, tidiedNote, firstWrong, clusters } from './typing.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -30,6 +31,12 @@ const els = {
   flipButtons: document.querySelectorAll('#card .flip-btn'), // not Recall's, which share the look (.review-flip)
   posBadges: document.querySelectorAll('.stat-pos'),
   learnPills: document.getElementById('learn-pills'),
+  typeBar: document.getElementById('type-bar'), // Type mode's box, in the answers' place
+  typeField: document.getElementById('type-field'),
+  typeBox: document.getElementById('type-box'),
+  typeResult: document.getElementById('type-result'),
+  typeCheck: document.getElementById('type-check'),
+  typeHint: document.getElementById('type-hint'),
   prevBtn: document.getElementById('prev-btn'),
   nextBtn: document.getElementById('next-btn'),
   orderButtons: document.querySelectorAll('.seg-btn[data-order]'),
@@ -226,7 +233,7 @@ const state = {
   dictLang: 'th',     // the Dictionary's way in: 'th' (ก–ฮ, Thai first) or 'en' (A–Z, English first); prefs.dictLang
   dictQuery: '',      // and its search box
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
-  orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review'
+  orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review' | 'type' (Recognition, typed: 2026-10-19)
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
   pickerOpen: false,
   pickerFilter: '',
@@ -242,9 +249,9 @@ const state = {
   storyReading: { active: false, token: 0, btn: null, at: null, paused: null },
   relearn: new Map(),       // Recognition: card key -> relearning step (requeueRecognition)
   carry: [],                // Recognition: comebacks past the end of the pass, for the next one
-  modeSnap: { practice: null, test: null }, // Browse's and Recognition's places while in another mode (snapMode)
-  answerSeq: 0,             // Recognition: bumped to cancel a pending move to the next card
-  learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen } for this session
+  modeSnap: { practice: null, test: null, type: null }, // Browse's, Recognition's and Type's places while in another mode (snapMode)
+  answerSeq: 0,             // Recognition and Type: bumped to cancel a pending move to the next card
+  learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen }, or Type's { typed, right, note, at }, for this session
   cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
   review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
@@ -970,7 +977,7 @@ function syncReviewOnly() {
   const c = currentCard();
   const queue = buildFlashcardQueue();
   let at = c ? queue.indexOf(state.cards.indexOf(c)) : -1;
-  if (at > 0 && state.orderMode === 'test') {
+  if (at > 0 && answeringMode()) {
     queue.unshift(...queue.splice(at, 1)); // a shuffled round: start it with this card
     at = 0;
   }
@@ -1023,16 +1030,22 @@ function fitCardText() {
 // fitBack). Below CARD_MIN_H the page scrolls instead.
 const PHONE_LAYOUT = matchMedia('(max-width: 600px)'); // as mobile.css's <link media>
 const CARD_MIN_H = 240; // the 72px corner buttons, top and bottom, and a line of text between
+const CARD_MIN_H_TYPING = 200; // Type, a phone's keyboard up: the corners close in on the word
+let typingFrom = 0; // the visible height when Type's box took the focus, before the keyboard came
 function sizeCards() {
+  // Type with a phone's keyboard up (html.type-kb): down to the keyboard, the tab bar hidden.
+  const keyboard = document.documentElement.classList.contains('type-kb');
+  const room = window.visualViewport?.height ?? window.innerHeight;
   for (const card of [els.card, els.reviewCard]) {
+    if (keyboard && room > 0.8 * typingFrom) continue; // the keyboard's still coming: as it was till then
     card.style.height = '';
     if (!PHONE_LAYOUT.matches || state.view !== 'flashcards' || !card.offsetParent) continue;
-    const bar = document.querySelector('.tabs').getBoundingClientRect();
+    const floor = keyboard ? room : document.querySelector('.tabs').getBoundingClientRect().top;
     // The lowest of the stage's parts, and the stage's padding under it, in page coordinates.
     const bottom = Math.max(...[...els.stage.children].filter((e) => e.getClientRects().length)
       .map((e) => e.getBoundingClientRect().bottom)) + window.scrollY;
-    const spare = bar.top - parseFloat(getComputedStyle(els.stage).paddingBottom) - bottom;
-    card.style.height = `${Math.max(CARD_MIN_H, Math.floor(card.offsetHeight + spare))}px`;
+    const spare = floor - parseFloat(getComputedStyle(els.stage).paddingBottom) - bottom;
+    card.style.height = `${Math.max(keyboard ? CARD_MIN_H_TYPING : CARD_MIN_H, Math.floor(card.offsetHeight + spare))}px`;
   }
 }
 
@@ -1153,6 +1166,7 @@ function renderCard() {
     showPic(els.cardPic, null);
     setFlipped(false);
     updateStats();
+    renderTypeBar();
     return;
   }
   // The .thai element acts as the front face; .english/.translit/.note are the back.
@@ -1184,6 +1198,7 @@ function renderCard() {
   setFlipped(false);
   updateStats();
   renderLearnPills();
+  renderTypeBar();
   // Auto-play Thai audio on navigation, only while the card is on screen (picking a deck or
   // changing a setting from the wordlist re-renders the hidden card too), and only if the Thai is
   // showing: English → Thai keeps quiet until the card is flipped (flipCard, handleLearnPick), or the
@@ -1240,9 +1255,9 @@ function setFlipped(flipped, { instant = false } = {}) {
 function flipCard() {
   const c = currentCard();
   if (!c) return;
-  // In Test mode the card only flips via answer pill — unless the user has already
+  // In Recognition and Type the card only flips by answering — unless the user has already
   // answered it, in which case they can freely flip to review.
-  if (state.orderMode === 'test' && !state.learnAnswers.has(c.key)) return;
+  if (answeringMode() && !state.learnAnswers.has(c.key)) return;
   setFlipped(!state.showingBack);
   // Turning to the side that speaks says the word (speakingSide).
   if (speakingSide(state.direction, state.showingBack) && autoPlayOn()) speak(cardSay(c));
@@ -1285,6 +1300,13 @@ function saveDeckRating(c, rating) {
 
 function clamp(n, lo, hi) {
   return Math.max(lo, Math.min(hi, n));
+}
+
+// Flashcards' modes (prefs.orderMode, alphaOrderMode). Recognition and Type are streams you move
+// through by answering, with no ‹ ›: Type is Recognition with the answer typed in Thai (2026-10-19).
+const ORDER_MODES = ['practice', 'test', 'review', 'type'];
+function answeringMode() {
+  return state.orderMode === 'test' || state.orderMode === 'type';
 }
 
 // ---------- Recognition: a continuous stream ----------
@@ -1341,13 +1363,13 @@ function advance() {
 
 // Browse's ‹ ›.
 function goPrev() {
-  if (state.orderMode === 'test' || state.pos <= 0) return;
+  if (answeringMode() || state.pos <= 0) return;
   state.pos -= 1;
   renderCard();
 }
 
 function goNext() {
-  if (state.orderMode === 'test' || state.pos >= state.queue.length - 1) return;
+  if (answeringMode() || state.pos >= state.queue.length - 1) return;
   state.pos += 1;
   renderCard();
 }
@@ -3410,10 +3432,10 @@ function useSection(section) {
   } else {
     const p = getPreferences();
     Object.assign(state, {
-      orderMode: ['practice', 'test', 'review'].includes(p.alphaOrderMode) ? p.alphaOrderMode : 'practice',
+      orderMode: ORDER_MODES.includes(p.alphaOrderMode) ? p.alphaOrderMode : 'practice',
       direction: ['th-en', 'en-th', 'listen'].includes(p.alphaDirection) ? p.alphaDirection : 'th-en',
       cards: [], queue: [], pos: 0, showingBack: false, flashScopeId: null, relearn: new Map(), carry: [],
-      modeSnap: { practice: null, test: null }, learnAnswers: new Map(), review: null, reviewOnlySig: '',
+      modeSnap: { practice: null, test: null, type: null }, learnAnswers: new Map(), review: null, reviewOnlySig: '',
     });
   }
   els.stage.dataset.order = state.orderMode;
@@ -3502,6 +3524,7 @@ function setView(view, { section = 'words' } = {}) {
   if (wasCards && (view !== 'flashcards' || section !== leavingSection)) {
     if (state.review) stopAudio();
     state.answerSeq += 1;
+    if (document.activeElement === els.typeBox) els.typeBox.blur(); // and a phone's keyboard goes
   }
   useSection(section);
   toggleAlphaSets(false);
@@ -3539,10 +3562,11 @@ function setView(view, { section = 'words' } = {}) {
   // (prefs, like the mode).
   if (entering) {
     if (state.orderMode === 'review') enterReview(); // Recall's stream: its card, or a new stream
-    if (state.orderMode === 'test') {
+    if (answeringMode()) {
       const c = currentCard();
       if (c && state.learnAnswers.has(c.key)) advance(); // answered (and saved) just before leaving
     }
+    if (state.orderMode === 'type' && !TOUCH_SCREEN) els.typeBox.focus({ preventScroll: true }); // a phone's keyboard waits for a tap
   }
   setPreferences({ view, section, ...(STUDY_VIEWS.has(view) && section === 'words' ? { studyPage: view } : {}) });
 }
@@ -3764,7 +3788,7 @@ function bindSettings() {
   });
   els.setTestOrder.addEventListener('change', () => {
     setSettings({ testOrder: els.setTestOrder.value });
-    if (state.orderMode === 'test') rebuildCurrentQueue();
+    if (answeringMode()) rebuildCurrentQueue();
   });
 
   els.settingsSearch.addEventListener('input', (e) => filterSettings(e.target.value));
@@ -3830,7 +3854,7 @@ function rebuildCurrentQueue() {
 }
 
 function setOrderMode(mode) {
-  if (!['practice', 'test', 'review'].includes(mode) || mode === state.orderMode) return;
+  if (!ORDER_MODES.includes(mode) || mode === state.orderMode) return;
   const leaving = state.orderMode;
   if (leaving !== 'review') state.modeSnap[leaving] = snapMode();
   state.orderMode = mode;
@@ -3848,6 +3872,7 @@ function setOrderMode(mode) {
     restoreMode(mode);
   }
   fitCardText(); // the card's height: each mode has its own buttons under it
+  if (mode === 'type') els.typeBox.focus({ preventScroll: true }); // in the tap, so a phone's keyboard opens
 }
 
 // Each mode keeps its own place (the user's call, 2026-10-08, after trying one shared word): Browse
@@ -3858,7 +3883,7 @@ function snapMode() {
   const c = currentCard();
   return {
     queue: state.queue, pos: state.pos, relearn: state.relearn, carry: state.carry, sig: state.reviewOnlySig,
-    answered: !!(c && state.learnAnswers.has(c.key)), // Recognition left mid-pause
+    answered: !!(c && state.learnAnswers.has(c.key)), // Recognition or Type left mid-pause
   };
 }
 
@@ -3873,12 +3898,12 @@ function restoreMode(mode) {
   state.learnAnswers = new Map();
   Object.assign(state, { queue: snap.queue, pos: snap.pos, relearn: snap.relearn, carry: snap.carry, reviewOnlySig: snap.sig });
   // An answered Recognition card was saved when answered: carry on to the next one.
-  if (mode === 'test' && snap.answered) advance();
+  if ((mode === 'test' || mode === 'type') && snap.answered) advance();
   else renderCard();
 }
 
 function discardModes() {
-  state.modeSnap = { practice: null, test: null };
+  state.modeSnap = { practice: null, test: null, type: null };
   if (state.review) {
     state.review = null;
     renderToday();
@@ -3898,6 +3923,7 @@ function setDirection(direction) {
   discardModes();
   rebuildCurrentQueue();
   enterReview();
+  if (state.orderMode === 'type') els.typeBox.focus({ preventScroll: true }); // in the tap, so a phone's keyboard opens
 }
 
 // ---------- wordlist ----------
@@ -4549,6 +4575,181 @@ function handleLearnPick(btn, isCorrect) {
   setTimeout(() => {
     if (seq === state.answerSeq && state.orderMode === 'test' && state.view === 'flashcards') advance();
   }, isCorrect ? s.learnPauseMs : s.wrongPauseMs);
+}
+
+// ---------- Type: Recognition with the answer typed (2026-10-19) ----------
+// The user's idea: a fourth mode, Recognition with a box in place of its three answers, and the
+// answer typed in Thai in every direction (the user's call): English → Thai from memory, Listen →
+// what you hear, Thai → English by copying the Thai shown, which is practice at finding the keys.
+// The checker is typing.js. Each card:
+// - right as soon as the box matches, once tidied (ํ + า for ำ, spaces and the like; a note says
+//   when it's worth knowing); so is a word in scope that sounds the same (Listen) or means the same
+//   (English → Thai), and a vowel without the อ that holds its place;
+// - Check (or the return key) marks it wrong, from the first letter that differs; Show, with the
+//   box empty, is a miss; Next, once answered, moves on without the pause;
+// - then on as Recognition goes: its pauses (a right answer with a note gets the longer one, to
+//   read it), and a miss back a few cards later (requeueRecognition).
+// Progress (the user's call): English → Thai is a recall (right is Easy, wrong Very Hard), Listen
+// as Recognition counts it (right is Hard: spelling what you hear isn't knowing its meaning),
+// Thai → English nothing, since copying a word says nothing of what it means.
+const TYPE_PLACEHOLDER = { 'th-en': 'Type the Thai', 'en-th': 'Type it in Thai', listen: 'Type what you hear' };
+
+function renderTypeBar() {
+  const c = currentCard();
+  const on = state.orderMode === 'type' && !!c;
+  els.typeBar.hidden = !on;
+  els.typeHint.hidden = true;
+  if (!on) {
+    if (document.activeElement === els.typeBox) els.typeBox.blur();
+    return;
+  }
+  els.typeBox.placeholder = TYPE_PLACEHOLDER[state.direction];
+  const prior = state.learnAnswers.get(c.key);
+  els.typeCheck.textContent = prior ? 'Next' : 'Show';
+  if (prior) {
+    els.typeBox.value = prior.typed;
+    showTyped(prior);
+    els.card.classList.add('answered');
+    setFlipped(true);
+  } else {
+    els.typeBox.value = '';
+    els.typeField.classList.remove('answered', 'right', 'wrong');
+    els.typeResult.hidden = true;
+  }
+}
+
+// What a typed answer counts as: right (with a note, when there's something to say) or not, and
+// then where it goes wrong.
+function typedAnswer(c, typed) {
+  if (sameThai(typed, c.thai)) return { right: true, note: tidiedNote(typed) };
+  if (c.alpha && c.alphaSet === 'vowels' && sameThai(typed, c.thai.replace('อ', ''))) return { right: true, note: '' };
+  const sound = (x) => (x.translit || '').toLowerCase().replace(/[\s-]/g, '');
+  const meaning = (x) => x.english.trim().toLowerCase();
+  const twin = state.direction === 'listen' ? (x) => sound(x) !== '' && sound(x) === sound(c)
+    : state.direction === 'en-th' ? (x) => meaning(x) === meaning(c) : null;
+  const other = twin && distractorPool().find((x) => x.key !== c.key && twin(x) && sameThai(typed, x.thai));
+  if (other) return { right: true, note: `${state.direction === 'listen' ? 'Same sound' : `Also “${c.english}”`}: this card is ${c.thai}` };
+  return { right: false, ...firstWrong(typed, c.thai) };
+}
+
+function answerTyped(typed, a = null) {
+  const c = currentCard();
+  if (!c || state.learnAnswers.has(c.key)) return;
+  const empty = tidy(typed) === '';
+  a ||= empty ? { right: false, note: '', at: 0 } : typedAnswer(c, typed);
+  const answer = { typed, empty, ...a };
+  // As Recognition's: a re-render (Settings opened over it, say) shows the card still answered.
+  state.learnAnswers.set(c.key, answer);
+  showTyped(answer);
+  els.typeCheck.textContent = 'Next';
+  els.typeHint.hidden = true;
+  els.card.classList.add('answered');
+  setFlipped(true);
+  if (state.direction === 'en-th' && autoPlayOn()) speak(cardSay(c));
+  saveTypedAnswer(c, a.right);
+  requeueRecognition(c, a.right);
+  if (state.pickerOpen) renderDeckPicker();
+  const s = getSettings();
+  const seq = ++state.answerSeq;
+  setTimeout(() => {
+    if (seq === state.answerSeq && state.orderMode === 'type' && state.view === 'flashcards') advance();
+  }, a.right && !a.note ? s.learnPauseMs : s.wrongPauseMs);
+}
+
+function saveTypedAnswer(c, right) {
+  if (state.direction === 'th-en') return;
+  const deckId = flashScope()?.deckOf.get(c.key)?.id || state.currentDeckId; // the card's own topic
+  const it = gradeItem(c.key, state.direction, right ? 3 : 1, { mode: state.direction === 'listen' ? 'mc' : 'recall', deckId });
+  c.dueAt = it.due;
+  c.seen = it.reps;
+}
+
+// The box once answered, over what was typed: ✓ and the answer, or ✗ and it with the rest in red
+// from the letter (and its marks) where it went wrong; a note under it.
+function showTyped(a) {
+  els.typeField.classList.add('answered');
+  els.typeField.classList.toggle('right', a.right);
+  els.typeField.classList.toggle('wrong', !a.right);
+  const said = document.createElement('span');
+  said.className = 'type-said';
+  if (a.empty) {
+    said.classList.add('type-shown');
+    said.textContent = 'Shown: it comes back in a few cards';
+  } else if (a.right) {
+    said.lang = 'th';
+    said.textContent = `✓ ${a.typed.trim()}`;
+  } else {
+    const parts = clusters(tidy(a.typed));
+    let k = 0;
+    for (let n = 0; k < parts.length && n + [...parts[k]].length <= a.at; k++) n += [...parts[k]].length;
+    const from = Math.max(0, k - 8); // a long answer: from a little before the slip
+    const bad = document.createElement('span');
+    bad.className = 'type-bad';
+    bad.textContent = k < parts.length ? parts.slice(k).join('') : '…'; // right as far as it went
+    said.lang = 'th';
+    said.append(`✗ ${from ? '…' : ''}${parts.slice(from, k).join('')}`, bad);
+  }
+  const note = document.createElement('span');
+  note.className = 'type-note';
+  note.textContent = a.note || '';
+  els.typeResult.replaceChildren(said, ...(a.note ? [note] : []));
+  els.typeResult.hidden = false;
+}
+
+// After every change: right, it's answered; the wrong keyboard (Latin letters), said at once.
+function onTypeInput() {
+  const c = currentCard();
+  if (!c || state.orderMode !== 'type') return;
+  const prior = state.learnAnswers.get(c.key);
+  if (prior) {
+    els.typeBox.value = prior.typed; // typed in the pause: the answer stands
+    return;
+  }
+  const typed = els.typeBox.value;
+  els.typeCheck.textContent = typed.trim() ? 'Check' : 'Show';
+  const latin = /[A-Za-z]/.test(typed) && !/[A-Za-z]/.test(c.thai);
+  els.typeHint.textContent = latin ? 'That’s not Thai: switch keyboards with 🌐' : '';
+  els.typeHint.hidden = !latin;
+  if (!tidy(typed)) return;
+  const a = typedAnswer(c, typed);
+  if (a.right) answerTyped(typed, a);
+}
+
+// Check, Show or Next: the button or the return key.
+function onTypeSubmit(e) {
+  e.preventDefault();
+  const c = currentCard();
+  if (c && state.learnAnswers.has(c.key)) {
+    state.answerSeq += 1; // the pause's move, now
+    advance();
+  } else {
+    answerTyped(els.typeBox.value);
+  }
+  els.typeBox.focus({ preventScroll: true }); // a phone's keyboard stays up
+}
+
+// A computer's keys typed as Thai by where they are (Kedmanee), whatever its layout, so one without
+// Thai set up types it too. A Thai layout, already typing Thai, is left alone, as are Ctrl, Alt and
+// ⌘. Not on a phone, whose keyboard is its own.
+function onTypeKey(e) {
+  if (TOUCH_SCREEN || e.ctrlKey || e.metaKey || e.altKey || e.isComposing) return;
+  const pair = KEDMANEE[e.code];
+  if (!pair || e.key.length !== 1 || /[\u0E00-\u0E7F]/.test(e.key)) return;
+  e.preventDefault();
+  const box = els.typeBox;
+  box.setRangeText(pair[e.shiftKey ? 1 : 0], box.selectionStart, box.selectionEnd, 'end');
+  onTypeInput();
+}
+
+// A phone's keyboard covers the page's foot (it left 390 × 357 of Safari's 664: the keyboard probe,
+// 2026-10-19), so while it's up for the box the page is the card and the box alone, the card down
+// to the keyboard (html.type-kb, sizeCards). The top row, the switches and the tab bar come back
+// when it goes (Done, over the keyboard). The page is scrolled back to its top, where iOS scrolled
+// it to show the box.
+const typingOnPhone = () => TOUCH_SCREEN && PHONE_LAYOUT.matches;
+function fitTypeKeyboard() {
+  window.scrollTo(0, 0);
+  fitCardText();
 }
 
 // ---------- Review mode: a continuous stream ----------
@@ -6824,6 +7025,31 @@ function bindEvents() {
     btn.addEventListener('click', () => setOrderMode(btn.dataset.order));
   });
 
+  // Type's box. A press on the card or the button doesn't take the focus from it, so a phone's
+  // keyboard stays up (the card's taps still work).
+  els.typeBar.addEventListener('submit', onTypeSubmit);
+  els.typeBox.addEventListener('input', onTypeInput);
+  els.typeBox.addEventListener('keydown', onTypeKey);
+  els.typeCheck.addEventListener('mousedown', (e) => e.preventDefault());
+  els.card.addEventListener('mousedown', (e) => {
+    if (document.activeElement === els.typeBox) e.preventDefault();
+  });
+  els.typeBox.addEventListener('focus', () => {
+    if (!typingOnPhone()) return;
+    // The page's height without the keyboard: iOS keeps the layout viewport's when it opens.
+    typingFrom = Math.max(window.visualViewport?.height ?? 0, document.documentElement.clientHeight);
+    document.documentElement.classList.add('type-kb');
+    fitTypeKeyboard();
+  });
+  els.typeBox.addEventListener('blur', () => {
+    if (!document.documentElement.classList.contains('type-kb')) return;
+    document.documentElement.classList.remove('type-kb');
+    fitCardText();
+  });
+  window.visualViewport?.addEventListener('resize', () => {
+    if (document.documentElement.classList.contains('type-kb')) fitTypeKeyboard();
+  });
+
   els.directionButtons.forEach((btn) => {
     btn.addEventListener('click', () => setDirection(btn.dataset.direction));
   });
@@ -7325,7 +7551,7 @@ async function init() {
   // Migrate legacy values: 'list' → 'practice', 'shuffle' → 'practice', 'learn' → 'test'.
   const legacy = { list: 'practice', shuffle: 'practice', learn: 'test' };
   const incoming = legacy[prefs.orderMode] || prefs.orderMode;
-  if (['practice', 'test', 'review'].includes(incoming)) {
+  if (ORDER_MODES.includes(incoming)) {
     state.orderMode = incoming;
   }
   els.orderButtons.forEach((b) => {
