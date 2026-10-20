@@ -3461,6 +3461,10 @@ function useSection(section) {
   els.orderButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.order === state.orderMode ? 'true' : 'false'));
   els.directionButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false'));
   if (saved) {
+    // The "none in Cards" message is the stage's, so it's redrawn for this section even in Recall,
+    // which has no renderCard: it was the other's, the Topics message over the Alphabet's Recall
+    // and none on Topics' empty one (the user's report, 2026-10-20).
+    renderReviewOnly();
     if (state.orderMode !== 'review') renderCard();
   } else {
     reloadFlashcards();

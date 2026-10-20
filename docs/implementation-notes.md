@@ -2443,6 +2443,13 @@ later (it's already in `fonts/`, NotoSansThai).
     Recognition's and Recall's streams) while the other's is in, so each keeps its place.
     setView swaps the words' back for anything but the Alphabet's Cards page; answerSeq stays
     global. Mode and direction save as prefs.alphaOrderMode / alphaDirection.
+    - **What's the stage's, not the engine's, is redrawn on the swap** (2026-10-20, the user's
+      report): the "none of this topic's words are in Cards" message is drawn by renderCard, which
+      Recall doesn't use, so it stayed the other section's. The Alphabet on Recall came back from
+      Letters with the Topics message over it, and Topics on Recall with nothing in Cards came back
+      from the Alphabet blank. `useSection` now calls `renderReviewOnly` whatever the mode. A round
+      trip of every mode pair (Alphabet Cards → Letters → Cards, → Topics' Cards → back, and
+      Topics' Cards → Letters → back; nothing in Cards and a topic added) found only these two.
   - Every letter is in (no adding to Cards): `reviewOnlyCards` and Recall's `reviewPool` take
     them all, in alphabet order. `ALPHA_SCOPE` is a full scope (decks, cards, deckOf) for
     flashScope; the letters are in `state.cardIndex` under the deck id `alphabet`.
