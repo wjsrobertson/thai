@@ -100,6 +100,10 @@ const els = {
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
   wordModal: document.getElementById('word-modal'),
+  moveModal: document.getElementById('move-modal'),
+  moveTitle: document.getElementById('move-title'),
+  moveDefault: document.getElementById('move-default'),
+  moveLists: document.getElementById('move-lists'),
   wordModalTr: document.getElementById('word-modal-tr'),
   wordModalEn: document.getElementById('word-modal-en'),
   wordModalBody: document.getElementById('word-modal-body'),
@@ -258,6 +262,7 @@ const state = {
   cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
   review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
+  moving: null,             // the open Change dialog (openMoveWords): { lastFocus }
   pickerTab: 'topics',      // the picker's tab: 'topics' | 'lists' | 'all' (renderPickerTabs)
   addTo: null,              // the list the picker is choosing words for (Add words), or null
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
@@ -1891,7 +1896,7 @@ function wordHitsSection({ hits, total }) {
   head.textContent = `${total} word${total === 1 ? '' : 's'}`;
   section.appendChild(head);
   const inList = targetWords();
-  for (const h of hits) section.appendChild(wordHitRow(h, inList.has(h.key)));
+  for (const h of hits) section.appendChild(wordHitRow(h, inList));
   if (total > hits.length) {
     const more = document.createElement('p');
     more.className = 'word-hits-more';
@@ -1903,7 +1908,7 @@ function wordHitsSection({ hits, total }) {
 
 // A result: tap it to see the word in its topic (the current topic if it's there); 🔁 adds it to
 // the target list and 🔊 plays it, as on the Topics page.
-function wordHitRow(h, added) {
+function wordHitRow(h, inList) {
   const row = document.createElement('div');
   row.className = 'word-hit';
   const main = document.createElement('button');
@@ -1931,21 +1936,7 @@ function wordHitRow(h, added) {
       openReading(passageId, h.card.thai);
     });
   }
-  const rv = document.createElement('button');
-  rv.type = 'button';
-  const paint = () => {
-    rv.className = 'row-review' + (added ? ' added' : '');
-    rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${h.card.thai} from '${targetName()}'` : `Add ${h.card.thai} to '${targetName()}'`;
-    rv.setAttribute('aria-label', rv.title);
-  };
-  paint();
-  rv.addEventListener('click', () => {
-    added = !added;
-    const name = setInTarget([h.key], added);
-    toast(added ? `✓ Added ${h.card.thai} to '${name}'` : `Removed ${h.card.thai} from '${name}'`, { tone: added ? 'good' : '' });
-    paint();
-  });
+  const rv = reviewButton(h.key, h.card.thai, inList);
   const sp = document.createElement('button');
   sp.type = 'button';
   sp.className = 'row-speak' + (sayingNow(cardSay(h.card)) ? ' playing' : '');
@@ -4298,10 +4289,7 @@ function wordRow(c, cols, added) {
   rv.replaceChildren(added ? '✓' : reviewIcon());
   rv.title = added ? `Remove ${c.thai} from '${targetName()}'` : `Add ${c.thai} to '${targetName()}'`;
   rv.setAttribute('aria-label', rv.title);
-  rv.addEventListener('click', () => {
-    const name = setInTarget([c.key], !added);
-    toast(added ? `Removed ${c.thai} from '${name}'` : `✓ Added ${c.thai} to '${name}'`, { tone: added ? '' : 'good' });
-  });
+  rv.addEventListener('click', () => toggleInTarget(c.key, c.thai, !added));
   audioTd.append(rv);
   if (isSpellable(c.thai)) {
     const sp = document.createElement('button');
@@ -5007,6 +4995,7 @@ function listsChanged(id) {
   if (state.view === 'dictionary') renderDictionary();
   renderDeckButton();
   syncReviewOnly();
+  document.querySelectorAll('.row-review').forEach((b) => b.paint?.()); // the word dialog's, word search's
 }
 
 function changeList(id, change) {
@@ -5019,12 +5008,12 @@ function changeList(id, change) {
   return list;
 }
 
-function createList(name) {
+function createList(name, { target = true } = {}) {
   const store = loadStore();
   const list = { id: newListId(), name, words: [] };
   (store.lists ||= []).push(list);
   saveStore(store);
-  setTarget(list.id);
+  if (target) setTarget(list.id);
   return list;
 }
 
@@ -5041,6 +5030,105 @@ function setInTarget(keys, on) {
     }
   });
   return list.name;
+}
+
+// 🔁 pressed: in or out of the target list, and the toast saying so.
+function toggleInTarget(key, thai, on) {
+  const name = setInTarget([key], on);
+  if (on) toastAdded([key], thai);
+  else toast(`Removed ${thai} from '${name}'`);
+}
+
+// A 🔁 its page doesn't redraw (the word dialog's, word search's): its look comes from the target
+// list, and listsChanged repaints it (b.paint), so it's right after Change moves the word.
+function reviewButton(key, thai, words = null) {
+  const rv = document.createElement('button');
+  rv.type = 'button';
+  rv.paint = (inList = targetWords()) => {
+    const added = inList.has(key);
+    rv.className = 'row-review' + (added ? ' added' : '');
+    rv.replaceChildren(added ? '✓' : reviewIcon());
+    rv.title = added ? `Remove ${thai} from '${targetName()}'` : `Add ${thai} to '${targetName()}'`;
+    rv.setAttribute('aria-label', rv.title);
+  };
+  rv.paint(words || undefined);
+  rv.addEventListener('click', () => toggleInTarget(key, thai, !targetWords().has(key)));
+  return rv;
+}
+
+// The toast after an add (🔁 or Add all), with Change (the user's request, 2026-10-20): it stays
+// longer, and Change puts the words in another list instead (openMoveWords).
+function toastAdded(keys, what) {
+  const list = targetList();
+  toast(`✓ Added ${what} to '${list.name}'`, { tone: 'good', action: { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
+}
+
+// Change's dialog, "Put กิน in": your lists, the one they're in ticked, then ＋ New list. A tap on a
+// list moves them and closes it (the user's pick, 2026-10-20: one tap for the usual one-off, rather
+// than choosing then Done). "Add new words there too", above, makes that list the target too.
+function openMoveWords(keys, what, fromId) {
+  state.moving = { lastFocus: document.activeElement };
+  els.moveTitle.textContent = `Put ${what} in`;
+  els.moveDefault.checked = false;
+  const rows = getLists().map((l) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'move-row';
+    b.innerHTML = '<span class="move-name"></span><span class="move-tick" aria-hidden="true"></span><span class="move-count"></span>';
+    b.querySelector('.move-name').textContent = l.name;
+    if (l.id === fromId) {
+      b.querySelector('.move-tick').textContent = '✓';
+      b.setAttribute('aria-current', 'true');
+    }
+    b.querySelector('.move-count').textContent = `${l.words.length} word${l.words.length === 1 ? '' : 's'}`;
+    b.addEventListener('click', () => moveWordsTo(keys, what, fromId, l.id));
+    return b;
+  });
+  const add = document.createElement('button');
+  add.type = 'button';
+  add.className = 'move-row move-new';
+  add.textContent = '＋ New list';
+  add.addEventListener('click', async () => {
+    const always = els.moveDefault.checked;
+    closeMoveWords();
+    const name = await askListName('New list', '', 'Make list');
+    if (!name) return;
+    els.moveDefault.checked = always;
+    moveWordsTo(keys, what, fromId, createList(name, { target: false }).id);
+  });
+  els.moveLists.replaceChildren(...rows, add);
+  els.moveModal.hidden = false;
+  setModalOpen(true);
+  (els.moveLists.querySelector('[aria-current]') || els.moveLists.firstChild).focus();
+}
+
+function closeMoveWords() {
+  const m = state.moving;
+  if (!m) return;
+  state.moving = null;
+  els.moveModal.hidden = true;
+  setModalOpen(!!document.querySelector('.modal:not([hidden])')); // the word dialog or picker may be under it
+  m.lastFocus?.focus?.();
+}
+
+function moveWordsTo(keys, what, fromId, toId) {
+  const always = els.moveDefault.checked;
+  closeMoveWords();
+  if (always) {
+    setTarget(toId);
+    if (state.addingTo) state.addingTo = toId; // adding from a topic: its bar names the new list
+  }
+  if (toId === fromId) {
+    if (always) listsChanged(toId);
+    return;
+  }
+  const out = new Set(keys);
+  changeList(fromId, (l) => { l.words = l.words.filter((k) => !out.has(k)); });
+  const to = changeList(toId, (l) => {
+    const have = new Set(l.words);
+    l.words.push(...keys.filter((k) => !have.has(k)));
+  });
+  toast(`✓ Moved ${what} to '${to.name}'`, { tone: 'good', action: { label: 'Change', fn: () => openMoveWords(keys, what, toId) } });
 }
 
 // A list's name, asked in the confirm dialog's text box. Resolves the trimmed name, or null.
@@ -5222,18 +5310,47 @@ const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 1
 // A toast: a short message at the bottom of the screen that fades out after `ms`. A new one
 // replaces any still showing.
 let toastTimer = null;
-function toast(message, { ms = 2000, tone = '' } = {}) {
+// With `action` ({ label, fn }), a button at its end (Change, 2026-10-20): it then stays at least
+// TOAST_ACTION_MS, and while a finger, the mouse or focus is on it.
+const TOAST_ACTION_MS = 5000;
+let toastMs = 0;
+function toast(message, { ms = 2000, tone = '', action = null } = {}) {
   const el = els.toast;
-  el.textContent = message;
-  el.className = 'toast' + (tone ? ` ${tone}` : '');
+  if (action) {
+    const msg = Object.assign(document.createElement('span'), { className: 'toast-msg', textContent: message });
+    const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'toast-action', textContent: action.label });
+    btn.addEventListener('click', () => {
+      hideToast();
+      action.fn();
+    });
+    el.replaceChildren(msg, btn);
+  } else {
+    el.textContent = message;
+  }
+  el.className = 'toast' + (tone ? ` ${tone}` : '') + (action ? ' has-action' : '');
   el.hidden = false;
   void el.offsetWidth; // restart the fade-in
   el.classList.add('show');
+  toastMs = action ? Math.max(ms, TOAST_ACTION_MS) : ms;
+  timeToast();
+}
+
+function timeToast() {
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    el.classList.remove('show');
-    toastTimer = setTimeout(() => { el.hidden = true; }, 250); // after the fade-out
-  }, ms);
+  toastTimer = setTimeout(hideToast, toastMs);
+}
+
+function hideToast() {
+  clearTimeout(toastTimer);
+  els.toast.classList.remove('show');
+  toastTimer = setTimeout(() => { els.toast.hidden = true; }, 250); // after the fade-out
+}
+
+// Held: a toast with a button waits while it's touched, hovered or focused, then has its time again.
+function holdToast(held) {
+  if (!els.toast.classList.contains('has-action') || !els.toast.classList.contains('show')) return;
+  if (held) clearTimeout(toastTimer);
+  else timeToast();
 }
 
 // A confirm dialog. Resolves true for the confirm button, false for Cancel, the backdrop or
@@ -6121,22 +6238,7 @@ function showWordPop(anchor, card) {
   const actions = document.createElement('div');
   actions.className = 'pop-actions';
   const key = cardKey(card);
-  let added = targetWords().has(key);
-  const rv = document.createElement('button');
-  rv.type = 'button';
-  const paintReview = () => {
-    rv.className = 'row-review' + (added ? ' added' : '');
-    rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${card.thai} from '${targetName()}'` : `Add ${card.thai} to '${targetName()}'`;
-    rv.setAttribute('aria-label', rv.title);
-  };
-  paintReview();
-  rv.addEventListener('click', () => {
-    added = !added;
-    const name = setInTarget([key], added);
-    toast(added ? `✓ Added ${card.thai} to '${name}'` : `Removed ${card.thai} from '${name}'`, { tone: added ? 'good' : '' });
-    paintReview();
-  });
+  const rv = reviewButton(key, card.thai);
   if (!card.alpha) actions.append(rv); // the Alphabet's Cards hold every letter: nothing to add
   if (spellingFor(card)) {
     const sp = document.createElement('button');
@@ -7471,7 +7573,7 @@ function bindEvents() {
     });
     if (ok) {
       setInTarget(keys, true);
-      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to '${name}'`, { tone: 'good' });
+      toastAdded(keys, `${n} ${n === 1 ? 'word' : 'words'}`);
     }
   });
   // Cards on an empty list: its Add words, on the List page.
@@ -7488,6 +7590,11 @@ function bindEvents() {
     }
   });
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
+  els.moveModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeMoveWords));
+  els.toast.addEventListener('pointerenter', () => holdToast(true));
+  els.toast.addEventListener('pointerleave', () => holdToast(false));
+  els.toast.addEventListener('focusin', () => holdToast(true));
+  els.toast.addEventListener('focusout', () => holdToast(false));
   els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
 
   // ⟳ turns the card: to the answer first, then either way (as a tap on the card does).
@@ -7527,6 +7634,13 @@ function bindEvents() {
         closeConfirm(false);
       }
       return; // Enter / Space act on the focused button
+    }
+    if (state.moving) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMoveWords();
+      }
+      return;
     }
     if (state.pickerOpen) {
       if (e.key === 'Escape') {

@@ -118,6 +118,22 @@
     </div>
   </div>
 
+  <!-- Change, on the toast after an add (openMoveWords in app.js): which list the words go in. -->
+  <div id="move-modal" class="modal confirm-modal move-modal" hidden role="dialog" aria-modal="true" aria-labelledby="move-title">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel confirm-panel move-panel" role="document">
+      <div class="move-head">
+        <h2 id="move-title"></h2>
+        <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
+      </div>
+      <label class="checkbox-inline move-default">
+        <input type="checkbox" id="move-default" />
+        <span>Add new words there too</span>
+      </label>
+      <div class="move-lists" id="move-lists"></div>
+    </div>
+  </div>
+
   <!-- A tapped word (showWordPop in app.js): a story's word, or a Topics row's Thai. -->
   <div id="word-modal" class="modal word-modal" hidden role="dialog" aria-modal="true" aria-labelledby="word-modal-en">
     <div class="modal-backdrop" data-close></div>

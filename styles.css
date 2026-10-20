@@ -2591,6 +2591,41 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .confirm-dont-ask { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
 .confirm-dont-ask input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
 .confirm-dont-ask .setting-help { padding-left: 26px; } /* lines up with "Don't ask again": box 18px + gap 8px */
+/* ---------- Change's dialog (openMoveWords): which list an added word goes in ---------- */
+.move-panel { gap: 8px; max-height: 100%; }
+.move-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -8px -8px 0 0; }
+.move-head h2 { min-width: 0; overflow-wrap: anywhere; }
+.move-default { min-height: 44px; }
+.move-default input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
+.move-lists {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin: 0 -12px; /* the rows' text under the title, their hover wider */
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+.move-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 12px;
+  background: transparent;
+  color: var(--ink);
+  border: 0;
+  border-radius: 8px;
+  font-size: calc(16px * var(--fs, 1));
+  text-align: left;
+}
+.move-row:hover { background: var(--panel-2); }
+.move-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.move-tick { color: var(--good); font-weight: 700; }
+.move-count { margin-left: auto; color: var(--muted); font-size: calc(14px * var(--fs, 1)); white-space: nowrap; }
+.move-new { color: var(--accent); font-weight: 600; }
+
 /* Every → in the UI is this SVG arrow (index.html, textWithArrows), since the → glyph sits low in
    some fonts. `middle` centres it on the lowercase letters; .caps centres it on capitals (EN→TH). */
 .arrow-icon {
@@ -2672,5 +2707,30 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .toast[hidden] { display: none; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
 .toast.good { color: var(--good); border-color: var(--good); }
+/* With a button (Change, after an add; 2026-10-20): only the button takes taps, and the message
+   wraps rather than lose the list's name. max-content, as left: 50% would otherwise squeeze it to
+   half the screen. */
+.toast.has-action {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: max-content;
+  padding: 3px 3px 3px 18px;
+  border-radius: 26px; /* a pill on one line, rounded corners on two */
+}
+.toast-msg { min-width: 0; padding: 6px 0; white-space: normal; line-height: 1.3; }
+.toast-action {
+  pointer-events: auto;
+  flex: none;
+  min-height: 44px;
+  padding: 0 16px;
+  background: transparent;
+  color: var(--accent);
+  border: 0;
+  border-radius: 999px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.toast-action:hover { background: var(--accent-soft); }
 /* Above the "new version" bar when that's showing. */
 .update-bar:not([hidden]) ~ .toast { bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }

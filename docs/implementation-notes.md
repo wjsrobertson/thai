@@ -1599,6 +1599,25 @@ the user said yes to all of them.
   level open it reads that level; with all closed, every level in turn (1,337 stories). Checked in
   headless Chromium with the audio stubbed: Little Stories into Easy, a page added every 10, on
   Everything and on all of Food & Drink; Pause and carry on (`readall_probe.py`, `readall_probe2.py`).
+- **Change, on the add toast** (the user's request, the same day: a word added to the wrong list).
+  "✓ Added กิน to 'My words'" (🔁 anywhere, or Add all's "Added 22 words") has a **Change** button
+  and stays 5 s (`TOAST_ACTION_MS`), longer while a finger, the mouse or focus is on it
+  (`holdToast`). Only the button takes taps: a tap on the message reaches the row under it. The
+  message wraps to two lines rather than cut off a long list name. Change opens **"Put กิน in"**
+  (`openMoveWords`, `#move-modal`, the confirm dialog's small card): **Add new words there too**, then
+  your lists with their word counts, the one it's in ✓, then ＋ New list. A tap on a list moves the
+  words and closes it, saying "✓ Moved … to '…'", with Change again. With the box ticked, that list
+  becomes the target as well (and the adding bar's, while adding from a topic). ＋ New list asks a
+  name, then moves the words there; it's the target only if ticked (`createList`'s `target`). Of the
+  three designs offered, the user was torn between a choose-then-Done dialog and a tap-to-move one
+  with a second toast offering "Always add here"; this is the second, with that offer as the tick box
+  instead, since a second toast is easily missed.
+  - The word dialog's and word search's 🔁 (`reviewButton`) read the target list each time they're
+    painted, and `listsChanged` repaints them (`b.paint`), so they're right after a move. They kept
+    their own added flag before.
+  - Checked in headless Chromium at 390 × 664 (text size 1 and 2) and 1280 × 800 (`move_probe.py`,
+    `move_probe2.py`): the 5 s, a move with and without the tick, from the word dialog, ＋ New list,
+    Escape, Add all's 22 words, a long name wrapping, taps passing under the message.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
