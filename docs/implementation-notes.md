@@ -1664,6 +1664,8 @@ the user said yes to all of them.
   ＋ New list stays under them; none found says so. Changing tab clears the search (a topic's and a
   list's are different searches); Enter picks the first. Checked in headless Chromium at 390 × 664
   (`listsearch_probe.py`): "food", "rice" and ข้าว finding Food words, no match, the tabs, Enter.
+- **Renamed** (the user's call, the same day): the picker's title is "Choose a topic or wordlist",
+  and its second tab "My Wordlists".
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

@@ -1972,7 +1972,7 @@ function openDeckPicker({ addTo = null } = {}) {
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
   state.pickerFor = addTo ? 'add' : 'study';
-  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : 'Choose a topic or list';
+  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : 'Choose a topic or wordlist';
   state.pickerTab = !addTo && state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
   renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
