@@ -277,7 +277,8 @@ const state = {
 // The parsed store is cached: progress is read on every card, and re-parsing thousands of items
 // each time would add up. Another tab writing the store drops the cache (the storage event).
 let storeCache = null;
-window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) storeCache = null; });
+let listsOfCache = null; // listsOf: each word's lists, rebuilt after any save
+window.addEventListener('storage', (e) => { if (e.key === STORAGE_KEY) storeCache = listsOfCache = null; });
 
 function loadStore() {
   if (!storeCache) {
@@ -292,6 +293,7 @@ function loadStore() {
 
 function saveStore(store) {
   storeCache = store;
+  listsOfCache = null;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
 }
 
@@ -4178,7 +4180,7 @@ function renderWordlist() {
         th.firstChild.textContent = topic.name;
         frag.appendChild(th);
       }
-      const tr = wordRow(c, cols, words.has(c.key));
+      const tr = wordRow(c, cols, words);
       if ((inList && !inList.has(c.key)) || (adding && state.takenOut.has(c.key) && !words.has(c.key))) tr.classList.add('row-removed');
       frag.appendChild(tr);
     }
@@ -4250,8 +4252,8 @@ function freshListCards() {
 // A word's row, as on the Topics page and in the Dictionary: its Thai (opening the word dialog; a
 // phrase's words each open their own), transliteration and English (opening it too), the note under
 // the English, and the add to a list (🔁), spell and play buttons. `cols` is the column order
-// (wordlistColumns); `added`, whether it's in the target list.
-function wordRow(c, cols, added) {
+// (wordlistColumns); `words`, the target list's (a Set).
+function wordRow(c, cols, words) {
   const tr = document.createElement('tr');
   tr.dataset.key = c.key;
   if (state.reading.active && state.reading.currentKey === c.key) {
@@ -4310,14 +4312,8 @@ function wordRow(c, cols, added) {
   }
   const audioTd = document.createElement('td');
   audioTd.className = 'col-audio';
-  // Add to / remove from the target list, left of the speaker: the 🔁 icon, or ✓ once added.
-  const rv = document.createElement('button');
-  rv.type = 'button';
-  rv.className = 'row-review' + (added ? ' added' : '');
-  rv.replaceChildren(added ? '✓' : reviewIcon());
-  rv.title = added ? `Remove ${c.thai} from '${targetName()}'` : `Add ${c.thai} to '${targetName()}'`;
-  rv.setAttribute('aria-label', rv.title);
-  rv.addEventListener('click', () => toggleInTarget(c.key, c.thai, !added));
+  // Add to / remove from the target list, left of the speaker (reviewButton).
+  const rv = reviewButton(c.key, c.thai, words);
   audioTd.append(rv);
   if (isSpellable(c.thai)) {
     const sp = document.createElement('button');
@@ -4454,7 +4450,7 @@ function renderDictionary() {
   els.dictTableHead.replaceChildren(head);
   const words = targetWords();
   const frag = document.createDocumentFragment();
-  for (const c of rows) frag.append(wordRow(c, cols, words.has(c.key)));
+  for (const c of rows) frag.append(wordRow(c, cols, words));
   els.dictTableBody.replaceChildren(frag);
 }
 
@@ -5016,7 +5012,7 @@ function listsChanged(id) {
   if (state.view === 'dictionary') renderDictionary();
   renderDeckButton();
   syncReviewOnly();
-  document.querySelectorAll('.row-review').forEach((b) => b.paint?.()); // the word dialog's, word search's
+  document.querySelectorAll('.row-review, .pop-lists').forEach((b) => b.paint?.()); // the word dialog's, word search's
 }
 
 function changeList(id, change) {
@@ -5066,16 +5062,20 @@ function toggleInTarget(key, thai, on) {
   else toast(`Removed ${thai} from '${name}'`);
 }
 
-// A 🔁 its page doesn't redraw (the word dialog's, word search's): its look comes from the target
-// list, and listsChanged repaints it (b.paint), so it's right after Change moves the word.
+// A word's 🔁 (its rows, word search, the word dialog), in three states (the user's pick, 2026-10-20):
+// ✓ in the target list; 🔁 with a dot in another of your lists; 🔁 in none. Its look comes from the
+// lists each time it's painted, and listsChanged repaints those their page doesn't redraw (b.paint),
+// so it's right after Change moves the word.
 function reviewButton(key, thai, words = null) {
   const rv = document.createElement('button');
   rv.type = 'button';
   rv.paint = (inList = targetWords()) => {
     const added = inList.has(key);
-    rv.className = 'row-review' + (added ? ' added' : '');
+    const others = added ? [] : listsOf(key);
+    rv.className = 'row-review' + (added ? ' added' : others.length ? ' elsewhere' : '');
     rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${thai} from '${targetName()}'` : `Add ${thai} to '${targetName()}'`;
+    rv.title = added ? `Remove ${thai} from '${targetName()}'`
+      : `Add ${thai} to '${targetName()}'` + (others.length ? ` (it's in ${listNames(others)})` : '');
     rv.setAttribute('aria-label', rv.title);
   };
   rv.paint(words || undefined);
@@ -5089,11 +5089,64 @@ function reviewButton(key, thai, words = null) {
 // no Change (the user's call, 2026-10-20).
 function toastAdded(keys, what) {
   const list = targetList();
-  toast(`✓ Added ${what} to '${list.name}'`, { tone: 'good', action: addingFrom() ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
+  // A word already in other lists says so (the same day), as its 🔁's dot did.
+  const also = keys.length === 1 ? listsOf(keys[0]).filter((l) => l.id !== list.id) : [];
+  toast(`✓ Added ${what} to '${list.name}'` + (also.length ? ` · also in ${listNames(also)}` : ''), { tone: 'good', action: addingFrom() ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
 }
 
 // Whether the List page shows a topic (or list) that words are being added from (Add words).
 const addingFrom = () => !!state.addingTo && state.view === 'wordlist' && state.currentDeckId !== listScopeId(state.addingTo);
+
+// The lists a word is in, in the order made.
+function listsOf(key) {
+  if (!listsOfCache) {
+    listsOfCache = new Map();
+    for (const l of getLists()) {
+      for (const k of l.words) {
+        if (!listsOfCache.has(k)) listsOfCache.set(k, []);
+        listsOfCache.get(k).push(l);
+      }
+    }
+  }
+  return listsOfCache.get(key) || [];
+}
+
+// 'Food words', 'Food words' and 'Verbs', or "3 other lists".
+function listNames(lists) {
+  const q = lists.map((l) => `'${l.name}'`);
+  return q.length <= 2 ? q.join(' and ') : `${q.length} other lists`;
+}
+
+// The word dialog's lists (the user's trial, 2026-10-20): each of your lists as a chip, ticked if
+// the word's in it; a tap puts it in or takes it out, whichever list 🔁 adds to. Repainted with
+// the 🔁s (listsChanged). Null with no lists yet.
+function popLists(key, thai) {
+  if (!getLists().length) return null;
+  const box = document.createElement('div');
+  box.className = 'pop-lists';
+  box.paint = () => {
+    const has = new Set(listsOf(key).map((l) => l.id));
+    const label = Object.assign(document.createElement('span'), { className: 'pop-lists-label', textContent: 'Lists' });
+    box.replaceChildren(label, ...getLists().map((l) => {
+      const on = has.has(l.id);
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pop-list' + (on ? ' on' : '');
+      b.setAttribute('aria-pressed', String(on));
+      b.textContent = (on ? '✓ ' : '') + l.name;
+      b.title = on ? `Remove ${thai} from '${l.name}'` : `Add ${thai} to '${l.name}'`;
+      b.addEventListener('click', () => {
+        changeList(l.id, (x) => {
+          x.words = on ? x.words.filter((k) => k !== key) : [...x.words, key];
+        });
+        toast(on ? `Removed ${thai} from '${l.name}'` : `✓ Added ${thai} to '${l.name}'`, { tone: on ? '' : 'good' });
+      });
+      return b;
+    }));
+  };
+  box.paint();
+  return box;
+}
 
 // Change's dialog, "Put กิน in": your lists, the one they're in ticked, then ＋ New list. A tap on a
 // list moves them and closes it (the user's pick, 2026-10-20: one tap for the usual one-off, rather
@@ -5348,20 +5401,20 @@ const TOAST_ACTION_MS = 5000;
 let toastMs = 0;
 function toast(message, { ms = 2000, tone = '', action = null } = {}) {
   const el = els.toast;
+  // A leading ✓ stands apart, centred beside the message, which can wrap to two lines (the user's
+  // call, 2026-10-20: it sat at the start of the first line).
+  const [, tick, text] = message.match(/^(✓\s+)?([\s\S]*)$/);
+  const parts = [Object.assign(document.createElement('span'), { className: 'toast-msg', textContent: text })];
+  if (tick) parts.unshift(Object.assign(document.createElement('span'), { className: 'toast-tick', textContent: '✓' }));
   if (action) {
-    // A leading ✓ stands apart, centred beside the message, which can wrap to two lines (the user's
-    // call, 2026-10-20: it sat at the start of the first line).
-    const [, tick, text] = message.match(/^(✓\s+)?([\s\S]*)$/);
-    const msg = Object.assign(document.createElement('span'), { className: 'toast-msg', textContent: text });
     const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'toast-action', textContent: action.label });
     btn.addEventListener('click', () => {
       hideToast();
       action.fn();
     });
-    el.replaceChildren(...(tick ? [Object.assign(document.createElement('span'), { className: 'toast-tick', textContent: '✓' })] : []), msg, btn);
-  } else {
-    el.textContent = message;
+    parts.push(btn);
   }
+  el.replaceChildren(...parts);
   el.className = 'toast' + (tone ? ` ${tone}` : '') + (action ? ' has-action' : '');
   el.hidden = false;
   void el.offsetWidth; // restart the fade-in
@@ -6235,7 +6288,8 @@ function showWordPop(anchor, card) {
   actions.append(play);
   // Under them, the word's tones (tones.js), closed to a row until tapped.
   const tones = toneSection(card, big);
-  els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []));
+  const lists = card.alpha ? null : popLists(key, card.thai);
+  els.wordModalBody.replaceChildren(wordBox, actions, ...(lists ? [lists] : []), ...(tones ? [tones.el] : []));
   if (!wordPop) wordPop = { lastFocus: document.activeElement };
   showWordModal();
   els.wordModalBody.scrollTop = 0;
