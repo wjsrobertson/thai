@@ -954,7 +954,7 @@ function renderReviewOnly() {
   const empty = !!state.flashScopeId && state.queue.length === 0;
   els.reviewOnlyEmpty.hidden = !empty;
   els.stage.classList.toggle('review-only-none', empty);
-  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This wordlist'}' has no words yet`;
+  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no words yet`;
 }
 
 // After a list changes. Away from Cards there's nothing to do: coming back rebuilds the queue if the
@@ -1633,7 +1633,7 @@ function renderPickerTabs() {
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
   els.reviewByHelp.textContent = {
     topics: adding ? `Pick a topic, then add its words to ${into}` : "The app's words, by subject",
-    lists: adding ? `Pick a wordlist, then add its words to ${into}` : "Words you've chosen, from any topic",
+    lists: adding ? `Pick a list, then add its words to ${into}` : "Words you've chosen, from any topic",
   }[tab];
   // Both tabs search (My lists since 2026-10-20, the user's request): topics and words, or your lists.
   els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : 'Search topics and words…';
@@ -1666,7 +1666,7 @@ function renderListsPane() {
   if (!lists.length) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
-    empty.textContent = q ? `No wordlist matches "${q}".` : state.pickerFor === 'add' ? 'No other wordlists yet.' : 'No wordlists yet. Make one, then add words to it from any topic.';
+    empty.textContent = q ? `No list matches "${q}".` : state.pickerFor === 'add' ? 'No other lists yet.' : 'No lists yet. Make one, then add words to it from any topic.';
     rows.push(empty);
   }
   if (state.pickerFor !== 'add') {
@@ -1972,7 +1972,7 @@ function openDeckPicker({ addTo = null } = {}) {
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
   state.pickerFor = addTo ? 'add' : 'study';
-  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : 'Choose a topic or wordlist';
+  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : 'Choose a topic or list';
   state.pickerTab = !addTo && state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
   renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
@@ -4156,7 +4156,7 @@ function renderWordlist() {
   if (rows.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another wordlist.' : 'No matches.';
+    tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another list.' : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
     // A list's words taken out of it since the page opened: faded, but still usable, 🔁 putting one
@@ -5161,7 +5161,7 @@ async function askListName(title, value = '', confirmLabel = 'Save') {
 async function renameList(id) {
   const list = listById(id);
   if (!list) return;
-  const name = await askListName('Rename wordlist', list.name);
+  const name = await askListName('Rename list', list.name);
   if (!name || name === list.name) return;
   changeList(id, (l) => { l.name = name; });
 }
@@ -6748,7 +6748,7 @@ async function resetAllProgress() {
 async function resetSettings() {
   const ok = await confirmDialog({
     title: 'Reset all settings?',
-    message: 'Every setting goes back to its default. Your progress and your wordlists are kept.',
+    message: 'Every setting goes back to its default. Your progress and your lists are kept.',
     confirmLabel: 'Reset settings',
     danger: true,
   });
@@ -7939,7 +7939,7 @@ function backupSummary(store) {
     return `${words} word${words === 1 ? '' : 's'} in Cards, ${progress}`;
   }
   const n = store.lists.length;
-  return `${n} wordlist${n === 1 ? '' : 's'}, ${progress}`;
+  return `${n} list${n === 1 ? '' : 's'}, ${progress}`;
 }
 
 async function exportBackup() {
@@ -7984,7 +7984,7 @@ async function loadBackup(file) {
   const when = backup.exported ? new Date(backup.exported).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'an unknown date';
   const ok = await confirmDialog({
     title: 'Load this backup?',
-    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and wordlists on this device (${backupSummary(loadStore())}).`,
+    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and lists on this device (${backupSummary(loadStore())}).`,
     confirmLabel: 'Load backup',
     danger: true,
   });

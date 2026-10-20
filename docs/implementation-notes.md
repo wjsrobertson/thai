@@ -1670,7 +1670,9 @@ the user said yes to all of them.
   Settings' help and confirms, and a backup's summary ("2 wordlists, …") say it too. "List" as the
   page's name (List | Cards | Reading, Settings → List) stays. Then, seeing it, the user found "My Wordlists"
   awful: the tab is **My Words**, its search "Search your words", and the button ＋ New list again
-  (its dialog New list, Make list).
+  (its dialog New list, Make list). Everything else went back to "list" too (the user's call, on a table of
+  them): "Choose a topic or list", Rename list, Delete list, the empty texts, Home, Settings and the
+  backup's summary. So only the tab and its search say "words".
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
