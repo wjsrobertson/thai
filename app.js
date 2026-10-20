@@ -5080,9 +5080,12 @@ function reviewButton(key, thai, words = null) {
 
 // The toast after an add (🔁 or Add all), with Change (the user's request, 2026-10-20): it stays
 // longer, and Change puts the words in another list instead (openMoveWords).
+// While adding words to a list (Add words: its bar over a topic), they're going where you chose, so
+// no Change (the user's call, 2026-10-20).
 function toastAdded(keys, what) {
   const list = targetList();
-  toast(`✓ Added ${what} to '${list.name}'`, { tone: 'good', action: { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
+  const adding = state.addingTo && state.view === 'wordlist' && state.currentDeckId !== listScopeId(state.addingTo);
+  toast(`✓ Added ${what} to '${list.name}'`, { tone: 'good', action: adding ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
 }
 
 // Change's dialog, "Put กิน in": your lists, the one they're in ticked, then ＋ New list. A tap on a

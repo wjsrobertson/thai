@@ -1685,6 +1685,9 @@ the user said yes to all of them.
 - **No "N words" under a list's name on the List page** (the user's call, the same day); the picker's
   row keeps it. Rename and Delete list sit 12 under the name, as the table sits 12 under them (they
   were pulled up 4 to tuck under the count).
+- **No Change while adding words** (the user's call, the same day: "I am conceptually inside the
+  list"). With Add words' bar over a topic, its 🔁, its word dialog's and its Add all say "✓ Added …
+  to '…'" without Change (`toastAdded`). Elsewhere they keep it. Checked at 390 × 664.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
