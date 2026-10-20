@@ -1549,6 +1549,59 @@ user asked:
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
+## Your lists: what List, Cards and Reading show (2026-10-20, a spike: branch `2026-10-20-spike-custom-topics`)
+
+**Status: an experiment** ("if it is good we will keep it, if it is shit we'll drop it"). The user
+found the old split "a bit weird": Cards held only the words added with 🔁, while Reading showed the
+topic's stories. Their idea: Cards and Reading show what the picker chose, which is a topic,
+Everything, or a list of your own, kept up on the List page. The details below were proposed and
+the user said yes to all of them.
+- **The picker's tabs:** **Topics | My lists | Everything** (`renderPickerTabs`; data-picker-tab).
+  They replace Cards' Everything / By topic. Everything shows only from Cards and Reading. It picks
+  at once and closes the dialog, as before. Topics and My lists only switch the pane; a choice is
+  made by tapping a row. My lists has a row per list (with its progress, as a topic's) and
+  **＋ New list**, which asks for a name in the confirm dialog's new text box (`askListName`;
+  `confirmDialog({ input })`).
+- **One choice for the three pages:** `state.currentDeckId` can now be `list:<id>` (resolveScope's
+  `kind: 'list'`, with no decks; deckOf is each word's first topic). Everything (prefs.flashcardsBy
+  `'all'`, the old name kept) applies to Cards and Reading (`studyScope()`). The List page keeps
+  showing the topic or list underneath, as it did when Everything was Cards' alone.
+- **Cards shows every word in its scope** (`buildFlashcardQueue`, `reviewPool`). It used to show only
+  the words you'd added. Recall's new words come in the scope's order; a list's order is the order
+  you added. Everything is the topics' 8,743 words (stories left out, since they reuse those words).
+  Recognition's wrong answers there come from the card's own topic (`distractorPool(card)`), as all
+  8,743 would be easy to rule out. A list with no words shows "'…' has no words yet" with **Add
+  words** where the card would be. The old three-way message went.
+- **Reading:** a list's stories are matched as a topic's are (two or more of its words, `storiesFor`).
+  **Everything lists every story** (`renderAllStories`). That reverses the 2026-10-08 call that there
+  would be too many; the user agreed to it here. They're shown by level (Little Stories 23, Easy 811,
+  Medium 439, Harder 64), each under a heading styled as the picker's categories, one level open at a
+  time. Only the open level is drawn, so Read all reads that level.
+- **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
+  the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
+  words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
+  titles name the list. On a topic, Add all says "Add all to My words" (a long name ends in …), or
+  "✓ All in …" to take them out (`setInTarget`).
+- **The List page for a list:** its name and "N words", **Rename** and **Delete list** under it, and
+  **＋ Add words** where Add all is. Its rows show ✓ (they're in it): a tap takes one out but
+  leaves the row, showing 🔁, so a second tap puts it back. The rows are refreshed next time the
+  page opens (`freshListCards`). Add words opens the picker ("Add words to '…'", Topics | My lists,
+  without this list). Picking a topic or list shows it with a bar over it, "Adding words to …" and
+  **Done** (`state.addingTo`, `#adding-bar`). Its 🔁 and Add all go into the list, and Done goes back to it.
+- **Storage:** `store.lists`, `[{ id, name, words: [cardKey…] }]`. `migrateLists` makes "My words" from
+  `store.reviewWords` (in the order added) on the first load and **leaves reviewWords as it was**, so
+  dropping the spike loses nothing on master. Settings → Reset → Clear Cards went (lists are deleted
+  on their page). The texts saying "the words in Cards" now say "your lists" (Reset, Backup, Settings
+  → List's confirms, the Home card's 🔁 line). A backup lists its lists, and one from before the
+  spike becomes My words when loaded.
+- **Checked** in headless Chromium at 390 × 664 and 1280 × 800 (scratch probes `lists_probe.py` and
+  `lists_probe2.py` in learnthai-shots-out). Checked: the migration; 🔁 on a topic; the tabs from List
+  and from Cards; Cards in Browse, Recognition and Recall on a list and on Everything (1 / 8743);
+  Reading on a list and on Everything's levels, a story opened inside one; Add words from a topic and
+  from another list, Add all and Done; the Dictionary's 🔁 reaching Cards on that list; New list,
+  Rename and Delete. No script errors and no sideways scroll. `check_layout.py` no longer taps Add
+  all before Cards, since Cards no longer needs words added. Not yet on the iPhone.
+
 ## The new-version bar, one line and prominent (2026-10-19)
 
 The user's screenshot: "A new version is ready." wrapped to three lines beside a 32 px Reload, in a

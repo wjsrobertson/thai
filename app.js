@@ -86,17 +86,16 @@ const els = {
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
   setRetention: document.getElementById('setting-retention'),
-  reviewBy: document.getElementById('review-by'),
-  reviewByButtons: document.querySelectorAll('[data-review-by]'),
+  pickerTabs: document.querySelectorAll('[data-picker-tab]'), // the picker's Topics | My lists | Everything
   reviewByHelp: document.getElementById('review-by-help'),
-  reviewBySwitch: document.querySelector('#review-by .segmented'),
-  reviewOnlyEmptyHint: document.getElementById('review-only-empty-hint'),
-  reviewOnlyAddAll: document.getElementById('review-only-add-all'),
-  reviewOnlyAddName: document.getElementById('review-only-add-name'),
-  reviewOnlyPickFrom: document.getElementById('review-only-pick-from'),
-  reviewOnlyYes: document.getElementById('review-only-yes'),
-  reviewOnlyTopics: document.getElementById('review-only-topics'),
-  reviewOnlyEverything: document.getElementById('review-only-everything'),
+  reviewOnlyAdd: document.getElementById('review-only-add'), // an empty list's Add words, on Cards
+  addingBar: document.getElementById('adding-bar'), // the List page while adding words to a list
+  addingName: document.getElementById('adding-name'),
+  addingDone: document.getElementById('adding-done'),
+  listActions: document.getElementById('list-actions'), // a list's Rename and Delete, on the List page
+  listRename: document.getElementById('list-rename'),
+  listDelete: document.getElementById('list-delete'),
+  confirmInput: document.getElementById('confirm-input'),
   deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
@@ -131,7 +130,6 @@ const els = {
   reviewGrades: document.getElementById('review-grades'),
   resetAll: document.getElementById('reset-all'),
   resetSettings: document.getElementById('reset-settings'),
-  resetReview: document.getElementById('reset-review'),
   setMuted: document.getElementById('setting-muted'),
   setAudioSource: document.getElementById('setting-audio-source'),
   setWriteCheck: document.getElementById('setting-write-check'),
@@ -233,6 +231,7 @@ const state = {
   dictLang: 'th',     // the Dictionary's way in: 'th' (ก–ฮ, Thai first) or 'en' (A–Z, English first); prefs.dictLang
   dictQuery: '',      // and its search box
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
+  readingLevel: null, // Reading on Everything: the open level (renderAllStories), '' with all closed
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review' | 'type' (Recognition, typed: 2026-10-19)
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
   pickerOpen: false,
@@ -255,6 +254,9 @@ const state = {
   cardIndex: new Map(),     // cardKey -> { card, deckIds } across all decks (see buildCardIndex)
   review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
+  pickerTab: 'topics',      // the picker's tab: 'topics' | 'lists' | 'all' (renderPickerTabs)
+  addTo: null,              // the list the picker is choosing words for (Add words), or null
+  addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
 };
 
 // ---------- storage ----------
@@ -917,66 +919,44 @@ function buildQueue(cards) {
   return [...queue.filter(isNew), ...queue.filter((i) => !isNew(i))];
 }
 
-// ---------- "Review words only": Flashcards shows the topic's words that are in Review ----------
-// The only behaviour since 2026-10-07 (it was a setting, on by default). A note under the card says
-// so; with none in Review there's no card, just a message to add some from Wordlists.
+// ---------- what Cards goes through: every word in its scope ----------
+// Since 2026-10-20 (the lists spike), every word of the topic, list or Everything. From 2026-10-07
+// it was only the words you'd added with 🔁, with a message to add some when there were none.
 
-// The topic's words in Review (maybe none): what Flashcards goes through.
-function reviewOnlyCards() {
-  if (state.section === 'alphabet') return state.cards;
-  const words = reviewWords();
-  return state.cards.filter((c) => c.key in words);
+// Which words those are, as a string, to tell when they've changed: only a list's can.
+function reviewOnlySignature() {
+  const scope = flashScope();
+  return scope?.kind === 'list' ? `${scope.id}\n${scope.cards.map(cardKey).join('\n')}` : scope?.id || '';
 }
 
-// Which words those are, as a string, to tell when that's changed.
-const reviewOnlySignature = () => reviewOnlyCards().map((c) => c.key).join('\n');
-
-// The Flashcards queue: indices into state.cards, which stays the whole topic, or every card on
-// Everything (Test-mode answer choices come from it too).
+// The Cards queue: indices into state.cards, the scope's words (Recognition's answer choices come
+// from them too).
 function buildFlashcardQueue() {
-  const queue = buildQueue(state.cards);
-  const keep = reviewOnlyCards();
-  state.reviewOnlySig = keep.map((c) => c.key).join('\n');
-  const keys = new Set(keep.map((c) => c.key));
-  return queue.filter((i) => keys.has(state.cards[i].key));
+  state.reviewOnlySig = reviewOnlySignature();
+  return buildQueue(state.cards);
 }
 
-// With nothing in Review, the message in place of the card (the stage's .review-only-none hides
-// it). Called from renderCard, so it follows every queue change. (Until 2026-10-07 a note under the
-// card also said "Showing only words in Review: 2 of 286"; the user found it redundant once this was
-// the only behaviour.)
+// An empty list: a message in place of the card (the stage's .review-only-none hides it), with Add
+// words. Called from renderCard, so it follows every queue change.
 function renderReviewOnly() {
   const empty = !!state.flashScopeId && state.queue.length === 0;
   els.reviewOnlyEmpty.hidden = !empty;
   els.stage.classList.toggle('review-only-none', empty);
-  if (empty) {
-    const scope = flashScope();
-    els.reviewOnlyEmptyTitle.textContent = scope?.kind === 'all' ? 'No words in Cards yet'
-      : !scope || scope.kind === 'topic' ? "None of this topic's words are in Cards yet" : `None of the words in ${scope.name} are in Cards yet`;
-    // Three ways out (2026-10-10, the user's wording and layout), each a button with what it does
-    // beside it: add the whole topic (or group); choose words in Topics; or switch to Everything, when
-    // that would show something. On Everything there's no topic to add.
-    const all = scope?.kind === 'all';
-    els.reviewOnlyAddAll.hidden = all || !state.cards.length;
-    els.reviewOnlyAddName.textContent = `'${scope?.name || 'this topic'}'`;
-    // "Add words from '…' individually", or on Everything (no topic) "Add words in Topics…".
-    els.reviewOnlyPickFrom.textContent = all ? 'in Topics' : `from ${els.reviewOnlyAddName.textContent}`;
-    els.reviewOnlyEmptyHint.hidden = all || !Object.keys(reviewWords()).length;
-  }
+  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no words yet`;
 }
 
-// After words go into or out of Review, or a setting changes. Away from Flashcards there's nothing
-// to do: coming back rebuilds the queue if the set changed (setView). On Flashcards (since the
-// card's Review button went, that's Settings opened over it) the queue is rebuilt at once, around
-// the card on screen if it's still in.
+// After a list changes. Away from Cards there's nothing to do: coming back rebuilds the queue if the
+// list it shows changed (setView). On Cards (the word dialog opened over it) the queue is rebuilt at
+// once, around the card on screen if it's still in.
 function syncReviewOnly() {
   if (!state.flashScopeId || state.view !== 'flashcards' || reviewOnlySignature() === state.reviewOnlySig) {
     renderReviewOnly();
     return;
   }
   const c = currentCard();
+  loadCards();
   const queue = buildFlashcardQueue();
-  let at = c ? queue.indexOf(state.cards.indexOf(c)) : -1;
+  let at = c ? queue.findIndex((i) => state.cards[i].key === c.key) : -1;
   if (at > 0 && answeringMode()) {
     queue.unshift(...queue.splice(at, 1)); // a shuffled round: start it with this card
     at = 0;
@@ -1378,22 +1358,29 @@ function goNext() {
   renderCard();
 }
 
-// ---------- scopes: a topic, a group of topics, or a whole category ----------
+// ---------- scopes: a topic, a group of topics, a whole category, or a list ----------
 // The Topics page and Flashcards show a scope (state.currentDeckId, prefs.currentDeckId);
-// Flashcards can also be on Everything (flashScope()). A scope id is a topic's id,
-// `group:<category>::<group>`, `cat:<category>`, or (Flashcards only) 'all'. resolveScope() gives { id, kind, name, label,
+// Cards and Reading can also be on Everything (studyScope()). A scope id is a topic's id,
+// `group:<category>::<group>`, `cat:<category>`, `list:<id>` (your lists), or (Cards and Reading only)
+// 'all'. resolveScope() gives { id, kind, name, label,
 // description, decks, cards, deckOf }: cards are the decks' cards with repeats dropped (a word in
 // two topics counts once), and deckOf maps a card key to the first of the scope's decks with it.
+// A list has no decks: its cards are its words, and deckOf each word's first topic.
 const scopeCache = new Map();
 function resolveScope(id) {
   if (!id) return null;
   if (scopeCache.has(id)) return scopeCache.get(id);
+  if (id.startsWith('list:')) {
+    const scope = resolveListScope(id);
+    if (scope) scopeCache.set(id, scope);
+    return scope;
+  }
   const catOf = (d) => d.category || 'Uncategorized';
   let kind = 'topic';
   let name = '';
   let decks = [];
-  if (id === 'all') {
-    [kind, name, decks] = ['all', 'Everything', state.decks];
+  if (id === 'all') { // the topics' words: Reading's stories reuse them (lists them all on Everything)
+    [kind, name, decks] = ['all', 'Everything', state.decks.filter((d) => !d.passage)];
   } else if (id.startsWith('cat:')) {
     [kind, name] = ['category', id.slice(4)];
     decks = state.decks.filter((d) => catOf(d) === name);
@@ -1429,14 +1416,32 @@ function resolveScope(id) {
 const currentScope = () => resolveScope(state.currentDeckId);
 const groupScopeId = (cat, group) => `group:${cat}::${group}`;
 
-// What Flashcards shows, in every mode: Everything (every word in Review), or "By topic"
-// (prefs.flashcardsBy, the default), the topic the Topics page shows. Set in Flashcards' topic
-// dialog (the user's request, 2026-10-07). Review mode follows it since Review moved into
-// Flashcards (2026-10-08); Review's own switch (prefs.reviewBy) went with the Review tab.
+let deckById = null;
+const deckOfId = (id) => (deckById ||= new Map(state.decks.map((d) => [d.id, d]))).get(id);
+
+function resolveListScope(id) {
+  const list = listById(id.slice(5));
+  if (!list) return null;
+  const cards = [];
+  const deckOf = new Map();
+  for (const key of list.words) {
+    const entry = state.cardIndex.get(key);
+    if (!entry) continue; // its card was edited or removed
+    cards.push(entry.card);
+    deckOf.set(key, deckOfId(entry.deckIds.find((d) => !deckOfId(d)?.passage) || entry.deckIds[0]));
+  }
+  const n = cards.length;
+  return { id, kind: 'list', name: list.name, decks: [], cards, deckOf, description: `${n} word${n === 1 ? '' : 's'}`, label: list.name };
+}
+
+// What Cards and Reading show: Everything, or the topic or list the List page shows ("By topic",
+// prefs.flashcardsBy, the default). Everything was Cards' alone from 2026-10-07 (every word you'd
+// added); Reading follows it since the lists spike (2026-10-20). Set in the picker's tabs.
 const flashcardsByAll = () => getPreferences().flashcardsBy === 'all';
+const studyScope = () => (flashcardsByAll() ? resolveScope('all') : currentScope());
 function flashScope() {
   if (state.section === 'alphabet') return alphaScope();
-  return flashcardsByAll() ? resolveScope('all') : currentScope();
+  return studyScope();
 }
 
 function setFlashcardsBy(by) {
@@ -1445,11 +1450,14 @@ function setFlashcardsBy(by) {
   reloadFlashcards();
   renderDeckButton();
   if (state.flashScopeId) preloadDeckAudio(flashScope());
+  if (state.view === 'reading') {
+    state.readingId = null;
+    renderReading();
+  }
 }
 
 // The topic's cards for the Topics page, and Flashcards': the same list By topic; on Everything
-// every card (its queue keeps the words in Review, and Test mode draws answer choices from all).
-// Both keep resolveScope's order, so a queue's indices stay valid across a reload.
+// every topic's cards. Both keep resolveScope's order, so a queue's indices stay valid across a reload.
 function loadCards() {
   if (state.section === 'alphabet') { // the letters, every one (nothing to add first)
     state.cards = mergeProgressIntoCards(alphaScope().cards);
@@ -1517,9 +1525,10 @@ function renderDeckButton() {
     els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS.alphabet));
     return;
   }
-  const scope = state.view === 'flashcards' ? flashScope() : currentScope();
+  const scope = state.view === 'flashcards' || state.view === 'reading' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
-  els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[!scope || scope.kind === 'topic' ? 'topics' : 'group']));
+  const icon = !scope || scope.kind === 'topic' ? 'topics' : scope.kind === 'list' ? 'mylist' : 'group';
+  els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[icon]));
 }
 
 function selectDeck(deckId) {
@@ -1596,20 +1605,26 @@ function pickerModel(q) {
   return [...cats.values()];
 }
 
-// The picker always picks the shared topic. Opened from Flashcards, it also has Everything / By
-// topic at the top (renderReviewBy), and picking a topic means By topic there.
+// The picker always picks the shared topic or list. Opened from Cards or Reading, it also has
+// Everything (renderPickerTabs), and picking a topic or list means By topic there.
 function pickerSelectedId() {
   return state.currentDeckId;
 }
 
-// Whether the page the picker was opened from is By topic (the Topics page always is).
+// Whether the page the picker was opened from is By topic (the List page always is).
 function pickerByTopic() {
   return state.pickerFor !== 'flashcards' || !flashcardsByAll();
 }
 
 function pickScope(id) {
+  // Add words (pickerFor 'add'): the List page shows where they come from, its 🔁 adding to the
+  // list (state.addingTo). Picked plainly, a list becomes where 🔁 adds.
+  state.addingTo = state.pickerFor === 'add' ? state.addTo : null;
+  if (state.pickerFor !== 'add' && id.startsWith('list:')) setTarget(id.slice(5));
   if (pickerByTopic() && id === state.currentDeckId) { // the same choice again: carry on
     closeDeckPicker();
+    freshListCards();
+    renderWordlist();
     return;
   }
   if (state.pickerFor === 'flashcards') setPreferences({ flashcardsBy: 'topic' });
@@ -1618,18 +1633,71 @@ function pickScope(id) {
   closeDeckPicker();
 }
 
-// Flashcards' dialog: Everything hides the topic list (there's nothing to pick); By topic shows
-// it. The Topics page's dialog is just the list.
-function renderReviewBy() {
-  const has = state.pickerFor === 'flashcards';
-  const topic = pickerByTopic();
-  els.reviewBy.hidden = !has;
-  els.reviewByButtons.forEach((b) => b.setAttribute('aria-checked', String((b.dataset.reviewBy === 'topic') === topic)));
-  els.reviewByHelp.textContent = topic ? 'Shared with the Topics page' : "Every word you've added to Cards";
-  const list = !has || topic;
-  els.deckPickerSearchRow.hidden = !list;
-  els.deckPickerTree.hidden = !list;
-  els.deckPicker.classList.toggle('review-all', !list); // just the switch: the dialog shrinks to fit
+// The picker's tabs (the lists spike, 2026-10-20; until then Cards' dialog had Everything | By
+// topic): Topics (the tree and search), My lists, and, from Cards and Reading, Everything, which
+// picks at once. Add words has Topics and My lists.
+function renderPickerTabs() {
+  const tab = state.pickerTab;
+  const adding = state.pickerFor === 'add';
+  els.pickerTabs.forEach((b) => {
+    b.hidden = b.dataset.pickerTab === 'all' && state.pickerFor !== 'flashcards';
+    b.setAttribute('aria-checked', String(b.dataset.pickerTab === tab));
+  });
+  const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
+  els.reviewByHelp.textContent = {
+    topics: adding ? `Pick a topic, then add its words to ${into}` : "The app's words, by subject",
+    lists: adding ? `Pick a list, then add its words to ${into}` : "Words you've chosen, from any topic",
+    all: 'Every word in every topic, and every story',
+  }[tab];
+  els.deckPickerSearchRow.hidden = tab !== 'topics';
+  els.deckPickerTree.hidden = tab === 'all';
+  els.deckPicker.classList.toggle('review-all', tab === 'all'); // just the tabs: the dialog shrinks to fit
+}
+
+function pickPickerTab(tab) {
+  if (tab === 'all') {
+    state.addingTo = null;
+    setFlashcardsBy('all');
+    closeDeckPicker(); // nothing more to pick
+    return;
+  }
+  state.pickerTab = tab;
+  renderPickerTabs();
+  renderDeckPicker();
+  els.deckPickerTree.scrollTop = 0;
+}
+
+// My lists: a row for each (as a topic's, with its progress), then New list. Add words leaves out
+// the list being added to.
+function renderListsPane() {
+  const lists = getLists().filter((l) => state.pickerFor !== 'add' || l.id !== state.addTo);
+  const rows = lists.map((l) => {
+    const id = listScopeId(l.id);
+    const scope = resolveScope(id);
+    const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards });
+    row.classList.add('list-row');
+    return row;
+  });
+  if (!lists.length) {
+    const empty = document.createElement('div');
+    empty.className = 'modal-empty';
+    empty.textContent = state.pickerFor === 'add' ? 'No other lists yet.' : 'No lists yet. Make one, then add words to it from any topic.';
+    rows.push(empty);
+  }
+  if (state.pickerFor !== 'add') {
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'ghost new-list';
+    add.textContent = '＋ New list';
+    add.addEventListener('click', async () => {
+      const name = await askListName('New list', '', 'Make list');
+      if (!name) return;
+      const list = createList(name);
+      pickScope(listScopeId(list.id));
+    });
+    rows.push(add);
+  }
+  els.deckPickerTree.replaceChildren(...rows);
 }
 
 // A category or group heading: the collapsible header and, on its right, "All N" to pick all of it.
@@ -1718,6 +1786,10 @@ function pickerGroup(g, q, cat) {
 }
 
 function renderDeckPicker() {
+  if (state.pickerTab === 'lists') {
+    renderListsPane();
+    return;
+  }
   const q = state.pickerFilter.trim().toLowerCase();
   const cats = pickerModel(q);
   els.deckPickerTree.innerHTML = '';
@@ -1814,8 +1886,8 @@ function wordHitsSection({ hits, total }) {
   head.className = 'word-hits-head';
   head.textContent = `${total} word${total === 1 ? '' : 's'}`;
   section.appendChild(head);
-  const inFlashcards = reviewWords();
-  for (const h of hits) section.appendChild(wordHitRow(h, h.key in inFlashcards));
+  const inList = targetWords();
+  for (const h of hits) section.appendChild(wordHitRow(h, inList.has(h.key)));
   if (total > hits.length) {
     const more = document.createElement('p');
     more.className = 'word-hits-more';
@@ -1825,8 +1897,8 @@ function wordHitsSection({ hits, total }) {
   return section;
 }
 
-// A result: tap it to see the word in its topic (the current topic if it's there); ✓ adds it to
-// Flashcards and 🔊 plays it, as on the Topics page.
+// A result: tap it to see the word in its topic (the current topic if it's there); 🔁 adds it to
+// the target list and 🔊 plays it, as on the Topics page.
 function wordHitRow(h, added) {
   const row = document.createElement('div');
   row.className = 'word-hit';
@@ -1860,14 +1932,14 @@ function wordHitRow(h, added) {
   const paint = () => {
     rv.className = 'row-review' + (added ? ' added' : '');
     rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${h.card.thai} from Cards` : `Add ${h.card.thai} to Cards`;
+    rv.title = added ? `Remove ${h.card.thai} from '${targetName()}'` : `Add ${h.card.thai} to '${targetName()}'`;
     rv.setAttribute('aria-label', rv.title);
   };
   paint();
   rv.addEventListener('click', () => {
     added = !added;
-    setInReview([h.key], added);
-    toast(added ? `✓ Added ${h.card.thai} to Cards` : `Removed ${h.card.thai} from Cards`, { tone: added ? 'good' : '' });
+    const name = setInTarget([h.key], added);
+    toast(added ? `✓ Added ${h.card.thai} to '${name}'` : `Removed ${h.card.thai} from '${name}'`, { tone: added ? 'good' : '' });
     paint();
   });
   const sp = document.createElement('button');
@@ -1883,6 +1955,7 @@ function wordHitRow(h, added) {
 
 // Opens the word's topic on the Topics page, scrolled to the word and briefly highlighted.
 function showWordInTopic(key, deckId) {
+  if (state.pickerOpen) state.addingTo = state.pickerFor === 'add' ? state.addTo : null; // as pickScope
   closeDeckPicker();
   if (state.view !== 'wordlist') setView('wordlist');
   if (deckId !== state.currentDeckId) selectDeck(deckId);
@@ -1917,7 +1990,8 @@ function setModalOpen(open) {
   document.documentElement.classList.toggle('modal-open', open);
 }
 
-function openDeckPicker() {
+// `addTo`: a list's id, for its Add words (openAddWords).
+function openDeckPicker({ addTo = null } = {}) {
   state.pickerOpen = true;
   state.lastFocus = document.activeElement;
   els.deckPicker.hidden = false;
@@ -1925,14 +1999,18 @@ function openDeckPicker() {
   els.deckButton.setAttribute('aria-expanded', 'true');
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
-  state.pickerFor = state.view === 'flashcards' ? 'flashcards' : 'study';
-  els.deckPickerTitle.textContent = state.pickerFor === 'flashcards' ? 'What to study' : 'Choose a topic';
-  renderReviewBy();
+  state.addTo = addTo;
+  // From Cards and Reading, Everything is a choice too ('flashcards'); from the List page ('study'), not.
+  state.pickerFor = addTo ? 'add' : state.view === 'flashcards' || state.view === 'reading' ? 'flashcards' : 'study';
+  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'`
+    : state.pickerFor === 'flashcards' ? 'What to study' : 'Choose a topic or list';
+  state.pickerTab = addTo ? 'topics' : !pickerByTopic() ? 'all' : state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
+  renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
   state.expandedCategories.clear();
   state.expandedGroups.clear();
-  if (current) {
+  if (current?.decks[0]) {
     const d = current.decks[0];
     state.expandedCategories.add(d.category || 'Uncategorized');
     if (d.group && current.kind !== 'category') state.expandedGroups.add(`${d.category || 'Uncategorized'}::${d.group}`);
@@ -3565,6 +3643,10 @@ function setView(view, { section = 'words' } = {}) {
   const alphaPage = view === 'alphabet' ? (getPreferences().alphaPage === 'write' ? 'write' : 'letters') : 'cards';
   els.alphaPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaPage === alphaPage ? 'true' : 'false'));
   els.wordlistSection.hidden = view !== 'wordlist';
+  if (view === 'wordlist' && leaving !== 'wordlist') { // a list's words may have changed meanwhile
+    freshListCards();
+    renderWordlist();
+  }
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
   els.readingSection.hidden = view !== 'reading';
   els.dictSection.hidden = view !== 'dictionary';
@@ -3868,6 +3950,7 @@ function filterSettings(q) {
 
 function rebuildCurrentQueue() {
   if (!state.flashScopeId) return;
+  if (reviewOnlySignature() !== state.reviewOnlySig) loadCards(); // the list shown changed meanwhile
   // A rebuilt queue is a new round, and a fresh Recognition stream (answers are saved as given).
   resetRecognition();
   state.learnAnswers = new Map();
@@ -4065,7 +4148,16 @@ function renderWordlist() {
     return el;
   }));
   renderLetterBoard(deck);
-  const words = reviewWords();
+  const words = targetWords();
+  const target = targetList();
+  const isList = deck.kind === 'list';
+  const own = isList && deck.id === listScopeId(target?.id); // the list 🔁 adds to
+  // Adding words to a list from another topic or list (Add words): a bar over the page says where
+  // they go, with Done to go back to it.
+  const adding = state.addingTo && deck.id !== listScopeId(state.addingTo) ? listById(state.addingTo) : null;
+  els.addingBar.hidden = !adding;
+  if (adding) els.addingName.textContent = adding.name;
+  els.listActions.hidden = !isList;
 
   const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
 
@@ -4088,7 +4180,8 @@ function renderWordlist() {
   els.wordtableBody.innerHTML = '';
   if (rows.length === 0) {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td class="empty" colspan="4">No matches.</td>`;
+    tr.innerHTML = '<td class="empty" colspan="4"></td>';
+    tr.firstChild.textContent = isList ? 'No words yet. Add words chooses some from a topic or another list.' : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
     const frag = document.createDocumentFragment();
@@ -4102,28 +4195,39 @@ function renderWordlist() {
         th.firstChild.textContent = topic.name;
         frag.appendChild(th);
       }
-      frag.appendChild(wordRow(c, cols, c.key in words));
+      frag.appendChild(wordRow(c, cols, words.has(c.key)));
     }
     els.wordtableBody.appendChild(frag);
   }
 
-  const allIn = state.listCards.every((c) => c.key in words);
-  // With the whole deck in Review, the button reads "✓ All in Review" and removes them all.
+  // The list 🔁 adds to: Add words. Anything else: Add all to it, or with the whole lot in, "✓ All
+  // in …", which takes them all out.
+  const name = (text) => Object.assign(document.createElement('span'), { className: 'add-all-name', textContent: text });
+  const allIn = !own && state.listCards.length > 0 && state.listCards.every((c) => words.has(c.key));
   els.wordlistAddAll.classList.toggle('all-in', allIn);
-  if (allIn) {
+  if (own) {
+    els.wordlistAddAll.replaceChildren('＋ Add words');
+  } else if (allIn) {
     // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
-    const label = (cls, text) => Object.assign(document.createElement('span'), { className: cls, textContent: text });
-    els.wordlistAddAll.replaceChildren(label('label-idle', '✓ All in Cards'), label('label-hover', '− Remove all'));
+    const idle = Object.assign(document.createElement('span'), { className: 'label-idle' });
+    idle.append('✓ All in ', name(targetName()));
+    const hover = Object.assign(document.createElement('span'), { className: 'label-hover', textContent: '− Remove all' });
+    els.wordlistAddAll.replaceChildren(idle, hover);
   } else {
-    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to Cards'); // "…to Review" until 2026-10-08
+    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to ', name(targetName())); // "…to Cards" until 2026-10-20
   }
-  els.wordlistAddAll.title = allIn ? 'Remove all from Cards' : '';
+  els.wordlistAddAll.title = own ? `Add words to '${targetName()}'` : allIn ? `Remove all from '${targetName()}'` : `Add all to '${targetName()}'`;
+}
+
+// The List page's rows for a list, afresh (they're kept while it's open: listsChanged).
+function freshListCards() {
+  if (currentScope()?.kind === 'list') state.listCards = mergeProgressIntoCards(currentScope().cards);
 }
 
 // A word's row, as on the Topics page and in the Dictionary: its Thai (opening the word dialog; a
 // phrase's words each open their own), transliteration and English (opening it too), the note under
-// the English, and the add to Flashcards, spell and play buttons. `cols` is the column order
-// (wordlistColumns); `added`, whether it's in Flashcards.
+// the English, and the add to a list (🔁), spell and play buttons. `cols` is the column order
+// (wordlistColumns); `added`, whether it's in the target list.
 function wordRow(c, cols, added) {
   const tr = document.createElement('tr');
   tr.dataset.key = c.key;
@@ -4183,16 +4287,16 @@ function wordRow(c, cols, added) {
   }
   const audioTd = document.createElement('td');
   audioTd.className = 'col-audio';
-  // Add to / remove from Review, left of the speaker: the Review icon, or ✓ once added.
+  // Add to / remove from the target list, left of the speaker: the 🔁 icon, or ✓ once added.
   const rv = document.createElement('button');
   rv.type = 'button';
   rv.className = 'row-review' + (added ? ' added' : '');
   rv.replaceChildren(added ? '✓' : reviewIcon());
-  rv.title = added ? `Remove ${c.thai} from Cards` : `Add ${c.thai} to Cards`;
+  rv.title = added ? `Remove ${c.thai} from '${targetName()}'` : `Add ${c.thai} to '${targetName()}'`;
   rv.setAttribute('aria-label', rv.title);
   rv.addEventListener('click', () => {
-    setInReview([c.key], !added);
-    toast(added ? `Removed ${c.thai} from Cards` : `✓ Added ${c.thai} to Cards`, { tone: added ? '' : 'good' });
+    const name = setInTarget([c.key], !added);
+    toast(added ? `Removed ${c.thai} from '${name}'` : `✓ Added ${c.thai} to '${name}'`, { tone: added ? '' : 'good' });
   });
   audioTd.append(rv);
   if (isSpellable(c.thai)) {
@@ -4328,9 +4432,9 @@ function renderDictionary() {
   audioTh.setAttribute('aria-label', 'Audio');
   head.append(audioTh);
   els.dictTableHead.replaceChildren(head);
-  const words = reviewWords();
+  const words = targetWords();
   const frag = document.createDocumentFragment();
-  for (const c of rows) frag.append(wordRow(c, cols, c.key in words));
+  for (const c of rows) frag.append(wordRow(c, cols, words.has(c.key)));
   els.dictTableBody.replaceChildren(frag);
 }
 
@@ -4420,13 +4524,18 @@ function makeRng(seed) {
 //  - the order of the three pills
 // Result is stable per (card.key, deck.id, seen-count).
 // On odd `seen` counts, flip the side so each card is shown both ways.
-// Where Test's wrong answers come from: the topic's words, or on Everything your Review words. All
-// 6,000-odd cards made them easy to rule out (the user's call, 2026-10-07). With fewer than 3
-// words in Review, all cards.
-function distractorPool() {
-  if (!flashcardsByAll()) return state.cards;
-  const pool = reviewOnlyCards();
-  return pool.length >= 3 ? pool : state.cards;
+// Where Recognition's wrong answers come from: the scope's words; on Everything, the card's own
+// topic's, as all 8,700-odd made them easy to rule out (the user's call, 2026-10-07, when Everything
+// was your added words). A list of fewer than 3 words: every topic's.
+function distractorPool(card) {
+  if (state.section === 'alphabet') return state.cards;
+  const scope = flashScope();
+  if (scope?.kind === 'all') {
+    const home = scope.deckOf.get(card.key);
+    const own = state.cards.filter((c) => scope.deckOf.get(c.key) === home);
+    if (own.length >= 3) return own;
+  }
+  return state.cards.length >= 3 ? state.cards : mergeProgressIntoCards(resolveScope('all').cards);
 }
 
 // Tone and Sound Pairs words list their partners (decks.json `partners`: card keys of the same set,
@@ -4520,7 +4629,7 @@ function renderLearnPills() {
 
   // If we've already answered this card in this session, reproduce that exact trial.
   const prior = state.learnAnswers.get(c.key);
-  const trial = buildLearnTrial(c, distractorPool(), prior?.seedSeen);
+  const trial = buildLearnTrial(c, distractorPool(c), prior?.seedSeen);
 
   // renderCard already set the front face based on state.direction.
   for (const opt of trial.options) {
@@ -4565,7 +4674,7 @@ function handleLearnPick(btn, isCorrect) {
       if (p !== btn) p.classList.add('dimmed');
     }
     // Mark the correct pill green.
-    const trial = buildLearnTrial(c, distractorPool());
+    const trial = buildLearnTrial(c, distractorPool(c));
     const correctText = answerText(c, trial.side);
     for (const p of els.learnPills.querySelectorAll('.learn-pill')) {
       if (p.textContent === correctText) {
@@ -4650,7 +4759,7 @@ function typedAnswer(c, typed) {
   const meaning = (x) => x.english.trim().toLowerCase();
   const twin = state.direction === 'listen' ? (x) => sound(x) !== '' && sound(x) === sound(c)
     : state.direction === 'en-th' ? (x) => meaning(x) === meaning(c) : null;
-  const other = twin && distractorPool().find((x) => x.key !== c.key && twin(x) && sameThai(typed, x.thai));
+  const other = twin && distractorPool(c).find((x) => x.key !== c.key && twin(x) && sameThai(typed, x.thai));
   if (other) return { right: true, note: `${state.direction === 'listen' ? 'Same sound' : `Also “${c.english}”`}: this card is ${c.thai}` };
   return { right: false, ...firstWrong(typed, c.thai) };
 }
@@ -4792,13 +4901,13 @@ function holdTop() {
 
 // ---------- Review mode: a continuous stream ----------
 // Since 2026-10-08 (the user's request) Review has no start or end: a stream of cards from the
-// words you've added, in Flashcards' scope and direction, ordered to help recall. Every card is
+// words in Cards' scope (until 2026-10-20 the ones you'd added), in its direction, ordered to help recall. Every card is
 // recall and self-grading (multiple choice is Test mode's). Every grade goes to FSRS, which decides
 // what's due on later visits. Within a visit (pickReviewEntry):
 // 1. A card you missed (Again) comes back REVIEW_RETURN[1] cards later, a Hard one REVIEW_RETURN[2]
 //    later, until you mark it Easy. An Easy card drops out of the rotation.
 // 2. Due cards, weakest (lowest recall probability) first, with a new word every NEW_EVERY cards.
-// 3. New words, in the order you added them. They aren't labelled as new.
+// 3. New words, in the scope's order (a list's: the order you added them). They aren't labelled as new.
 // 4. When nothing's due, the cards you're most likely to have forgotten, so the stream never runs
 //    dry. (FSRS's same-day rule, tweaked so repeats never lengthen a gap, keeps a long sitting
 //    from pushing words out.)
@@ -4808,14 +4917,9 @@ const REVIEW_RETURN = { 1: [2, 4], 2: [6, 9] }; // cards later: Again, Hard
 const NEW_EVERY = 4;
 const RECENT = 5;
 
-// The decks Review is narrowed to, or null for Everything.
-function reviewScopeDeckIds() {
-  const scope = flashScope();
-  return !scope || scope.kind === 'all' ? null : new Set(scope.decks.map((d) => d.id));
-}
-
-// Review mode's words: every word you've added in Flashcards' scope, in the order you added them,
-// with its progress in one direction (it: null for a word not started in it).
+// Recall's words: every word in Cards' scope, in its order (a list's: the order you added them),
+// with its progress in one direction (it: null for a word not started in it). Until the lists spike
+// (2026-10-20) it was the words you'd added with 🔁, in that scope.
 function reviewPool(dir = state.direction) {
   const items = loadStore().items || {};
   // The Alphabet's Recall: every card of its set, in order.
@@ -4823,14 +4927,12 @@ function reviewPool(dir = state.direction) {
     const { id, cards } = alphaScope();
     return cards.map((c) => ({ key: cardKey(c), dir, deckId: id, it: items[itemKeyOf(cardKey(c), dir)] || null }));
   }
-  const f = reviewFilter();
-  const scopeIds = reviewScopeDeckIds();
-  const pool = [];
-  for (const key of Object.keys(f.words).sort((x, y) => f.words[x] - f.words[y])) {
-    const deckId = reviewDeckId(key, scopeIds);
-    if (deckId) pool.push({ key, dir, deckId, it: items[itemKeyOf(key, dir)] || null });
-  }
-  return pool;
+  const scope = flashScope();
+  if (!scope) return [];
+  return scope.cards.map((c) => {
+    const key = cardKey(c);
+    return { key, dir, deckId: scope.deckOf.get(key)?.id || null, it: items[itemKeyOf(key, dir)] || null };
+  });
 }
 
 // The next card in the stream (see the top of this section), or null with no words to review.
@@ -4859,40 +4961,136 @@ function pickReviewEntry(r, now = Date.now()) {
   return (rest.length ? rest : pool).sort((x, y) => (r.shownAt.get(ik(x)) ?? -1) - (r.shownAt.get(ik(y)) ?? -1))[0];
 }
 
-// The deck a word is reviewed under, or null if Review skips it: its card was edited or removed,
-// or none of its decks is in what Flashcards covers (scopeIds, null for Everything).
-function reviewDeckId(key, scopeIds = null) {
-  const entry = state.cardIndex.get(key);
-  if (!entry) return null;
-  return entry.deckIds.find((id) => !scopeIds || scopeIds.has(id)) || null;
-}
+// ---------- your lists (2026-10-20, a spike: branch 2026-10-20-spike-custom-topics) ----------
+// The user's idea: List, Cards and Reading show a topic, Everything (Cards and Reading only), or a
+// list of your own, picked in the topic picker's My lists tab. Until then Cards held only the words
+// you'd added with 🔁 (store.reviewWords) and Reading the topic's stories, which they found "a bit
+// weird". A list is words you choose, in the order added: store.lists, [{ id, name, words: [cardKey…] }].
+// The old 🔁 words became the list "My words" (migrateLists). store.reviewWords is left as it was,
+// so master still has it if the spike is dropped.
+// 🔁 (a topic's rows, the Dictionary, word search, the word dialog) adds to one list, the target
+// (prefs.targetListId): the list last picked, made, or opened with Add words.
 
-// What Review holds: the words you've added, store.reviewWords ({ cardKey: addedAt }). Since
-// 2026-10-07 that's the only way (automatic adding, from started or current topics, is gone).
-function reviewFilter() {
-  const words = reviewWords();
-  return { words, has: (key) => key in words };
-}
+const listScopeId = (id) => `list:${id}`;
+const getLists = () => loadStore().lists || [];
+const listById = (id) => getLists().find((l) => l.id === id) || null;
+const newListId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 
-function reviewWords() {
-  return loadStore().reviewWords || {};
-}
-
-// Add words to (on) or take them out of Review. Taking out keeps their progress, so adding them
-// again carries on where they left off.
-function setInReview(keys, on) {
+function migrateLists() {
   const store = loadStore();
-  store.reviewWords ||= {};
-  let t = Date.now();
-  for (const key of keys) {
-    if (on && !(key in store.reviewWords)) store.reviewWords[key] = t++; // keeps the order added
-    if (!on) delete store.reviewWords[key];
-  }
+  if (store.lists) return;
+  const old = store.reviewWords || {};
+  const words = Object.keys(old).sort((a, b) => old[a] - old[b]);
+  store.lists = words.length ? [{ id: newListId(), name: 'My words', words }] : [];
   saveStore(store);
-  renderToday();
+}
+
+// Where 🔁 adds: the target list, or the first list; null with none yet (the first 🔁 makes My words).
+function targetList() {
+  const lists = getLists();
+  return lists.find((l) => l.id === getPreferences().targetListId) || lists[0] || null;
+}
+const targetName = () => targetList()?.name || 'My words';
+const targetWords = () => new Set(targetList()?.words || []);
+const setTarget = (id) => setPreferences({ targetListId: id });
+
+// After a list changes: its scope is rebuilt, and whatever shows it is redrawn. The List page keeps
+// its rows (state.listCards) until it's opened afresh, so a word taken out of the list it shows stays
+// on screen with 🔁, to put back with a tap.
+function listsChanged(id) {
+  scopeCache.delete(listScopeId(id));
   if (state.view === 'wordlist') renderWordlist();
   if (state.view === 'dictionary') renderDictionary();
+  renderDeckButton();
   syncReviewOnly();
+}
+
+function changeList(id, change) {
+  const store = loadStore();
+  const list = (store.lists ||= []).find((l) => l.id === id);
+  if (!list) return null;
+  change(list);
+  saveStore(store);
+  listsChanged(id);
+  return list;
+}
+
+function createList(name) {
+  const store = loadStore();
+  const list = { id: newListId(), name, words: [] };
+  (store.lists ||= []).push(list);
+  saveStore(store);
+  setTarget(list.id);
+  return list;
+}
+
+// Adds words to (on) or takes them out of the target list, making My words if there's no list yet.
+// Taking out keeps their progress. Returns the list's name, for the toast.
+function setInTarget(keys, on) {
+  const list = targetList() || createList('My words');
+  changeList(list.id, (l) => {
+    const have = new Set(l.words);
+    if (on) l.words.push(...keys.filter((k) => !have.has(k)));
+    else {
+      const out = new Set(keys);
+      l.words = l.words.filter((k) => !out.has(k));
+    }
+  });
+  return list.name;
+}
+
+// A list's name, asked in the confirm dialog's text box. Resolves the trimmed name, or null.
+async function askListName(title, value = '', confirmLabel = 'Save') {
+  const ok = await confirmDialog({ title, confirmLabel, input: { value, placeholder: 'Name, e.g. Food words' } });
+  const name = els.confirmInput.value.trim();
+  return ok && name ? name.slice(0, 60) : null;
+}
+
+async function renameList(id) {
+  const list = listById(id);
+  if (!list) return;
+  const name = await askListName('Rename list', list.name);
+  if (!name || name === list.name) return;
+  changeList(id, (l) => { l.name = name; });
+}
+
+async function deleteList(id) {
+  const list = listById(id);
+  if (!list) return;
+  const n = list.words.length;
+  const ok = await confirmDialog({
+    title: `Delete '${list.name}'?`,
+    message: `${n ? `Its ${n} word${n === 1 ? '' : 's'} stay in their topics, and your progress on them is kept.` : 'It has no words.'}`,
+    confirmLabel: 'Delete',
+    danger: true,
+  });
+  if (!ok) return;
+  const store = loadStore();
+  store.lists = (store.lists || []).filter((l) => l.id !== id);
+  saveStore(store);
+  scopeCache.delete(listScopeId(id));
+  if (getPreferences().targetListId === id) setTarget(store.lists[0]?.id || null);
+  if (state.addingTo === id) state.addingTo = null;
+  // Showing it: the next list, or the first topic.
+  if (state.currentDeckId === listScopeId(id)) {
+    selectDeck(store.lists[0] ? listScopeId(store.lists[0].id) : state.decks.find((d) => !d.passage).id);
+  }
+  toast(`Deleted '${list.name}'`);
+}
+
+// The List page's Add words: the picker, to choose a topic or another list to add from. Its words'
+// 🔁 then add to this list, and a bar over the page says so, with Done to come back (renderWordlist).
+function openAddWords(id) {
+  setTarget(id);
+  if (state.view !== 'wordlist') setView('wordlist');
+  openDeckPicker({ addTo: id });
+}
+
+function doneAdding() {
+  const id = state.addingTo;
+  state.addingTo = null;
+  if (id && listById(id)) selectDeck(listScopeId(id));
+  else renderWordlist();
 }
 
 // Sets el's text, drawing each → as the SVG arrow (.arrow-icon), since the → glyph sits low in
@@ -5004,7 +5202,7 @@ function speakerIcon() {
   return svg;
 }
 // The pages' line icons: the phone's tab bar, the home cards and the topic button (a topic: Topics'
-// list; a category or Everything: a folder). index.html has the same paths inline.
+// list; a category or Everything: a folder; one of your lists: a bookmark). index.html has the same paths inline.
 const PAGE_ICONS = {
   home: 'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z',
   topics: 'M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01',
@@ -5013,6 +5211,7 @@ const PAGE_ICONS = {
   dictionary: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z',
   group: 'M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z',
   alphabet: 'M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6',
+  mylist: 'M6 3h12v18l-6-4.5L6 21z', // a bookmark: one of your lists (2026-10-20)
 };
 const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4');
 
@@ -5038,9 +5237,14 @@ function toast(message, { ms = 2000, tone = '' } = {}) {
 // confirm button red and starts focus on Cancel, so Enter doesn't confirm. With `setting` (a boolean setting, true = ask; listed under Settings →
 // Wordlists, beside the buttons they confirm), it offers "Don't ask again", which turns the setting off when confirming; while
 // it's off, it resolves true straight away without showing anything.
-function confirmDialog({ title, message, confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false }) {
+// With `input` ({ value, placeholder }), a text box under the message (a list's name, 2026-10-20),
+// focused, Enter confirming; the caller reads els.confirmInput.
+function confirmDialog({ title, message = '', confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false, input = null }) {
   if (setting && getSettings()[setting] === false) return Promise.resolve(true);
   if (state.confirm) closeConfirm(false);
+  els.confirmInput.hidden = !input;
+  els.confirmInput.value = input?.value || '';
+  els.confirmInput.placeholder = input?.placeholder || '';
   els.confirmTitle.textContent = title;
   els.confirmMessage.textContent = message;
   els.confirmMessage.hidden = !message;
@@ -5053,7 +5257,8 @@ function confirmDialog({ title, message, confirmLabel = 'OK', cancelLabel = 'Can
   setModalOpen(true);
   return new Promise((resolve) => {
     state.confirm = { resolve, setting, lastFocus: document.activeElement };
-    (danger ? els.confirmCancel : els.confirmOk).focus();
+    (input ? els.confirmInput : danger ? els.confirmCancel : els.confirmOk).focus();
+    if (input) els.confirmInput.select();
   });
 }
 
@@ -5399,16 +5604,21 @@ function renderReading() {
   placeReader();
 }
 
-// The list: the stories that use the current topic's words (the topic picker's choice, shared with
-// the Topics page), best matches first. There's no list of every story: there will be too many (the
-// user's call, 2026-10-08).
+// The list: the stories that use the words of the topic or list (the topic picker's choice, shared
+// with the List page), best matches first; on Everything, every story, by level (renderAllStories).
+// There was no list of every story at first, as there'd be too many (the user's call, 2026-10-08);
+// Everything has one since the lists spike (2026-10-20, the user's go-ahead), a level at a time.
 function renderReadingList() {
-  const scope = currentScope();
+  const scope = studyScope();
+  if (scope?.kind === 'all') {
+    renderAllStories();
+    return;
+  }
   const found = scope ? storiesFor(scope) : [];
   if (!found.length) {
     const empty = document.createElement('div');
     empty.className = 'reading-empty';
-    empty.append(scope ? `No stories for ${scope.name} yet.` : '');
+    empty.append(!scope ? '' : scope.kind === 'list' ? `No stories use two or more of the words in '${scope.name}' yet.` : `No stories for ${scope.name} yet.`);
     // A narrower choice can try its whole category, whose words are pooled.
     const cat = scope && scope.kind !== 'category' ? scope.decks[0]?.category : null;
     if (cat) {
@@ -5425,29 +5635,72 @@ function renderReadingList() {
   // A story opened from elsewhere (a search result) that isn't one of this topic's goes first.
   const open = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
   if (open && !found.some(({ d }) => d === open)) found.unshift({ d: open });
-  els.readingList.replaceChildren(...found.map(({ d }) => {
-    const entry = document.createElement('div');
-    entry.className = 'reading-entry';
-    entry.dataset.id = d.id;
-    // The title row: its button opens and closes the story; the open one's row also holds Read.
-    const head = document.createElement('div');
-    head.className = 'reading-head';
-    const item = document.createElement('button');
-    item.type = 'button';
-    item.className = 'reading-item';
-    item.setAttribute('aria-expanded', 'false');
-    item.setAttribute('aria-controls', 'reader');
-    item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"><span class="reading-item-title"></span></span><span class="reading-item-desc"></span></span><span class="reading-item-chevron" aria-hidden="true">›</span>';
-    item.querySelector('.reading-item-title').textContent = d.name;
-    item.querySelector('.reading-item-desc').textContent = d.description;
-    item.addEventListener('click', () => {
-      if (storyRunOn()) stopReadStories(); // a story picked by hand ends Read all
-      if (state.readingId === d.id) closeReading();
-      else openReading(d.id);
+  els.readingList.replaceChildren(...found.map(({ d }) => storyEntry(d)));
+}
+
+// A story's row: its title button opens and closes it; the open one's row also holds Read.
+function storyEntry(d) {
+  const entry = document.createElement('div');
+  entry.className = 'reading-entry';
+  entry.dataset.id = d.id;
+  const head = document.createElement('div');
+  head.className = 'reading-head';
+  const item = document.createElement('button');
+  item.type = 'button';
+  item.className = 'reading-item';
+  item.setAttribute('aria-expanded', 'false');
+  item.setAttribute('aria-controls', 'reader');
+  item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"><span class="reading-item-title"></span></span><span class="reading-item-desc"></span></span><span class="reading-item-chevron" aria-hidden="true">›</span>';
+  item.querySelector('.reading-item-title').textContent = d.name;
+  item.querySelector('.reading-item-desc').textContent = d.description;
+  item.addEventListener('click', () => {
+    if (storyRunOn()) stopReadStories(); // a story picked by hand ends Read all
+    if (state.readingId === d.id) closeReading();
+    else openReading(d.id);
+  });
+  head.append(item);
+  entry.append(head);
+  return entry;
+}
+
+// Everything's stories: a heading for each level (Little Stories, Easy, Medium, Harder: the
+// stories' groups in decks.json), one open at a time (state.readingLevel; the open story's, or the
+// first), as the topic picker's categories are. Only the open level's stories are drawn (811 Easy
+// ones), so Read all reads that level.
+function renderAllStories() {
+  const levels = new Map();
+  for (const d of state.decks) {
+    if (!d.passage) continue;
+    const g = d.group || 'Stories';
+    if (!levels.has(g)) levels.set(g, []);
+    levels.get(g).push(d);
+  }
+  const openStory = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
+  if (openStory) state.readingLevel = openStory.group || 'Stories';
+  if (state.readingLevel !== '' && !levels.has(state.readingLevel)) state.readingLevel = levels.keys().next().value; // '': all closed
+  els.readingList.replaceChildren(...[...levels].map(([name, stories]) => {
+    const open = name === state.readingLevel;
+    const wrap = document.createElement('div');
+    wrap.className = 'reading-level' + (open ? '' : ' collapsed');
+    const head = document.createElement('button');
+    head.type = 'button';
+    head.className = 'cat-header reading-level-head';
+    head.setAttribute('aria-expanded', String(open));
+    head.innerHTML = '<span class="cat-caret">▾</span><span class="cat-name"></span><span class="cat-count"></span>';
+    head.querySelector('.cat-name').textContent = name;
+    head.querySelector('.cat-count').textContent = `${stories.length} stor${stories.length === 1 ? 'y' : 'ies'}`;
+    head.addEventListener('click', () => {
+      if (storyRunOn()) stopReadStories();
+      hideWordPop();
+      state.readingId = null;
+      state.readingLevel = open ? '' : name;
+      renderReading();
+      // A level closing above can move this one off screen.
+      els.readingList.querySelector('.reading-level:not(.collapsed) .reading-level-head')?.scrollIntoView({ block: 'nearest' });
     });
-    head.append(item);
-    entry.append(head);
-    return entry;
+    wrap.append(head);
+    if (open) wrap.append(...stories.map(storyEntry));
+    return wrap;
   }));
 }
 
@@ -5775,20 +6028,20 @@ function showWordPop(anchor, card) {
   const actions = document.createElement('div');
   actions.className = 'pop-actions';
   const key = cardKey(card);
-  let added = key in reviewWords();
+  let added = targetWords().has(key);
   const rv = document.createElement('button');
   rv.type = 'button';
   const paintReview = () => {
     rv.className = 'row-review' + (added ? ' added' : '');
     rv.replaceChildren(added ? '✓' : reviewIcon());
-    rv.title = added ? `Remove ${card.thai} from Cards` : `Add ${card.thai} to Cards`;
+    rv.title = added ? `Remove ${card.thai} from '${targetName()}'` : `Add ${card.thai} to '${targetName()}'`;
     rv.setAttribute('aria-label', rv.title);
   };
   paintReview();
   rv.addEventListener('click', () => {
     added = !added;
-    setInReview([key], added);
-    toast(added ? `✓ Added ${card.thai} to Cards` : `Removed ${card.thai} from Cards`, { tone: added ? 'good' : '' });
+    const name = setInTarget([key], added);
+    toast(added ? `✓ Added ${card.thai} to '${name}'` : `Removed ${card.thai} from '${name}'`, { tone: added ? 'good' : '' });
     paintReview();
   });
   if (!card.alpha) actions.append(rv); // the Alphabet's Cards hold every letter: nothing to add
@@ -6332,29 +6585,8 @@ async function resetAllProgress() {
   toast('All progress reset');
 }
 
-// Settings → Reset → Clear Flashcards: every word you've added out of it (store.reviewWords; it was
-// "Reset Review list" until 2026-10-08). Progress is kept, so re-adding carries on.
-async function resetReviewList() {
-  const n = Object.keys(reviewWords()).length;
-  if (!n) {
-    toast('There are no words in Cards');
-    return;
-  }
-  const ok = await confirmDialog({
-    title: 'Clear Cards?',
-    message: `This takes all ${n} word${n === 1 ? '' : 's'} you've added out of Cards. Their progress is kept, so adding them again carries on.`,
-    confirmLabel: 'Clear Cards',
-    danger: true,
-  });
-  if (!ok) return;
-  const store = loadStore();
-  store.reviewWords = {};
-  saveStore(store);
-  renderToday();
-  renderWordlist();
-  syncReviewOnly();
-  toast('Cards cleared');
-}
+// Settings → Reset → Clear Cards went with the lists spike (2026-10-20): a list is deleted from
+// its List page.
 
 // Every setting back to its default (getSettings merges DEFAULT_SETTINGS over what's saved).
 // Progress and the Review list aren't settings, and nor is "Download all audio" being on: the
@@ -6362,7 +6594,7 @@ async function resetReviewList() {
 async function resetSettings() {
   const ok = await confirmDialog({
     title: 'Reset all settings?',
-    message: 'Every setting goes back to its default. Your progress and the words in Cards are kept.',
+    message: 'Every setting goes back to its default. Your progress and your lists are kept.',
     confirmLabel: 'Reset settings',
     danger: true,
   });
@@ -6424,20 +6656,15 @@ function cacheSample(url, blobUrl) {
 // replaces the last one's clips that haven't been fetched yet.
 // At most PRELOAD_MAX words: a group or category can hold hundreds, and fetching all of them at
 // launch kept a phone busy for seconds (2026-10-07: 1,216 clips for a 593-word category). Then
-// it's the words likely to play soon: those in Review (what Flashcards shows), then the top of the
-// Topics page. Anything else is fetched when it's played.
+// it's the words likely to play soon, the top of the list (Cards goes through it in order since the
+// lists spike, 2026-10-20; before, the words in Cards came first). Anything else is fetched when it's played.
 const PRELOAD_MAX = 80;
 function preloadDeckAudio(deck) {
   if (getSettings().audioSource !== 'samples') {
     queuePageAudio([]);
     return;
   }
-  let cards = deck.cards;
-  if (cards.length > PRELOAD_MAX) {
-    const words = reviewWords();
-    const inReview = cards.filter((c) => cardKey(c) in words);
-    cards = [...new Set([...inReview, ...cards])].slice(0, PRELOAD_MAX);
-  }
+  const cards = deck.cards.slice(0, PRELOAD_MAX);
   const entries = [];
   const add = (url, keep) => url && entries.push({ url, keep });
   for (const c of cards) add(sampleUrl(cardSay(c), 'th'), true);
@@ -6939,11 +7166,10 @@ function bindEvents() {
   document.addEventListener('click', (e) => {
     if (!els.alphaSetMenu.hidden && !e.target.closest('#alpha-set-menu, #deck-button')) toggleAlphaSets(false);
   });
-  els.reviewByButtons.forEach((b) => b.addEventListener('click', () => {
-    setFlashcardsBy(b.dataset.reviewBy);
-    if (b.dataset.reviewBy === 'all') closeDeckPicker(); // nothing more to pick
-    else renderReviewBy();
-  }));
+  els.pickerTabs.forEach((b) => b.addEventListener('click', () => pickPickerTab(b.dataset.pickerTab)));
+  els.addingDone.addEventListener('click', doneAdding);
+  els.listRename.addEventListener('click', () => renameList(currentScope()?.id.slice(5)));
+  els.listDelete.addEventListener('click', () => deleteList(currentScope()?.id.slice(5)));
   els.deckPicker.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeDeckPicker();
   });
@@ -7006,7 +7232,6 @@ function bindEvents() {
 
   els.resetAll.addEventListener('click', resetAllProgress);
   els.resetSettings.addEventListener('click', resetSettings);
-  els.resetReview.addEventListener('click', resetReviewList);
 
   [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a flip
@@ -7103,53 +7328,60 @@ function bindEvents() {
   els.homeLink.addEventListener('click', () => setView('home'));
   els.homeCards.forEach((card) => card.addEventListener('click', () => goTo(card.dataset.go))); // the Alphabet: its last page
 
-  // Adding to Review by hand
+  // The List page's Add all: every word shown into the target list, or, with all of them in, out of
+  // it. On the target list's own page it's Add words instead (renderWordlist).
   els.wordlistAddAll.addEventListener('click', async () => {
-    const words = reviewWords();
     const deck = currentScope();
-    const keys = state.listCards.map((c) => c.key).filter((key) => !(key in words));
+    const target = targetList();
+    if (target && deck?.id === listScopeId(target.id)) {
+      openAddWords(target.id);
+      return;
+    }
+    const name = targetName();
+    const words = targetWords();
+    const keys = state.listCards.map((c) => c.key).filter((key) => !words.has(key));
     if (!keys.length) {
-      // All in Review: remove them all (their progress is kept).
+      // All in the list: take them all out (their progress is kept).
       const n = state.listCards.length;
       const ok = await confirmDialog({
-        title: 'Remove all from Cards?',
-        message: `Remove all ${n} words in ${deck.name} from Cards? Your progress on them is kept.`,
+        title: `Remove all from '${name}'?`,
+        message: `Remove all ${n} words in ${deck.name} from '${name}'? Your progress on them is kept.`,
         confirmLabel: `Remove ${n}`,
         setting: 'confirmRemoveAll',
       });
       if (ok) {
-        setInReview(state.listCards.map((c) => c.key), false);
-        toast(`Removed ${n} words from Cards`);
+        setInTarget(state.listCards.map((c) => c.key), false);
+        toast(`Removed ${n} words from '${name}'`);
       }
       return;
     }
     const n = keys.length;
     const ok = await confirmDialog({
-      title: 'Add all to Cards?',
+      title: `Add all to '${name}'?`,
       message: n === state.listCards.length
-        ? `Add all ${n} words in ${deck.name} to Cards?`
-        : `Add the ${n} words in ${deck.name} that aren't in Cards yet?`,
+        ? `Add all ${n} words in ${deck.name} to '${name}'?`
+        : `Add the ${n} words in ${deck.name} that aren't in '${name}' yet?`,
       confirmLabel: `Add ${n}`,
       setting: 'confirmAddAll',
     });
     if (ok) {
-      setInReview(keys, true);
-      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to Cards`, { tone: 'good' });
+      setInTarget(keys, true);
+      toast(`✓ Added ${n} ${n === 1 ? 'word' : 'words'} to '${name}'`, { tone: 'good' });
     }
   });
-  // Flashcards with none of the topic's words in yet: "Add all words from '…'? Yes" (the question is
-  // the confirmation), or the Topics page to pick them.
-  els.reviewOnlyYes.addEventListener('click', () => {
-    const words = reviewWords();
-    const keys = state.cards.map((c) => c.key).filter((key) => !(key in words));
-    if (!keys.length) return;
-    setInReview(keys, true);
-    toast(`✓ Added ${keys.length} ${keys.length === 1 ? 'word' : 'words'} to Cards`, { tone: 'good' });
+  // Cards on an empty list: its Add words, on the List page.
+  els.reviewOnlyAdd.addEventListener('click', () => {
+    const id = currentScope()?.kind === 'list' ? currentScope().id.slice(5) : null;
+    if (id) openAddWords(id);
   });
-  els.reviewOnlyTopics.addEventListener('click', () => setView('wordlist'));
-  els.reviewOnlyEverything.addEventListener('click', () => setFlashcardsBy('all'));
   els.confirmOk.addEventListener('click', () => closeConfirm(true));
   els.confirmCancel.addEventListener('click', () => closeConfirm(false));
+  els.confirmInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      closeConfirm(true);
+    }
+  });
   els.confirmModal.querySelector('[data-close]').addEventListener('click', () => closeConfirm(false));
   els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
 
@@ -7500,16 +7732,22 @@ async function syncOfflineAudio() {
 }
 
 // ---------- backup (Settings → App → Backup) ----------
-// The whole store (settings, progress, Review list, page choices) as a JSON file, and loading one
+// The whole store (settings, progress, your lists, page choices) as a JSON file, and loading one
 // back. Loading replaces the store, then reloads the app so everything starts from it.
 const BACKUP_FORMAT = 'learnthai-backup';
 
 function backupSummary(store) {
-  const words = Object.keys(store.reviewWords || {}).length;
   const keys = new Set(Object.keys(store.items || {}).map((k) => splitItemKey(k)[0]));
   const alpha = [...keys].filter((k) => k.startsWith('abc:')).length;
   const studied = keys.size - alpha;
-  return `${words} word${words === 1 ? '' : 's'} in Cards, progress on ${studied}` + (alpha ? ` and ${alpha} from the Alphabet` : '');
+  const progress = `progress on ${studied}` + (alpha ? ` and ${alpha} from the Alphabet` : '');
+  // A backup from before the lists (2026-10-20) has the words in Cards, which become My words.
+  if (!store.lists) {
+    const words = Object.keys(store.reviewWords || {}).length;
+    return `${words} word${words === 1 ? '' : 's'} in Cards, ${progress}`;
+  }
+  const n = store.lists.length;
+  return `${n} list${n === 1 ? '' : 's'}, ${progress}`;
 }
 
 async function exportBackup() {
@@ -7546,14 +7784,15 @@ async function loadBackup(file) {
   const data = backup?.data;
   const plain = (x) => x == null || (typeof x === 'object' && !Array.isArray(x));
   if (backup?.format !== BACKUP_FORMAT || !data || typeof data !== 'object' ||
-      !['settings', 'prefs', 'items', 'daily', 'reviewWords'].every((k) => plain(data[k]))) {
+      !['settings', 'prefs', 'items', 'daily', 'reviewWords'].every((k) => plain(data[k])) ||
+      !(data.lists == null || Array.isArray(data.lists))) {
     toast("That file isn't a Learn Thai backup");
     return;
   }
   const when = backup.exported ? new Date(backup.exported).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : 'an unknown date';
   const ok = await confirmDialog({
     title: 'Load this backup?',
-    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and words in Cards on this device (${backupSummary(loadStore())}).`,
+    message: `From ${when}: ${backupSummary(data)}.\nIt replaces the settings, progress and lists on this device (${backupSummary(loadStore())}).`,
     confirmLabel: 'Load backup',
     danger: true,
   });
@@ -7587,6 +7826,7 @@ async function init() {
 
   migrateLeitnerToItems();
   migrateCardRenames();
+  migrateLists(); // after the renames, which fix the old words in Cards it's made from
 
   const prefs = getPreferences();
   // 2026-10-06: Wordlists' "Show first" moved from the page (prefs.primaryCol) to Settings.

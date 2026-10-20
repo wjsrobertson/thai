@@ -432,11 +432,15 @@ html.modal-open body {
 }
 .scope-all:hover { color: var(--accent); border-color: var(--accent); }
 .scope-all.current { color: var(--accent); border-color: var(--accent); background: var(--panel-2); }
-/* Review's dialog: Everything / By topic above the topic list (renderReviewBy). */
+/* The picker's tabs, Topics | My lists | Everything, above its list (renderPickerTabs; it was Cards'
+   Everything / By topic until the lists spike, 2026-10-20). */
 .review-by { padding: 12px 16px 4px; }
 .review-by[hidden], #deck-picker .modal-search[hidden], #deck-picker-tree[hidden] { display: none; }
 .review-by .segmented { display: flex; }
 .review-by .seg-btn { flex: 1; }
+.review-by .seg-btn[hidden] { display: none; } /* Everything, from the List page */
+/* My lists: New list under the lists (renderListsPane). */
+.new-list { display: block; width: calc(100% - 16px); min-height: 44px; margin: 8px; font-size: 16px; }
 .review-by-help { margin: 8px 2px 4px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
 #deck-picker.review-all .modal-panel { height: auto; align-self: center; padding-bottom: 8px; }
 .cat-header {
@@ -1932,6 +1936,28 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   color: var(--ink);
   margin-bottom: 12px;
 }
+/* Add words: where the words go, over the topic or list they come from, with Done (2026-10-20). */
+.adding-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding: 8px 8px 8px 14px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  border-radius: 10px;
+  color: var(--ink);
+  font-size: calc(16px * var(--fs, 1));
+}
+.adding-bar[hidden], .list-actions[hidden] { display: none; }
+.adding-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.adding-bar .ghost { flex: none; min-height: 44px; padding: 8px 16px; }
+/* A list's Rename and Delete, under its name. */
+.list-actions { display: flex; gap: 8px; margin: -4px 0 12px; }
+.list-actions .ghost { min-height: 44px; padding: 8px 14px; }
+.ghost.danger { color: var(--again); }
+/* Add all to the list 🔁 adds to: a long name ends in … (the button stays one line). */
+.add-all-name { display: inline-block; max-width: 9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .wordlist-title { display: block; font-size: calc(22px * var(--fs, 1)); font-weight: 600; }
 .wordlist-desc { display: block; margin-top: 4px; font-size: calc(17px * var(--fs, 1)); line-height: 1.45; }
 /* Tap-to-play Thai in notes and topic paragraphs (appendNoteText). */
@@ -1986,6 +2012,11 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .reading-item-name { display: block; font-size: calc(18px * var(--fs, 1)); font-weight: 600; }
 .reading-item-desc { display: block; margin-top: 2px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
 .reading-empty { padding: 20px 4px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
+/* Reading on Everything: a heading for each level, one open at a time (renderAllStories), styled as
+   the topic picker's categories. */
+.reading-level { margin-bottom: 4px; }
+.reading-level-head { min-height: 44px; margin-bottom: 4px; }
+.reading-level.collapsed .cat-caret { transform: rotate(-90deg); }
 .reading-empty .ghost { display: block; margin-top: 12px; padding: 8px 14px; }
 .rw.found { color: var(--accent); background: var(--panel-2); }
 
@@ -2539,7 +2570,20 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 }
 .confirm-panel h2 { margin: 0; font-size: calc(19px * var(--fs, 1)); color: var(--ink); }
 .confirm-panel p { margin: 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.45; white-space: pre-line; }
-.confirm-panel p[hidden], .confirm-dont-ask[hidden] { display: none; }
+.confirm-panel p[hidden], .confirm-dont-ask[hidden], .confirm-input[hidden] { display: none; }
+/* A list's name (askListName): 16px, so iOS doesn't zoom in on it. */
+.confirm-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
+  background: var(--panel-2);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+.confirm-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
 .confirm-dont-ask { display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
 .confirm-dont-ask input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
 .confirm-dont-ask .setting-help { padding-left: 26px; } /* lines up with "Don't ask again": box 18px + gap 8px */

@@ -253,7 +253,7 @@ def checks(ws, size):
               up is not None and down is not None and down >= 0 and abs(up - down) <= 2, f"{up and round(up)} above, {down and round(down)} below")
 
     open_page(ws, 'study', studyPage='wordlist', currentDeckId='greetings')
-    tap(ws, '#wordlist-add-all', wait=0.8)
+    # (Add all was tapped here until the lists spike, 2026-10-20: Cards held only the words added.)
     tap(ws, '[data-study-page=flashcards]', wait=1.5)
     card, nx, tabs = R(ws, '#card'), R(ws, '#next-btn'), R(ws, '.tabs')
     up, down = (nx and card and nx['t'] - card['b'], nx and tabs['t'] - nx['b'])
