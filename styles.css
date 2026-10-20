@@ -1936,12 +1936,13 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   color: var(--ink);
   margin-bottom: 12px;
 }
-/* Add words: where the words go, over the topic or list they come from, with Done (2026-10-20). */
+/* Add words: where the words go, over the topic or list they come from, with Done (2026-10-20). A
+   row of its own at the head of the bar, over the topic button (on a phone, pinned: mobile.css). */
+.adding-pin { flex: 1 0 100%; order: -1; }
 .adding-bar {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
   padding: 8px 8px 8px 14px;
   background: var(--accent-soft);
   border: 1px solid var(--accent);
@@ -1949,7 +1950,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   color: var(--ink);
   font-size: calc(16px * var(--fs, 1));
 }
-.adding-bar[hidden], .list-actions[hidden] { display: none; }
+.adding-pin[hidden], .list-actions[hidden] { display: none; }
 .adding-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .adding-bar .ghost { flex: none; min-height: 44px; padding: 8px 16px; }
 /* A list's Rename and Delete, under its name. */

@@ -1630,6 +1630,15 @@ the user said yes to all of them.
   390 × 664 and 1280 × 800 (`words_probe.py`, `words_probe2.py`): all of Food & Drink (273 words),
   Show more, "rice", ข้าว, "khao", no match, Read all past three pages, My words, a topic and the
   consonants whole. The layout check wasn't run (the user's call).
+- **Add words' bar pinned** (the user's call, the same day, for the phone: it scrolled away, under
+  Add all and Read all). "Adding words to … Done" (`#adding-bar`, now `.adding-pin` round the bar)
+  moved out of the List page into the top bar, after the pinned topic row and before Add all and
+  Read all. On a phone it's pinned under that row (`top: var(--pinned-h)`), taking the gutters, the
+  page's colour with a hairline once scrolled, as the Alphabet's letter line is; `scroll-padding-top`
+  grows to 162 while it shows, so Read all's rows stop under it. On desktop it's a full-width row at
+  the head of the bar (`order: -1`), over the topic button, and scrolls away. Checked at 390 × 664,
+  390 × 844 (text size 2) and 1280 × 800 (`adding_probe.py`): under the row at rest and scrolled
+  1200, a row scrolled to stopping at 162, gone on Cards and Reading and after Done.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
