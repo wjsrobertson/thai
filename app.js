@@ -5349,13 +5349,16 @@ let toastMs = 0;
 function toast(message, { ms = 2000, tone = '', action = null } = {}) {
   const el = els.toast;
   if (action) {
-    const msg = Object.assign(document.createElement('span'), { className: 'toast-msg', textContent: message });
+    // A leading ✓ stands apart, centred beside the message, which can wrap to two lines (the user's
+    // call, 2026-10-20: it sat at the start of the first line).
+    const [, tick, text] = message.match(/^(✓\s+)?([\s\S]*)$/);
+    const msg = Object.assign(document.createElement('span'), { className: 'toast-msg', textContent: text });
     const btn = Object.assign(document.createElement('button'), { type: 'button', className: 'toast-action', textContent: action.label });
     btn.addEventListener('click', () => {
       hideToast();
       action.fn();
     });
-    el.replaceChildren(msg, btn);
+    el.replaceChildren(...(tick ? [Object.assign(document.createElement('span'), { className: 'toast-tick', textContent: '✓' })] : []), msg, btn);
   } else {
     el.textContent = message;
   }

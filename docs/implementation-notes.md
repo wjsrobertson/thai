@@ -1691,6 +1691,9 @@ the user said yes to all of them.
   there (its ✓) is faded too, as on the list's own page (`state.takenOut`, kept by `setInTarget` while
   `addingFrom()`), and putting it back says "Re-added". The fades clear with a new topic or when the
   page opens afresh, the topic's rows staying (they're its words).
+- **The toast's ✓ beside its message** (the user's call, the same day: on a two-line message it sat
+  at the start of the first line). A toast with a button splits a leading ✓ into its own `.toast-tick`,
+  centred against the message, which wraps beside it (`toast`).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

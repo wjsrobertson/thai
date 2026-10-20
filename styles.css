@@ -2724,6 +2724,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   border-radius: 26px; /* a pill on one line, rounded corners on two */
 }
 .toast-msg { min-width: 0; padding: 6px 0; white-space: normal; line-height: 1.3; }
+.toast-tick { flex: none; margin-right: 4px; } /* with the gap, 8 from the message */
 .toast-action {
   pointer-events: auto;
   flex: none;
