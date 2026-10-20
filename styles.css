@@ -2006,6 +2006,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Read all sits at the bar's right end, as Topics' Read all does. */
 .reading-bar-right { margin-left: auto; }
 .reading-bar-right > .read-aloud { margin-left: 0; }
+/* The stories' search, as tall as Read all beside it; Show more under the stories (pagedStories). */
+.reading-bar-right { align-items: stretch; }
+.reading-bar-right .reading-search { flex: 0 1 260px; min-width: 0; margin: 0; padding: 8px 14px; }
+.reading-more { display: block; width: 100%; min-height: 44px; margin: 4px 0 12px; font-size: 16px; }
 /* Paused by a word's dialog (pauseReadStories): its button carries on. */
 .read-aloud.paused { color: var(--accent); border-color: var(--accent); border-style: dashed; }
 .reading-item-main { flex: 1; min-width: 0; }

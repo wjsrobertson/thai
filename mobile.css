@@ -9,6 +9,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 /* iOS Safari zooms the page into any focused input smaller than 16px. */
 #deck-picker-search,
 #dict-search,
+#reading-search,
 #settings-search,
 .setting-row select,
 .setting-row input[type="number"] {
@@ -113,6 +114,7 @@ html.kb .tabs { display: none; }
 /* Reading's Read all: on the right, as on Topics, not stretched across the row. */
 .reading-bar-right { justify-content: flex-end; }
 .reading-bar-right > button { flex: 0 0 auto; }
+.reading-bar-right .reading-search { flex: 1 1 0; }
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- the section's top row, pinned ---------- */

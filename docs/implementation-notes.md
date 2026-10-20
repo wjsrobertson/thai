@@ -1576,7 +1576,15 @@ the user said yes to all of them.
   **Everything lists every story** (`renderAllStories`). That reverses the 2026-10-08 call that there
   would be too many; the user agreed to it here. They're shown by level (Little Stories 23, Easy 811,
   Medium 439, Harder 64), each under a heading styled as the picker's categories, one level open at a
-  time. Only the open level is drawn, so Read all reads that level.
+  time. Only the open level is drawn.
+- **Reading in pages, with a search** (the user's call the same day: a list's stories ran to hundreds,
+  216 for all of Food & Drink). Any Reading list shows 10 stories, then **Show 10 more · N left**
+  (`pagedStories`, `READING_PAGE`); the open story always shows. **Search stories** (`#reading-search`)
+  sits left of Read all, in the row that was empty on a phone, at Read all's height. A Thai query
+  matches the stories' Thai (word breaks ignored); anything else matches the title, description and
+  English (`storyMatches`). On Everything, a search covers every level at once, with no headings. A new topic, list or
+  level starts again at the first page with the search cleared (`readingFor`). Read all reads the
+  stories showing.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

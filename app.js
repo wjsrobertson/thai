@@ -160,6 +160,7 @@ const els = {
   readingList: document.getElementById('reading-list'),
   readingRead: document.getElementById('reading-read'),
   readingReadAll: document.getElementById('reading-read-all'),
+  readingSearch: document.getElementById('reading-search'),
   reader: document.getElementById('reader'),
   readerLines: document.getElementById('reader-lines'),
   readerTranslit: document.getElementById('reader-translit'),
@@ -232,6 +233,9 @@ const state = {
   dictQuery: '',      // and its search box
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   readingLevel: null, // Reading on Everything: the open level (renderAllStories), '' with all closed
+  readingQuery: '',   // Reading's search box (storyMatches)
+  readingShown: 10,   // how many of the list's stories show (READING_PAGE more with each Show more)
+  readingFor: null,   // the scope (and level) those were for: a new one starts them afresh
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review' | 'type' (Recognition, typed: 2026-10-19)
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
   pickerOpen: false,
@@ -5610,17 +5614,21 @@ function renderReading() {
 // Everything has one since the lists spike (2026-10-20, the user's go-ahead), a level at a time.
 function renderReadingList() {
   const scope = studyScope();
-  if (scope?.kind === 'all') {
+  readingFor(scope?.id);
+  const q = state.readingQuery.trim();
+  if (scope?.kind === 'all' && !q) {
     renderAllStories();
     return;
   }
-  const found = scope ? storiesFor(scope) : [];
+  // Searching Everything: every level's at once.
+  let found = scope?.kind === 'all' ? state.decks.filter((d) => d.passage).map((d) => ({ d })) : scope ? storiesFor(scope) : [];
+  if (q) found = found.filter(({ d }) => storyMatches(d, q));
   if (!found.length) {
     const empty = document.createElement('div');
     empty.className = 'reading-empty';
-    empty.append(!scope ? '' : scope.kind === 'list' ? `No stories use two or more of the words in '${scope.name}' yet.` : `No stories for ${scope.name} yet.`);
+    empty.append(q ? `No stories match "${q}".` : !scope ? '' : scope.kind === 'list' ? `No stories use two or more of the words in '${scope.name}' yet.` : `No stories for ${scope.name} yet.`);
     // A narrower choice can try its whole category, whose words are pooled.
-    const cat = scope && scope.kind !== 'category' ? scope.decks[0]?.category : null;
+    const cat = !q && scope && scope.kind !== 'category' ? scope.decks[0]?.category : null;
     if (cat) {
       const wider = document.createElement('button');
       wider.type = 'button';
@@ -5635,7 +5643,55 @@ function renderReadingList() {
   // A story opened from elsewhere (a search result) that isn't one of this topic's goes first.
   const open = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
   if (open && !found.some(({ d }) => d === open)) found.unshift({ d: open });
-  els.readingList.replaceChildren(...found.map(({ d }) => storyEntry(d)));
+  els.readingList.replaceChildren(...pagedStories(found.map(({ d }) => d)));
+}
+
+// A long list in pages (the user's call, 2026-10-20: a list's or Everything's stories ran to hundreds):
+// the first READING_PAGE, then Show more for the next. The open story is always among them. Read all
+// reads what shows.
+const READING_PAGE = 10;
+function pagedStories(stories) {
+  const at = stories.findIndex((d) => d.id === state.readingId);
+  if (at >= state.readingShown) state.readingShown = at + 1;
+  const shown = stories.slice(0, state.readingShown).map(storyEntry);
+  const left = stories.length - state.readingShown;
+  if (left > 0) {
+    const more = document.createElement('button');
+    more.type = 'button';
+    more.className = 'ghost reading-more';
+    more.textContent = `Show ${Math.min(left, READING_PAGE)} more · ${left} left`;
+    more.addEventListener('click', () => {
+      state.readingShown += READING_PAGE;
+      renderReadingList();
+      placeReader();
+    });
+    shown.push(more);
+  }
+  return shown;
+}
+
+// A new scope (or level) starts at the top: the first page, and no search.
+function readingFor(key) {
+  if (key === state.readingFor) return;
+  state.readingFor = key;
+  state.readingShown = READING_PAGE;
+  state.readingQuery = '';
+  els.readingSearch.value = '';
+}
+
+// Reading's search: a Thai query finds the stories' Thai (word breaks ignored), anything else their
+// titles, descriptions and English.
+let storyText = null;
+function storyMatches(d, q) {
+  storyText ||= new Map();
+  if (!storyText.has(d.id)) {
+    storyText.set(d.id, {
+      th: d.passage.map((l) => l.th).join(' ').replace(/[|\s]/g, ''),
+      en: [d.name, d.description || '', ...d.passage.map((l) => l.en)].join('\n').toLowerCase(),
+    });
+  }
+  const t = storyText.get(d.id);
+  return /[\u0E00-\u0E7F]/.test(q) ? t.th.includes(q.replace(/\s/g, '')) : t.en.includes(q.toLowerCase());
 }
 
 // A story's row: its title button opens and closes it; the open one's row also holds Read.
@@ -5694,12 +5750,13 @@ function renderAllStories() {
       hideWordPop();
       state.readingId = null;
       state.readingLevel = open ? '' : name;
+      state.readingShown = READING_PAGE;
       renderReading();
       // A level closing above can move this one off screen.
       els.readingList.querySelector('.reading-level:not(.collapsed) .reading-level-head')?.scrollIntoView({ block: 'nearest' });
     });
     wrap.append(head);
-    if (open) wrap.append(...stories.map(storyEntry));
+    if (open) wrap.append(...pagedStories(stories));
     return wrap;
   }));
 }
@@ -7136,6 +7193,18 @@ function bindEvents() {
     }, 150);
   });
   els.dictLangButtons.forEach((b) => b.addEventListener('click', () => setDictLang(b.dataset.dictLang)));
+  let readingTyping = null;
+  els.readingSearch.addEventListener('input', () => {
+    clearTimeout(readingTyping);
+    readingTyping = setTimeout(() => {
+      if (storyRunOn()) stopReadStories();
+      hideWordPop();
+      state.readingQuery = els.readingSearch.value;
+      state.readingShown = READING_PAGE;
+      state.readingId = null;
+      renderReading();
+    }, 150);
+  });
   els.dictBack.addEventListener('click', () => {
     if (state.dictQuery.trim()) {
       state.dictQuery = '';
