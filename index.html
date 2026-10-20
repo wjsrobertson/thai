@@ -153,7 +153,7 @@
       <button type="button" class="home-card home-card-wide" data-go="study">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</span>
         <span class="home-card-list">
-          <span class="home-card-row"><b>List</b><span>Every word in a topic. Tap <span class="inline-icon" role="img" aria-label="Add to a list"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> to add one to a list of your own.</span></span>
+          <span class="home-card-row"><b>List</b><span>Every word in a topic. Tap <span class="inline-icon" role="img" aria-label="Add to a wordlist"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> to add one to a wordlist of your own.</span></span>
           <span class="home-card-row"><b>Cards</b><span>Browse, Recognition, Recall and Type</span></span>
           <span class="home-card-row"><b>Reading</b><span>Short stories that use the topic's words</span></span>
         </span>
@@ -325,9 +325,9 @@
     <!-- An empty list on Cards (renderReviewOnly). Until the lists spike (2026-10-20), Cards with none of
          the topic's words added: add them all, choose some, or Everything. -->
     <div class="review-only-empty flashcards-only" id="review-only-empty" role="status" hidden>
-      <p class="review-only-empty-title">This list has no words yet</p>
+      <p class="review-only-empty-title">This wordlist has no words yet</p>
       <div class="review-only-actions">
-        <div class="review-only-row"><button type="button" class="round-again review-only-btn" id="review-only-add">Add words</button><span>Choose words from a topic or another of your lists</span></div>
+        <div class="review-only-row"><button type="button" class="round-again review-only-btn" id="review-only-add">Add words</button><span>Choose words from a topic or another of your wordlists</span></div>
       </div>
     </div>
 
@@ -524,14 +524,14 @@
             <label class="setting-row">
               <span class="setting-label">Confirm Add all</span>
               <input type="checkbox" data-confirm-setting="confirmAddAll" />
-              <span class="setting-help">Ask before adding every word shown to one of your lists.</span>
+              <span class="setting-help">Ask before adding every word shown to one of your wordlists.</span>
             </label>
           </div>
           <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
             <label class="setting-row">
               <span class="setting-label">Confirm Remove all</span>
               <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
-              <span class="setting-help">Ask before taking every word shown out of one of your lists.</span>
+              <span class="setting-help">Ask before taking every word shown out of one of your wordlists.</span>
             </label>
           </div>
         </div>
@@ -686,7 +686,7 @@
           <div class="setting-group" data-search="backup export import load save file settings progress restore transfer move device copy">
             <div class="setting-row">
               <span class="setting-label">Backup</span>
-              <span class="setting-help">Settings, progress and your lists, in a file: to move to another device, say. Loading replaces what's here. Not downloaded audio.</span>
+              <span class="setting-help">Settings, progress and your wordlists, in a file: to move to another device, say. Loading replaces what's here. Not downloaded audio.</span>
             </div>
             <div class="setting-actions">
               <button type="button" id="backup-export" class="setting-action">Export to a file</button>
@@ -725,13 +725,13 @@
           <div class="setting-group" data-search="reset progress wipe delete everything study history">
             <button type="button" id="reset-all" class="setting-row setting-button danger">
               <span class="setting-label">Reset all progress</span>
-              <span class="setting-help">Wipes your study history on every topic. Settings and your lists stay.</span>
+              <span class="setting-help">Wipes your study history on every topic. Settings and your wordlists stay.</span>
             </button>
           </div>
           <div class="setting-group" data-search="reset settings defaults default restore options">
             <button type="button" id="reset-settings" class="setting-row setting-button danger">
               <span class="setting-label">Reset settings</span>
-              <span class="setting-help">Every setting back to its default. Progress and your lists stay.</span>
+              <span class="setting-help">Every setting back to its default. Progress and your wordlists stay.</span>
             </button>
           </div>
         </div>
@@ -812,7 +812,7 @@
       <!-- One of your lists: its name's Rename and Delete. -->
       <div class="list-actions" id="list-actions" hidden>
         <button type="button" class="ghost" id="list-rename">Rename</button>
-        <button type="button" class="ghost danger" id="list-delete">Delete list</button>
+        <button type="button" class="ghost danger" id="list-delete">Delete wordlist</button>
       </div>
       <div class="wordlist-about" id="wordlist-about" hidden></div>
       <!-- A topic's tiles to tap and hear, under its text: its `board` in decks.json (renderLetterBoard;
