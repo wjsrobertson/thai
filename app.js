@@ -1636,7 +1636,7 @@ function renderPickerTabs() {
     lists: adding ? `Pick a wordlist, then add its words to ${into}` : "Words you've chosen, from any topic",
   }[tab];
   // Both tabs search (My lists since 2026-10-20, the user's request): topics and words, or your lists.
-  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your wordlists' : 'Search topics and words…';
+  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : 'Search topics and words…';
 }
 
 function pickPickerTab(tab) {
@@ -1673,9 +1673,9 @@ function renderListsPane() {
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'ghost new-list';
-    add.textContent = '＋ New wordlist';
+    add.textContent = '＋ New list';
     add.addEventListener('click', async () => {
-      const name = await askListName('New wordlist', '', 'Make wordlist');
+      const name = await askListName('New list', '', 'Make list');
       if (!name) return;
       const list = createList(name);
       pickScope(listScopeId(list.id));
@@ -5107,11 +5107,11 @@ function openMoveWords(keys, what, fromId) {
   const add = document.createElement('button');
   add.type = 'button';
   add.className = 'move-row move-new';
-  add.textContent = '＋ New wordlist';
+  add.textContent = '＋ New list';
   add.addEventListener('click', async () => {
     const always = els.moveDefault.checked;
     closeMoveWords();
-    const name = await askListName('New wordlist', '', 'Make wordlist');
+    const name = await askListName('New list', '', 'Make list');
     if (!name) return;
     els.moveDefault.checked = always;
     moveWordsTo(keys, what, fromId, createList(name, { target: false }).id);
