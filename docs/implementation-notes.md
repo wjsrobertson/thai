@@ -1650,6 +1650,12 @@ the user said yes to all of them.
   that describe Everything are history. Checked in headless Chromium at 390 × 664 (`noall_probe.py`):
   the picker from each page, a list picked from Reading reaching Cards, Recognition on a 2-word
   list.
+- **A word taken out of the list shown is faded** (the user's call, the same day). On a list's List
+  page, a row whose word is no longer in that list (✓ tapped, or moved away by Change) has its text
+  at 40% opacity (`tr.row-removed`), fading into whichever theme's panel, its buttons as they are: it
+  still opens the word dialog, and 🔁 puts it back, unfading it. It's gone the next time the page
+  opens (`freshListCards`). Checked in headless Chromium at 390 × 664 in Dark and Light
+  (`faded_probe.py`).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

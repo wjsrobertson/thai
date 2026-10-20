@@ -4153,6 +4153,9 @@ function renderWordlist() {
     tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another list.' : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
+    // A list's words taken out of it since the page opened: faded, but still usable, 🔁 putting one
+    // back (the user's call, 2026-10-20: a sign it won't be there next time).
+    const inList = isList ? new Set(listById(deck.id.slice(5))?.words || []) : null;
     const frag = document.createDocumentFragment();
     for (const c of rows) {
       const topic = topicHeadings && deck.deckOf.get(c.key);
@@ -4164,7 +4167,9 @@ function renderWordlist() {
         th.firstChild.textContent = topic.name;
         frag.appendChild(th);
       }
-      frag.appendChild(wordRow(c, cols, words.has(c.key)));
+      const tr = wordRow(c, cols, words.has(c.key));
+      if (inList && !inList.has(c.key)) tr.classList.add('row-removed');
+      frag.appendChild(tr);
     }
     els.wordtableBody.appendChild(frag);
   }

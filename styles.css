@@ -2257,6 +2257,9 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   border-left: 3px solid var(--accent);
   padding-left: 11px;
 }
+/* A word taken out of the list the page shows (renderWordlist, 2026-10-20): its text faded into the
+   theme's panel, its buttons as they are, so 🔁 can put it back. */
+.wordtable tbody tr.row-removed td:not(.col-audio) { opacity: .4; }
 .wordtable {
   width: 100%;
   border-collapse: collapse;
