@@ -5012,7 +5012,7 @@ function listsChanged(id) {
   if (state.view === 'dictionary') renderDictionary();
   renderDeckButton();
   syncReviewOnly();
-  document.querySelectorAll('.row-review, .pop-lists').forEach((b) => b.paint?.()); // the word dialog's, word search's
+  document.querySelectorAll('.row-review').forEach((b) => b.paint?.()); // the word dialog's, word search's
 }
 
 function changeList(id, change) {
@@ -5115,37 +5115,6 @@ function listsOf(key) {
 function listNames(lists) {
   const q = lists.map((l) => `'${l.name}'`);
   return q.length <= 2 ? q.join(' and ') : `${q.length} other lists`;
-}
-
-// The word dialog's lists (the user's trial, 2026-10-20): each of your lists as a chip, ticked if
-// the word's in it; a tap puts it in or takes it out, whichever list 🔁 adds to. Repainted with
-// the 🔁s (listsChanged). Null with no lists yet.
-function popLists(key, thai) {
-  if (!getLists().length) return null;
-  const box = document.createElement('div');
-  box.className = 'pop-lists';
-  box.paint = () => {
-    const has = new Set(listsOf(key).map((l) => l.id));
-    const label = Object.assign(document.createElement('span'), { className: 'pop-lists-label', textContent: 'Lists' });
-    box.replaceChildren(label, ...getLists().map((l) => {
-      const on = has.has(l.id);
-      const b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'pop-list' + (on ? ' on' : '');
-      b.setAttribute('aria-pressed', String(on));
-      b.textContent = (on ? '✓ ' : '') + l.name;
-      b.title = on ? `Remove ${thai} from '${l.name}'` : `Add ${thai} to '${l.name}'`;
-      b.addEventListener('click', () => {
-        changeList(l.id, (x) => {
-          x.words = on ? x.words.filter((k) => k !== key) : [...x.words, key];
-        });
-        toast(on ? `Removed ${thai} from '${l.name}'` : `✓ Added ${thai} to '${l.name}'`, { tone: on ? '' : 'good' });
-      });
-      return b;
-    }));
-  };
-  box.paint();
-  return box;
 }
 
 // Change's dialog, "Put กิน in": your lists, the one they're in ticked, then ＋ New list. A tap on a
@@ -6288,8 +6257,7 @@ function showWordPop(anchor, card) {
   actions.append(play);
   // Under them, the word's tones (tones.js), closed to a row until tapped.
   const tones = toneSection(card, big);
-  const lists = card.alpha ? null : popLists(key, card.thai);
-  els.wordModalBody.replaceChildren(wordBox, actions, ...(lists ? [lists] : []), ...(tones ? [tones.el] : []));
+  els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []));
   if (!wordPop) wordPop = { lastFocus: document.activeElement };
   showWordModal();
   els.wordModalBody.scrollTop = 0;

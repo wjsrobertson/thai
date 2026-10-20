@@ -2110,24 +2110,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .pop-actions .speaker-icon { width: 31px; height: 31px; }
 .pop-actions .pop-spell { font-size: 26px; }
 .pop-actions .row-review.added { color: var(--good); }
-/* Your lists, as chips under the buttons (popLists, 2026-10-20): ticked ones hold the word. */
-.pop-lists { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin: 4px 0 12px; }
-.pop-lists-label { color: var(--muted); font-size: calc(14px * var(--fs, 1)); margin-right: 4px; }
-.pop-list {
-  min-height: 44px;
-  max-width: 100%;
-  padding: 0 14px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  background: transparent;
-  color: var(--ink);
-  border: 1px solid var(--control-border);
-  border-radius: 999px;
-  font-size: calc(15px * var(--fs, 1));
-}
-.pop-list.on { color: var(--good); border-color: var(--good); }
-.pop-list:hover { background: var(--panel-2); }
 .pop-actions .playing { color: var(--accent); }
 /* The word again, large, under the meaning: tap a letter, vowel or tone mark to hear its name
    (partAt), which then shows below it and lights up briefly. */

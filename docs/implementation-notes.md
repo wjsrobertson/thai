@@ -1702,14 +1702,12 @@ the user said yes to all of them.
     (`.row-review.elsewhere`); plain 🔁 in none. Its title names the others, for desktop.
   - **The add toast says where else:** "✓ Added กิน to 'My words' · also in 'Food words'" (two names,
     or "3 other lists"; `toastAdded`, `listNames`).
-  - **The word dialog lists your lists** (the user's trial: "might like it when I play with it"): a
-    "Lists" row of chips under its buttons, each list's name, ticked and green if it holds the word
-    (`popLists`). A tap puts the word in that list or takes it out, whichever 🔁 adds to; no Change.
-    All your lists show, wrapping; with many, only those holding it plus "＋ Other list" might be
-    better. None without lists, or for a letter.
+  - **The word dialog listed your lists, for a few minutes** (the user's trial): a "Lists" row of
+    chips under its buttons, a tap putting the word in a list or taking it out. The user didn't
+    like it there and took it out: the dialog stays information about the word, for now.
   - `listsOf(key)` gives a word's lists from a map rebuilt after any save (`listsOfCache`).
   - Checked in headless Chromium at 390 × 664 and 1280 × 800 (`three_probe.py`): the states on
-    Greetings, the toast, chips on and off reaching the rows and the dialog's 🔁, the Dictionary.
+    Greetings, the toast, the dialog's 🔁, the Dictionary.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
