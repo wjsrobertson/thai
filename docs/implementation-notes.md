@@ -1582,7 +1582,8 @@ the user said yes to all of them.
   (`pagedStories`, `READING_PAGE`); the open story always shows. **Search stories** (`#reading-search`)
   sits left of Read all, in the row that was empty on a phone, at Read all's height. A Thai query
   matches the stories' Thai (word breaks ignored); anything else matches the title, description and
-  English (`storyMatches`). On Everything, a search covers every level at once, with no headings. A new topic, list or
+  English (`storyMatches`). **A search shows every match**, with no Show more: paging its results too
+  "seems weird" (the user, the same day). On Everything, a search covers every level at once, with no headings. A new topic, list or
   level starts again at the first page with the search cleared (`readingFor`). Read all reads the
   stories showing.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to

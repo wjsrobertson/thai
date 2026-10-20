@@ -5647,10 +5647,12 @@ function renderReadingList() {
 }
 
 // A long list in pages (the user's call, 2026-10-20: a list's or Everything's stories ran to hundreds):
-// the first READING_PAGE, then Show more for the next. The open story is always among them. Read all
-// reads what shows.
+// the first READING_PAGE, then Show more for the next. The open story is always among them. A search
+// shows every match: paging its results too felt weird (the user, the same day). Read all reads what
+// shows.
 const READING_PAGE = 10;
 function pagedStories(stories) {
+  if (state.readingQuery.trim()) return stories.map(storyEntry);
   const at = stories.findIndex((d) => d.id === state.readingId);
   if (at >= state.readingShown) state.readingShown = at + 1;
   const shown = stories.slice(0, state.readingShown).map(storyEntry);
