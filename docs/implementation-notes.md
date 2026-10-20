@@ -1655,7 +1655,9 @@ the user said yes to all of them.
   at 40% opacity (`tr.row-removed`), fading into whichever theme's panel, its buttons as they are: it
   still opens the word dialog, and 🔁 puts it back, unfading it. It's gone the next time the page
   opens (`freshListCards`). Checked in headless Chromium at 390 × 664 in Dark and Light
-  (`faded_probe.py`).
+  (`faded_probe.py`). Putting one back there (its row's 🔁, or its dialog's over the page) says "✓ Re-added …",
+  without Change (the user's call, the same day: it's going back where it was; `toggleInTarget`).
+  Adding from anywhere else keeps "Added" and Change (`readd_probe.py`).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

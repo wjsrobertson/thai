@@ -5042,9 +5042,14 @@ function setInTarget(keys, on) {
 }
 
 // 🔁 pressed: in or out of the target list, and the toast saying so.
+// A word put back on its own list's page (its faded row, or its dialog over the page) says
+// "Re-added", without Change (the user's call, 2026-10-20): it's going back where it was.
 function toggleInTarget(key, thai, on) {
+  const back = on && state.view === 'wordlist' && currentScope()?.id === listScopeId(targetList()?.id)
+    && state.listCards.some((c) => c.key === key);
   const name = setInTarget([key], on);
-  if (on) toastAdded([key], thai);
+  if (back) toast(`✓ Re-added ${thai} to '${name}'`, { tone: 'good' });
+  else if (on) toastAdded([key], thai);
   else toast(`Removed ${thai} from '${name}'`);
 }
 
