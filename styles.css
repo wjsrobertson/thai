@@ -1954,7 +1954,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .adding-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .adding-bar .ghost { flex: none; min-height: 44px; padding: 8px 16px; }
 /* A list's Rename and Delete, under its name. */
-.list-actions { display: flex; gap: 8px; margin: -4px 0 12px; }
+.list-actions { display: flex; gap: 8px; margin: 0 0 12px; }
 .list-actions .ghost { min-height: 44px; padding: 8px 14px; }
 .ghost.danger { color: var(--again); }
 /* Add all to the list 🔁 adds to: a long name ends in … (the button stays one line). */
