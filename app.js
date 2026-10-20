@@ -5620,9 +5620,7 @@ function renderReadingList() {
     renderAllStories();
     return;
   }
-  // Searching Everything: every level's at once.
-  let found = scope?.kind === 'all' ? state.decks.filter((d) => d.passage).map((d) => ({ d })) : scope ? storiesFor(scope) : [];
-  if (q) found = found.filter(({ d }) => storyMatches(d, q));
+  const found = listedStories(scope, q);
   if (!found.length) {
     const empty = document.createElement('div');
     empty.className = 'reading-empty';
@@ -5640,20 +5638,38 @@ function renderReadingList() {
     els.readingList.replaceChildren(empty);
     return;
   }
+  els.readingList.replaceChildren(...pagedStories(found));
+}
+
+// The list's stories in order, past the page shown: a topic's or list's, or a search's (Everything's
+// searches every level at once).
+function listedStories(scope, q) {
+  let found = scope?.kind === 'all' ? state.decks.filter((d) => d.passage) : scope ? storiesFor(scope).map(({ d }) => d) : [];
+  if (q) found = found.filter((d) => storyMatches(d, q));
   // A story opened from elsewhere (a search result) that isn't one of this topic's goes first.
-  const open = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
-  if (open && !found.some(({ d }) => d === open)) found.unshift({ d: open });
-  els.readingList.replaceChildren(...pagedStories(found.map(({ d }) => d)));
+  const open = found.length && state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
+  if (open && !found.includes(open)) found.unshift(open);
+  return found;
+}
+
+// What Read all reads: the whole list, not just the page shown; on Everything the open level, or with
+// all closed every level in turn (the user's request, 2026-10-20: it read nothing then).
+function readAllStories() {
+  const scope = studyScope();
+  const q = state.readingQuery.trim();
+  if (scope?.kind !== 'all' || q) return listedStories(scope, q);
+  const levels = storyLevels();
+  return levels.get(state.readingLevel) || [...levels.values()].flat();
 }
 
 // A long list in pages (the user's call, 2026-10-20: a list's or Everything's stories ran to hundreds):
 // the first READING_PAGE, then Show more for the next, a search's matches too (showing them all
-// looked worse: the user, the same day). The open story is always among them. Read all reads what
-// shows.
+// looked worse: the user, the same day). The open story is always among them, the pages shown
+// running on to it, as Read all's does on reaching the end of a page (the user's request, same day).
 const READING_PAGE = 10;
 function pagedStories(stories) {
   const at = stories.findIndex((d) => d.id === state.readingId);
-  if (at >= state.readingShown) state.readingShown = at + 1;
+  if (at >= state.readingShown) state.readingShown = (Math.floor(at / READING_PAGE) + 1) * READING_PAGE;
   const shown = stories.slice(0, state.readingShown).map(storyEntry);
   const left = stories.length - state.readingShown;
   if (left > 0) {
@@ -5723,8 +5739,8 @@ function storyEntry(d) {
 // Everything's stories: a heading for each level (Little Stories, Easy, Medium, Harder: the
 // stories' groups in decks.json), one open at a time (state.readingLevel; the open story's, or the
 // first), as the topic picker's categories are. Only the open level's stories are drawn (811 Easy
-// ones), so Read all reads that level.
-function renderAllStories() {
+// ones). Read all reads that level, or with all closed every level, each opening as it's reached.
+function storyLevels() {
   const levels = new Map();
   for (const d of state.decks) {
     if (!d.passage) continue;
@@ -5732,8 +5748,16 @@ function renderAllStories() {
     if (!levels.has(g)) levels.set(g, []);
     levels.get(g).push(d);
   }
+  return levels;
+}
+
+function renderAllStories() {
+  const levels = storyLevels();
   const openStory = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
-  if (openStory) state.readingLevel = openStory.group || 'Stories';
+  if (openStory && (openStory.group || 'Stories') !== state.readingLevel) { // another level: its first page
+    state.readingLevel = openStory.group || 'Stories';
+    state.readingShown = READING_PAGE;
+  }
   if (state.readingLevel !== '' && !levels.has(state.readingLevel)) state.readingLevel = levels.keys().next().value; // '': all closed
   els.readingList.replaceChildren(...[...levels].map(([name, stories]) => {
     const open = name === state.readingLevel;
@@ -5945,8 +5969,7 @@ const storyRunOn = () => state.storyReading.active || !!state.storyReading.pause
 async function readStories(btn, from = null) {
   if (mutedNotice()) return;
   const all = btn === els.readingReadAll;
-  const ids = from?.ids ?? (all ? [...els.readingList.querySelectorAll('.reading-entry')].map((e) => e.dataset.id)
-    : state.readingId ? [state.readingId] : []);
+  const ids = from?.ids ?? (all ? readAllStories().map((d) => d.id) : state.readingId ? [state.readingId] : []);
   if (!ids.length) return;
   const run = state.storyReading;
   run.paused = null;
@@ -5964,6 +5987,8 @@ async function readStories(btn, from = null) {
         if (state.readingId !== id) {
           hideWordPop();
           state.readingId = id;
+          // Not drawn: past the page shown (the next page shows), or in a closed level (it opens).
+          if (!els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"]`)) renderReadingList();
           placeReader();
         }
         // Its title into view only if it's off screen: no jump to the top (the user's call, 2026-10-12).

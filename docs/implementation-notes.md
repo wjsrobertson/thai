@@ -1591,8 +1591,14 @@ the user said yes to all of them.
   People & Relationships: 42 of 168. When that leaves fewer than a page, the list keeps the two-word
   rule, in the same order, or a short list finds almost nothing (Greetings: 2 of 13). Topics,
   groups and categories are as they were. A new topic, list or
-  level starts again at the first page with the search cleared (`readingFor`). Read all reads the
-  stories showing.
+  level starts again at the first page with the search cleared (`readingFor`).
+- **Read all reads the whole list** (the user's request, the same day; it read only the stories
+  drawn, so nothing on Everything with every level closed). It takes the list from `readAllStories`,
+  pages included, and a story it reaches that isn't drawn redraws the list: past a page, the next 10
+  show, as Show more does; on Everything, its level opens, at the first page. On Everything, with a
+  level open it reads that level; with all closed, every level in turn (1,337 stories). Checked in
+  headless Chromium with the audio stubbed: Little Stories into Easy, a page added every 10, on
+  Everything and on all of Food & Drink; Pause and carry on (`readall_probe.py`, `readall_probe2.py`).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
