@@ -820,10 +820,13 @@
         <p class="letter-board-hint" id="wordlist-letters-hint"></p>
         <div id="wordlist-letter-grid"></div>
       </div>
+      <!-- More than a page of words (WORD_PAGE): a search, and Show more under them (renderWordlist). -->
+      <input type="search" class="dict-search wordlist-search" id="wordlist-search" placeholder="Search these words" autocomplete="off" aria-label="Search these words" hidden />
       <table class="wordtable" id="wordtable">
         <thead id="wordtable-head"></thead>
         <tbody id="wordtable-body"></tbody>
       </table>
+      <button type="button" class="ghost reading-more wordlist-more" id="wordlist-more" hidden></button>
     </section>
   </main>
 

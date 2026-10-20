@@ -10,6 +10,7 @@ button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap dela
 #deck-picker-search,
 #dict-search,
 #reading-search,
+#wordlist-search,
 #settings-search,
 .setting-row select,
 .setting-row input[type="number"] {

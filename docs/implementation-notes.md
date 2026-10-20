@@ -1618,6 +1618,18 @@ the user said yes to all of them.
   - Checked in headless Chromium at 390 × 664 (text size 1 and 2) and 1280 × 800 (`move_probe.py`,
     `move_probe2.py`): the 5 s, a move with and without the tick, from the word dialog, ＋ New list,
     Escape, Add all's 22 words, a long name wrapping, taps passing under the message.
+- **The List page in pages, with a search** (the user's call, the same day: a list can grow without
+  end). As Reading's stories, but 25 rows at a time (`WORD_PAGE`; 10 is too few for words), with
+  **Show 25 more · N left** under the table (`#wordlist-more`, `pagedWords`). **Search these words**
+  (`#wordlist-search`) sits over the table once there's more than a page. It keeps list order: a
+  Thai query matches the Thai (spaces ignored), anything else the English, or the transliteration
+  loosely (`wordMatches`, `looseTranslit`). Lists, groups and categories page; a topic shows whole
+  (they're 25 at most, but the 44 consonants are one). A new scope starts at the first page with the
+  search cleared (`wordsFor`). Read all reads every match, showing the next page as it gets there.
+  Add all still adds all the scope's words, not just a search's. Checked in headless Chromium at
+  390 × 664 and 1280 × 800 (`words_probe.py`, `words_probe2.py`): all of Food & Drink (273 words),
+  Show more, "rice", ข้าว, "khao", no match, Read all past three pages, My words, a topic and the
+  consonants whole. The layout check wasn't run (the user's call).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

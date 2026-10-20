@@ -165,6 +165,8 @@ const els = {
   readingRead: document.getElementById('reading-read'),
   readingReadAll: document.getElementById('reading-read-all'),
   readingSearch: document.getElementById('reading-search'),
+  wordlistSearch: document.getElementById('wordlist-search'),
+  wordlistMore: document.getElementById('wordlist-more'),
   reader: document.getElementById('reader'),
   readerLines: document.getElementById('reader-lines'),
   readerTranslit: document.getElementById('reader-translit'),
@@ -235,6 +237,9 @@ const state = {
   dictLetter: null,   // the Dictionary's letter (ก…ฮ, or A…Z in English), or null for the grid (renderDictionary)
   dictLang: 'th',     // the Dictionary's way in: 'th' (ก–ฮ, Thai first) or 'en' (A–Z, English first); prefs.dictLang
   dictQuery: '',      // and its search box
+  wordQuery: '',      // the List page's search (renderWordlist)
+  wordShown: 25,      // and how many of its rows show (WORD_PAGE, Show more)
+  wordFor: null,      // the scope those are for: another starts afresh (wordsFor)
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   readingLevel: null, // Reading on Everything: the open level (renderAllStories), '' with all closed
   readingQuery: '',   // Reading's search box (storyMatches)
@@ -4154,7 +4159,13 @@ function renderWordlist() {
   if (adding) els.addingName.textContent = adding.name;
   els.listActions.hidden = !isList;
 
-  const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
+  // In list order (the headings sorted the table until 2026-10-12), a search's matches, a page at a time.
+  wordsFor(deck.id);
+  const q = state.wordQuery.trim();
+  const paged = deck.kind !== 'topic'; // a topic shows whole (the 44 consonants are one)
+  els.wordlistSearch.hidden = !paged || (state.listCards.length <= WORD_PAGE && !q);
+  const rows = paged ? pagedWords(listedWords()) : state.listCards;
+  if (!paged) els.wordlistMore.hidden = true;
 
   const cols = wordlistColumns();
 
@@ -4176,7 +4187,7 @@ function renderWordlist() {
   if (rows.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = isList ? 'No words yet. Add words chooses some from a topic or another list.' : 'No matches.';
+    tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another list.' : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
     const frag = document.createDocumentFragment();
@@ -4212,6 +4223,43 @@ function renderWordlist() {
     els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to ', name(targetName())); // "…to Cards" until 2026-10-20
   }
   els.wordlistAddAll.title = own ? `Add words to '${targetName()}'` : allIn ? `Remove all from '${targetName()}'` : `Add all to '${targetName()}'`;
+}
+
+// A long list in pages (the user's call, 2026-10-20: your lists can grow without end), as Reading's
+// stories are, 25 at a time rather than 10, with a search when there's more than a page. Groups and
+// categories too; a topic shows whole. Read all reads every match, showing the next page as it
+// reaches it.
+const WORD_PAGE = 25;
+function listedWords() {
+  const q = state.wordQuery.trim();
+  return q ? state.listCards.filter((c) => wordMatches(c, q)) : state.listCards;
+}
+
+function pagedWords(rows) {
+  const at = state.reading.currentKey ? rows.findIndex((c) => c.key === state.reading.currentKey) : -1;
+  if (at >= state.wordShown) state.wordShown = (Math.floor(at / WORD_PAGE) + 1) * WORD_PAGE;
+  const left = rows.length - state.wordShown;
+  els.wordlistMore.hidden = left <= 0;
+  if (left > 0) els.wordlistMore.textContent = `Show ${Math.min(left, WORD_PAGE)} more · ${left} left`;
+  return rows.slice(0, state.wordShown);
+}
+
+// A new topic or list starts at the top: the first page, and no search.
+function wordsFor(key) {
+  if (key === state.wordFor) return;
+  state.wordFor = key;
+  state.wordShown = WORD_PAGE;
+  state.wordQuery = '';
+  els.wordlistSearch.value = '';
+}
+
+// The List page's search, kept in list order: a Thai query finds the Thai (spaces ignored), anything
+// else the English, or the transliteration loosely (looseTranslit).
+function wordMatches(c, q) {
+  if (/[\u0E00-\u0E7F]/.test(q)) return c.thai.replace(/\s/g, '').includes(q.replace(/\s/g, ''));
+  if (c.english.toLowerCase().includes(q.toLowerCase())) return true;
+  const qt = looseTranslit(q);
+  return qt.length >= 2 && looseTranslit(c.translit || '').includes(qt);
 }
 
 // The List page's rows for a list, afresh (they're kept while it's open: listsChanged).
@@ -6696,7 +6744,7 @@ function phraseWords(card) {
 
 async function startReadAloud() {
   if (state.reading.active || mutedNotice()) return;
-  const rows = state.listCards; // in list order (the headings sorted the table until 2026-10-12)
+  const rows = listedWords(); // a search's matches, every page (pagedWords shows the next as it gets there)
   if (rows.length === 0) return;
 
   state.reading.active = true;
@@ -7331,6 +7379,20 @@ function bindEvents() {
     }, 150);
   });
   els.dictLangButtons.forEach((b) => b.addEventListener('click', () => setDictLang(b.dataset.dictLang)));
+  let wordTyping = null;
+  els.wordlistSearch.addEventListener('input', () => {
+    clearTimeout(wordTyping);
+    wordTyping = setTimeout(() => {
+      if (state.reading.active) stopReadAloud();
+      state.wordQuery = els.wordlistSearch.value;
+      state.wordShown = WORD_PAGE;
+      renderWordlist();
+    }, 150);
+  });
+  els.wordlistMore.addEventListener('click', () => {
+    state.wordShown += WORD_PAGE;
+    renderWordlist();
+  });
   let readingTyping = null;
   els.readingSearch.addEventListener('input', () => {
     clearTimeout(readingTyping);
