@@ -1635,7 +1635,7 @@ function renderPickerTabs() {
   els.reviewByHelp.hidden = !adding;
   els.reviewByHelp.textContent = !adding ? '' : tab === 'lists' ? `Pick a list, then add its words to ${into}` : `Pick a topic, then add its words to ${into}`;
   // Both tabs search (My lists since 2026-10-20, the user's request): topics and words, or your lists.
-  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : 'Search topics and words…';
+  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : 'Search topics';
 }
 
 function pickPickerTab(tab) {
