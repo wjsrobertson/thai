@@ -5647,12 +5647,11 @@ function renderReadingList() {
 }
 
 // A long list in pages (the user's call, 2026-10-20: a list's or Everything's stories ran to hundreds):
-// the first READING_PAGE, then Show more for the next. The open story is always among them. A search
-// shows every match: paging its results too felt weird (the user, the same day). Read all reads what
+// the first READING_PAGE, then Show more for the next, a search's matches too (showing them all
+// looked worse: the user, the same day). The open story is always among them. Read all reads what
 // shows.
 const READING_PAGE = 10;
 function pagedStories(stories) {
-  if (state.readingQuery.trim()) return stories.map(storyEntry);
   const at = stories.findIndex((d) => d.id === state.readingId);
   if (at >= state.readingShown) state.readingShown = at + 1;
   const shown = stories.slice(0, state.readingShown).map(storyEntry);
@@ -5814,15 +5813,25 @@ const READING_MIN_MATCH = 2;
 const READING_COMMON = new Set(('ไป มา มี เป็น อยู่ ได้ ให้ ทำ ของ ที่ ไม่ ใน กับ และ แต่ แล้ว จะ ก็ นะ ครับ ค่ะ คะ จ้ะ '
   + 'ฉัน ผม เรา เขา คุณ นี่ นี้ คือ ว่า มาก ดี ไหม เลย ยัง ด้วย กัน ตอน').split(' '));
 
+// One of your lists is stricter (the user's call, 2026-10-20: all of Food & Drink in a list found 216
+// stories): a story at least READING_LIST_SHARE of whose words are in the list (Food & Drink: 45),
+// the most of it first. When that leaves less than a page, as a short list's does (Greetings: 2),
+// every story with two of its words, ordered the same way.
+const READING_LIST_SHARE = 0.25;
+
 function storiesFor(scope) {
   const words = new Set(scope.cards.map((c) => c.thai).filter((w) => !READING_COMMON.has(w)));
   const found = [];
   for (const d of state.decks) {
     if (!d.passage) continue;
-    const hits = [...new Set(d.cards.map((c) => c.thai))].filter((w) => words.has(w));
-    if (hits.length >= READING_MIN_MATCH) found.push({ d, hits });
+    const own = [...new Set(d.cards.map((c) => c.thai))].filter((w) => !READING_COMMON.has(w));
+    const hits = own.filter((w) => words.has(w));
+    if (hits.length >= READING_MIN_MATCH) found.push({ d, hits, share: hits.length / own.length });
   }
-  return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
+  if (scope.kind !== 'list') return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
+  found.sort((a, b) => b.share - a.share || b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
+  const close = found.filter((f) => f.share >= READING_LIST_SHARE);
+  return close.length >= READING_PAGE ? close : found;
 }
 
 // Opens a passage under its title (from the list, or a search result, which also lights the word
