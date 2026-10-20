@@ -1678,6 +1678,9 @@ the user said yes to all of them.
   "known/total", with a bar on desktop. A list's row leaves both out (`pickerDeckRow`'s `progress`),
   since its "N words" says the total, and takes the whole width (`.deck-row.list-row`). Topics keep
   theirs. Checked at 390 × 664 and 1280 × 800.
+- **The tabs' taglines went** (the user's call, the same day): "The app's words, by subject" and
+  "Words you've chosen, from any topic" under Topics | My Words. The line under the tabs shows only
+  when adding words ("Pick a topic, then add its words to '…'"; `renderPickerTabs`).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

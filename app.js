@@ -1630,11 +1630,10 @@ function renderPickerTabs() {
   const tab = state.pickerTab;
   const adding = state.pickerFor === 'add';
   els.pickerTabs.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.pickerTab === tab)));
+  // A line under the tabs only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
-  els.reviewByHelp.textContent = {
-    topics: adding ? `Pick a topic, then add its words to ${into}` : "The app's words, by subject",
-    lists: adding ? `Pick a list, then add its words to ${into}` : "Words you've chosen, from any topic",
-  }[tab];
+  els.reviewByHelp.hidden = !adding;
+  els.reviewByHelp.textContent = !adding ? '' : tab === 'lists' ? `Pick a list, then add its words to ${into}` : `Pick a topic, then add its words to ${into}`;
   // Both tabs search (My lists since 2026-10-20, the user's request): topics and words, or your lists.
   els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : 'Search topics and words…';
 }
