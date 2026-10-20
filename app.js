@@ -239,6 +239,7 @@ const state = {
   wordQuery: '',      // the List page's search (renderWordlist)
   wordShown: 25,      // and how many of its rows show (WORD_PAGE, Show more)
   wordFor: null,      // the scope those are for: another starts afresh (wordsFor)
+  takenOut: new Set(), // words taken out of the list being added to, while adding (faded: renderWordlist)
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   readingQuery: '',   // Reading's search box (storyMatches)
   readingShown: 10,   // how many of the list's stories show (READING_PAGE more with each Show more)
@@ -3615,6 +3616,7 @@ function setView(view, { section = 'words' } = {}) {
   els.wordlistSection.hidden = view !== 'wordlist';
   if (view === 'wordlist' && leaving !== 'wordlist') { // a list's words may have changed meanwhile
     freshListCards();
+    state.takenOut.clear();
     renderWordlist();
   }
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
@@ -4163,6 +4165,7 @@ function renderWordlist() {
   } else {
     // A list's words taken out of it since the page opened: faded, but still usable, 🔁 putting one
     // back (the user's call, 2026-10-20: a sign it won't be there next time).
+    // So is a word taken out of the list being added to, from Add words' topic (the same day).
     const inList = isList ? new Set(listById(deck.id.slice(5))?.words || []) : null;
     const frag = document.createDocumentFragment();
     for (const c of rows) {
@@ -4176,7 +4179,7 @@ function renderWordlist() {
         frag.appendChild(th);
       }
       const tr = wordRow(c, cols, words.has(c.key));
-      if (inList && !inList.has(c.key)) tr.classList.add('row-removed');
+      if ((inList && !inList.has(c.key)) || (adding && state.takenOut.has(c.key) && !words.has(c.key))) tr.classList.add('row-removed');
       frag.appendChild(tr);
     }
     els.wordtableBody.appendChild(frag);
@@ -4224,6 +4227,7 @@ function pagedWords(rows) {
 function wordsFor(key) {
   if (key === state.wordFor) return;
   state.wordFor = key;
+  state.takenOut.clear();
   state.wordShown = WORD_PAGE;
   state.wordQuery = '';
   els.wordlistSearch.value = '';
@@ -5037,6 +5041,7 @@ function createList(name, { target = true } = {}) {
 // Adds words to (on) or takes them out of the target list, making My words if there's no list yet.
 // Taking out keeps their progress. Returns the list's name, for the toast.
 function setInTarget(keys, on) {
+  if (!on && addingFrom()) keys.forEach((k) => state.takenOut.add(k)); // faded (renderWordlist)
   const list = targetList() || createList('My words');
   changeList(list.id, (l) => {
     const have = new Set(l.words);
@@ -5053,8 +5058,8 @@ function setInTarget(keys, on) {
 // A word put back on its own list's page (its faded row, or its dialog over the page) says
 // "Re-added", without Change (the user's call, 2026-10-20): it's going back where it was.
 function toggleInTarget(key, thai, on) {
-  const back = on && state.view === 'wordlist' && currentScope()?.id === listScopeId(targetList()?.id)
-    && state.listCards.some((c) => c.key === key);
+  const back = on && state.view === 'wordlist' && ((currentScope()?.id === listScopeId(targetList()?.id)
+    && state.listCards.some((c) => c.key === key)) || (addingFrom() && state.takenOut.has(key)));
   const name = setInTarget([key], on);
   if (back) toast(`✓ Re-added ${thai} to '${name}'`, { tone: 'good' });
   else if (on) toastAdded([key], thai);
@@ -5084,9 +5089,11 @@ function reviewButton(key, thai, words = null) {
 // no Change (the user's call, 2026-10-20).
 function toastAdded(keys, what) {
   const list = targetList();
-  const adding = state.addingTo && state.view === 'wordlist' && state.currentDeckId !== listScopeId(state.addingTo);
-  toast(`✓ Added ${what} to '${list.name}'`, { tone: 'good', action: adding ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
+  toast(`✓ Added ${what} to '${list.name}'`, { tone: 'good', action: addingFrom() ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
 }
+
+// Whether the List page shows a topic (or list) that words are being added from (Add words).
+const addingFrom = () => !!state.addingTo && state.view === 'wordlist' && state.currentDeckId !== listScopeId(state.addingTo);
 
 // Change's dialog, "Put กิน in": your lists, the one they're in ticked, then ＋ New list. A tap on a
 // list moves them and closes it (the user's pick, 2026-10-20: one tap for the usual one-off, rather

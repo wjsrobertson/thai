@@ -1687,7 +1687,10 @@ the user said yes to all of them.
   were pulled up 4 to tuck under the count).
 - **No Change while adding words** (the user's call, the same day: "I am conceptually inside the
   list"). With Add words' bar over a topic, its 🔁, its word dialog's and its Add all say "✓ Added …
-  to '…'" without Change (`toastAdded`). Elsewhere they keep it. Checked at 390 × 664.
+  to '…'" without Change (`toastAdded`). Elsewhere they keep it. Checked at 390 × 664. A word taken out
+  there (its ✓) is faded too, as on the list's own page (`state.takenOut`, kept by `setInTarget` while
+  `addingFrom()`), and putting it back says "Re-added". The fades clear with a new topic or when the
+  page opens afresh, the topic's rows staying (they're its words).
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
