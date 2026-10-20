@@ -588,6 +588,8 @@ html.modal-open body {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
+/* A list's row has neither (pickerDeckRow): its name gets the width. */
+.deck-row.list-row { grid-template-columns: 1fr; }
 
 /* Word search results, below the matching topics (wordHitsSection). */
 .word-hits { margin-top: 6px; }

@@ -1673,6 +1673,11 @@ the user said yes to all of them.
   (its dialog New list, Make list). Everything else went back to "list" too (the user's call, on a table of
   them): "Choose a topic or list", Rename list, Delete list, the empty texts, Home, Settings and the
   backup's summary. So only the tab and its search say "words".
+- **No known count on a list's row** (the user's call, the same day: "what is it for?"). The picker's
+  rows show how many words are known (the meaning held 10 days or more, `deckProgress`) as
+  "known/total", with a bar on desktop. A list's row leaves both out (`pickerDeckRow`'s `progress`),
+  since its "N words" says the total, and takes the whole width (`.deck-row.list-row`). Topics keep
+  theirs. Checked at 390 × 664 and 1280 × 800.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and

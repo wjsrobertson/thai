@@ -1659,7 +1659,7 @@ function renderListsPane() {
   const rows = lists.map((l) => {
     const id = listScopeId(l.id);
     const scope = resolveScope(id);
-    const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards });
+    const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
     return row;
   });
@@ -1731,7 +1731,10 @@ function pickerHeader(prefix, name, countText, container, q, openSet, key) {
   return header;
 }
 
-function pickerDeckRow(d) {
+// A topic's row: its name and description, and how many of its words are known (deckProgress) as a
+// bar and "known/total". A list's leaves those out (`progress` false; the user's call, 2026-10-20):
+// its description already says "N words", and the count read as a puzzle.
+function pickerDeckRow(d, { progress = true } = {}) {
   const { known, total: cards } = deckProgress(d.id, d);
   const pct = cards === 0 ? 0 : Math.round((known / cards) * 100);
   const row = document.createElement('button');
@@ -1741,10 +1744,9 @@ function pickerDeckRow(d) {
     <span class="deck-row-main">
       <span class="deck-row-name"></span>
       <span class="deck-row-desc"></span>
-    </span>
+    </span>` + (progress ? `
     <span class="deck-row-bar"><span class="deck-row-bar-fill" style="width:${pct}%"></span></span>
-    <span class="deck-row-count">${known}/${cards}</span>
-  `;
+    <span class="deck-row-count">${known}/${cards}</span>` : '');
   row.querySelector('.deck-row-name').textContent = d.name;
   textWithArrows(row.querySelector('.deck-row-desc'), d.description || '');
   row.addEventListener('click', () => pickScope(d.id));
