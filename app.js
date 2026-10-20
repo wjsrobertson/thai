@@ -228,7 +228,7 @@ const state = {
   pickerFor: 'study',        // the topic picker was opened from 'study' (the Topics page), 'flashcards' or 'review'
   listCards: [],      // the topic's cards (with progress merged): the Topics page
   cards: [],          // Flashcards' cards: the same list By topic, every card on Everything (loadCards)
-  flashScopeId: null, // the scope `cards` was built for: the topic's id, or 'all'
+  flashScopeId: null, // the scope `cards` was built for: the topic's or list's id (or the Alphabet's)
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
   showingBack: false,
@@ -241,7 +241,6 @@ const state = {
   wordShown: 25,      // and how many of its rows show (WORD_PAGE, Show more)
   wordFor: null,      // the scope those are for: another starts afresh (wordsFor)
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
-  readingLevel: null, // Reading on Everything: the open level (renderAllStories), '' with all closed
   readingQuery: '',   // Reading's search box (storyMatches)
   readingShown: 10,   // how many of the list's stories show (READING_PAGE more with each Show more)
   readingFor: null,   // the scope (and level) those were for: a new one starts them afresh
@@ -1373,10 +1372,9 @@ function goNext() {
 }
 
 // ---------- scopes: a topic, a group of topics, a whole category, or a list ----------
-// The Topics page and Flashcards show a scope (state.currentDeckId, prefs.currentDeckId);
-// Cards and Reading can also be on Everything (studyScope()). A scope id is a topic's id,
-// `group:<category>::<group>`, `cat:<category>`, `list:<id>` (your lists), or (Cards and Reading only)
-// 'all'. resolveScope() gives { id, kind, name, label,
+// List, Cards and Reading show a scope (state.currentDeckId, prefs.currentDeckId). A scope id is a
+// topic's id, `group:<category>::<group>`, `cat:<category>`, `list:<id>` (your lists), or 'all'
+// (every topic: Recognition's wrong answers for a short list). resolveScope() gives { id, kind, name, label,
 // description, decks, cards, deckOf }: cards are the decks' cards with repeats dropped (a word in
 // two topics counts once), and deckOf maps a card key to the first of the scope's decks with it.
 // A list has no decks: its cards are its words, and deckOf each word's first topic.
@@ -1393,7 +1391,7 @@ function resolveScope(id) {
   let kind = 'topic';
   let name = '';
   let decks = [];
-  if (id === 'all') { // the topics' words: Reading's stories reuse them (lists them all on Everything)
+  if (id === 'all') { // every topic's words (distractorPool); Cards and Reading had it as Everything until 2026-10-20
     [kind, name, decks] = ['all', 'Everything', state.decks.filter((d) => !d.passage)];
   } else if (id.startsWith('cat:')) {
     [kind, name] = ['category', id.slice(4)];
@@ -1448,26 +1446,13 @@ function resolveListScope(id) {
   return { id, kind: 'list', name: list.name, decks: [], cards, deckOf, description: `${n} word${n === 1 ? '' : 's'}`, label: list.name };
 }
 
-// What Cards and Reading show: Everything, or the topic or list the List page shows ("By topic",
-// prefs.flashcardsBy, the default). Everything was Cards' alone from 2026-10-07 (every word you'd
-// added); Reading follows it since the lists spike (2026-10-20). Set in the picker's tabs.
-const flashcardsByAll = () => getPreferences().flashcardsBy === 'all';
-const studyScope = () => (flashcardsByAll() ? resolveScope('all') : currentScope());
+// What Cards and Reading show: the topic or list the List page shows, the picker's one choice. Cards
+// had Everything as well from 2026-10-07 (prefs.flashcardsBy; every word you'd added), and Reading
+// with it in the lists spike (every story, by level); the user dropped it on 2026-10-20 as not useful,
+// so the picker is the same on all three pages.
 function flashScope() {
   if (state.section === 'alphabet') return alphaScope();
-  return studyScope();
-}
-
-function setFlashcardsBy(by) {
-  if (getPreferences().flashcardsBy === by || (by === 'topic' && !flashcardsByAll())) return;
-  setPreferences({ flashcardsBy: by });
-  reloadFlashcards();
-  renderDeckButton();
-  if (state.flashScopeId) preloadDeckAudio(flashScope());
-  if (state.view === 'reading') {
-    state.readingId = null;
-    renderReading();
-  }
+  return currentScope();
 }
 
 // The topic's cards for the Topics page, and Flashcards': the same list By topic; on Everything
@@ -1479,7 +1464,7 @@ function loadCards() {
   }
   const topic = currentScope();
   state.listCards = topic ? mergeProgressIntoCards(topic.cards) : [];
-  state.cards = flashcardsByAll() ? mergeProgressIntoCards(resolveScope('all').cards) : state.listCards;
+  state.cards = state.listCards;
 }
 
 // A new Flashcards round for its current scope. In Review mode, a new session for it.
@@ -1552,8 +1537,7 @@ function selectDeck(deckId) {
   if (storyRunOn()) stopReadStories();
   state.currentDeckId = deckId;
   setPreferences({ currentDeckId: deckId });
-  // Flashcards on Everything carries on; otherwise it starts the new topic.
-  if ((flashcardsByAll() ? 'all' : deckId) !== state.flashScopeId) reloadFlashcards();
+  if (deckId !== state.flashScopeId) reloadFlashcards(); // a new topic starts Cards afresh
   else state.listCards = mergeProgressIntoCards(deck.cards);
   renderDeckButton();
   if (state.orderMode !== 'review' || state.view !== 'flashcards') preloadDeckAudio(deck); // a session preloads its own
@@ -1619,15 +1603,9 @@ function pickerModel(q) {
   return [...cats.values()];
 }
 
-// The picker always picks the shared topic or list. Opened from Cards or Reading, it also has
-// Everything (renderPickerTabs), and picking a topic or list means By topic there.
+// The picker picks the topic or list that List, Cards and Reading share.
 function pickerSelectedId() {
   return state.currentDeckId;
-}
-
-// Whether the page the picker was opened from is By topic (the List page always is).
-function pickerByTopic() {
-  return state.pickerFor !== 'flashcards' || !flashcardsByAll();
 }
 
 function pickScope(id) {
@@ -1635,46 +1613,33 @@ function pickScope(id) {
   // list (state.addingTo). Picked plainly, a list becomes where 🔁 adds.
   state.addingTo = state.pickerFor === 'add' ? state.addTo : null;
   if (state.pickerFor !== 'add' && id.startsWith('list:')) setTarget(id.slice(5));
-  if (pickerByTopic() && id === state.currentDeckId) { // the same choice again: carry on
+  if (id === state.currentDeckId) { // the same choice again: carry on
     closeDeckPicker();
     freshListCards();
     renderWordlist();
     return;
   }
-  if (state.pickerFor === 'flashcards') setPreferences({ flashcardsBy: 'topic' });
   selectDeck(id); // rebuilds Flashcards (and a Review session) if its scope changed
   renderDeckButton();
   closeDeckPicker();
 }
 
 // The picker's tabs (the lists spike, 2026-10-20; until then Cards' dialog had Everything | By
-// topic): Topics (the tree and search), My lists, and, from Cards and Reading, Everything, which
-// picks at once. Add words has Topics and My lists.
+// topic): Topics (the tree and search) and My lists, on every page. Everything, a third from Cards
+// and Reading, went the same day (flashScope).
 function renderPickerTabs() {
   const tab = state.pickerTab;
   const adding = state.pickerFor === 'add';
-  els.pickerTabs.forEach((b) => {
-    b.hidden = b.dataset.pickerTab === 'all' && state.pickerFor !== 'flashcards';
-    b.setAttribute('aria-checked', String(b.dataset.pickerTab === tab));
-  });
+  els.pickerTabs.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.pickerTab === tab)));
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
   els.reviewByHelp.textContent = {
     topics: adding ? `Pick a topic, then add its words to ${into}` : "The app's words, by subject",
     lists: adding ? `Pick a list, then add its words to ${into}` : "Words you've chosen, from any topic",
-    all: 'Every word in every topic, and every story',
   }[tab];
   els.deckPickerSearchRow.hidden = tab !== 'topics';
-  els.deckPickerTree.hidden = tab === 'all';
-  els.deckPicker.classList.toggle('review-all', tab === 'all'); // just the tabs: the dialog shrinks to fit
 }
 
 function pickPickerTab(tab) {
-  if (tab === 'all') {
-    state.addingTo = null;
-    setFlashcardsBy('all');
-    closeDeckPicker(); // nothing more to pick
-    return;
-  }
   state.pickerTab = tab;
   renderPickerTabs();
   renderDeckPicker();
@@ -2000,11 +1965,9 @@ function openDeckPicker({ addTo = null } = {}) {
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
-  // From Cards and Reading, Everything is a choice too ('flashcards'); from the List page ('study'), not.
-  state.pickerFor = addTo ? 'add' : state.view === 'flashcards' || state.view === 'reading' ? 'flashcards' : 'study';
-  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'`
-    : state.pickerFor === 'flashcards' ? 'What to study' : 'Choose a topic or list';
-  state.pickerTab = addTo ? 'topics' : !pickerByTopic() ? 'all' : state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
+  state.pickerFor = addTo ? 'add' : 'study';
+  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : 'Choose a topic or list';
+  state.pickerTab = !addTo && state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
   renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -4564,17 +4527,10 @@ function makeRng(seed) {
 //  - the order of the three pills
 // Result is stable per (card.key, deck.id, seen-count).
 // On odd `seen` counts, flip the side so each card is shown both ways.
-// Where Recognition's wrong answers come from: the scope's words; on Everything, the card's own
-// topic's, as all 8,700-odd made them easy to rule out (the user's call, 2026-10-07, when Everything
-// was your added words). A list of fewer than 3 words: every topic's.
+// Where Recognition's wrong answers come from: the scope's words; a list of fewer than 3 words,
+// every topic's.
 function distractorPool(card) {
   if (state.section === 'alphabet') return state.cards;
-  const scope = flashScope();
-  if (scope?.kind === 'all') {
-    const home = scope.deckOf.get(card.key);
-    const own = state.cards.filter((c) => scope.deckOf.get(c.key) === home);
-    if (own.length >= 3) return own;
-  }
   return state.cards.length >= 3 ? state.cards : mergeProgressIntoCards(resolveScope('all').cards);
 }
 
@@ -5774,17 +5730,12 @@ function renderReading() {
 }
 
 // The list: the stories that use the words of the topic or list (the topic picker's choice, shared
-// with the List page), best matches first; on Everything, every story, by level (renderAllStories).
-// There was no list of every story at first, as there'd be too many (the user's call, 2026-10-08);
-// Everything has one since the lists spike (2026-10-20, the user's go-ahead), a level at a time.
+// with the List page), best matches first. There's no list of every story, as there'd be too many
+// (the user's call, 2026-10-08; Everything had one, a level at a time, for a day in the lists spike).
 function renderReadingList() {
-  const scope = studyScope();
+  const scope = currentScope();
   readingFor(scope?.id);
   const q = state.readingQuery.trim();
-  if (scope?.kind === 'all' && !q) {
-    renderAllStories();
-    return;
-  }
   const found = listedStories(scope, q);
   if (!found.length) {
     const empty = document.createElement('div');
@@ -5806,10 +5757,9 @@ function renderReadingList() {
   els.readingList.replaceChildren(...pagedStories(found));
 }
 
-// The list's stories in order, past the page shown: a topic's or list's, or a search's (Everything's
-// searches every level at once).
+// The list's stories in order, past the page shown: a topic's or list's, or a search's.
 function listedStories(scope, q) {
-  let found = scope?.kind === 'all' ? state.decks.filter((d) => d.passage) : scope ? storiesFor(scope).map(({ d }) => d) : [];
+  let found = scope ? storiesFor(scope).map(({ d }) => d) : [];
   if (q) found = found.filter((d) => storyMatches(d, q));
   // A story opened from elsewhere (a search result) that isn't one of this topic's goes first.
   const open = found.length && state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
@@ -5817,14 +5767,9 @@ function listedStories(scope, q) {
   return found;
 }
 
-// What Read all reads: the whole list, not just the page shown; on Everything the open level, or with
-// all closed every level in turn (the user's request, 2026-10-20: it read nothing then).
+// What Read all reads: the whole list, not just the page shown (the user's request, 2026-10-20).
 function readAllStories() {
-  const scope = studyScope();
-  const q = state.readingQuery.trim();
-  if (scope?.kind !== 'all' || q) return listedStories(scope, q);
-  const levels = storyLevels();
-  return levels.get(state.readingLevel) || [...levels.values()].flat();
+  return listedStories(currentScope(), state.readingQuery.trim());
 }
 
 // A long list in pages (the user's call, 2026-10-20: a list's or Everything's stories ran to hundreds):
@@ -5852,7 +5797,7 @@ function pagedStories(stories) {
   return shown;
 }
 
-// A new scope (or level) starts at the top: the first page, and no search.
+// A new topic or list starts at the top: the first page, and no search.
 function readingFor(key) {
   if (key === state.readingFor) return;
   state.readingFor = key;
@@ -5899,56 +5844,6 @@ function storyEntry(d) {
   head.append(item);
   entry.append(head);
   return entry;
-}
-
-// Everything's stories: a heading for each level (Little Stories, Easy, Medium, Harder: the
-// stories' groups in decks.json), one open at a time (state.readingLevel; the open story's, or the
-// first), as the topic picker's categories are. Only the open level's stories are drawn (811 Easy
-// ones). Read all reads that level, or with all closed every level, each opening as it's reached.
-function storyLevels() {
-  const levels = new Map();
-  for (const d of state.decks) {
-    if (!d.passage) continue;
-    const g = d.group || 'Stories';
-    if (!levels.has(g)) levels.set(g, []);
-    levels.get(g).push(d);
-  }
-  return levels;
-}
-
-function renderAllStories() {
-  const levels = storyLevels();
-  const openStory = state.readingId && state.decks.find((d) => d.id === state.readingId && d.passage);
-  if (openStory && (openStory.group || 'Stories') !== state.readingLevel) { // another level: its first page
-    state.readingLevel = openStory.group || 'Stories';
-    state.readingShown = READING_PAGE;
-  }
-  if (state.readingLevel !== '' && !levels.has(state.readingLevel)) state.readingLevel = levels.keys().next().value; // '': all closed
-  els.readingList.replaceChildren(...[...levels].map(([name, stories]) => {
-    const open = name === state.readingLevel;
-    const wrap = document.createElement('div');
-    wrap.className = 'reading-level' + (open ? '' : ' collapsed');
-    const head = document.createElement('button');
-    head.type = 'button';
-    head.className = 'cat-header reading-level-head';
-    head.setAttribute('aria-expanded', String(open));
-    head.innerHTML = '<span class="cat-caret">▾</span><span class="cat-name"></span><span class="cat-count"></span>';
-    head.querySelector('.cat-name').textContent = name;
-    head.querySelector('.cat-count').textContent = `${stories.length} stor${stories.length === 1 ? 'y' : 'ies'}`;
-    head.addEventListener('click', () => {
-      if (storyRunOn()) stopReadStories();
-      hideWordPop();
-      state.readingId = null;
-      state.readingLevel = open ? '' : name;
-      state.readingShown = READING_PAGE;
-      renderReading();
-      // A level closing above can move this one off screen.
-      els.readingList.querySelector('.reading-level:not(.collapsed) .reading-level-head')?.scrollIntoView({ block: 'nearest' });
-    });
-    wrap.append(head);
-    if (open) wrap.append(...pagedStories(stories));
-    return wrap;
-  }));
 }
 
 // Puts the reader under the open story's title (or hides it, with none open), and opens that one.
@@ -6152,7 +6047,7 @@ async function readStories(btn, from = null) {
         if (state.readingId !== id) {
           hideWordPop();
           state.readingId = id;
-          // Not drawn: past the page shown (the next page shows), or in a closed level (it opens).
+          // Not drawn: past the page shown (the next page shows).
           if (!els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"]`)) renderReadingList();
           placeReader();
         }

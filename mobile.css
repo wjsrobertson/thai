@@ -389,8 +389,6 @@ html.modal-open body { overflow: clip; }
 /* A page, not a sheet over one (the user's calls, 2026-10-14: no accent edge, no grey line, the page's
    own background): all the room between the bars, as Settings has. */
 .modal-panel.word-panel { height: 100%; max-height: none; border: 0; border-radius: 0; background: var(--bg); }
-/* Review's dialog on Everything: a short sheet from the top instead of a full-screen one. */
-#deck-picker.review-all .modal-panel { align-self: flex-start; border-radius: 0 0 14px 14px; }
 
 /* Deck picker: drop the progress bar, keep the count. */
 .deck-row { grid-template-columns: 1fr auto; gap: 8px; padding: 10px; }

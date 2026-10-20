@@ -438,11 +438,9 @@ html.modal-open body {
 .review-by[hidden], #deck-picker .modal-search[hidden], #deck-picker-tree[hidden] { display: none; }
 .review-by .segmented { display: flex; }
 .review-by .seg-btn { flex: 1; }
-.review-by .seg-btn[hidden] { display: none; } /* Everything, from the List page */
 /* My lists: New list under the lists (renderListsPane). */
 .new-list { display: block; width: calc(100% - 16px); min-height: 44px; margin: 8px; font-size: 16px; }
 .review-by-help { margin: 8px 2px 4px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
-#deck-picker.review-all .modal-panel { height: auto; align-self: center; padding-bottom: 8px; }
 .cat-header {
   display: flex;
   align-items: center;
@@ -2023,9 +2021,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .reading-empty { padding: 20px 4px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
 /* Reading on Everything: a heading for each level, one open at a time (renderAllStories), styled as
    the topic picker's categories. */
-.reading-level { margin-bottom: 4px; }
-.reading-level-head { min-height: 44px; margin-bottom: 4px; }
-.reading-level.collapsed .cat-caret { transform: rotate(-90deg); }
 .reading-empty .ghost { display: block; margin-top: 12px; padding: 8px 14px; }
 .rw.found { color: var(--accent); background: var(--panel-2); }
 

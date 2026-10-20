@@ -1639,6 +1639,17 @@ the user said yes to all of them.
   the head of the bar (`order: -1`), over the topic button, and scrolls away. Checked at 390 × 664,
   390 × 844 (text size 2) and 1280 × 800 (`adding_probe.py`): under the row at rest and scrolled
   1200, a row scrolled to stopping at 162, gone on Cards and Reading and after Done.
+- **Everything dropped** (the user's call, the same day: not useful). The picker's Everything tab is
+  gone, so it's the same dialog from List, Cards and Reading: "Choose a topic or list", Topics | My
+  lists (`pickerFor` is 'add' or 'study'; 'flashcards' and "What to study" went). Cards and Reading
+  show the List page's topic or list (`flashScope` is `currentScope`; `flashcardsByAll`, `studyScope`
+  and `setFlashcardsBy` went, and a saved `prefs.flashcardsBy` is ignored). Reading's levels went with
+  it (`renderAllStories`, `storyLevels`, `state.readingLevel`), as did Recognition's own-topic wrong
+  answers on Everything and the picker's short sheet for it (`.review-all`). `resolveScope('all')`
+  stays: a list of fewer than 3 words takes its wrong answers from every topic. The bullets above
+  that describe Everything are history. Checked in headless Chromium at 390 × 664 (`noall_probe.py`):
+  the picker from each page, a list picked from Reading reaching Cards, Recognition on a 2-word
+  list.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
