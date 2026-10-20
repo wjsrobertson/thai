@@ -96,7 +96,6 @@ const els = {
   listRename: document.getElementById('list-rename'),
   listDelete: document.getElementById('list-delete'),
   confirmInput: document.getElementById('confirm-input'),
-  deckPickerSearchRow: document.querySelector('#deck-picker .modal-search'),
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
   wordModal: document.getElementById('word-modal'),
@@ -1636,10 +1635,15 @@ function renderPickerTabs() {
     topics: adding ? `Pick a topic, then add its words to ${into}` : "The app's words, by subject",
     lists: adding ? `Pick a list, then add its words to ${into}` : "Words you've chosen, from any topic",
   }[tab];
-  els.deckPickerSearchRow.hidden = tab !== 'topics';
+  // Both tabs search (My lists since 2026-10-20, the user's request): topics and words, or your lists.
+  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your lists and their words…' : 'Search topics and words…';
 }
 
 function pickPickerTab(tab) {
+  if (tab !== state.pickerTab) { // a new tab, a new search
+    state.pickerFilter = '';
+    els.deckPickerSearch.value = '';
+  }
   state.pickerTab = tab;
   renderPickerTabs();
   renderDeckPicker();
@@ -1647,9 +1651,11 @@ function pickPickerTab(tab) {
 }
 
 // My lists: a row for each (as a topic's, with its progress), then New list. Add words leaves out
-// the list being added to.
+// the list being added to. A search finds a list by its name or by a word in it (wordMatches).
 function renderListsPane() {
-  const lists = getLists().filter((l) => state.pickerFor !== 'add' || l.id !== state.addTo);
+  const q = state.pickerFilter.trim();
+  const lists = getLists().filter((l) => (state.pickerFor !== 'add' || l.id !== state.addTo)
+    && (!q || l.name.toLowerCase().includes(q.toLowerCase()) || resolveScope(listScopeId(l.id)).cards.some((c) => wordMatches(c, q))));
   const rows = lists.map((l) => {
     const id = listScopeId(l.id);
     const scope = resolveScope(id);
@@ -1660,7 +1666,7 @@ function renderListsPane() {
   if (!lists.length) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
-    empty.textContent = state.pickerFor === 'add' ? 'No other lists yet.' : 'No lists yet. Make one, then add words to it from any topic.';
+    empty.textContent = q ? `No list matches "${q}".` : state.pickerFor === 'add' ? 'No other lists yet.' : 'No lists yet. Make one, then add words to it from any topic.';
     rows.push(empty);
   }
   if (state.pickerFor !== 'add') {

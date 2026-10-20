@@ -1658,6 +1658,12 @@ the user said yes to all of them.
   (`faded_probe.py`). Putting one back there (its row's 🔁, or its dialog's over the page) says "✓ Re-added …",
   without Change (the user's call, the same day: it's going back where it was; `toggleInTarget`).
   Adding from anywhere else keeps "Added" and Change (`readd_probe.py`).
+- **My lists has a search** (the user's request, the same day), the same box and hairline as Topics'
+  ("Search your lists and their words…"): a list shows if its name has the text, or one of its
+  words matches it as the List page's search does (`wordMatches`: Thai, English, transliteration).
+  ＋ New list stays under them; none found says so. Changing tab clears the search (a topic's and a
+  list's are different searches); Enter picks the first. Checked in headless Chromium at 390 × 664
+  (`listsearch_probe.py`): "food", "rice" and ข้าว finding Food words, no match, the tabs, Enter.
 - **🔁 adds to a list:** the topic rows, the Dictionary, word search and the word dialog all add to
   the **target list** (prefs.targetListId). That's the list last picked, made, or opened with Add
   words, else the first list; if there's no list yet, the first 🔁 makes "My words". Toasts and
