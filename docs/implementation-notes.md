@@ -1893,6 +1893,13 @@ long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
   page's foot 18, as Cards'. Explore still scrolls a little at 664 (20 px with a two-line note; 30
   before). On a desktop the row was already where the Dictionary's switch is (91 px), with the
   same space on each side: no change. Checked (scratch `pad_probe.py`, `timescroll.py`, `timepin.py`).
+- **The switches as Words'** (the user's call, 2026-10-21: Quiz's TH → Time, Time → TH and ▶ → Time
+  were shorter than Cards' TH → EN): on a phone both of Time's rows are 44 tall (styles.css's 40 had
+  beaten mobile.css's 44 tap targets), with 15px text and 8 × 6 padding, as `.deck-picker-bar
+  .seg-btn`; the directions' own flex, gap and 20px ▶ went, so the arrows and ▶ are Cards' too.
+  Quiz's clock 142 on a phone (was 150), so it still fits 390 × 664. Explore scrolls 24 at 664. On a
+  desktop Time's rows stay 40 (Cards' are 26). Checked (scratch `dirh.py`, `dirh2.py`): 44 / 15px /
+  the same arrow and ▶ sizes as Words' and the Alphabet's; Quiz the same 24 states over (`timequiz3.py`).
 - **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
   `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
   after the pause; Official; 300 questions with four different answers; the answers not moving when

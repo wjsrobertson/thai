@@ -2237,8 +2237,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .time-cap-tr { color: var(--accent); font-style: italic; }
 /* Quiz: its directions as Cards' are, the question in a card, four answers in two rows. */
 .time-dirs { display: flex; width: 100%; }
-.time-dirs .seg-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
-.time-dirs .speaker-icon { width: 20px; height: 20px; }
 .time-q {
   display: flex;
   flex-direction: column;

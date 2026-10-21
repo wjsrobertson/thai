@@ -475,6 +475,9 @@ html.modal-open body { overflow: clip; }
 /* ---------- Time (a spike, 2026-10-21) ---------- */
 /* The page fits 390 × 664 with a one-line time: closer together, the clock to the screen's height. */
 .time, .time-explore, .time-quiz { gap: 10px; }
+/* Its switches as Words' and the Alphabet's on a phone (2026-10-21, the user's call: they were
+   40px, under the 44 above, with 16px text): 44 tall, 15px text, the same padding. */
+.time-top .seg-btn, .time-dirs .seg-btn { min-height: 44px; padding: 8px 6px; font-size: 15px; }
 /* With 12px over the top row now (2026-10-21), Quiz still fits 664: its gaps 10, as .time's (they
    were 14), and the page's foot 18, as Cards'. */
 .stage[data-view="time"] { padding-bottom: 18px; }
@@ -483,8 +486,9 @@ html.modal-open body { overflow: clip; }
 .time-th { font-size: calc(30px * var(--fs, 1)); }
 .time-parts { gap: 6px; }
 .time-part { padding: 0 10px; font-size: calc(17px * var(--fs, 1)); } /* five parts in a row (บ่าย สอง โมง สามสิบห้า นาที) */
-/* Quiz fits 390 × 664 in all three directions (Listen's the tallest: the clock, its ▶, two lines). */
-.time-clock.time-q-clock { width: min(150px, 40vw); }
+/* Quiz fits 390 × 664 in all three directions (Listen's the tallest: the clock, its ▶, two lines);
+   the clock 142 (150 till the switches grew to 44, 2026-10-21). */
+.time-clock.time-q-clock { width: min(142px, 38vw); }
 .time-q { gap: 5px; padding: 12px; }
 .time-q-say { height: 80px; }
 .time-q-play.big { width: 80px; height: 80px; }
