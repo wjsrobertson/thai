@@ -50,9 +50,10 @@ mp3s that `data/audio/manifest.json` refers to. The voice's known misreadings ar
   (~/Development/datasets/burapha-th). Its terms are research and education use, not commercial,
   citing the paper; the app ships only the weights and credits it in Settings → About.
 - **Layout checks:** `python3 -u tools/check_layout.py` (the server on :8765; about 10 minutes,
-  phones then a 1280x800 screen; then `390x664 390x844 --text-size 2`) is expensive: run it only for
-  changes likely to have moved or resized something (CSS, sizing code, new rows or controls), not
-  for every fix (the user's call, 2026-10-20). Report what fails. It checks everything the user has
+  phones then a 1280x800 screen; then `390x664 390x844 --text-size 2`) is expensive: **run it only
+  when the user asks** (the user's call, 2026-10-21; before that, for any change likely to have moved
+  something). Use quick headless probes to check your own work instead. When it is run, report what
+  fails. It checks everything the user has
   asked to line up, match or stay put; the list is in docs/implementation-notes.md, "What lines up".
   A new request of that kind gets a check there too.
 - **Screenshots and UI tests:** headless Chromium scripts in ~/snap/chromium/common/learnthai-shots-out
