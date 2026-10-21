@@ -1882,7 +1882,17 @@ long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
   the same in all 24 states (three directions, asked and answered, Everyday and Official, each
   visited twice) at 390 × 664, 390 × 844 at text size 2 and 1280 × 800; nothing overflowing; 60
   questions' Thai inside the card. **To come:** a check in check_layout.py for this, once the
-  pages are settled (the user's call: not yet).
+  pages are settled (the user's call: not yet). The answer line's height is in px
+  (17 × 1.4 × 2 × text size), not 2.8 em: when `fitTimeQuiz` shrank a long answer line's text, an
+  em height shrank with it, 3 px at text size 2.
+- **The top row as other sections'** (the user's call, 2026-10-21: Time had no padding over it): on
+  a phone Explore | Quiz and Everyday | Official are pinned like the Dictionary's search
+  (`.time-top` with `.section-bar` and `.dict-top` in mobile.css): 12 px above, below and at the sides,
+  and the page's colour with a hairline once it scrolls. To keep Quiz fitting 390 × 664 with the
+  12 px, the gaps inside Explore and Quiz are 10 on a phone, as `.time`'s (they were 14), and the
+  page's foot 18, as Cards'. Explore still scrolls a little at 664 (20 px with a two-line note; 30
+  before). On a desktop the row was already where the Dictionary's switch is (91 px), with the
+  same space on each side: no change. Checked (scratch `pad_probe.py`, `timescroll.py`, `timepin.py`).
 - **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
   `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
   after the pause; Official; 300 questions with four different answers; the answers not moving when

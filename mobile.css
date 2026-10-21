@@ -129,7 +129,7 @@ html.kb .tabs { display: none; }
    it out from under them (scroll-padding), and from under the tab bar. */
 .stage:not([data-view="home"]) { padding-top: 0; }
 .deck-picker-bar { display: contents; }
-.section-bar, .dict-top {
+.section-bar, .dict-top, .time-top {
   position: sticky;
   top: 0;
   z-index: 9;
@@ -139,7 +139,11 @@ html.kb .tabs { display: none; }
 }
 .section-bar { display: flex; gap: 8px; }
 .dict-top { margin-bottom: 4px; } /* with its padding, the 16px it had */
-html.scrolled :is(.section-bar, .dict-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
+/* Time's Explore | Quiz and Everyday | Official the same (2026-10-21, the user's call: it sat at the
+   very top, without the 12px the other sections have above their row). Its padding stands in for
+   .time's gap under it: 12, as under Topics' row. */
+.time-top { margin-bottom: -10px; }
+html.scrolled :is(.section-bar, .dict-top, .time-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
 /* The consonants' and vowels' line (the hint, or the one last tapped: pickAlpha) pinned under the
    section's row too (2026-10-15, the user's requests), the two one band: the hairline under the
    line, not between them. It takes the gutters, and the 12px under it is split around its padding. */
@@ -470,7 +474,10 @@ html.modal-open body { overflow: clip; }
 
 /* ---------- Time (a spike, 2026-10-21) ---------- */
 /* The page fits 390 × 664 with a one-line time: closer together, the clock to the screen's height. */
-.time { gap: 10px; }
+.time, .time-explore, .time-quiz { gap: 10px; }
+/* With 12px over the top row now (2026-10-21), Quiz still fits 664: its gaps 10, as .time's (they
+   were 14), and the page's foot 18, as Cards'. */
+.stage[data-view="time"] { padding-bottom: 18px; }
 .time-clock { width: min(200px, 50vw, 29vh); }
 .time-band-row { grid-template-rows: 32px auto; }
 .time-th { font-size: calc(30px * var(--fs, 1)); }

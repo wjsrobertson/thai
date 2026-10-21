@@ -2266,7 +2266,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Listen's question is its speaker, large. */
 .time-q-play.big { width: 96px; height: 96px; }
 .time-q-play.big .speaker-icon { width: 56px; height: 56px; }
-.time-q-reveal { flex: none; height: 2.8em; overflow: hidden; margin: 0; line-height: 1.4; color: var(--accent); font-size: calc(17px * var(--fs, 1)); }
+/* Two lines of its full size, in px: fitTimeQuiz shrinks a long one's text, and an em height shrank with it. */
+.time-q-reveal { flex: none; height: calc(17px * 1.4 * 2 * var(--fs, 1)); overflow: hidden; margin: 0; line-height: 1.4; color: var(--accent); font-size: calc(17px * var(--fs, 1)); }
 .time-q-reveal.hint { color: var(--muted); }
 .time-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .time-answers .learn-pill { height: 64px; min-height: 0; padding: 4px 8px; overflow: hidden; font-size: calc(20px * var(--fs, 1)); }
