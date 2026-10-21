@@ -71,7 +71,7 @@ body { padding-top: env(safe-area-inset-top, 0px); }
    shape in all three modes; the answers were 92 px tall and the grades 72, the card 24 and 10 px
    shorter than Browse's). */
 .stage[data-view="flashcards"] { padding-bottom: 18px; }
-.stage[data-view="flashcards"]:not([data-order="test"]) :is(#prev-btn, #next-btn) { margin-top: -6px; }
+.stage[data-view="flashcards"]:not([data-order="test"]) :is(#prev-btn, #next-btn, #random-btn) { margin-top: -6px; }
 .stage[data-order="test"] .learn-pills { margin-top: 6px; } /* after the card's 12 px gap: 18 */
 .stage[data-order="type"] .type-bar { margin-top: 6px; } /* Type's box (2026-10-19), as the answers */
 /* The page is the visible height, not Safari's 100vh (its height with the toolbars hidden), so a
@@ -172,8 +172,8 @@ html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom,
 /* ---------- flashcard: full-width card, answer pills, then prev/next under the thumb ---------- */
 .card-wrap {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas: "card card" "pills pills" "prev next";
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: "card card card" "pills pills pills" "prev random next";
   gap: 12px;
 }
 .card-row { display: contents; }
@@ -187,9 +187,12 @@ html { scroll-padding: 88px 0 calc(var(--tabbar-h) + env(safe-area-inset-bottom,
 .learn-pills { grid-area: pills; gap: 8px; }
 #prev-btn { grid-area: prev; justify-self: start; }
 /* Recognition has no ‹ ›: no row for them, or its gap would take 12px from the card. */
-.stage:is([data-order="test"], [data-order="type"]) .card-wrap { grid-template-areas: "card card" "pills pills"; }
+.stage:is([data-order="test"], [data-order="type"]) .card-wrap { grid-template-areas: "card card card" "pills pills pills"; }
 #next-btn { grid-area: next; justify-self: end; }
+/* 🔀 between them, centred on the card (the columns either side are the same width). */
+#random-btn { grid-area: random; }
 .nav-btn { width: 56px; height: 56px; font-size: 26px; }
+.shuffle-icon { width: 24px; height: 24px; }
 
 /* Corner controls shrink so they no longer cover the word (72 px since 2026-10-09, from 48). */
 .card .face { padding: 84px 16px; }

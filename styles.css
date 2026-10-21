@@ -1187,9 +1187,18 @@ body { display: flex; flex-direction: column; }
   cursor: not-allowed;
 }
 /* Next is filled with the accent, like Recall's ⟳ before the answer, so it's clear what to press
-   (2026-10-10, the user's request). At the end of the list it's disabled and plain again. */
+   (2026-10-10, the user's request). With a single card it's disabled and plain again (‹ › go round
+   since 2026-10-21, so there's no end to stop at). */
 #next-btn:not(:disabled) { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 #next-btn:hover:not(:disabled) { filter: brightness(1.08); }
+/* 🔀 (goRandom): under the card here, between ‹ › on a phone (mobile.css); hidden with them. */
+.shuffle-icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+/* 12 px under the card, as ‹ › are beside it, and the page's foot 24 rather than 32, so Browse still
+   fits 1280 × 800 without scrolling (it went 11 px over). */
+@media (min-width: 601px) {
+  #random-btn { margin-top: -4px; }
+  .stage[data-view="flashcards"][data-order="practice"] { padding-bottom: 24px; }
+}
 .nav-btn.pulse {
   color: var(--accent);
   border-color: var(--accent);

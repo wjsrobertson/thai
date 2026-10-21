@@ -117,6 +117,12 @@ def web_checks(ws, size):
     lab2 = json.loads(js(ws, "JSON.stringify((() => { const b = document.querySelector('.study-switch .seg-btn'), i = b.querySelector('.seg-icon').getBoundingClientRect(), l = b.querySelector('.seg-label').getBoundingClientRect();"
                              " return { px: parseFloat(getComputedStyle(b.querySelector('.seg-label')).fontSize), beside: i.right <= l.left && i.bottom > l.top && i.top < l.bottom }; })())"))
     C("Web: each page's name beside its icon, at 16 px", all(x['beside'] and near(x['px'], 16, 0.1) for x in (lab, lab2)), f'{lab} / {lab2}')
+    tap(ws, '[data-study-page=flashcards]', wait=1.5)
+    tap(ws, '[data-order=practice]', wait=0.8)
+    card, rd = R(ws, '#card'), R(ws, '#random-btn')
+    over = js(ws, 'document.documentElement.scrollHeight - innerHeight')
+    C("Web: Cards' 🔀 under the card, centred on it, and Browse fits without scrolling (10-21)",
+      card and rd and near(centre(rd), centre(card)) and rd['t'] >= card['b'] and over <= 0, f"card {fmt(card)}, 🔀 {fmt(rd)}, {over} px over")
     errs = json.loads(js(ws, 'JSON.stringify(window.__errs || [])'))
     C('No script errors', not errs, '; '.join(errs)[:200])
     C('No sideways scroll', js(ws, 'document.documentElement.scrollWidth') <= W, f"{js(ws, 'document.documentElement.scrollWidth')} wide")
@@ -259,6 +265,9 @@ def checks(ws, size):
     up, down = (nx and card and nx['t'] - card['b'], nx and tabs['t'] - nx['b'])
     C("Topics' Cards: ‹ › in the middle of the room under the card, clear of the tab bar",
       up is not None and down is not None and down >= 0 and abs(up - down) <= 2, f"{up and round(up)} above, {down and round(down)} below")
+    pv, rd = R(ws, '#prev-btn'), R(ws, '#random-btn')
+    C("Topics' Cards: 🔀 in the middle of ‹ ›, level with them (10-21)",
+      pv and nx and rd and near(rd['l'] + rd['w'] / 2, (pv['r'] + nx['l']) / 2) and same(rd, nx, 'th'), f"‹ {fmt(pv)}, 🔀 {fmt(rd)}, › {fmt(nx)}")
 
     # ---- The card one shape in Browse, Recognition and Recall (2026-10-16) ----
     def modes(label, tab):

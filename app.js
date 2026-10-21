@@ -39,6 +39,7 @@ const els = {
   typeHint: document.getElementById('type-hint'),
   prevBtn: document.getElementById('prev-btn'),
   nextBtn: document.getElementById('next-btn'),
+  randomBtn: document.getElementById('random-btn'),
   orderButtons: document.querySelectorAll('.seg-btn[data-order]'),
   directionButtons: document.querySelectorAll('.seg-btn[data-direction]'),
   wordlistSection: document.getElementById('wordlist-section'),
@@ -230,6 +231,8 @@ const state = {
   flashScopeId: null, // the scope `cards` was built for: the topic's or list's id (or the Alphabet's)
   queue: [],          // ordered indices into `cards`
   pos: 0,             // index into queue
+  randomAt: null,     // { queue, pos }: the card 🔀 drew, shown as "? / n" till ‹ › move on (goRandom)
+  randomBag: null,    // { queue, left }: the places 🔀 hasn't drawn yet
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
@@ -1221,14 +1224,15 @@ function formatRelative(ts) {
   return `in ${days} day${days === 1 ? '' : 's'}`;
 }
 
-// Browse's "3 / 24" and ‹ ›. Recognition hides them: it's a stream, and you move on by answering.
+// Browse's "3 / 24" and ‹ 🔀 ›. Recognition hides them: it's a stream, and you move on by answering.
+// A random card's place is "? / 24" (goRandom). With ‹ › going round, only a single card stops them.
 function updateStats() {
+  const random = state.randomAt?.queue === state.queue && state.randomAt.pos === state.pos;
   const posText = state.queue.length
-    ? `${state.pos + 1} / ${state.queue.length}`
+    ? `${random ? '?' : state.pos + 1} / ${state.queue.length}`
     : '—';
   els.posBadges.forEach((p) => { p.textContent = posText; });
-  els.prevBtn.disabled = state.pos <= 0;
-  els.nextBtn.disabled = state.pos >= state.queue.length - 1;
+  els.prevBtn.disabled = els.nextBtn.disabled = els.randomBtn.disabled = state.queue.length < 2;
 }
 
 // `instant` skips the flip animation (.no-anim).
@@ -1360,16 +1364,38 @@ function advance() {
   renderCard();
 }
 
-// Browse's ‹ ›.
+// Browse's ‹ ›, going round: past the last card is the first again, and back from the first the
+// last (2026-10-21, the user's request; they stopped at the ends).
+// Moving on from a random card forgets it was one: come round to it again and it has its number
+// (2026-10-21, the user's report: the "?" came back).
 function goPrev() {
-  if (answeringMode() || state.pos <= 0) return;
-  state.pos -= 1;
+  if (answeringMode() || state.queue.length < 2) return;
+  state.pos = (state.pos - 1 + state.queue.length) % state.queue.length;
+  state.randomAt = null;
   renderCard();
 }
 
 function goNext() {
-  if (answeringMode() || state.pos >= state.queue.length - 1) return;
-  state.pos += 1;
+  if (answeringMode() || state.queue.length < 2) return;
+  state.pos = (state.pos + 1) % state.queue.length;
+  state.randomAt = null;
+  renderCard();
+}
+
+// Browse's 🔀 (2026-10-21, the user's request): a card from anywhere in the topic, its place shown
+// as "? / 24", since in a topic's own order the number gives the word away. The draws go through
+// every card before one comes again (a shuffled bag, kept with the queue it's drawn from, so a new
+// queue starts a new one), and ‹ › go on from the card drawn.
+function goRandom() {
+  if (answeringMode() || state.queue.length < 2) return;
+  let bag = state.randomBag;
+  if (bag?.queue !== state.queue || !bag.left.some((p) => p !== state.pos)) {
+    bag = state.randomBag = { queue: state.queue, left: shuffled(state.queue.map((_, p) => p).filter((p) => p !== state.pos)) };
+  }
+  let pos = bag.left.pop();
+  if (pos === state.pos) pos = bag.left.pop(); // reached with ‹ › since: the next one instead
+  state.pos = pos;
+  state.randomAt = { queue: state.queue, pos };
   renderCard();
 }
 
@@ -7514,6 +7540,7 @@ function bindEvents() {
 
   els.prevBtn.addEventListener('click', goPrev);
   els.nextBtn.addEventListener('click', goNext);
+  els.randomBtn.addEventListener('click', goRandom);
 
   els.orderButtons.forEach((btn) => {
     btn.addEventListener('click', () => setOrderMode(btn.dataset.order));
@@ -7737,6 +7764,8 @@ function bindEvents() {
       goNext();
     } else if (e.key === 'ArrowLeft') {
       goPrev();
+    } else if (e.key === 'r' || e.key === 'R') {
+      goRandom();
     }
   });
 

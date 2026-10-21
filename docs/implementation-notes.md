@@ -1537,12 +1537,13 @@ user asked:
   keyboard up the card and box above it, the box keeping the focus, the page held at its top
   (10-19); a letter or
   short word filling the card's front, long text inside it (10-16); an Alphabet card's back whole,
-  the letter twice the words (10-16).
+  the letter twice the words (10-16); Browse's 🔀 in the middle of ‹ ›, level with them (10-21).
 - **Tile boards:** the Thai Script topics' rows centred, tiles one width (10-13).
 - **A wider screen** (1280 × 800, `web_checks`): each section's switch in one place on all its pages,
   in a row of its own above the topic button, the three centred alike at one height; the topic
   button in one place on every page, scrolling or not; each page's name beside its icon at 16 px;
-  the switches 16 px under the top bar (10-18).
+  the switches 16 px under the top bar (10-18); Cards' 🔀 centred under the card, Browse fitting
+  without a scroll (10-21).
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
@@ -1741,6 +1742,31 @@ the user said yes to all of them.
   Checked headless with a faked keyboard (scratch `dialogkb_probe.py`, 390 × 844 and 390 × 664 at
   text size 2): the dialog clear above it, drags stopped but in the box, and as before once it goes.
   No layout check (the user's call).
+
+## Browse: a random card, and ‹ › going round (2026-10-21)
+
+The user's request, from a screenshot of Browse on Hard Vowels: a random button between ‹ and ›,
+‹ › going back round at either end, and "? / 17" for a random card.
+- **🔀** (`#random-btn`, `goRandom`): between ‹ › on a phone, in the grid's middle column (`1fr auto
+  1fr`, so it's centred on the card), 56 px and level with them; on a wider screen under the card,
+  centred, 12 px under it as ‹ › are beside it. A crossed-arrows icon (`.shuffle-icon`), plain like
+  ‹, since › keeps the accent. **R** draws one from the keyboard. It's Browse's, on Topics' and the
+  Alphabet's Cards; Recognition and Type hide it with ‹ › (`.nav-btn`).
+- **The draws:** a shuffled bag of the queue's places (`state.randomBag`, kept with the queue it was
+  drawn from, so a new queue or scope starts a new one): every card comes once before any comes
+  again, never the card on screen. ‹ › go on from the card drawn.
+- **"? / 17":** till ‹ › move on from the card drawn (`state.randomAt`, `{ queue, pos }`, which ‹ ›
+  clear, as does a rebuilt queue); in a topic's own order the number would give the word away. Come
+  round to it again and it has its number (the user's report, the same day: the "?" came back).
+- **Going round:** › on the last card is the first, ‹ on the first the last; the buttons are
+  disabled only with a single card (› plain then, as it was at the end).
+- **A wider screen's foot:** 🔀 put Browse 11 px over 1280 × 800, so Browse's stage there has 24 px
+  under it rather than 32 (`@media (min-width: 601px)`); it fits again.
+- **Checked** headless (scratch `random_probe.py`) at 390 × 664, 390 × 844 at text size 2 and
+  1280 × 800: 🔀 centred between ‹ › and level with them, ‹ from 1 / 25 to 25 / 25 and › back, 24
+  draws reaching every other card, "? / 25" then › showing a number, R, none of it in Recognition,
+  the Alphabet's Cards the same, no scroll and no script errors. `check_layout.py` checks the place
+  (What lines up).
 
 ## Topics' third page says Read (2026-10-21)
 
