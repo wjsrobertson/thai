@@ -1773,6 +1773,22 @@ The user's request, from a screenshot of Browse on Hard Vowels: a random button 
   the Alphabet's Cards the same, no scroll and no script errors. `check_layout.py` checks the place
   (What lines up).
 
+## Your lists' words newest first (2026-10-21)
+
+The user's call: a list's words newest added first, and a setting for it, newest first by default.
+Until now they were oldest first (the order they went in).
+- **Settings → List → "Your lists' words":** Newest first (default) or Oldest first
+  (`settings.listOrder`). A list keeps its words in the order they went in (`list.words`), and
+  `resolveListScope` turns that round for newest first, so the List page, Cards (Browse's order;
+  Recognition's "List order") and Read all follow it. A word put back goes in again, so it's the
+  newest; Add all's words go in the topic's order, so newest first shows them the other way round.
+- **Changing it** (`listOrderChanged`): every list's scope again, the List page redrawn behind
+  Settings, and Cards' queue rebuilt round the card shown (`syncReviewOnly`), or on coming back.
+- **Checked** at 390 × 664 (scratch `listorder_probe.py`): a list saved oldest first shown newest
+  first on the List page and in Browse; Oldest first in Settings re-ordering the page behind it and
+  Cards; Settings' search finding it by "newest"; a word added from a topic first in the list.
+  No layout check (a settings row like the others).
+
 ## Topics' third page says Read (2026-10-21)
 
 The user's call: the page switch's Reading is **Read** (its label, `aria-label` and `title`), and so is

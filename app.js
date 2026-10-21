@@ -147,6 +147,7 @@ const els = {
   themeColorMeta: document.querySelector('meta[name="theme-color"]'),
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
+  setListOrder: document.getElementById('setting-list-order'),
   setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
   setReadStoryTitles: document.getElementById('setting-read-story-titles'),
   setReadStoriesLoop: document.getElementById('setting-read-stories-loop'),
@@ -216,6 +217,7 @@ const DEFAULT_SETTINGS = {
   wrongPauseMs: 4000,             // Recognition: pause after a wrong one (its own setting since 2026-10-08; 3 s at first)
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → List)
+  listOrder: 'newest',            // your lists' words: 'newest' | 'oldest' added first (Settings → List; resolveListScope)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
   readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
@@ -1465,7 +1467,10 @@ function resolveListScope(id) {
   if (!list) return null;
   const cards = [];
   const deckOf = new Map();
-  for (const key of list.words) {
+  // Newest added first, or oldest (Settings → List, the user's call, 2026-10-21: it was oldest).
+  // list.words keeps the order they went in; a word put back goes in again, as the newest.
+  const keys = getSettings().listOrder === 'oldest' ? list.words : [...list.words].reverse();
+  for (const key of keys) {
     const entry = state.cardIndex.get(key);
     if (!entry) continue; // its card was edited or removed
     cards.push(entry.card);
@@ -3784,6 +3789,7 @@ function renderSettings() {
   els.setThaiFont.value = s.thaiFont === 'loopless' ? 'loopless' : 'looped';
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
+  els.setListOrder.value = s.listOrder === 'oldest' ? 'oldest' : 'newest';
   els.setTopicWordGaps.checked = !!s.topicWordGaps;
   els.setReadStoryTitles.checked = s.readStoryTitles !== false;
   els.setReadStoriesLoop.checked = s.readStoriesLoop !== false;
@@ -3888,6 +3894,10 @@ function bindSettings() {
   els.setWordlistFirst.addEventListener('change', () => {
     setSettings({ wordlistFirst: els.setWordlistFirst.value === 'english' ? 'english' : 'thai' });
     renderWordlist();
+  });
+  els.setListOrder.addEventListener('change', () => {
+    setSettings({ listOrder: els.setListOrder.value === 'oldest' ? 'oldest' : 'newest' });
+    listOrderChanged();
   });
   els.setTextSize.addEventListener('change', () => {
     setSettings({ textSize: parseInt(els.setTextSize.value, 10) || 0 });
@@ -5097,6 +5107,16 @@ function listsChanged(id) {
   renderDeckButton();
   syncReviewOnly();
   document.querySelectorAll('.row-review').forEach((b) => b.paint?.()); // the word dialog's, word search's
+}
+
+// Settings' order for your lists: every list's words again, and the page and Cards in the new order
+// (syncReviewOnly rebuilds Cards' queue around the card shown; away from Cards, coming back does).
+function listOrderChanged() {
+  for (const id of scopeCache.keys()) if (id.startsWith('list:')) scopeCache.delete(id);
+  if (currentScope()?.kind !== 'list') return;
+  freshListCards();
+  if (state.view === 'wordlist') renderWordlist();
+  syncReviewOnly();
 }
 
 function changeList(id, change) {
