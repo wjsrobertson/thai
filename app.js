@@ -1,6 +1,7 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable, consonantClass } from './spell.js';
 import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 import { KEDMANEE, sameThai, tidy, tidiedNote, firstWrong, clusters } from './typing.js';
+import { PERIODS, periodOf, timePhrase, timeEnglish } from './time.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -83,6 +84,18 @@ const els = {
   tabMore: document.getElementById('tab-more'), // a phone's, hidden for now (index.html)
   moreMenu: document.getElementById('more-menu'), // its list
   moreItems: document.querySelectorAll('.more-item'),
+  timeSection: document.getElementById('time-section'),
+  timeStyleButtons: document.querySelectorAll('[data-time-style]'),
+  timeClock: document.getElementById('time-clock'),
+  timePrev: document.getElementById('time-prev'),
+  timeNext: document.getElementById('time-next'),
+  timeBand: document.getElementById('time-band'),
+  timeTh: document.getElementById('time-th'),
+  timeTr: document.getElementById('time-tr'),
+  timeEn: document.getElementById('time-en'),
+  timePlay: document.getElementById('time-play'),
+  timeParts: document.getElementById('time-parts'),
+  timeCaption: document.getElementById('time-caption'),
   setWaitAgain: document.getElementById('setting-wait-again'),
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
@@ -235,6 +248,7 @@ const state = {
   pos: 0,             // index into queue
   randomAt: null,     // { queue, pos }: the card 🔀 drew, shown as "? / n" till ‹ › move on (goRandom)
   randomBag: null,    // { queue, left }: the places 🔀 hasn't drawn yet
+  time: (() => { const d = new Date(); const at = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5 % 1440; return { h: Math.floor(at / 60), m: at % 60 }; })(), // Time's clock (renderTime): now, to the 5 minutes
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
@@ -1138,11 +1152,11 @@ function fitText(el) {
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); }, 150);
+  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeText(); }, 150);
 });
 // The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
 // the fallback: fit again once it's in.
-document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); });
+document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); fitTimeText(); });
 
 function renderCard() {
   renderReviewOnly();
@@ -3696,6 +3710,8 @@ function setView(view, { section = 'words' } = {}) {
   els.readingSection.hidden = view !== 'reading';
   els.dictSection.hidden = view !== 'dictionary';
   if (view === 'dictionary') renderDictionary();
+  els.timeSection.hidden = view !== 'time';
+  if (view === 'time') renderTime();
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
@@ -7550,6 +7566,186 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// ---------- Time (time.js; a spike, 2026-10-21: branch 2026-10-21-spike-time) ----------
+// Explore: a clock to set, by dragging its hands (the long one by 5 minutes, carrying the hour round;
+// the short one by the hour), by ‹ › (5 minutes) or by the band, and the Thai for its time under it,
+// the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in two rows,
+// am and pm, each part of the day in its colour with the count its Thai uses (บ่าย 1–3, เย็น 4–6,
+// ทุ่ม 1–5); the clock's rim shows the parts for the half of the day it's in. The Thai's parts below
+// it each say what they are when tapped. A change says the time, as Cards' auto-play does (its A).
+// It opens on the time now, to the 5 minutes.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svgEl = (tag, attrs = {}) => {
+  const e = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  return e;
+};
+const timeStyle = () => (getPreferences().timeStyle === 'official' ? 'official' : 'everyday');
+const timeSaysOnChange = () => getPreferences().autoPlay !== false;
+let clockParts = null; // the clock's hands and rim, once drawn (drawClock)
+let clockDrag = null;  // 'hour' or 'minute' while a hand is dragged
+
+// A point on the clock: `deg` clockwise from 12, `r` from the middle (the face is 0 0 200 200).
+const clockPoint = (deg, r) => [100 + r * Math.sin((deg * Math.PI) / 180), 100 - r * Math.cos((deg * Math.PI) / 180)];
+
+function drawClock() {
+  const svg = els.timeClock;
+  svg.replaceChildren(svgEl('circle', { class: 'clock-face', cx: 100, cy: 100, r: 91 }));
+  // The rim: an hour's arc each, coloured by its part of the day (renderTime).
+  const rim = [];
+  for (let k = 0; k < 12; k++) {
+    const [x0, y0] = clockPoint(k * 30 + 1, 96);
+    const [x1, y1] = clockPoint(k * 30 + 29, 96);
+    const arc = svgEl('path', { class: 'clock-rim', d: `M${x0.toFixed(2)} ${y0.toFixed(2)}A96 96 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}` });
+    rim.push(arc);
+    svg.append(arc);
+  }
+  for (let i = 0; i < 60; i++) {
+    const five = i % 5 === 0;
+    const [x0, y0] = clockPoint(i * 6, five ? 80 : 84);
+    const [x1, y1] = clockPoint(i * 6, 88);
+    svg.append(svgEl('line', { class: five ? 'clock-tick five' : 'clock-tick', x1: x0, y1: y0, x2: x1, y2: y1 }));
+  }
+  for (let n = 1; n <= 12; n++) {
+    const [x, y] = clockPoint(n * 30, 67);
+    const t = svgEl('text', { class: 'clock-num', x, y, 'text-anchor': 'middle', 'dominant-baseline': 'central' });
+    t.textContent = n;
+    svg.append(t);
+  }
+  const hour = svgEl('line', { class: 'clock-hand hour', x1: 100, y1: 100, x2: 100, y2: 52 });
+  const minute = svgEl('line', { class: 'clock-hand minute', x1: 100, y1: 100, x2: 100, y2: 26 });
+  svg.append(hour, minute, svgEl('circle', { class: 'clock-pin', cx: 100, cy: 100, r: 5 }));
+  clockParts = { hour, minute, rim };
+}
+
+function setTime(h, m, { say = false } = {}) {
+  state.time = { h: ((h % 24) + 24) % 24, m: ((m % 60) + 60) % 60 };
+  renderTime();
+  if (say && timeSaysOnChange()) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th);
+}
+
+function stepTime(minutes) {
+  const at = (state.time.h * 60 + state.time.m + minutes + 1440) % 1440;
+  setTime(Math.floor(at / 60), at % 60, { say: true });
+}
+
+function renderTime() {
+  if (!clockParts) drawClock();
+  const { h, m } = state.time;
+  const style = timeStyle();
+  els.timeStyleButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeStyle === style)));
+  clockParts.hour.setAttribute('transform', `rotate(${(h % 12) * 30 + m / 2} 100 100)`);
+  clockParts.minute.setAttribute('transform', `rotate(${m * 6} 100 100)`);
+  const half = h < 12 ? 0 : 12;
+  clockParts.rim.forEach((arc, k) => arc.setAttribute('class', `clock-rim period-${periodOf(half + k).id}` + (half + k === h ? ' on' : '')));
+  renderTimeBand();
+  const p = timePhrase(h, m, style);
+  els.timeTh.textContent = p.th;
+  fitTimeText();
+  els.timeTr.textContent = p.tl;
+  els.timeEn.textContent = p.en + (p.written ? ` · written ${p.written}` : '');
+  els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}: drag its hands`);
+  els.timePlay.dataset.say = p.th;
+  els.timePlay.classList.toggle('playing', sayingNow(p.th));
+  els.timeParts.replaceChildren(...p.parts.map((part) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'time-part';
+    const period = PERIODS.find((x) => x.th === part.th); // a part of the day's word, in its colour
+    if (period) b.classList.add(`period-${period.id}`);
+    b.lang = 'th';
+    b.textContent = part.th;
+    b.setAttribute('aria-pressed', 'false');
+    b.addEventListener('click', () => {
+      els.timeParts.querySelectorAll('.time-part').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      speak(part.th);
+      timeCaption(part);
+    });
+    return b;
+  }));
+  timeCaption(null, p.note);
+}
+
+// The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
+// mid-phrase on a phone), as Cards' text fits its card; at the least 18 px, past that it wraps.
+function fitTimeText() {
+  const el = els.timeTh;
+  el.style.fontSize = '';
+  el.classList.remove('wraps');
+  if (els.timeSection.hidden) return;
+  const room = el.parentElement.clientWidth - els.timePlay.offsetWidth - 4;
+  if (el.scrollWidth <= room) return;
+  const px = Math.floor((parseFloat(getComputedStyle(el).fontSize) * room) / el.scrollWidth);
+  el.style.fontSize = `${Math.max(18, px)}px`;
+  if (px < 18) el.classList.add('wraps');
+}
+
+// Under the parts: what the tapped one means, or a word on this time.
+function timeCaption(part, note = '') {
+  if (!part) {
+    els.timeCaption.replaceChildren(note);
+    els.timeCaption.classList.toggle('note', !!note);
+    return;
+  }
+  els.timeCaption.classList.remove('note');
+  els.timeCaption.replaceChildren(
+    Object.assign(document.createElement('span'), { className: 'time-cap-th', lang: 'th', textContent: part.th }),
+    Object.assign(document.createElement('span'), { className: 'time-cap-tr', textContent: part.tl }),
+    Object.assign(document.createElement('span'), { className: 'time-cap-en', textContent: part.en }));
+}
+
+// The band: am then pm, twelve hours a row, a part of the day's name under its hours (centred under
+// them, or from the start of a single hour's: เที่ยงคืน, เที่ยง).
+function renderTimeBand() {
+  const rows = [0, 12].map((start) => {
+    const row = document.createElement('div');
+    row.className = 'time-band-row';
+    for (let h = start; h < start + 12; h++) {
+      const period = periodOf(h);
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = `time-cell period-${period.id}` + (h === state.time.h ? ' on' : '');
+      cell.textContent = period.count(h);
+      cell.setAttribute('aria-label', `${timeEnglish(h, 0)}: ${timePhrase(h, 0).th}`);
+      cell.addEventListener('click', () => setTime(h, state.time.m, { say: true }));
+      row.append(cell);
+    }
+    for (const period of PERIODS.filter((p) => p.hours[0] >= start && p.hours[0] < start + 12)) {
+      const label = document.createElement('span');
+      label.className = `time-band-label period-${period.id}` + (period.hours.length === 1 ? ' single' : '');
+      label.lang = 'th';
+      label.textContent = period.th;
+      label.style.gridColumn = `${period.hours[0] - start + 1} / span ${period.hours.length}`;
+      row.append(label);
+    }
+    return row;
+  });
+  els.timeBand.replaceChildren(...rows);
+}
+
+// Dragging a hand: within 60% of the middle the hour's, else the minutes'.
+function clockAt(e) {
+  const r = els.timeClock.getBoundingClientRect();
+  const x = e.clientX - (r.left + r.width / 2);
+  const y = e.clientY - (r.top + r.height / 2);
+  return { deg: ((Math.atan2(x, -y) * 180) / Math.PI + 360) % 360, d: Math.hypot(x, y) / (r.width / 2) };
+}
+function moveHand(deg) {
+  const { h, m } = state.time;
+  if (clockDrag === 'minute') {
+    const mm = (Math.round(deg / 30) * 5) % 60;
+    if (mm === m) return;
+    // Past 12 the hour goes on (or back), as a real clock's does.
+    const hh = m >= 45 && mm <= 15 ? h + 1 : m <= 15 && mm >= 45 ? h - 1 : h;
+    setTime(hh, mm);
+  } else {
+    const h12 = Math.round((((deg - m / 2) % 360) + 360) % 360 / 30) % 12;
+    // Of the two hours it could be, am or pm, the one nearer the hour it was: so a drag goes on round.
+    const near = [h12, h12 + 12].sort((a, b) => Math.min(Math.abs(a - h), 24 - Math.abs(a - h)) - Math.min(Math.abs(b - h), 24 - Math.abs(b - h)))[0];
+    if (near !== h) setTime(near, m);
+  }
+}
+
 // ---------- wiring ----------
 
 function bindEvents() {
@@ -7760,6 +7956,33 @@ function bindEvents() {
     });
   });
 
+  // Time's clock (renderTime).
+  els.timePrev.addEventListener('click', () => stepTime(-5));
+  els.timeNext.addEventListener('click', () => stepTime(5));
+  els.timeStyleButtons.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.timeStyle === timeStyle()) return;
+    setPreferences({ timeStyle: b.dataset.timeStyle });
+    setTime(state.time.h, state.time.m, { say: true });
+  }));
+  els.timePlay.append(speakerIcon());
+  els.timePlay.addEventListener('click', () => speakerPress(els.timePlay, els.timePlay.dataset.say));
+  els.timeClock.addEventListener('pointerdown', (e) => {
+    const { deg, d } = clockAt(e);
+    if (d > 1.05) return;
+    clockDrag = d < 0.6 ? 'hour' : 'minute';
+    els.timeClock.setPointerCapture(e.pointerId);
+    els.timeClock.classList.add('dragging');
+    moveHand(deg);
+  });
+  els.timeClock.addEventListener('pointermove', (e) => { if (clockDrag) moveHand(clockAt(e).deg); });
+  const dropHand = () => {
+    if (!clockDrag) return;
+    clockDrag = null;
+    els.timeClock.classList.remove('dragging');
+    if (timeSaysOnChange()) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th); // said once it's let go
+  };
+  els.timeClock.addEventListener('pointerup', dropHand);
+  els.timeClock.addEventListener('pointercancel', dropHand);
   els.prevBtn.addEventListener('click', goPrev);
   els.nextBtn.addEventListener('click', goNext);
   els.randomBtn.addEventListener('click', goRandom);
@@ -7973,6 +8196,13 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (state.view === 'time') { // ← → move the clock 5 minutes
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        stepTime(e.key === 'ArrowLeft' ? -5 : 5);
+      }
+      return;
+    }
     if (state.view === 'home' || state.view === 'reading' || state.view === 'dictionary' || state.view === 'alphabet') return; // Flashcards' and Topics' keys
     if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);

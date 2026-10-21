@@ -1547,6 +1547,7 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
+- **More** (the Time spike's branch): the bar's last tab; its list Time and Settings, Settings last (10-21).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -1772,6 +1773,57 @@ The user's request, from a screenshot of Browse on Hard Vowels: a random button 
   draws reaching every other card, "? / 25" then › showing a number, R, none of it in Recognition,
   the Alphabet's Cards the same, no scroll and no script errors. `check_layout.py` checks the place
   (What lines up).
+
+## Time: Explore (2026-10-21, a spike: branch `2026-10-21-spike-time`)
+
+The user's call, after a sketch they liked: a **Time** section, Explore first (Quiz to come), on a
+spike branch as they're unsure of it; **More** back on a phone's bar, with Time and Settings in it,
+Settings always last.
+- **Where:** a phone's bar is Home, Words, Alphabet, Dictionary, **More** (`#tab-more`, kept hidden
+  since 10-14, its list and code ready); its list is Time, then Settings. `#tab-settings` and the
+  new `.tab-time` are hidden on a phone (mobile.css); More is lit on Time or Settings (`MORE_VIEWS`,
+  from the list's `data-view`s). A wider screen has Time in the top switch after Dictionary, and
+  ⚙ for Settings as before. The view is `time` (`setView`, `renderTime`); the app still opens on
+  Home.
+- **The Thai** (`time.js`, no page code): any time said the everyday way or the official one
+  (`timePhrase`, `timeParts`), in the Telling the Time topics' forms: …โมงเช้า, เที่ยง, บ่ายโมง,
+  บ่ายสอง/สามโมง, สี่–หกโมงเย็น, หนึ่ง–ห้าทุ่ม, เที่ยงคืน, ตีหนึ่ง–ตีห้า; with minutes เช้า and เย็น
+  go (แปดโมงครึ่ง, สี่โมงสี่สิบห้านาที), 7 pm is ทุ่ม (ทุ่มครึ่ง), half past is ครึ่ง and other
+  minutes the number and นาที. Official: the hour, นาฬิกา, the minutes and นาที (สิบเก้านาฬิกา
+  สามสิบนาที), written 19.30 น. A note where one's easy to get wrong: หกโมงครึ่ง is 6:30 am or pm;
+  เที่ยง never สิบสองโมง; บ่ายโมง without หนึ่ง; the short forms the topics give (บ่ายสอง,
+  แปดโมง, ทุ่ม); an official hour's everyday one.
+- **The page** (Explore): Everyday | Official (`prefs.timeStyle`); a clock (SVG, drawn once:
+  `drawClock`) with ‹ › either side (5 minutes, round past midnight; ← → on a keyboard); the band;
+  the time's Thai with its ▶ (on one line, smaller for a long one: `fitTimeText`), its
+  transliteration and English ("2:30 pm"; official "14:30 · written 14.30 น."); its parts as
+  chips, a part of the day's word in its colour, each saying itself and what it means underneath
+  when tapped; and that line otherwise the time's note. It opens on the time now, to 5 minutes.
+- **The clock:** drag the long hand (within the outer 40%) by 5 minutes, carrying the hour on past
+  12 or back, or the short one (the inner 60%) by the hour, the nearer of its am and pm hours so a
+  drag goes on round; it says the time when let go. The rim is the half of the day it's in, an
+  hour's arc each in its part's colour, the hour's lit. Dragging doesn't scroll (`touch-action`).
+- **The band:** the 24 hours in two rows, am and pm, each cell its part of the day's colour with the
+  count the Thai uses (ตี 1–5, เช้า 6–11, บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5; 12 for midnight and noon),
+  the part's name under its hours (a single hour's from its start, running on). A tap sets the hour.
+  The cells are 30 px wide on a phone, under the style guide's 44: the hands and ‹ › are the main
+  way; the band is the picture.
+- **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
+  midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
+  `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).
+- **Audio:** every time every 5 minutes both ways (576) and their parts, 605 texts
+  (`node tools/time_phrases.mjs --write` → data/time-phrases.json, which tools/gen_audio.py now
+  records under `th`; a part that's a card's Thai keeps its sample). A change says the time when
+  Cards' auto-play (its A) is on. `time.js` is in sw.js's SHELL (v22).
+- **Fits** 390 × 664 for a time on one line (16 px over with the parts' caption line); a long one
+  (บ่ายสองโมงสามสิบห้านาที) shrinks to its line; at text size 2 the parts take two rows and the page
+  scrolls. `check_layout.py` opens Settings through More now (`#tab-settings` is hidden on a phone)
+  and checks More's list.
+- **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
+  `time_probe.py`): More's list and its lit tab; the band's 2 pm; dragging the long hand 12 → 6
+  (2:30) and on round to 3 pm; the short hand to the evening (ทุ่ม); a part's caption; Official
+  (ยี่สิบนาฬิกา, written 20.00 น.); › past midnight (เที่ยงคืนสี่สิบนาที); Settings from More; no
+  script errors. Not on the iPhone, and the recordings not yet listened to.
 
 ## The word dialog: the word in the stories (2026-10-21)
 

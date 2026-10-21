@@ -51,11 +51,12 @@
       <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Words</span></button>
       <button type="button" class="tab" role="tab" data-view="alphabet" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg><span class="tab-label">Alphabet</span></button>
       <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg><span class="tab-label">Dictionary</span></button>
+      <button type="button" class="tab tab-time" role="tab" data-view="time" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="tab-label">Time</span></button>
       <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
-      <!-- More (2026-10-14): hidden for now, the user's call ("we don't need More right now"), with Settings
-           back on the bar; its list (#more-menu), styles and code are kept to bring back: take away
-           `hidden` here, and put Settings back in its list in place of #tab-settings. -->
-      <button type="button" class="tab tab-more" id="tab-more" hidden aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path class="dots" d="M8 12h.01M12 12h.01M16 12h.01" /></svg><span class="tab-label">More</span></button>
+      <!-- More (2026-10-14; hidden from that day, the user's call, till 2026-10-21, the Time spike): on a
+           phone the bar's last tab, its list Time and Settings, Settings always last (the user's call).
+           #tab-settings stays for a wider screen's ⚙ and is hidden on a phone (mobile.css). -->
+      <button type="button" class="tab tab-more" id="tab-more" aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path class="dots" d="M8 12h.01M12 12h.01M16 12h.01" /></svg><span class="tab-label">More</span></button>
     </nav>
     <div class="controls">
       <button type="button" id="settings-button" class="tab-icon" aria-haspopup="dialog" aria-expanded="false" aria-label="Settings" title="Settings">⚙</button>
@@ -68,6 +69,7 @@
   <div id="more-menu" class="more-menu" hidden>
     <div class="more-backdrop" data-close></div>
     <div class="more-panel" role="menu" aria-labelledby="tab-more">
+      <button type="button" class="more-item" role="menuitem" data-view="time"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="more-label">Time</span><span class="more-chevron" aria-hidden="true">›</span></button>
       <button type="button" class="more-item" role="menuitem" data-action="settings"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="more-label">Settings</span><span class="more-chevron" aria-hidden="true">›</span></button>
     </div>
   </div>
@@ -781,6 +783,33 @@
         <thead id="dict-table-head"></thead>
         <tbody id="dict-table-body"></tbody>
       </table>
+    </section>
+
+    <!-- Time (renderTime; a spike, 2026-10-21: branch 2026-10-21-spike-time): Explore, a clock to set
+         and the Thai for its time, everyday or official, with the day's parts as a band. -->
+    <section class="time time-only" id="time-section" hidden>
+      <div class="time-top">
+        <div class="segmented time-switch" role="radiogroup" aria-label="How the time is said">
+          <button type="button" role="radio" class="seg-btn" data-time-style="everyday" aria-checked="true">Everyday</button>
+          <button type="button" role="radio" class="seg-btn" data-time-style="official" aria-checked="false">Official</button>
+        </div>
+      </div>
+      <div class="time-clock-row">
+        <button type="button" class="nav-btn" id="time-prev" aria-label="5 minutes earlier" title="5 minutes earlier (←)">‹</button>
+        <svg class="time-clock" id="time-clock" viewBox="0 0 200 200" role="img" aria-label="Clock: drag its hands"></svg>
+        <button type="button" class="nav-btn" id="time-next" aria-label="5 minutes later" title="5 minutes later (→)">›</button>
+      </div>
+      <div class="time-band" id="time-band"></div>
+      <div class="time-say">
+        <div class="time-say-main">
+          <p class="time-th" id="time-th" lang="th"></p>
+          <button type="button" class="row-speak reader-play time-play" id="time-play" aria-label="Play" title="Play"></button>
+        </div>
+        <p class="time-tr" id="time-tr"></p>
+        <p class="time-en" id="time-en"></p>
+      </div>
+      <div class="time-parts" id="time-parts"></div>
+      <p class="time-caption" id="time-caption"></p>
     </section>
 
     <!-- The Alphabet's letters (renderAlphabet): the 44 consonants; a letter opens its dialog

@@ -36,6 +36,7 @@ DECKS = ROOT / 'data' / 'decks.json'
 AUDIO_DIR = ROOT / 'data' / 'audio'
 MANIFEST = AUDIO_DIR / 'manifest.json'
 SPELLING_PARTS = ROOT / 'data' / 'spelling-parts.json'
+TIME_PHRASES = ROOT / 'data' / 'time-phrases.json'
 
 # manifest language -> card field
 FIELDS = {'th': 'thai', 'en': 'english'}
@@ -283,6 +284,17 @@ async def main():
             name = sample_name(said, voices['en'], args.rate)
             entries[('en', d['name'])] = name
             samples[name] = (said, voices['en'], False)
+    # The Time section's times and their parts (data/time-phrases.json, written by
+    # `node tools/time_phrases.mjs --write`; the Time spike, 2026-10-21), keyed under 'th' like a
+    # card's Thai. One that is a card's Thai (บ่าย, เที่ยงคืน) keeps that card's sample.
+    if TIME_PHRASES.exists():
+        for text in json.loads(TIME_PHRASES.read_text()):
+            if ('th', text) in entries:
+                continue
+            said = spoken_text(text, 'th')
+            name = sample_name(said, voices['th'], args.rate)
+            entries[('th', text)] = name
+            samples[name] = (said, voices['th'], False)
     # Spelling parts, read by the Thai voice (see the module docstring).
     if SPELLING_PARTS.exists():
         for part in json.loads(SPELLING_PARTS.read_text()):
