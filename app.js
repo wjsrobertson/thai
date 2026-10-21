@@ -4897,15 +4897,29 @@ function fitTypeKeyboard() {
 // all fits over it, and scrolls it itself, after an answer too (the user's screenshot, 2026-10-19:
 // the card's top under the clock, a gap over the keyboard). So it's held at its top: a drag is
 // stopped (not in the box, or on a back long enough to scroll), and a scroll put back.
+// The same for a dialog's box (html.dialog-kb, fitDialogKeyboard).
 function holdStill(e) {
-  if (e.target === els.typeBox) return;
+  if (e.target === els.typeBox || e.target === els.confirmInput) return;
   const back = e.target.closest?.('.face-body');
   if (back && back.scrollHeight > back.clientHeight) return;
   e.preventDefault();
 }
 function holdTop() {
-  if (!document.documentElement.classList.contains('type-kb')) return;
+  const html = document.documentElement.classList;
+  if (!html.contains('type-kb') && !html.contains('dialog-kb')) return;
   if (window.scrollY || window.visualViewport?.offsetTop) window.scrollTo(0, 0);
+}
+
+// A dialog's text box (a list's name) with a touch screen's keyboard up: iOS let the page be dragged
+// by as much as the keyboard covers, the dialog off the top, and its buttons were under the
+// keyboard's bar (the user's screenshots, 2026-10-21). So the page is held still, as Type's is, and
+// the dialog sits in what the keyboard leaves: --kb-h, what it covers of the page. iOS keeps the
+// page's height with the keyboard up; a browser that shrinks the page instead gets 0, as it needs.
+function fitDialogKeyboard() {
+  const vv = window.visualViewport;
+  const kb = vv ? Math.max(0, document.documentElement.clientHeight - vv.height) : 0;
+  document.documentElement.style.setProperty('--kb-h', `${Math.round(kb)}px`);
+  holdTop();
 }
 
 // ---------- Review mode: a continuous stream ----------
@@ -7528,8 +7542,21 @@ function bindEvents() {
     document.removeEventListener('touchmove', holdStill, { passive: false });
     fitCardText();
   });
+  // A dialog's box (fitDialogKeyboard): held while it has the keyboard.
+  els.confirmInput.addEventListener('focus', () => {
+    if (!TOUCH_SCREEN) return;
+    document.documentElement.classList.add('dialog-kb');
+    document.addEventListener('touchmove', holdStill, { passive: false });
+    fitDialogKeyboard();
+  });
+  els.confirmInput.addEventListener('blur', () => {
+    if (!document.documentElement.classList.contains('dialog-kb')) return;
+    document.documentElement.classList.remove('dialog-kb');
+    document.removeEventListener('touchmove', holdStill, { passive: false });
+  });
   window.visualViewport?.addEventListener('resize', () => {
     if (document.documentElement.classList.contains('type-kb')) fitTypeKeyboard();
+    if (document.documentElement.classList.contains('dialog-kb')) fitDialogKeyboard();
   });
   window.addEventListener('scroll', holdTop);
   window.visualViewport?.addEventListener('scroll', holdTop);

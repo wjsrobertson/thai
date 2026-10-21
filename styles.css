@@ -2581,7 +2581,13 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 
 /* ---------- confirm dialog (confirmDialog) ---------- */
 /* A small centred card on every screen size (mobile.css turns other modals into full-screen sheets). */
-.modal.confirm-modal { z-index: 110; padding: 16px; align-items: center; }
+.modal.confirm-modal { z-index: 110; padding: 16px; align-items: center; transition: padding-bottom .2s ease-out; }
+/* Its box with a touch screen's keyboard up (html.dialog-kb: app.js, fitDialogKeyboard): centred in
+   what the keyboard leaves, clear of the clock, the backdrop still the whole screen (2026-10-21). */
+html.dialog-kb .modal.confirm-modal {
+  padding-top: max(16px, env(safe-area-inset-top, 0px));
+  padding-bottom: calc(16px + var(--kb-h, 0px));
+}
 .modal-panel.confirm-panel {
   width: min(420px, 100%);
   height: auto;

@@ -1732,6 +1732,15 @@ the user said yes to all of them.
   from another list, Add all and Done; the Dictionary's 🔁 reaching Cards on that list; New list,
   Rename and Delete. No script errors and no sideways scroll. `check_layout.py` no longer taps Add
   all before Cards, since Cards no longer needs words added. Not yet on the iPhone.
+- **A list's name with the keyboard up** (the user's screenshots, 2026-10-21): iOS let the page be
+  dragged by as much as the keyboard covers, the dialog off the top, and its buttons sat under the
+  keyboard's bar. While the dialog's box has a touch screen's keyboard (`html.dialog-kb`,
+  `fitDialogKeyboard`) a drag is stopped and a scroll put back, as for Type's box (`holdStill`,
+  `holdTop`, now taking both), and the dialog is centred in what the keyboard leaves (bottom padding
+  `--kb-h`, the page's height less the visible one; 0 where a browser shrinks the page instead).
+  Checked headless with a faked keyboard (scratch `dialogkb_probe.py`, 390 × 844 and 390 × 664 at
+  text size 2): the dialog clear above it, drags stopped but in the box, and as before once it goes.
+  No layout check (the user's call).
 
 ## The new-version bar, one line and prominent (2026-10-19)
 
