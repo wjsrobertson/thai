@@ -2161,6 +2161,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .stage:not([data-view="time"]) .time-only {
   display: none !important;
 }
+/* Its tab only with Settings → App → Dev features on (the user's call, 2026-10-21; applyDevFeatures). */
+html:not(.dev) .tab-time { display: none; }
 /* The day's parts, each its colour, from the theme's own (so all five themes have them): night's
    purple and blue, the morning's green, noon's gold, the afternoon's orange, the evening's red. */
 .period-midnight, .period-thum { --period: var(--tone-high); }

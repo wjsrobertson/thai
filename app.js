@@ -171,6 +171,7 @@ const els = {
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
   setListOrder: document.getElementById('setting-list-order'),
   setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
+  setDevFeatures: document.getElementById('setting-dev-features'),
   setReadStoryTitles: document.getElementById('setting-read-story-titles'),
   setReadStoriesLoop: document.getElementById('setting-read-stories-loop'),
   installHelp: document.getElementById('install-help'),
@@ -241,6 +242,7 @@ const DEFAULT_SETTINGS = {
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → List)
   listOrder: 'newest',            // your lists' words: 'newest' | 'oldest' added first (Settings → List; resolveListScope)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
+  devFeatures: false,             // pages still being tried out, now Time (Settings → App; applyDevFeatures)
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
   readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
   writeCheck: 'normal',           // Write → From memory: how sure the model must be, 'lenient' | 'normal' | 'strict' (WRITE_CHECK)
@@ -3790,6 +3792,17 @@ function mutedNotice() {
 
 // The Thai font: data-thai-font on <html> switches --thai-font in styles.css (looped is the default,
 // with no attribute). index.html applies the saved one before first paint.
+// Dev features (Settings → App, off by default; the user's call, 2026-10-21): pages still being tried
+// out, now Time. On, Time has a tab, and on a phone More takes Settings' place on the bar, with Time
+// and Settings in its list; off, the bar is as it was (html.dev: styles.css, mobile.css).
+function applyDevFeatures() {
+  const on = !!getSettings().devFeatures;
+  document.documentElement.classList.toggle('dev', on);
+  if (on) return;
+  closeMore();
+  if (state.view === 'time') goTo('home');
+}
+
 function applyThaiFont() {
   if (getSettings().thaiFont === 'loopless') document.documentElement.dataset.thaiFont = 'loopless';
   else delete document.documentElement.dataset.thaiFont;
@@ -3817,6 +3830,7 @@ function renderSettings() {
   els.setWordlistFirst.value = s.wordlistFirst;
   els.setListOrder.value = s.listOrder === 'oldest' ? 'oldest' : 'newest';
   els.setTopicWordGaps.checked = !!s.topicWordGaps;
+  els.setDevFeatures.checked = !!s.devFeatures;
   els.setReadStoryTitles.checked = s.readStoryTitles !== false;
   els.setReadStoriesLoop.checked = s.readStoriesLoop !== false;
   renderInstall();
@@ -3916,6 +3930,10 @@ function bindSettings() {
   els.setTopicWordGaps.addEventListener('change', () => {
     setSettings({ topicWordGaps: els.setTopicWordGaps.checked });
     els.wordtable.classList.toggle('show-spaces', els.setTopicWordGaps.checked);
+  });
+  els.setDevFeatures.addEventListener('change', () => {
+    setSettings({ devFeatures: els.setDevFeatures.checked });
+    applyDevFeatures();
   });
   els.setWordlistFirst.addEventListener('change', () => {
     setSettings({ wordlistFirst: els.setWordlistFirst.value === 'english' ? 'english' : 'thai' });
@@ -7085,6 +7103,7 @@ async function resetSettings() {
   applyTheme();
   applyThaiFont();
   applyMute();
+  applyDevFeatures();
   renderSettings();
   renderSpelling();
   syncReviewOnly();
@@ -8718,6 +8737,7 @@ async function init() {
   applyTheme();
   applyThaiFont();
   applyMute();
+  applyDevFeatures();
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));

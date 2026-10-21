@@ -1547,7 +1547,8 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
-- **More** (the Time spike's branch): the bar's last tab; its list Time and Settings, Settings last (10-21).
+- **The bar's end** (the Time spike's branch): without dev features (the default), Settings last, no
+  More or Time; with them, More last, its list Time and Settings, Settings last (10-21).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -1810,6 +1811,13 @@ Settings always last.
   from the list's `data-view`s). A wider screen has Time in the top switch after Dictionary, and
   ⚙ for Settings as before. The view is `time` (`setView`, `renderTime`); the app still opens on
   Home.
+- **Behind a setting** (the user's call, the same day): Settings → App → **Dev features**, off by
+  default (`devFeatures`, `applyDevFeatures`, `html.dev`). Off, the bar is as it was on master: Home,
+  Words, Alphabet, Dictionary, Settings, no More, and no Time tab on a wider screen (styles.css,
+  mobile.css); turned off while Time shows, the page goes Home. On, it's as above. Checked (scratch
+  `devprobe.py`) on a phone and 1280 × 800: off by default, on and off from Settings, kept over a
+  reload, Settings still opening from the bar; no script errors. check_layout.py checks the bar both
+  ways (not run).
 - **The Thai** (`time.js`, no page code): any time said the everyday way or the official one
   (`timePhrase`, `timeParts`), in the Telling the Time topics' forms: …โมงเช้า, เที่ยง, บ่ายโมง,
   บ่ายสอง/สามโมง, สี่–หกโมงเย็น, หนึ่ง–ห้าทุ่ม, เที่ยงคืน, ตีหนึ่ง–ตีห้า; with minutes เช้า and เย็น

@@ -304,8 +304,11 @@ html.type-kb #card .type-hint { bottom: 8px; max-width: calc(100% - 136px); }
 #settings-search { min-height: 52px; }
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
-/* Settings and Time are in More (the Time spike, 2026-10-21): More is lit while either shows. */
-.tab-settings, .tab-time { display: none; }
+html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit while its page is open */
+/* With dev features on (Settings → App; the Time spike, 2026-10-21) Settings and Time are in More,
+   lit while either shows; off (the default), the bar ends with Settings, and there's no More. */
+html.dev .tab-settings, .tab-time { display: none; }
+html:not(.dev) .tab-more { display: none; }
 
 /* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
    (.deck-button above; not styles.css's 220px, with three icons beside it). */
