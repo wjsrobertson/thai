@@ -1773,6 +1773,19 @@ The user's request, from a screenshot of Browse on Hard Vowels: a random button 
   the Alphabet's Cards the same, no scroll and no script errors. `check_layout.py` checks the place
   (What lines up).
 
+## The Topics section is Words (2026-10-21)
+
+The user's call: with your lists in it as well as the topics, the section isn't Topics any more.
+It's **Words**: the tab (the phone's bar and the wider screen's top switch), Home's card and the
+page switch's `aria-label` ("Words page"). Words beside Alphabet reads as words beside letters; the
+Dictionary is where you look one up. The picker's Topics | My Words tabs, and Search topics, stay:
+they're the topics. The code keeps `study` (the view, `data-view`, `studyPage`).
+- **Settings, reviewed:** none of it names the section. Its headings are the pages (List, Cards,
+  Reading, Writing), which stay; Reading and Writing read better as headings than Read and Write.
+  The List and Read all settings' search words now include "words" as well as "topics".
+- **Checked** headless at 390 × 664 and 1280 × 800: the tab, Home's card and the top switch say
+  Words; no script errors.
+
 ## Your lists' words newest first (2026-10-21)
 
 The user's call: a list's words newest added first, and a setting for it, newest first by default.

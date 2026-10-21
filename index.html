@@ -39,16 +39,16 @@
     <!-- The pages' line icons (app.js PAGE_ICONS has the same paths) are the tabs', the home cards'
          and the topic button's (2026-10-12: the user's request, for one look; they were emoji). -->
     <!-- On a phone (mobile.css) the tabs are a bar along the bottom, each an icon over its name, and
-         there's no top bar: Home, Topics, Alphabet, Dictionary, Settings (2026-10-14, the user's calls;
-         the Topics tab, data-view "study", is the topic's List, Cards and Reading in one, picked by the
-         .study-switch). More, with Settings in its list, had the last place for a day; it's hidden,
+         there's no top bar: Home, Words, Alphabet, Dictionary, Settings (2026-10-14, the user's calls;
+         Words was Topics till 2026-10-21, when it held your lists too: data-view "study", the topic's or
+         list's List, Cards and Read in one, picked by the .study-switch). More, with Settings in its list, had the last place for a day; it's hidden,
          kept for when it's needed again. The icons, Home and More are hidden on wider screens, where ⚙
          opens Settings. -->
-    <!-- The tabs say Cards and Words for the Flashcards and Dictionary pages (the user's call,
-         2026-10-12: shorter, and the text a little larger). -->
+    <!-- The tabs said Cards and Words for the Flashcards and Dictionary pages (the user's call,
+         2026-10-12: shorter, and the text a little larger). Words is the study tab's now (2026-10-21). -->
     <nav class="tabs" role="tablist">
       <button type="button" class="tab tab-home" role="tab" data-view="home" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg><span class="tab-label">Home</span></button>
-      <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Topics</span></button>
+      <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Words</span></button>
       <button type="button" class="tab" role="tab" data-view="alphabet" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg><span class="tab-label">Alphabet</span></button>
       <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg><span class="tab-label">Dictionary</span></button>
       <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
@@ -147,11 +147,11 @@
   <main class="stage" data-view="home" data-section="words">
     <section class="home home-only" id="home-section">
       <!-- The three sections, as the tab bar has them (2026-10-14, the user's call: the home page went to
-           Topics, Alphabet and Dictionary, not to the pages inside them). Each card opens its section where
-           you last were in it (goTo). Topics is first and across both columns; a card is a title and its
+           Words, Alphabet and Dictionary, not to the pages inside them). Each card opens its section where
+           you last were in it (goTo). Words is first and across both columns; a card is a title and its
            text, or rows of a label and what it does (spans, since a button may only hold phrasing content). -->
       <button type="button" class="home-card home-card-wide" data-go="study">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Topics</span>
+        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Words</span>
         <span class="home-card-list">
           <span class="home-card-row"><b>List</b><span>Every word in a topic. Tap <span class="inline-icon" role="img" aria-label="Add to a list"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4" /></svg></span> to add one to a list of your own.</span></span>
           <span class="home-card-row"><b>Cards</b><span>Browse, Recognition, Recall and Type</span></span>
@@ -193,7 +193,7 @@
            List | Cards | Reading; it was "Study" for a day; its switch beside the topic button, as the
            Alphabet's Letters | Cards is, each page an icon with its name): the topic's words, its
            cards, its stories. Internally still "study" (data-view, .study-switch). -->
-      <div class="segmented study-switch" role="radiogroup" aria-label="Topics page">
+      <div class="segmented study-switch" role="radiogroup" aria-label="Words page">
         <button type="button" role="radio" class="seg-btn" data-study-page="wordlist" aria-checked="true" aria-label="List" title="The topic\'s words"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18M3 15h18M9 10v9" /></svg><span class="seg-label">List</span></button>
         <button type="button" role="radio" class="seg-btn" data-study-page="flashcards" aria-checked="false" aria-label="Cards" title="Cards"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM7 3h12a2 2 0 0 1 2 2v12" /></svg><span class="seg-label">Cards</span></button>
         <button type="button" role="radio" class="seg-btn" data-study-page="reading" aria-checked="false" aria-label="Read" title="Read"><svg class="seg-icon page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg><span class="seg-label">Read</span></button>
@@ -505,7 +505,7 @@
       <details class="settings-cat" data-cat="wordlists">
         <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18M3 15h18M9 10v9" /></svg>List</summary>
         <div class="setting-list">
-          <div class="setting-group" data-search="topics wordlists show first column thai english order table">
+          <div class="setting-group" data-search="words topics wordlists show first column thai english order table">
             <label class="setting-row">
               <span class="setting-label">Show first</span>
               <select id="setting-wordlist-first">
@@ -515,7 +515,7 @@
               <span class="setting-help">The first column, here and in the Dictionary's Thai lists. Transliteration always follows the Thai.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="topics wordlists your lists my words order sort sorted newest oldest added first recent">
+          <div class="setting-group" data-search="words topics wordlists your lists my words order sort sorted newest oldest added first recent">
             <label class="setting-row">
               <span class="setting-label">Your lists' words</span>
               <select id="setting-list-order">
@@ -525,21 +525,21 @@
               <span class="setting-help">By when you added them, here and in Cards.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="topics wordlists word gaps spaces between words phrases split thai">
+          <div class="setting-group" data-search="words topics wordlists word gaps spaces between words phrases split thai">
             <label class="setting-row">
               <span class="setting-label">Word gaps in phrases</span>
               <input type="checkbox" id="setting-topic-word-gaps" />
               <span class="setting-help">A space between a phrase's words. Thai is written without.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="topics wordlists confirm confirmation ask before add all whole deck review don't ask again topic">
+          <div class="setting-group" data-search="words topics wordlists confirm confirmation ask before add all whole deck review don't ask again topic">
             <label class="setting-row">
               <span class="setting-label">Confirm Add all</span>
               <input type="checkbox" data-confirm-setting="confirmAddAll" />
               <span class="setting-help">Ask before adding every word shown to one of your lists.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
+          <div class="setting-group" data-search="words topics wordlists confirm confirmation ask before remove all whole deck review don't ask again topic">
             <label class="setting-row">
               <span class="setting-label">Confirm Remove all</span>
               <input type="checkbox" data-confirm-setting="confirmRemoveAll" />
@@ -549,21 +549,21 @@
         </div>
         <p class="setting-list-head">Read all</p>
         <div class="setting-list">
-          <div class="setting-group" data-search="topics read all read aloud repeats wordlist playback twice">
+          <div class="setting-group" data-search="words topics read all read aloud repeats wordlist playback twice">
             <label class="setting-row">
               <span class="setting-label">Repeats</span>
               <input type="number" min="1" max="10" id="setting-read-repeats" />
               <span class="setting-help">How many times each word is said.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="topics read all read aloud pause silence between words seconds delay">
+          <div class="setting-group" data-search="words topics read all read aloud pause silence between words seconds delay">
             <label class="setting-row">
               <span class="setting-label">Pause between words</span>
               <input type="number" min="0" max="20" step="0.1" id="setting-read-pause" />
               <span class="setting-help">Seconds.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="topics read all read aloud speak english translation language">
+          <div class="setting-group" data-search="words topics read all read aloud speak english translation language">
             <label class="setting-row">
               <span class="setting-label">Speak English too</span>
               <input type="checkbox" id="setting-read-english" />
