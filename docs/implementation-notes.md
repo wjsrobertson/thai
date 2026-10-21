@@ -1547,6 +1547,8 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
+- **The bar's end** (the Time spike's branch): without dev features (the default), Settings last, no
+  More or Time; with them, More last, its list Time and Settings, Settings last (10-21).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -1797,6 +1799,169 @@ The user's request, from a screenshot of Browse on Hard Vowels: a random button 
   draws reaching every other card, "? / 25" then › showing a number, R, none of it in Recognition,
   the Alphabet's Cards the same, no scroll and no script errors. `check_layout.py` checks the place
   (What lines up).
+
+## Time: Explore (2026-10-21, a spike: branch `2026-10-21-spike-time`)
+
+The user's call, after a sketch they liked: a **Time** section, Explore first (Quiz to come), on a
+spike branch as they're unsure of it; **More** back on a phone's bar, with Time and Settings in it,
+Settings always last.
+- **Where:** a phone's bar is Home, Words, Alphabet, Dictionary, **More** (`#tab-more`, kept hidden
+  since 10-14, its list and code ready); its list is Time, then Settings. `#tab-settings` and the
+  new `.tab-time` are hidden on a phone (mobile.css); More is lit on Time or Settings (`MORE_VIEWS`,
+  from the list's `data-view`s). A wider screen has Time in the top switch after Dictionary, and
+  ⚙ for Settings as before. The view is `time` (`setView`, `renderTime`); the app still opens on
+  Home.
+- **Less on the page** (the user's call, 2026-10-21: "too busy"): the time's words as buttons
+  (`#time-parts`, each said and explained when tapped) and the caption under them (`#time-caption`,
+  the tapped word's meaning, or a note on the time such as "could be 6 am or 6 pm…") went, with
+  their code and styles. Explore is the clock and its ‹ ›, the band, and the Thai with its ▶,
+  transliteration and English (and "written 14.30 น." for Official). time.js still makes `parts`
+  and `note`, unused. It fits without a scroll now at 390 × 664 too. Checked (scratch `time_probe.py`
+  without the parts' steps, `timescroll.py`): the hands, the band, ‹ ›, Official; no script errors.
+- **Behind a setting** (the user's call, the same day): Settings → App → **Dev features**, off by
+  default (`devFeatures`, `applyDevFeatures`, `html.dev`). Off, the bar is as it was on master: Home,
+  Words, Alphabet, Dictionary, Settings, no More, and no Time tab on a wider screen (styles.css,
+  mobile.css); turned off while Time shows, the page goes Home. On, it's as above. Checked (scratch
+  `devprobe.py`) on a phone and 1280 × 800: off by default, on and off from Settings, kept over a
+  reload, Settings still opening from the bar; no script errors. check_layout.py checks the bar both
+  ways (not run).
+- **Home's Time card** (the user's call, the same day), after the Dictionary's, with dev features
+  on only: "Telling the time in Thai, everyday and official, with a quiz." (`.home-card-time`,
+  `data-go="time"`). Across both columns on a wider screen, as Words' is, not half a row on its own.
+  Checked (scratch `homeprobe.py`): absent with dev features off, so Home is as it was; present
+  with them on, opening Time with More (a phone) or Time's tab lit; no script errors.
+- **The Thai** (`time.js`, no page code): any time said the everyday way or the official one
+  (`timePhrase`, `timeParts`), in the Telling the Time topics' forms: …โมงเช้า, เที่ยง, บ่ายโมง,
+  บ่ายสอง/สามโมง, สี่–หกโมงเย็น, หนึ่ง–ห้าทุ่ม, เที่ยงคืน, ตีหนึ่ง–ตีห้า; with minutes เช้า and เย็น
+  go (แปดโมงครึ่ง, สี่โมงสี่สิบห้านาที), 7 pm is ทุ่ม (ทุ่มครึ่ง), half past is ครึ่ง and other
+  minutes the number and นาที. Official: the hour, นาฬิกา, the minutes and นาที (สิบเก้านาฬิกา
+  สามสิบนาที), written 19.30 น. A note where one's easy to get wrong: หกโมงครึ่ง is 6:30 am or pm;
+  เที่ยง never สิบสองโมง; บ่ายโมง without หนึ่ง; the short forms the topics give (บ่ายสอง,
+  แปดโมง, ทุ่ม); an official hour's everyday one.
+- **The page** (Explore): Everyday | Official (`prefs.timeStyle`); a clock (SVG, drawn once:
+  `drawClock`) with ‹ › either side (5 minutes, round past midnight; ← → on a keyboard); the band;
+  the time's Thai with its ▶ (on one line, smaller for a long one: `fitTimeText`), its
+  transliteration and English ("2:30 pm"; official "14:30 · written 14.30 น."); its parts as
+  chips, a part of the day's word in its colour, each saying itself and what it means underneath
+  when tapped; and that line otherwise the time's note. It opens on the time now, to 5 minutes.
+- **The clock:** drag the long hand (within the outer 40%) by 5 minutes, carrying the hour on past
+  12 or back, or the short one (the inner 60%) by the hour, the nearer of its am and pm hours so a
+  drag goes on round; it says the time when let go. The rim is the half of the day it's in, an
+  hour's arc each in its part's colour, the hour's lit. Dragging doesn't scroll (`touch-action`).
+- **The band:** the 24 hours in two rows, am and pm, each cell its part of the day's colour with the
+  count the Thai uses (ตี 1–5, เช้า 6–11, บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5; 12 for midnight and noon),
+  the part's name under its hours (a single hour's from its start, running on). A tap sets the hour.
+  The cells are 30 px wide on a phone, under the style guide's 44: the hands and ‹ › are the main
+  way; the band is the picture.
+  **Four rows since 2026-10-21** (the user's call: "a 6 hours split, each on a new line; this is
+  how Thais have the split, right?"): the six-hour clock's quarters, each counting one to six and
+  ending on the day's markers, as the traditional clock does: 1–6 am (ตี 1–5, then six in the
+  morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม 1–5, then midnight, once หกทุ่ม,
+  the sixth ทุ่ม). Not 12–5, 6–11…: those split the quarters' counts. `TIME_QUARTERS`; under each run
+  of a part, its name, and a quarter's last hour's (เช้า, เที่ยง, เที่ยงคืน) centred under it, its end
+  at the row's if it's wider (`.end`). The cells are now 59 px wide on a phone (still 32 tall). To
+  keep Explore fitting 390 × 664, the phone's clock is 24vh (29 before): 159 px there, 183 at 763,
+  200 from 844. Checked (scratch `timescroll.py` and a label check): no scroll at 390 × 664, 763,
+  844, 430 × 932 and 390 × 844 at text size 2; no label outside the band; no script errors.
+- **Explore fills the screen on a phone** (the user's call, 2026-10-21: the clock, the band and the
+  time with room between them, the page's height): `.time-explore` grows to the tab bar and shares
+  the room left evenly above, between and below its three parts (`space-evenly`, 10 apart at the
+  least): at 390 × 844 about 46 between them, at 664 the 10 it had (nothing to share). So that
+  nothing moves as the time changes, the time's lines keep one height: the transliteration on one
+  line too, shrunk to fit as the Thai is (`fitTimeSay`, down to 13 px; it wrapped for a long time at
+  text size 2, moving the clock and band 6 px), its line height its full size's. Checked (scratch
+  `exspace.py`) at 390 × 664, 763, 844, 430 × 932 and 390 × 844 at text size 2: the gaps the same
+  for 2 pm and 11:55 am, no scroll, Quiz unchanged; desktop as before.
+- **The band's names say themselves; the band sets the hour** (the user's calls, 2026-10-21): each
+  name under the hours (ตี, เช้า, เที่ยง, บ่าย, เย็น, ทุ่ม, เที่ยงคืน; all recorded) is a button
+  that says it (`speakerPress`), lit while it does (`markSpeakers`, as the speaker buttons; a tint
+  of its colour), its target wider than the word and down into the gap below, not up over the cells.
+  A tap on an hour or a name puts the clock on the hour (an hour's tap kept the minutes before): an
+  hour's says the time; a name's says just the name, and keeps the hour if it's one of the name's,
+  or else goes to its first (ทุ่ม at 9:35 pm → 9 pm; from 3:35 pm → 7 pm; เที่ยงคืน → midnight).
+  Checked (scratch `bandtap.py`, `bandtap2.py`, real clicks) at 390 × 844 and 1280 × 800: each
+  name its own clip, lit while it plays, the times as above; a point just under a cell still the
+  cell's; no script errors.
+- **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
+  midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
+  `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).
+- **Audio:** every time every 5 minutes both ways (576) and their parts, 605 texts
+  (`node tools/time_phrases.mjs --write` → data/time-phrases.json, which tools/gen_audio.py now
+  records under `th`; a part that's a card's Thai keeps its sample). A change says the time when
+  Cards' auto-play (its A) is on. `time.js` is in sw.js's SHELL (v22).
+- **Fits** 390 × 664 for a time on one line (16 px over with the parts' caption line); a long one
+  (บ่ายสองโมงสามสิบห้านาที) shrinks to its line; at text size 2 the parts take two rows and the page
+  scrolls. `check_layout.py` opens Settings through More now (`#tab-settings` is hidden on a phone)
+  and checks More's list.
+- **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
+  `time_probe.py`): More's list and its lit tab; the band's 2 pm; dragging the long hand 12 → 6
+  (2:30) and on round to 3 pm; the short hand to the evening (ทุ่ม); a part's caption; Official
+  (ยี่สิบนาฬิกา, written 20.00 น.); › past midnight (เที่ยงคืนสี่สิบนาที); Settings from More; no
+  script errors. Not on the iPhone, and the recordings not yet listened to.
+
+## Time: Quiz (2026-10-21, the same spike)
+
+The user's pick from the subsections suggested (Quiz, Dates, How long): Quiz here; Dates and How
+long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
+- **Explore | Quiz** (`prefs.timePage`) beside Everyday | Official at the top (which both pages
+  use); `renderTimeSection` shows one. Explore's clock code makes Quiz's too (`drawClock(svg)`,
+  `setClock`).
+- **Directions** as Cards' (`prefs.timeQuizDir`): TH → Time (the Thai, its ▶; said when Cards'
+  auto-play is on), Time → TH (a clock and its time in English, four Thai answers), Listen → Time
+  (a large ▶; said at once). Four answers in two rows, Recognition's buttons (`.learn-pill`).
+- **The wrong answers** (`timeDecoys`) are the likely mistakes, the question's minutes in all four:
+  the same number in the day's other parts (ตีสาม: 3 pm, and 9 pm, สามทุ่ม), the hour twelve away,
+  and those hours' twins; the official clock's, the hour twelve away and the one ending in the same
+  digit (สิบสี่ and สี่), then the hours either side. Four different answers always (300 checked).
+- **A question's time:** half on the hour, a quarter half past, the rest any 5 minutes; a time got
+  wrong comes back three questions later (`comebacks`).
+- **Answering:** right green, wrong red with the right one green, the rest dimmed; the Thai's
+  transliteration and English (or, from a clock, the Thai and its transliteration) under the
+  question; the clock's hands, blank till then for TH and Listen, so the card keeps its height and
+  the answers stay put (they moved down 12–71 px when the clock came in; at text size 2 the answer
+  line wrapped). The time's said (unless Listen, which said it), then the next after Settings'
+  pauses (Cards → Pause after a right / wrong answer), unless the page was left meanwhile. 1–4 answer
+  from a keyboard. The question's Thai keeps to one line (`fitTimeText`, as Explore's).
+- **One size in every direction** (the user's call, 2026-10-21: switching TH → Time, Time → TH and
+  Listen moved the card and the answers): the card's parts have fixed heights (the clock always
+  there, blank till answered; the line with the Thai or ▶ as tall as Listen's ▶, 96 px, 80 on a
+  phone; the answer line two lines), and the answers one height (64, 60 on a phone); what's too long
+  shrinks (`fitTimeQuiz`, down to 12 px; the question's line spans the card so a long time's Thai
+  shrinks inside it). Checked (scratch `timequiz3.py`, `timequiz5.py`): the card and the four answers
+  the same in all 24 states (three directions, asked and answered, Everyday and Official, each
+  visited twice) at 390 × 664, 390 × 844 at text size 2 and 1280 × 800; nothing overflowing; 60
+  questions' Thai inside the card. **To come:** a check in check_layout.py for this, once the
+  pages are settled (the user's call: not yet). The answer line's height is in px
+  (17 × 1.4 × 2 × text size), not 2.8 em: when `fitTimeQuiz` shrank a long answer line's text, an
+  em height shrank with it, 3 px at text size 2.
+- **The top row as other sections'** (the user's call, 2026-10-21: Time had no padding over it): on
+  a phone Explore | Quiz and Everyday | Official are pinned like the Dictionary's search
+  (`.time-top` with `.section-bar` and `.dict-top` in mobile.css): 12 px above, below and at the sides,
+  and the page's colour with a hairline once it scrolls. To keep Quiz fitting 390 × 664 with the
+  12 px, the gaps inside Explore and Quiz are 10 on a phone, as `.time`'s (they were 14), and the
+  page's foot 18, as Cards'. Explore still scrolls a little at 664 (20 px with a two-line note; 30
+  before). On a desktop the row was already where the Dictionary's switch is (91 px), with the
+  same space on each side: no change. Checked (scratch `pad_probe.py`, `timescroll.py`, `timepin.py`).
+- **The switches as Words'** (the user's call, 2026-10-21: Quiz's TH → Time, Time → TH and ▶ → Time
+  were shorter than Cards' TH → EN): on a phone both of Time's rows are 44 tall (styles.css's 40 had
+  beaten mobile.css's 44 tap targets), with 15px text and 8 × 6 padding, as `.deck-picker-bar
+  .seg-btn`; the directions' own flex, gap and 20px ▶ went, so the arrows and ▶ are Cards' too.
+  Quiz's clock 142 on a phone (was 150), so it still fits 390 × 664. Explore scrolls 24 at 664. On a
+  desktop too (the user's call, the same day): its min-height of 40 went, so both rows are Cards' 26
+  (34 with the group's frame). Checked (scratch `dirh.py`, `dirh2.py`): 44 / 15px /
+  the same arrow and ▶ sizes as Words' and the Alphabet's; Quiz the same 24 states over (`timequiz3.py`).
+- **Quiz fills the screen on a phone** (the user's call, 2026-10-21: a gap under the answers on a
+  taller phone): the answers at the foot, 18 over the tab bar as Cards' are, and the card taking the
+  height between, its contents in the middle of it. CSS only (mobile.css): the stage a column on
+  Time, `.time`, Quiz and the card growing (`flex: 1 0 auto`); the card's still one size in every
+  direction, as it's the room left, not its contents. Explore unchanged. Checked (scratch
+  `timequiz3.py`, `timescroll.py`) at 390 × 664, 763 and 844, 430 × 932, and 390 × 844 at text
+  size 2: the answers 18 over the bar, no scroll, the card and answers the same in all 24 states;
+  1280 × 800 as before.
+- **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
+  `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
+  after the pause; Official; 300 questions with four different answers; the answers not moving when
+  answered, in all three directions; Quiz fitting 390 × 664; no script errors.
 
 ## The word dialog: the word in the stories (2026-10-21)
 

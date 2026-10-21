@@ -1,6 +1,7 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable, consonantClass } from './spell.js';
 import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 import { KEDMANEE, sameThai, tidy, tidiedNote, firstWrong, clusters } from './typing.js';
+import { periodOf, timePhrase, timeEnglish } from './time.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -83,6 +84,25 @@ const els = {
   tabMore: document.getElementById('tab-more'), // a phone's, hidden for now (index.html)
   moreMenu: document.getElementById('more-menu'), // its list
   moreItems: document.querySelectorAll('.more-item'),
+  timeSection: document.getElementById('time-section'),
+  timeStyleButtons: document.querySelectorAll('[data-time-style]'),
+  timeClock: document.getElementById('time-clock'),
+  timePrev: document.getElementById('time-prev'),
+  timeNext: document.getElementById('time-next'),
+  timeBand: document.getElementById('time-band'),
+  timeTh: document.getElementById('time-th'),
+  timeTr: document.getElementById('time-tr'),
+  timeEn: document.getElementById('time-en'),
+  timePlay: document.getElementById('time-play'),
+  timePageButtons: document.querySelectorAll('[data-time-page]'),
+  timeExplore: document.getElementById('time-explore'),
+  timeQuiz: document.getElementById('time-quiz'),
+  timeDirButtons: document.querySelectorAll('[data-time-dir]'),
+  timeQClock: document.getElementById('time-q-clock'),
+  timeQPrompt: document.getElementById('time-q-prompt'),
+  timeQPlay: document.getElementById('time-q-play'),
+  timeQReveal: document.getElementById('time-q-reveal'),
+  timeAnswers: document.getElementById('time-answers'),
   setWaitAgain: document.getElementById('setting-wait-again'),
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
@@ -149,6 +169,7 @@ const els = {
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
   setListOrder: document.getElementById('setting-list-order'),
   setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
+  setDevFeatures: document.getElementById('setting-dev-features'),
   setReadStoryTitles: document.getElementById('setting-read-story-titles'),
   setReadStoriesLoop: document.getElementById('setting-read-stories-loop'),
   installHelp: document.getElementById('install-help'),
@@ -219,6 +240,7 @@ const DEFAULT_SETTINGS = {
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → List)
   listOrder: 'newest',            // your lists' words: 'newest' | 'oldest' added first (Settings → List; resolveListScope)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
+  devFeatures: false,             // pages still being tried out, now Time (Settings → App; applyDevFeatures)
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
   readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
   writeCheck: 'normal',           // Write → From memory: how sure the model must be, 'lenient' | 'normal' | 'strict' (WRITE_CHECK)
@@ -235,6 +257,8 @@ const state = {
   pos: 0,             // index into queue
   randomAt: null,     // { queue, pos }: the card 🔀 drew, shown as "? / n" till ‹ › move on (goRandom)
   randomBag: null,    // { queue, left }: the places 🔀 hasn't drawn yet
+  timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, style, comebacks, seq } (nextTimeQuestion)
+  time: (() => { const d = new Date(); const at = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5 % 1440; return { h: Math.floor(at / 60), m: at % 60 }; })(), // Time's clock (renderTime): now, to the 5 minutes
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
@@ -1138,11 +1162,11 @@ function fitText(el) {
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); }, 150);
+  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeSay(); fitTimeQuiz(); }, 150);
 });
 // The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
 // the fallback: fit again once it's in.
-document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); });
+document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); fitTimeSay(); });
 
 function renderCard() {
   renderReviewOnly();
@@ -3696,6 +3720,8 @@ function setView(view, { section = 'words' } = {}) {
   els.readingSection.hidden = view !== 'reading';
   els.dictSection.hidden = view !== 'dictionary';
   if (view === 'dictionary') renderDictionary();
+  els.timeSection.hidden = view !== 'time';
+  if (view === 'time') renderTimeSection();
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
@@ -3764,6 +3790,17 @@ function mutedNotice() {
 
 // The Thai font: data-thai-font on <html> switches --thai-font in styles.css (looped is the default,
 // with no attribute). index.html applies the saved one before first paint.
+// Dev features (Settings → App, off by default; the user's call, 2026-10-21): pages still being tried
+// out, now Time. On, Time has a tab, and on a phone More takes Settings' place on the bar, with Time
+// and Settings in its list; off, the bar is as it was (html.dev: styles.css, mobile.css).
+function applyDevFeatures() {
+  const on = !!getSettings().devFeatures;
+  document.documentElement.classList.toggle('dev', on);
+  if (on) return;
+  closeMore();
+  if (state.view === 'time') goTo('home');
+}
+
 function applyThaiFont() {
   if (getSettings().thaiFont === 'loopless') document.documentElement.dataset.thaiFont = 'loopless';
   else delete document.documentElement.dataset.thaiFont;
@@ -3791,6 +3828,7 @@ function renderSettings() {
   els.setWordlistFirst.value = s.wordlistFirst;
   els.setListOrder.value = s.listOrder === 'oldest' ? 'oldest' : 'newest';
   els.setTopicWordGaps.checked = !!s.topicWordGaps;
+  els.setDevFeatures.checked = !!s.devFeatures;
   els.setReadStoryTitles.checked = s.readStoryTitles !== false;
   els.setReadStoriesLoop.checked = s.readStoriesLoop !== false;
   renderInstall();
@@ -3890,6 +3928,10 @@ function bindSettings() {
   els.setTopicWordGaps.addEventListener('change', () => {
     setSettings({ topicWordGaps: els.setTopicWordGaps.checked });
     els.wordtable.classList.toggle('show-spaces', els.setTopicWordGaps.checked);
+  });
+  els.setDevFeatures.addEventListener('change', () => {
+    setSettings({ devFeatures: els.setDevFeatures.checked });
+    applyDevFeatures();
   });
   els.setWordlistFirst.addEventListener('change', () => {
     setSettings({ wordlistFirst: els.setWordlistFirst.value === 'english' ? 'english' : 'thai' });
@@ -7059,6 +7101,7 @@ async function resetSettings() {
   applyTheme();
   applyThaiFont();
   applyMute();
+  applyDevFeatures();
   renderSettings();
   renderSpelling();
   syncReviewOnly();
@@ -7528,7 +7571,7 @@ function markSpeakers() {
   const recall = state.review?.current && cardSay(state.cardIndex.get(state.review.current.key).card);
   els.speakButtons.forEach((b) => b.classList.toggle('playing', on(flash)));
   document.querySelectorAll('.review-speak').forEach((b) => b.classList.toggle('playing', on(recall)));
-  document.querySelectorAll('.row-speak, .letter-tile').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
+  document.querySelectorAll('.row-speak, .letter-tile, .time-band-label').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
 }
 
 function ttsAndWait(text, lang) {
@@ -7548,6 +7591,325 @@ function ttsAndWait(text, lang) {
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ---------- Time (time.js; a spike, 2026-10-21: branch 2026-10-21-spike-time) ----------
+// Explore: a clock to set, by dragging its hands (the long one by 5 minutes, carrying the hour round;
+// the short one by the hour), by ‹ › (5 minutes) or by the band, and the Thai for its time under it,
+// the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in the
+// six-hour clock's four quarters, each part of the day in its colour with the count its Thai uses
+// (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its hours saying itself when tapped; the clock's rim
+// shows the parts for the half of the day it's in. A change says the time, as Cards' auto-play does
+// (its A). It opens on the time now, to the 5 minutes.
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const svgEl = (tag, attrs = {}) => {
+  const e = document.createElementNS(SVG_NS, tag);
+  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  return e;
+};
+const timeStyle = () => (getPreferences().timeStyle === 'official' ? 'official' : 'everyday');
+const timeSaysOnChange = () => getPreferences().autoPlay !== false;
+let clockParts = null; // Explore's clock's hands and rim, once drawn (drawClock)
+let clockDrag = null;  // 'hour' or 'minute' while a hand is dragged
+
+// A point on the clock: `deg` clockwise from 12, `r` from the middle (the face is 0 0 200 200).
+const clockPoint = (deg, r) => [100 + r * Math.sin((deg * Math.PI) / 180), 100 - r * Math.cos((deg * Math.PI) / 180)];
+
+// A clock in `svg` (Explore's, or a Quiz question's): its hands and rim, to set (setClock).
+function drawClock(svg) {
+  svg.replaceChildren(svgEl('circle', { class: 'clock-face', cx: 100, cy: 100, r: 91 }));
+  // The rim: an hour's arc each, coloured by its part of the day (renderTime).
+  const rim = [];
+  for (let k = 0; k < 12; k++) {
+    const [x0, y0] = clockPoint(k * 30 + 1, 96);
+    const [x1, y1] = clockPoint(k * 30 + 29, 96);
+    const arc = svgEl('path', { class: 'clock-rim', d: `M${x0.toFixed(2)} ${y0.toFixed(2)}A96 96 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}` });
+    rim.push(arc);
+    svg.append(arc);
+  }
+  for (let i = 0; i < 60; i++) {
+    const five = i % 5 === 0;
+    const [x0, y0] = clockPoint(i * 6, five ? 80 : 84);
+    const [x1, y1] = clockPoint(i * 6, 88);
+    svg.append(svgEl('line', { class: five ? 'clock-tick five' : 'clock-tick', x1: x0, y1: y0, x2: x1, y2: y1 }));
+  }
+  for (let n = 1; n <= 12; n++) {
+    const [x, y] = clockPoint(n * 30, 67);
+    const t = svgEl('text', { class: 'clock-num', x, y, 'text-anchor': 'middle', 'dominant-baseline': 'central' });
+    t.textContent = n;
+    svg.append(t);
+  }
+  const hour = svgEl('line', { class: 'clock-hand hour', x1: 100, y1: 100, x2: 100, y2: 52 });
+  const minute = svgEl('line', { class: 'clock-hand minute', x1: 100, y1: 100, x2: 100, y2: 26 });
+  svg.append(hour, minute, svgEl('circle', { class: 'clock-pin', cx: 100, cy: 100, r: 5 }));
+  return { hour, minute, rim };
+}
+
+// The hands at h:m, and the rim the half of the day it's in, the hour's arc lit.
+function setClock(parts, h, m) {
+  parts.hour.setAttribute('transform', `rotate(${(h % 12) * 30 + m / 2} 100 100)`);
+  parts.minute.setAttribute('transform', `rotate(${m * 6} 100 100)`);
+  const half = h < 12 ? 0 : 12;
+  parts.rim.forEach((arc, k) => arc.setAttribute('class', `clock-rim period-${periodOf(half + k).id}` + (half + k === h ? ' on' : '')));
+}
+
+function setTime(h, m, { say = false } = {}) {
+  state.time = { h: ((h % 24) + 24) % 24, m: ((m % 60) + 60) % 60 };
+  renderTime();
+  if (say && timeSaysOnChange()) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th);
+}
+
+function stepTime(minutes) {
+  const at = (state.time.h * 60 + state.time.m + minutes + 1440) % 1440;
+  setTime(Math.floor(at / 60), at % 60, { say: true });
+}
+
+function renderTime() {
+  if (!clockParts) clockParts = drawClock(els.timeClock);
+  const { h, m } = state.time;
+  const style = timeStyle();
+  els.timeStyleButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeStyle === style)));
+  setClock(clockParts, h, m);
+  renderTimeBand();
+  const p = timePhrase(h, m, style);
+  els.timeTh.textContent = p.th;
+  els.timeTr.textContent = p.tl;
+  fitTimeSay();
+  els.timeEn.textContent = p.en + (p.written ? ` · written ${p.written}` : '');
+  els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}: drag its hands`);
+  els.timePlay.dataset.say = p.th;
+  els.timePlay.classList.toggle('playing', sayingNow(p.th));
+  // The time's words as buttons, and a caption with what one meant or a note on the time ("could be
+  // 6 am or 6 pm…"), went 2026-10-21 (the user's call: too busy). time.js still has them (parts, note).
+}
+
+// The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
+// mid-phrase on a phone), as Cards' text fits its card; at the least 18 px, past that it wraps.
+// Quiz's question too (fitTimeText(els.timeQPrompt, els.timeQPlay)), so its card keeps its height.
+function fitTimeText(el = els.timeTh, play = els.timePlay, min = 18) {
+  el.style.fontSize = '';
+  el.classList.remove('wraps');
+  if (els.timeSection.hidden || !el.offsetParent) return;
+  const room = el.parentElement.clientWidth - (play && !play.hidden ? play.offsetWidth : 0) - 4;
+  if (el.scrollWidth <= room) return;
+  const px = Math.floor((parseFloat(getComputedStyle(el).fontSize) * room) / el.scrollWidth);
+  el.style.fontSize = `${Math.max(min, px)}px`;
+  if (px < min) el.classList.add('wraps');
+}
+
+// Explore's Thai and its transliteration, each on one line: the time's lines keep one height, so with
+// the page's room shared out around them (mobile.css) the clock and band don't move as it changes
+// (a long transliteration wrapped at text size 2, 2026-10-21).
+function fitTimeSay() {
+  fitTimeText();
+  fitTimeText(els.timeTr, null, 13);
+}
+
+// The band: the six-hour clock's four quarters, a row each (2026-10-21, the user's call; am and pm
+// rows of twelve before), each counting one to six and ending on the day's markers: 1–6 am (ตี, then
+// six in the morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม one to five, then
+// midnight, once หกทุ่ม). Under each run of a part of the day, its name: centred, or a single hour's
+// (the quarter's last) to the row's end.
+const TIME_QUARTERS = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 0]];
+function renderTimeBand() {
+  const rows = TIME_QUARTERS.map((hours) => {
+    const row = document.createElement('div');
+    row.className = 'time-band-row';
+    for (const h of hours) {
+      const period = periodOf(h);
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = `time-cell period-${period.id}` + (h === state.time.h ? ' on' : '');
+      cell.textContent = period.count(h);
+      cell.setAttribute('aria-label', `${timeEnglish(h, 0)}: ${timePhrase(h, 0).th}`);
+      cell.addEventListener('click', () => setTime(h, 0, { say: true })); // on the hour (the user's call, 2026-10-21; it kept the minutes)
+      row.append(cell);
+    }
+    for (let i = 0; i < hours.length;) {
+      const period = periodOf(hours[i]);
+      let n = 1;
+      while (i + n < hours.length && periodOf(hours[i + n]) === period) n++;
+      // The name says itself when tapped, lit while it does (markSpeakers), and sets the clock on the
+      // hour: this hour if it's one of the name's, or else its first (the user's calls, 2026-10-21).
+      const run = hours.slice(i, i + n);
+      const label = document.createElement('button');
+      label.type = 'button';
+      label.className = `time-band-label period-${period.id}` + (n === 1 && i + n === hours.length ? ' end' : '');
+      label.lang = 'th';
+      label.textContent = period.th;
+      label.dataset.say = period.th;
+      label.title = `Play ${period.th}`;
+      label.classList.toggle('playing', sayingNow(period.th));
+      label.addEventListener('click', () => {
+        speakerPress(label, period.th);
+        setTime(run.includes(state.time.h) ? state.time.h : run[0], 0);
+      });
+      label.style.gridColumn = `${i + 1} / span ${n}`;
+      row.append(label);
+      i += n;
+    }
+    return row;
+  });
+  els.timeBand.replaceChildren(...rows);
+}
+
+// ---------- Time's Quiz (2026-10-21, the same spike) ----------
+// Recognition for times: a time in Thai (or heard) and four in English to pick from, or a clock and
+// four in Thai. The wrong answers are the mistakes learners make: the same number in the day's other
+// parts (บ่ายสองโมง's are ตีสอง and สองทุ่ม, 2 am and 8 pm), and the hour twelve away (2 am); in
+// the official clock, the hour twelve away and the one ending in the same digit (สิบสี่ and สี่).
+// The minutes are the question's in all four. Half are on the hour, a quarter half past, the rest
+// any 5 minutes. As in Recognition: right is green, wrong red and the right one green, then the
+// next after Settings' pauses (Cards → Pause after a right / wrong answer), and a time got wrong
+// comes back three questions later. Explore's Everyday | Official applies here too.
+const TIME_DIRS = ['th', 'time', 'listen'];
+const timePage = () => (getPreferences().timePage === 'quiz' ? 'quiz' : 'explore');
+const timeQuizDir = () => (TIME_DIRS.includes(getPreferences().timeQuizDir) ? getPreferences().timeQuizDir : 'th');
+let qClockParts = null; // the question's clock, once drawn
+
+// Explore or Quiz, by the page switch.
+function renderTimeSection() {
+  const page = timePage();
+  els.timePageButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timePage === page)));
+  els.timeExplore.hidden = page !== 'explore';
+  els.timeQuiz.hidden = page !== 'quiz';
+  if (page === 'explore') renderTime();
+  else if (!state.timeQuiz?.q || state.timeQuiz.picked !== null) nextTimeQuestion(); // an answered one left behind: the next
+  else renderTimeQuiz();
+}
+
+function quizTime() {
+  const r = Math.random();
+  const others = [5, 10, 15, 20, 25, 35, 40, 45, 50, 55];
+  return { h: Math.floor(Math.random() * 24), m: r < 0.5 ? 0 : r < 0.75 ? 30 : others[Math.floor(Math.random() * others.length)] };
+}
+
+// The hours to offer beside h, likeliest mistakes first.
+function timeDecoys(h, style) {
+  const hours = [...Array(24).keys()].filter((x) => x !== h);
+  if (style === 'official') {
+    return [(h + 12) % 24, ...shuffled(hours.filter((x) => x % 10 === h % 10)), ...shuffled([(h + 1) % 24, (h + 23) % 24]), ...shuffled(hours)];
+  }
+  const count = periodOf(h).count(h);
+  const same = shuffled(hours.filter((x) => periodOf(x).count(x) === count));
+  return [...same, (h + 12) % 24, ...shuffled(same.map((x) => (x + 12) % 24)), ...shuffled(hours)];
+}
+
+// What an answer says: the time in English, or (asked from a clock) its Thai.
+const timeAnswerText = (t, dir, style) => (dir === 'time' ? timePhrase(t.h, t.m, style).th : timeEnglish(t.h, t.m, style));
+
+function nextTimeQuestion() {
+  const quiz = (state.timeQuiz ||= { comebacks: [], seq: 0 });
+  quiz.seq += 1;
+  quiz.comebacks.forEach((c) => { c.in -= 1; });
+  const due = quiz.comebacks.findIndex((c) => c.in <= 0);
+  const q = due >= 0 ? quiz.comebacks.splice(due, 1)[0] : quizTime();
+  const dir = timeQuizDir();
+  const style = timeStyle();
+  const options = [{ h: q.h, m: q.m }];
+  const seen = new Set([timeAnswerText(q, dir, style)]);
+  for (const h of timeDecoys(q.h, style)) {
+    const t = { h, m: q.m };
+    const text = timeAnswerText(t, dir, style);
+    if (seen.has(text) || h === q.h) continue;
+    seen.add(text);
+    options.push(t);
+    if (options.length === 4) break;
+  }
+  Object.assign(quiz, { q: { h: q.h, m: q.m }, options: shuffled(options), picked: null, dir, style });
+  renderTimeQuiz();
+  const th = timePhrase(q.h, q.m, style).th;
+  if (dir === 'listen' || (dir === 'th' && timeSaysOnChange())) speak(th);
+}
+
+function renderTimeQuiz() {
+  const quiz = state.timeQuiz;
+  const { q, options, picked, dir, style } = quiz;
+  els.timeDirButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeDir === timeQuizDir())));
+  const answered = picked !== null;
+  const p = timePhrase(q.h, q.m, style);
+  if (!qClockParts) qClockParts = drawClock(els.timeQClock);
+  setClock(qClockParts, q.h, q.m);
+  // The clock is the question asked from a clock; for the others it's blank, no hands, till answered
+  // (so nothing moves when they come: the card keeps its height).
+  els.timeQClock.classList.toggle('blank', dir !== 'time' && !answered);
+  els.timeQPrompt.lang = dir === 'th' || (answered && dir === 'listen') ? 'th' : 'en';
+  els.timeQPrompt.className = 'time-q-prompt' + (els.timeQPrompt.lang === 'th' ? ' th' : '');
+  els.timeQPrompt.textContent = dir === 'time' ? timeEnglish(q.h, q.m, style) : dir === 'th' || answered ? p.th : '';
+  // The speaker: Thai and Listen have it from the start; from a clock, once answered (it'd say it).
+  els.timeQPlay.hidden = dir === 'time' && !answered;
+  els.timeQPlay.dataset.say = p.th;
+  els.timeQPlay.classList.toggle('big', dir === 'listen'); // Listen's question, and still once answered
+  els.timeQReveal.textContent = !answered ? (dir === 'listen' ? 'What time do you hear?' : '')
+    : dir === 'time' ? `${p.th} · ${p.tl}` : `${p.tl} · ${p.en}${p.written ? ` · ${p.written}` : ''}`;
+  els.timeQReveal.classList.toggle('hint', !answered);
+  els.timeAnswers.classList.toggle('locked', answered);
+  els.timeAnswers.replaceChildren(...options.map((t, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'learn-pill' + (dir === 'time' ? ' thai-pill' : '');
+    if (dir === 'time') b.lang = 'th';
+    b.textContent = timeAnswerText(t, dir, style);
+    const right = t.h === q.h;
+    if (answered) b.classList.add(right ? 'correct' : i === picked ? 'wrong' : 'dimmed');
+    b.addEventListener('click', () => answerTime(i));
+    return b;
+  }));
+  fitTimeQuiz();
+}
+
+// Quiz's parts keep their heights (styles.css, .time-q-say): the question's Thai shrinks to its line,
+// and the answer line and the answers to their boxes, down to 12 px, the style guide's least.
+function fitTimeQuiz() {
+  if (els.timeQuiz.hidden || els.timeSection.hidden) return;
+  fitTimeText(els.timeQPrompt, els.timeQPlay);
+  for (const el of [els.timeQReveal, ...els.timeAnswers.children]) {
+    el.style.fontSize = '';
+    let px = parseFloat(getComputedStyle(el).fontSize);
+    while (px > 12 && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) {
+      px -= 1;
+      el.style.fontSize = `${px}px`;
+    }
+  }
+}
+
+function answerTime(i) {
+  const quiz = state.timeQuiz;
+  if (!quiz || quiz.picked !== null) return;
+  quiz.picked = i;
+  const right = quiz.options[i].h === quiz.q.h;
+  if (!right && !quiz.comebacks.some((c) => c.h === quiz.q.h && c.m === quiz.q.m)) quiz.comebacks.push({ ...quiz.q, in: 3 });
+  renderTimeQuiz();
+  if (quiz.dir !== 'listen' && timeSaysOnChange()) speak(timePhrase(quiz.q.h, quiz.q.m, quiz.style).th);
+  const seq = quiz.seq;
+  const s = getSettings();
+  setTimeout(() => {
+    if (state.timeQuiz?.seq !== seq || state.view !== 'time' || timePage() !== 'quiz') return; // moved on meanwhile
+    nextTimeQuestion();
+  }, (right ? s.learnPauseMs : s.wrongPauseMs) + (quiz.dir === 'listen' || timeSaysOnChange() ? 600 : 0));
+}
+
+// Dragging a hand: within 60% of the middle the hour's, else the minutes'.
+function clockAt(e) {
+  const r = els.timeClock.getBoundingClientRect();
+  const x = e.clientX - (r.left + r.width / 2);
+  const y = e.clientY - (r.top + r.height / 2);
+  return { deg: ((Math.atan2(x, -y) * 180) / Math.PI + 360) % 360, d: Math.hypot(x, y) / (r.width / 2) };
+}
+function moveHand(deg) {
+  const { h, m } = state.time;
+  if (clockDrag === 'minute') {
+    const mm = (Math.round(deg / 30) * 5) % 60;
+    if (mm === m) return;
+    // Past 12 the hour goes on (or back), as a real clock's does.
+    const hh = m >= 45 && mm <= 15 ? h + 1 : m <= 15 && mm >= 45 ? h - 1 : h;
+    setTime(hh, mm);
+  } else {
+    const h12 = Math.round((((deg - m / 2) % 360) + 360) % 360 / 30) % 12;
+    // Of the two hours it could be, am or pm, the one nearer the hour it was: so a drag goes on round.
+    const near = [h12, h12 + 12].sort((a, b) => Math.min(Math.abs(a - h), 24 - Math.abs(a - h)) - Math.min(Math.abs(b - h), 24 - Math.abs(b - h)))[0];
+    if (near !== h) setTime(near, m);
+  }
 }
 
 // ---------- wiring ----------
@@ -7760,6 +8122,47 @@ function bindEvents() {
     });
   });
 
+  // Time's clock (renderTime).
+  els.timePrev.addEventListener('click', () => stepTime(-5));
+  els.timeNext.addEventListener('click', () => stepTime(5));
+  els.timeStyleButtons.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.timeStyle === timeStyle()) return;
+    setPreferences({ timeStyle: b.dataset.timeStyle });
+    els.timeStyleButtons.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+    if (timePage() === 'quiz') nextTimeQuestion(); // a new question, said the other way
+    else setTime(state.time.h, state.time.m, { say: true });
+  }));
+  els.timePageButtons.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.timePage === timePage()) return;
+    setPreferences({ timePage: b.dataset.timePage });
+    renderTimeSection();
+  }));
+  els.timeDirButtons.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.timeDir === timeQuizDir()) return;
+    setPreferences({ timeQuizDir: b.dataset.timeDir });
+    nextTimeQuestion();
+  }));
+  els.timeQPlay.append(speakerIcon());
+  els.timeQPlay.addEventListener('click', () => speakerPress(els.timeQPlay, els.timeQPlay.dataset.say));
+  els.timePlay.append(speakerIcon());
+  els.timePlay.addEventListener('click', () => speakerPress(els.timePlay, els.timePlay.dataset.say));
+  els.timeClock.addEventListener('pointerdown', (e) => {
+    const { deg, d } = clockAt(e);
+    if (d > 1.05) return;
+    clockDrag = d < 0.6 ? 'hour' : 'minute';
+    els.timeClock.setPointerCapture(e.pointerId);
+    els.timeClock.classList.add('dragging');
+    moveHand(deg);
+  });
+  els.timeClock.addEventListener('pointermove', (e) => { if (clockDrag) moveHand(clockAt(e).deg); });
+  const dropHand = () => {
+    if (!clockDrag) return;
+    clockDrag = null;
+    els.timeClock.classList.remove('dragging');
+    if (timeSaysOnChange()) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th); // said once it's let go
+  };
+  els.timeClock.addEventListener('pointerup', dropHand);
+  els.timeClock.addEventListener('pointercancel', dropHand);
   els.prevBtn.addEventListener('click', goPrev);
   els.nextBtn.addEventListener('click', goNext);
   els.randomBtn.addEventListener('click', goRandom);
@@ -7973,6 +8376,17 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (state.view === 'time') { // ← → move Explore's clock 5 minutes; 1–4 answer Quiz's question
+      if (timePage() === 'quiz') {
+        if (/^[1-4]$/.test(e.key)) answerTime(+e.key - 1);
+        return;
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+        e.preventDefault();
+        stepTime(e.key === 'ArrowLeft' ? -5 : 5);
+      }
+      return;
+    }
     if (state.view === 'home' || state.view === 'reading' || state.view === 'dictionary' || state.view === 'alphabet') return; // Flashcards' and Topics' keys
     if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);
@@ -8319,6 +8733,7 @@ async function init() {
   applyTheme();
   applyThaiFont();
   applyMute();
+  applyDevFeatures();
   try {
     [state.decks, sampleFiles] = await Promise.all([loadDecks(), loadAudioManifest()]);
     sayText = new Map(state.decks.flatMap((d) => d.cards.filter((c) => c.say).map((c) => [c.thai, c.say])));

@@ -129,7 +129,7 @@ html.kb .tabs { display: none; }
    it out from under them (scroll-padding), and from under the tab bar. */
 .stage:not([data-view="home"]) { padding-top: 0; }
 .deck-picker-bar { display: contents; }
-.section-bar, .dict-top {
+.section-bar, .dict-top, .time-top {
   position: sticky;
   top: 0;
   z-index: 9;
@@ -139,7 +139,11 @@ html.kb .tabs { display: none; }
 }
 .section-bar { display: flex; gap: 8px; }
 .dict-top { margin-bottom: 4px; } /* with its padding, the 16px it had */
-html.scrolled :is(.section-bar, .dict-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
+/* Time's Explore | Quiz and Everyday | Official the same (2026-10-21, the user's call: it sat at the
+   very top, without the 12px the other sections have above their row). Its padding stands in for
+   .time's gap under it: 12, as under Topics' row. */
+.time-top { margin-bottom: -10px; }
+html.scrolled :is(.section-bar, .dict-top, .time-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
 /* The consonants' and vowels' line (the hint, or the one last tapped: pickAlpha) pinned under the
    section's row too (2026-10-15, the user's requests), the two one band: the hairline under the
    line, not between them. It takes the gutters, and the 12px under it is split around its padding. */
@@ -301,7 +305,10 @@ html.type-kb #card .type-hint { bottom: 8px; max-width: calc(100% - 136px); }
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
 html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit while its page is open */
-.tab-more[hidden] { display: none; } /* More, kept for later (index.html) */
+/* With dev features on (Settings → App; the Time spike, 2026-10-21) Settings and Time are in More,
+   lit while either shows; off (the default), the bar ends with Settings, and there's no More. */
+html.dev .tab-settings, .tab-time { display: none; }
+html:not(.dev) .tab-more { display: none; }
 
 /* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
    (.deck-button above; not styles.css's 220px, with three icons beside it). */
@@ -467,3 +474,37 @@ html.modal-open body { overflow: clip; }
 /* Reader: drop the "Show" label (screen readers keep the group's "Show under each line") so
    Transliteration, English and Word gaps fit one row at the Larger text size. */
 .reader-show { display: none; }
+
+/* ---------- Time (a spike, 2026-10-21) ---------- */
+/* The page fits 390 × 664 with a one-line time: closer together, the clock to the screen's height
+   (24vh, 29 till the band's four rows, 2026-10-21). */
+.time, .time-explore, .time-quiz { gap: 10px; }
+/* Its switches as Words' and the Alphabet's on a phone (2026-10-21, the user's call: they were
+   40px, under the 44 above, with 16px text): 44 tall, 15px text, the same padding. */
+.time-top .seg-btn, .time-dirs .seg-btn { min-height: 44px; padding: 8px 6px; font-size: 15px; }
+/* With 12px over the top row now (2026-10-21), Quiz still fits 664: its gaps 10, as .time's (they
+   were 14), and the page's foot 18, as Cards'. */
+.stage[data-view="time"] { padding-bottom: 18px; }
+/* Quiz fills the screen (2026-10-21, the user's call: a taller phone left a gap under the answers):
+   the answers at the foot, 18 over the tab bar as Cards' are, and the card taking the height between,
+   its clock, question and answer line in the middle of it (.time-q centres them). The page is a
+   column down to the bar (body and .stage grow: styles.css), and so are .time and Quiz. .time is
+   100% wide, as its auto margins would shrink it to its content here. */
+.stage[data-view="time"] { display: flex; flex-direction: column; }
+.stage[data-view="time"] .time { flex: 1 0 auto; width: 100%; }
+.time-quiz, .time-q { flex: 1 0 auto; }
+/* Explore too (the user's call, the same day): its clock, band and time the screen's height between
+   them, the room left shared out evenly above, between and below them (10 apart at the least, its gap). */
+.time-explore { flex: 1 0 auto; justify-content: space-evenly; }
+.time-clock { width: min(200px, 50vw, 24vh); }
+.time-band-row { grid-template-rows: 32px auto; }
+.time-th { font-size: calc(30px * var(--fs, 1)); }
+/* Quiz fits 390 × 664 in all three directions (Listen's the tallest: the clock, its ▶, two lines);
+   the clock 142 (150 till the switches grew to 44, 2026-10-21). */
+.time-clock.time-q-clock { width: min(142px, 38vw); }
+.time-q { gap: 5px; padding: 12px; }
+.time-q-say { height: 80px; }
+.time-q-play.big { width: 80px; height: 80px; }
+.time-q-play.big .speaker-icon { width: 46px; height: 46px; }
+.time-answers .learn-pill { height: 60px; font-size: calc(18px * var(--fs, 1)); }
+.time-answers .learn-pill.thai-pill { font-size: calc(21px * var(--fs, 1)); }
