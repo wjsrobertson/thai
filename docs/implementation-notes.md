@@ -2004,6 +2004,22 @@ they're the topics. The code keeps `study` (the view, `data-view`, `studyPage`).
 - **Checked** headless at 390 × 664 and 1280 × 800: the tab, Home's card and the top switch say
   Words; no script errors.
 
+## Thai Numerals, a topic (2026-10-21)
+
+The user asked if there was one; there wasn't (the digits were one card in Numbers 0–20, and เลขไทย
+a word in Reading & Writing). Now **Basics → First Words → Thai Numerals** (`numbers-thai-numerals`),
+after Big Numbers & Counting, 24 cards: the ten digits one a card (๑ → "1 — one"), and the all-ten
+card as it is; numbers with a lesson (๑๑ and ๒๑: a final one is เอ็ด; ๒๐ is ยี่สิบ; ๑๐,๐๐๐ is
+หมื่น), ๕๐, ๑๐๐, ๑,๐๐๐; what you meet: ๒๕๐ บาท, the year ๒๕๖๙ (B.E.), ๑๙.๓๐ น. (said as
+สิบเก้านาฬิกาสามสิบนาที, its `say`: the voice reads the written form badly); เลขไทย (the existing
+card as it is) and เลขอารบิก. No `words`: they're numbers, not phrases. An Alphabet set for them
+was the other choice; a topic for now (the user's call).
+- The voice skips Thai digits, so gen_audio reads them as Arabic ones (`THAI_DIGITS`, already
+  there); spell-aloud says a number digit by digit (๑๐: หนึ่ง, ศูนย์), as spell.js already did.
+- Checked: the audit, stories, spelling and recordings (29 new, none missing); the topic picked in
+  the app, its List and Recognition (scratch `numerals.py`). The Dictionary's search finds nothing
+  for a digit (๙), as before for the all-ten card: not changed.
+
 ## The Alphabet before Words (2026-10-21)
 
 The user's call: the Alphabet before Words in the tabs, on Home and in Settings.
