@@ -1818,6 +1818,11 @@ Settings always last.
   `devprobe.py`) on a phone and 1280 × 800: off by default, on and off from Settings, kept over a
   reload, Settings still opening from the bar; no script errors. check_layout.py checks the bar both
   ways (not run).
+- **Home's Time card** (the user's call, the same day), after the Dictionary's, with dev features
+  on only: "Telling the time in Thai, everyday and official, with a quiz." (`.home-card-time`,
+  `data-go="time"`). Across both columns on a wider screen, as Words' is, not half a row on its own.
+  Checked (scratch `homeprobe.py`): absent with dev features off, so Home is as it was; present
+  with them on, opening Time with More (a phone) or Time's tab lit; no script errors.
 - **The Thai** (`time.js`, no page code): any time said the everyday way or the official one
   (`timePhrase`, `timeParts`), in the Telling the Time topics' forms: …โมงเช้า, เที่ยง, บ่ายโมง,
   บ่ายสอง/สามโมง, สี่–หกโมงเย็น, หนึ่ง–ห้าทุ่ม, เที่ยงคืน, ตีหนึ่ง–ตีห้า; with minutes เช้า and เย็น
