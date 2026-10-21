@@ -1981,9 +1981,47 @@ const TOUCH_SCREEN = window.matchMedia('(pointer: coarse)').matches;
 const KEYBOARD_FIELDS = 'input[type=text], input[type=search], input[type=number], textarea';
 function syncKeyboardUp(field) {
   const up = TOUCH_SCREEN && !!field?.matches?.(KEYBOARD_FIELDS);
+  // Type's box and a dialog's are held still instead (holdStill).
+  const closes = up && field !== els.typeBox && field !== els.confirmInput;
+  document[closes ? 'addEventListener' : 'removeEventListener']('touchstart', dragStart, { passive: true });
+  document[closes ? 'addEventListener' : 'removeEventListener']('touchmove', dragClosesKeyboard, { passive: false });
   if (up === document.documentElement.classList.contains('kb')) return;
   document.documentElement.classList.toggle('kb', up);
   if (!up) fitCardText();
+}
+
+// With any other field's keyboard up (the Dictionary's search, Settings' and the picker's, Read's
+// and a list's, Settings' numbers), iOS let the page, or the sheet over it, be dragged about under
+// the keyboard (the user's report, 2026-10-21). So a drag moves nothing, and once it's more than a
+// tap's wobble it closes the keyboard, as an app's search does; the next drag scrolls. One on the
+// field itself is left alone (it moves the caret). The listeners are there only while it's up
+// (syncKeyboardUp), so they don't slow scrolling otherwise.
+let dragFrom = null;
+function dragStart(e) {
+  const t = e.touches[0];
+  dragFrom = t ? { x: t.clientX, y: t.clientY } : null;
+}
+function dragClosesKeyboard(e) {
+  const field = document.activeElement;
+  const t = e.touches[0];
+  if (!t || e.target === field) return;
+  if (e.cancelable) e.preventDefault();
+  if (!dragFrom || Math.hypot(t.clientX - dragFrom.x, t.clientY - dragFrom.y) < 8) return;
+  // The rest of this drag moves nothing either (these listeners go with the focus; without that it
+  // scrolled the rest of the way, the probe).
+  document.addEventListener('touchmove', holdTillLifted, { passive: false });
+  document.addEventListener('touchend', lifted);
+  document.addEventListener('touchcancel', lifted);
+  field.blur();
+}
+function holdTillLifted(e) {
+  if (e.cancelable) e.preventDefault();
+}
+function lifted(e) {
+  if (e.touches.length) return;
+  document.removeEventListener('touchmove', holdTillLifted, { passive: false });
+  document.removeEventListener('touchend', lifted);
+  document.removeEventListener('touchcancel', lifted);
 }
 
 // While a modal is open the page behind it is locked (html.modal-open), so scrolls stay in the sheet.
@@ -4923,7 +4961,10 @@ function fitTypeKeyboard() {
 // all fits over it, and scrolls it itself, after an answer too (the user's screenshot, 2026-10-19:
 // the card's top under the clock, a gap over the keyboard). So it's held at its top: a drag is
 // stopped (not in the box, or on a back long enough to scroll), and a scroll put back.
-// The same for a dialog's box (html.dialog-kb, fitDialogKeyboard).
+// The same for a dialog's box (html.dialog-kb, fitDialogKeyboard), but held where the page behind
+// it was (heldY): held at the top, a list's page scrolled down came back at its top when the dialog
+// closed (2026-10-21).
+let heldY = 0;
 function holdStill(e) {
   if (e.target === els.typeBox || e.target === els.confirmInput) return;
   const back = e.target.closest?.('.face-body');
@@ -4933,7 +4974,7 @@ function holdStill(e) {
 function holdTop() {
   const html = document.documentElement.classList;
   if (!html.contains('type-kb') && !html.contains('dialog-kb')) return;
-  if (window.scrollY || window.visualViewport?.offsetTop) window.scrollTo(0, 0);
+  if (Math.abs(window.scrollY - heldY) > 1 || window.visualViewport?.offsetTop) window.scrollTo(0, heldY);
 }
 
 // A dialog's text box (a list's name) with a touch screen's keyboard up: iOS let the page be dragged
@@ -7559,6 +7600,7 @@ function bindEvents() {
     if (!typingOnPhone()) return;
     // The page's height without the keyboard: iOS keeps the layout viewport's when it opens.
     typingFrom = Math.max(window.visualViewport?.height ?? 0, document.documentElement.clientHeight);
+    heldY = 0;
     document.documentElement.classList.add('type-kb');
     document.addEventListener('touchmove', holdStill, { passive: false }); // only while it's up
     fitTypeKeyboard();
@@ -7572,6 +7614,7 @@ function bindEvents() {
   // A dialog's box (fitDialogKeyboard): held while it has the keyboard.
   els.confirmInput.addEventListener('focus', () => {
     if (!TOUCH_SCREEN) return;
+    heldY = window.scrollY;
     document.documentElement.classList.add('dialog-kb');
     document.addEventListener('touchmove', holdStill, { passive: false });
     fitDialogKeyboard();

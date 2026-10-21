@@ -1741,7 +1741,8 @@ the user said yes to all of them.
   `--kb-h`, the page's height less the visible one; 0 where a browser shrinks the page instead).
   Checked headless with a faked keyboard (scratch `dialogkb_probe.py`, 390 × 844 and 390 × 664 at
   text size 2): the dialog clear above it, drags stopped but in the box, and as before once it goes.
-  No layout check (the user's call).
+  No layout check (the user's call). It's held where the page behind it was, not at the top (A field's keyboard: a
+  drag closes it).
 
 ## Browse: a random card, and ‹ › going round (2026-10-21)
 
@@ -1804,6 +1805,29 @@ height and comes into view part way up as the page scrolls.
   sizes the card to the keyboard as before.
 - **Checked:** `check_layout.py` taps the Dictionary's search with a touch screen emulated (the bar
   hidden), then lets it go (the bar back). Not yet on the iPhone.
+
+## A field's keyboard: a drag closes it (2026-10-21)
+
+The user's report, after New list's dialog was held still: Settings' search and the Dictionary's
+still let the page be dragged about with the keyboard up. Every text field was looked at:
+- **Held still** (as before): Type's box (10-19) and a dialog's, New list and Rename (10-21). The
+  dialog's hold had put the page behind it back at its top (`scrollTo(0, 0)`), so a list's page
+  scrolled down came back at its top when the dialog closed (the probe); it's now held where it was
+  (`heldY`, Type's still 0).
+- **A drag closes the keyboard** (the rest): the Dictionary's search, Settings' search and its
+  number boxes, the picker's search, Read's and a list's. While one has the keyboard
+  (`syncKeyboardUp` adds the listeners, and takes them away with the focus), a drag moves nothing,
+  and once it's past 8 px (more than a tap's wobble) it takes the focus away, so the keyboard goes,
+  as an app's search does (`dragClosesKeyboard`). The rest of that drag moves nothing either
+  (`holdTillLifted` till the finger's lifted: without it the page scrolled the rest of the way);
+  the next one scrolls. A drag on the field itself is left alone (it moves the caret), and a tap on
+  a result still works.
+- **Checked** headless with touch emulation and real touches (scratch `kbdrag_probe.py`,
+  `dictscroll.py`, 390 × 664): on each of those fields a drag closed the keyboard with the page or
+  sheet where it was, and the next drag scrolled (the Dictionary's results 250 px, Settings' 344);
+  a tap on a Dictionary result opened it; New list over a list's page scrolled to 300 left it at
+  300; Type's box kept the focus with the page at its top. Not yet on the iPhone, where iOS still
+  moves a sheet itself to show a field low in it (a Settings number box), as before.
 
 ## Cards: Type, the answer typed in Thai (2026-10-19), `typing.js`
 
