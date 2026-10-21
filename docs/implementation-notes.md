@@ -1882,6 +1882,17 @@ Settings always last.
   Checked (scratch `bandtap.py`, `bandtap2.py`, real clicks) at 390 × 844 and 1280 × 800: each
   name its own clip, lit while it plays, the times as above; a point just under a cell still the
   cell's; no script errors.
+- **Its clips preloaded** (the user's call, 2026-10-21: "Download all audio" had them, all 605
+  times and the band's names being in the manifest's Thai, but nothing fetched them ahead, so each
+  came from the network the first time it played). `preloadTimeAudio`, through the queue a topic's
+  preload uses (`queuePageAudio`, held in memory to play at once): on Explore the clock's time and
+  those within half an hour of it, nearest first, the band's seven names and the 24 hours on the
+  hour, in the style shown (about 45 clips, ~450 KB), again as the clock moves (only what's new is
+  fetched: › fetched just the half-hour's new edge); in Quiz the question's and the next one's, the
+  next new time picked a question ahead (`quiz.ahead`), so it's loaded before it's asked. Nothing
+  with Settings → Audio's browser voice. As with a topic, a time said as it changes is fetched twice
+  the first time (the player's waveform and the queue). Checked (scratch `timepre.py`, the fetches
+  logged): Explore at 2 pm, ›, Official; Quiz's next question loaded before it came; no script errors.
 - **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
   midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
   `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).

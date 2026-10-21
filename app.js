@@ -257,7 +257,7 @@ const state = {
   pos: 0,             // index into queue
   randomAt: null,     // { queue, pos }: the card 🔀 drew, shown as "? / n" till ‹ › move on (goRandom)
   randomBag: null,    // { queue, left }: the places 🔀 hasn't drawn yet
-  timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, style, comebacks, seq } (nextTimeQuestion)
+  timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, style, comebacks, seq, ahead: the next new time } (nextTimeQuestion)
   time: (() => { const d = new Date(); const at = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5 % 1440; return { h: Math.floor(at / 60), m: at % 60 }; })(), // Time's clock (renderTime): now, to the 5 minutes
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
@@ -7681,6 +7681,7 @@ function renderTime() {
   els.timePlay.classList.toggle('playing', sayingNow(p.th));
   // The time's words as buttons, and a caption with what one meant or a note on the time ("could be
   // 6 am or 6 pm…"), went 2026-10-21 (the user's call: too busy). time.js still has them (parts, note).
+  preloadTimeAudio(); // the times around this one
 }
 
 // The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
@@ -7775,7 +7776,42 @@ function renderTimeSection() {
   els.timeQuiz.hidden = page !== 'quiz';
   if (page === 'explore') renderTime();
   else if (!state.timeQuiz?.q || state.timeQuiz.picked !== null) nextTimeQuestion(); // an answered one left behind: the next
-  else renderTimeQuiz();
+  else {
+    renderTimeQuiz();
+    preloadTimeAudio();
+  }
+}
+
+// Time's clips, fetched ahead of playback as a topic's are (preloadDeckAudio; the user's call,
+// 2026-10-21: each was fetched the first time it played, unless Download all audio had them).
+// Explore: the clock's time and those within half an hour of it, nearest first, then the band's
+// names and the 24 hours on the hour, in the style shown (about 45 clips, ~450 KB), again as the
+// clock moves (those loaded are skipped). Quiz: the question's and the next one's (nextTimeQuestion
+// picks it a question ahead). Held in memory, as a topic's Thai is, so they play at once.
+function preloadTimeAudio() {
+  if (getSettings().audioSource !== 'samples') {
+    queuePageAudio([]);
+    return;
+  }
+  const style = timeStyle();
+  const say = new Set();
+  const at = (h, m) => say.add(timePhrase(h, m, style).th);
+  if (timePage() === 'quiz') {
+    const { q, ahead } = state.timeQuiz || {};
+    if (q) at(q.h, q.m);
+    if (ahead) at(ahead.h, ahead.m);
+  } else {
+    const now = state.time.h * 60 + state.time.m;
+    for (let d = 0; d <= 30; d += 5) {
+      for (const t of [now + d, now - d]) {
+        const x = (t + 1440) % 1440;
+        at(Math.floor(x / 60), x % 60);
+      }
+    }
+    for (const h of TIME_QUARTERS.flat()) say.add(periodOf(h).th);
+    for (let h = 0; h < 24; h++) at(h, 0);
+  }
+  queuePageAudio([...say].map((th) => ({ url: sampleUrl(th, 'th'), keep: true })).filter((e) => e.url));
 }
 
 function quizTime() {
@@ -7803,7 +7839,9 @@ function nextTimeQuestion() {
   quiz.seq += 1;
   quiz.comebacks.forEach((c) => { c.in -= 1; });
   const due = quiz.comebacks.findIndex((c) => c.in <= 0);
-  const q = due >= 0 ? quiz.comebacks.splice(due, 1)[0] : quizTime();
+  // A new time is the one picked a question ago (quiz.ahead), its clip loading since (preloadTimeAudio).
+  const q = due >= 0 ? quiz.comebacks.splice(due, 1)[0] : quiz.ahead || quizTime();
+  if (due < 0) quiz.ahead = null;
   const dir = timeQuizDir();
   const style = timeStyle();
   const options = [{ h: q.h, m: q.m }];
@@ -7817,9 +7855,11 @@ function nextTimeQuestion() {
     if (options.length === 4) break;
   }
   Object.assign(quiz, { q: { h: q.h, m: q.m }, options: shuffled(options), picked: null, dir, style });
+  quiz.ahead ||= quizTime();
   renderTimeQuiz();
   const th = timePhrase(q.h, q.m, style).th;
   if (dir === 'listen' || (dir === 'th' && timeSaysOnChange())) speak(th);
+  preloadTimeAudio();
 }
 
 function renderTimeQuiz() {
