@@ -243,6 +243,7 @@ const state = {
   wordShown: 25,      // and how many of its rows show (WORD_PAGE, Show more)
   wordFor: null,      // the scope those are for: another starts afresh (wordsFor)
   takenOut: new Set(), // words taken out of the list being added to, while adding (faded: renderWordlist)
+  addedHere: new Set(), // words put in it on this visit, which aren't faded when taken out (setInTarget)
   readingId: null,    // the Reading page's open passage (renderReading), or null for the list. 'reading' is a view too, reached from Home.
   readingQuery: '',   // Reading's search box (storyMatches)
   readingShown: 10,   // how many of the list's stories show (READING_PAGE more with each Show more)
@@ -3683,6 +3684,7 @@ function setView(view, { section = 'words' } = {}) {
   if (view === 'wordlist' && leaving !== 'wordlist') { // a list's words may have changed meanwhile
     freshListCards();
     state.takenOut.clear();
+    state.addedHere.clear();
     renderWordlist();
   }
   if (view === 'wordlist') sizeLetterTiles(); // a board drawn while Topics was hidden had nothing to measure
@@ -4294,6 +4296,7 @@ function wordsFor(key) {
   if (key === state.wordFor) return;
   state.wordFor = key;
   state.takenOut.clear();
+  state.addedHere.clear();
   state.wordShown = WORD_PAGE;
   state.wordQuery = '';
   els.wordlistSearch.value = '';
@@ -5118,8 +5121,16 @@ function createList(name, { target = true } = {}) {
 // Adds words to (on) or takes them out of the target list, making My words if there's no list yet.
 // Taking out keeps their progress. Returns the list's name, for the toast.
 function setInTarget(keys, on) {
-  if (!on && addingFrom()) keys.forEach((k) => state.takenOut.add(k)); // faded (renderWordlist)
   const list = targetList() || createList('My words');
+  // Adding words from a topic, a word taken out of the list is faded (renderWordlist), but not one
+  // put in on this visit: in and out again, it's as it was (the user's call, 2026-10-21).
+  if (addingFrom()) {
+    const have = new Set(list.words);
+    keys.forEach((k) => {
+      if (on && !have.has(k) && !state.takenOut.has(k)) state.addedHere.add(k);
+      if (!on && have.has(k) && !state.addedHere.has(k)) state.takenOut.add(k);
+    });
+  }
   changeList(list.id, (l) => {
     const have = new Set(l.words);
     if (on) l.words.push(...keys.filter((k) => !have.has(k)));

@@ -1691,7 +1691,11 @@ the user said yes to all of them.
   to '…'" without Change (`toastAdded`). Elsewhere they keep it. Checked at 390 × 664. A word taken out
   there (its ✓) is faded too, as on the list's own page (`state.takenOut`, kept by `setInTarget` while
   `addingFrom()`), and putting it back says "Re-added". The fades clear with a new topic or when the
-  page opens afresh, the topic's rows staying (they're its words).
+  page opens afresh, the topic's rows staying (they're its words). A word put in on this visit and
+  taken out again isn't faded (the user's call, 2026-10-21): it's as it was, 🔁, and only a word that
+  was in the list before fades (`state.addedHere`, kept by `setInTarget`, cleared with the fades).
+  Checked at 390 × 664 (scratch `addedhere_probe.py`): a new word in and out plain, in again
+  "Added"; a word from before faded, "Re-added", faded again.
 - **The toast's ✓ beside its message** (the user's call, the same day: on a two-line message it sat
   at the start of the first line). A toast with a button splits a leading ✓ into its own `.toast-tick`,
   centred against the message, which wraps beside it (`toast`). Every toast now wraps that way, not
