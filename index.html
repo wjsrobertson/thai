@@ -789,27 +789,52 @@
          and the Thai for its time, everyday or official, with the day's parts as a band. -->
     <section class="time time-only" id="time-section" hidden>
       <div class="time-top">
+        <!-- Explore | Quiz (prefs.timePage), and how the time is said, for both. -->
+        <div class="segmented time-page-switch" role="radiogroup" aria-label="Time page">
+          <button type="button" role="radio" class="seg-btn" data-time-page="explore" aria-checked="true">Explore</button>
+          <button type="button" role="radio" class="seg-btn" data-time-page="quiz" aria-checked="false">Quiz</button>
+        </div>
         <div class="segmented time-switch" role="radiogroup" aria-label="How the time is said">
           <button type="button" role="radio" class="seg-btn" data-time-style="everyday" aria-checked="true">Everyday</button>
           <button type="button" role="radio" class="seg-btn" data-time-style="official" aria-checked="false">Official</button>
         </div>
       </div>
-      <div class="time-clock-row">
-        <button type="button" class="nav-btn" id="time-prev" aria-label="5 minutes earlier" title="5 minutes earlier (←)">‹</button>
-        <svg class="time-clock" id="time-clock" viewBox="0 0 200 200" role="img" aria-label="Clock: drag its hands"></svg>
-        <button type="button" class="nav-btn" id="time-next" aria-label="5 minutes later" title="5 minutes later (→)">›</button>
-      </div>
-      <div class="time-band" id="time-band"></div>
-      <div class="time-say">
-        <div class="time-say-main">
-          <p class="time-th" id="time-th" lang="th"></p>
-          <button type="button" class="row-speak reader-play time-play" id="time-play" aria-label="Play" title="Play"></button>
+      <div class="time-explore" id="time-explore">
+        <div class="time-clock-row">
+          <button type="button" class="nav-btn" id="time-prev" aria-label="5 minutes earlier" title="5 minutes earlier (←)">‹</button>
+          <svg class="time-clock" id="time-clock" viewBox="0 0 200 200" role="img" aria-label="Clock: drag its hands"></svg>
+          <button type="button" class="nav-btn" id="time-next" aria-label="5 minutes later" title="5 minutes later (→)">›</button>
         </div>
-        <p class="time-tr" id="time-tr"></p>
-        <p class="time-en" id="time-en"></p>
+        <div class="time-band" id="time-band"></div>
+        <div class="time-say">
+          <div class="time-say-main">
+            <p class="time-th" id="time-th" lang="th"></p>
+            <button type="button" class="row-speak reader-play time-play" id="time-play" aria-label="Play" title="Play"></button>
+          </div>
+          <p class="time-tr" id="time-tr"></p>
+          <p class="time-en" id="time-en"></p>
+        </div>
+        <div class="time-parts" id="time-parts"></div>
+        <p class="time-caption" id="time-caption"></p>
       </div>
-      <div class="time-parts" id="time-parts"></div>
-      <p class="time-caption" id="time-caption"></p>
+      <!-- Quiz (renderTimeQuiz): Recognition for times, its answers the same number in the day's other
+           parts. The directions as Cards' are (prefs.timeQuizDir). -->
+      <div class="time-quiz" id="time-quiz" hidden>
+        <div class="segmented time-dirs" role="radiogroup" aria-label="Quiz direction">
+          <button type="button" role="radio" class="seg-btn" data-time-dir="th" aria-checked="true"><span class="dir-long">Thai</span><span class="dir-short">TH</span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Time</button>
+          <button type="button" role="radio" class="seg-btn" data-time-dir="time" aria-checked="false">Time<svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg><span class="dir-long">Thai</span><span class="dir-short">TH</span></button>
+          <button type="button" role="radio" class="seg-btn" data-time-dir="listen" aria-checked="false" title="Hear the Thai, without the script"><span class="dir-long">Listen</span><span class="dir-short" aria-label="Listen"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg></span><svg class="arrow-icon" viewBox="0 0 16 16" role="img" aria-label="to"><path d="M2.5 8h10.5M9 4l4 4-4 4" /></svg>Time</button>
+        </div>
+        <div class="time-q" id="time-q">
+          <svg class="time-clock time-q-clock" id="time-q-clock" viewBox="0 0 200 200" aria-hidden="true"></svg>
+          <div class="time-q-say">
+            <p class="time-q-prompt" id="time-q-prompt"></p>
+            <button type="button" class="row-speak reader-play time-q-play" id="time-q-play" aria-label="Play" title="Play"></button>
+          </div>
+          <p class="time-q-reveal" id="time-q-reveal"></p>
+        </div>
+        <div class="learn-pills time-answers" id="time-answers"></div>
+      </div>
     </section>
 
     <!-- The Alphabet's letters (renderAlphabet): the 44 consonants; a letter opens its dialog

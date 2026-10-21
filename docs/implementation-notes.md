@@ -1825,6 +1825,34 @@ Settings always last.
   (ยี่สิบนาฬิกา, written 20.00 น.); › past midnight (เที่ยงคืนสี่สิบนาที); Settings from More; no
   script errors. Not on the iPhone, and the recordings not yet listened to.
 
+## Time: Quiz (2026-10-21, the same spike)
+
+The user's pick from the subsections suggested (Quiz, Dates, How long): Quiz here; Dates and How
+long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
+- **Explore | Quiz** (`prefs.timePage`) beside Everyday | Official at the top (which both pages
+  use); `renderTimeSection` shows one. Explore's clock code makes Quiz's too (`drawClock(svg)`,
+  `setClock`).
+- **Directions** as Cards' (`prefs.timeQuizDir`): TH → Time (the Thai, its ▶; said when Cards'
+  auto-play is on), Time → TH (a clock and its time in English, four Thai answers), Listen → Time
+  (a large ▶; said at once). Four answers in two rows, Recognition's buttons (`.learn-pill`).
+- **The wrong answers** (`timeDecoys`) are the likely mistakes, the question's minutes in all four:
+  the same number in the day's other parts (ตีสาม: 3 pm, and 9 pm, สามทุ่ม), the hour twelve away,
+  and those hours' twins; the official clock's, the hour twelve away and the one ending in the same
+  digit (สิบสี่ and สี่), then the hours either side. Four different answers always (300 checked).
+- **A question's time:** half on the hour, a quarter half past, the rest any 5 minutes; a time got
+  wrong comes back three questions later (`comebacks`).
+- **Answering:** right green, wrong red with the right one green, the rest dimmed; the Thai's
+  transliteration and English (or, from a clock, the Thai and its transliteration) under the
+  question; the clock's hands, blank till then for TH and Listen, so the card keeps its height and
+  the answers stay put (they moved down 12–71 px when the clock came in; at text size 2 the answer
+  line wrapped). The time's said (unless Listen, which said it), then the next after Settings'
+  pauses (Cards → Pause after a right / wrong answer), unless the page was left meanwhile. 1–4 answer
+  from a keyboard. The question's Thai keeps to one line (`fitTimeText`, as Explore's).
+- **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
+  `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
+  after the pause; Official; 300 questions with four different answers; the answers not moving when
+  answered, in all three directions; Quiz fitting 390 × 664; no script errors.
+
 ## The word dialog: the word in the stories (2026-10-21)
 
 The user's pick from a list of ideas ("words in context at the bottom of the word popup"): under the

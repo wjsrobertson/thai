@@ -96,6 +96,15 @@ const els = {
   timePlay: document.getElementById('time-play'),
   timeParts: document.getElementById('time-parts'),
   timeCaption: document.getElementById('time-caption'),
+  timePageButtons: document.querySelectorAll('[data-time-page]'),
+  timeExplore: document.getElementById('time-explore'),
+  timeQuiz: document.getElementById('time-quiz'),
+  timeDirButtons: document.querySelectorAll('[data-time-dir]'),
+  timeQClock: document.getElementById('time-q-clock'),
+  timeQPrompt: document.getElementById('time-q-prompt'),
+  timeQPlay: document.getElementById('time-q-play'),
+  timeQReveal: document.getElementById('time-q-reveal'),
+  timeAnswers: document.getElementById('time-answers'),
   setWaitAgain: document.getElementById('setting-wait-again'),
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
@@ -248,6 +257,7 @@ const state = {
   pos: 0,             // index into queue
   randomAt: null,     // { queue, pos }: the card 🔀 drew, shown as "? / n" till ‹ › move on (goRandom)
   randomBag: null,    // { queue, left }: the places 🔀 hasn't drawn yet
+  timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, style, comebacks, seq } (nextTimeQuestion)
   time: (() => { const d = new Date(); const at = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5 % 1440; return { h: Math.floor(at / 60), m: at % 60 }; })(), // Time's clock (renderTime): now, to the 5 minutes
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
@@ -1152,7 +1162,7 @@ function fitText(el) {
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeText(); }, 150);
+  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeText(); fitTimeText(els.timeQPrompt, els.timeQPlay); }, 150);
 });
 // The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
 // the fallback: fit again once it's in.
@@ -3711,7 +3721,7 @@ function setView(view, { section = 'words' } = {}) {
   els.dictSection.hidden = view !== 'dictionary';
   if (view === 'dictionary') renderDictionary();
   els.timeSection.hidden = view !== 'time';
-  if (view === 'time') renderTime();
+  if (view === 'time') renderTimeSection();
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
@@ -7582,14 +7592,14 @@ const svgEl = (tag, attrs = {}) => {
 };
 const timeStyle = () => (getPreferences().timeStyle === 'official' ? 'official' : 'everyday');
 const timeSaysOnChange = () => getPreferences().autoPlay !== false;
-let clockParts = null; // the clock's hands and rim, once drawn (drawClock)
+let clockParts = null; // Explore's clock's hands and rim, once drawn (drawClock)
 let clockDrag = null;  // 'hour' or 'minute' while a hand is dragged
 
 // A point on the clock: `deg` clockwise from 12, `r` from the middle (the face is 0 0 200 200).
 const clockPoint = (deg, r) => [100 + r * Math.sin((deg * Math.PI) / 180), 100 - r * Math.cos((deg * Math.PI) / 180)];
 
-function drawClock() {
-  const svg = els.timeClock;
+// A clock in `svg` (Explore's, or a Quiz question's): its hands and rim, to set (setClock).
+function drawClock(svg) {
   svg.replaceChildren(svgEl('circle', { class: 'clock-face', cx: 100, cy: 100, r: 91 }));
   // The rim: an hour's arc each, coloured by its part of the day (renderTime).
   const rim = [];
@@ -7615,7 +7625,15 @@ function drawClock() {
   const hour = svgEl('line', { class: 'clock-hand hour', x1: 100, y1: 100, x2: 100, y2: 52 });
   const minute = svgEl('line', { class: 'clock-hand minute', x1: 100, y1: 100, x2: 100, y2: 26 });
   svg.append(hour, minute, svgEl('circle', { class: 'clock-pin', cx: 100, cy: 100, r: 5 }));
-  clockParts = { hour, minute, rim };
+  return { hour, minute, rim };
+}
+
+// The hands at h:m, and the rim the half of the day it's in, the hour's arc lit.
+function setClock(parts, h, m) {
+  parts.hour.setAttribute('transform', `rotate(${(h % 12) * 30 + m / 2} 100 100)`);
+  parts.minute.setAttribute('transform', `rotate(${m * 6} 100 100)`);
+  const half = h < 12 ? 0 : 12;
+  parts.rim.forEach((arc, k) => arc.setAttribute('class', `clock-rim period-${periodOf(half + k).id}` + (half + k === h ? ' on' : '')));
 }
 
 function setTime(h, m, { say = false } = {}) {
@@ -7630,14 +7648,11 @@ function stepTime(minutes) {
 }
 
 function renderTime() {
-  if (!clockParts) drawClock();
+  if (!clockParts) clockParts = drawClock(els.timeClock);
   const { h, m } = state.time;
   const style = timeStyle();
   els.timeStyleButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeStyle === style)));
-  clockParts.hour.setAttribute('transform', `rotate(${(h % 12) * 30 + m / 2} 100 100)`);
-  clockParts.minute.setAttribute('transform', `rotate(${m * 6} 100 100)`);
-  const half = h < 12 ? 0 : 12;
-  clockParts.rim.forEach((arc, k) => arc.setAttribute('class', `clock-rim period-${periodOf(half + k).id}` + (half + k === h ? ' on' : '')));
+  setClock(clockParts, h, m);
   renderTimeBand();
   const p = timePhrase(h, m, style);
   els.timeTh.textContent = p.th;
@@ -7668,12 +7683,12 @@ function renderTime() {
 
 // The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
 // mid-phrase on a phone), as Cards' text fits its card; at the least 18 px, past that it wraps.
-function fitTimeText() {
-  const el = els.timeTh;
+// Quiz's question too (fitTimeText(els.timeQPrompt, els.timeQPlay)), so its card keeps its height.
+function fitTimeText(el = els.timeTh, play = els.timePlay) {
   el.style.fontSize = '';
   el.classList.remove('wraps');
-  if (els.timeSection.hidden) return;
-  const room = el.parentElement.clientWidth - els.timePlay.offsetWidth - 4;
+  if (els.timeSection.hidden || !el.offsetParent) return;
+  const room = el.parentElement.clientWidth - (play.hidden ? 0 : play.offsetWidth) - 4;
   if (el.scrollWidth <= room) return;
   const px = Math.floor((parseFloat(getComputedStyle(el).fontSize) * room) / el.scrollWidth);
   el.style.fontSize = `${Math.max(18, px)}px`;
@@ -7721,6 +7736,127 @@ function renderTimeBand() {
     return row;
   });
   els.timeBand.replaceChildren(...rows);
+}
+
+// ---------- Time's Quiz (2026-10-21, the same spike) ----------
+// Recognition for times: a time in Thai (or heard) and four in English to pick from, or a clock and
+// four in Thai. The wrong answers are the mistakes learners make: the same number in the day's other
+// parts (บ่ายสองโมง's are ตีสอง and สองทุ่ม, 2 am and 8 pm), and the hour twelve away (2 am); in
+// the official clock, the hour twelve away and the one ending in the same digit (สิบสี่ and สี่).
+// The minutes are the question's in all four. Half are on the hour, a quarter half past, the rest
+// any 5 minutes. As in Recognition: right is green, wrong red and the right one green, then the
+// next after Settings' pauses (Cards → Pause after a right / wrong answer), and a time got wrong
+// comes back three questions later. Explore's Everyday | Official applies here too.
+const TIME_DIRS = ['th', 'time', 'listen'];
+const timePage = () => (getPreferences().timePage === 'quiz' ? 'quiz' : 'explore');
+const timeQuizDir = () => (TIME_DIRS.includes(getPreferences().timeQuizDir) ? getPreferences().timeQuizDir : 'th');
+let qClockParts = null; // the question's clock, once drawn
+
+// Explore or Quiz, by the page switch.
+function renderTimeSection() {
+  const page = timePage();
+  els.timePageButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timePage === page)));
+  els.timeExplore.hidden = page !== 'explore';
+  els.timeQuiz.hidden = page !== 'quiz';
+  if (page === 'explore') renderTime();
+  else if (!state.timeQuiz?.q || state.timeQuiz.picked !== null) nextTimeQuestion(); // an answered one left behind: the next
+  else renderTimeQuiz();
+}
+
+function quizTime() {
+  const r = Math.random();
+  const others = [5, 10, 15, 20, 25, 35, 40, 45, 50, 55];
+  return { h: Math.floor(Math.random() * 24), m: r < 0.5 ? 0 : r < 0.75 ? 30 : others[Math.floor(Math.random() * others.length)] };
+}
+
+// The hours to offer beside h, likeliest mistakes first.
+function timeDecoys(h, style) {
+  const hours = [...Array(24).keys()].filter((x) => x !== h);
+  if (style === 'official') {
+    return [(h + 12) % 24, ...shuffled(hours.filter((x) => x % 10 === h % 10)), ...shuffled([(h + 1) % 24, (h + 23) % 24]), ...shuffled(hours)];
+  }
+  const count = periodOf(h).count(h);
+  const same = shuffled(hours.filter((x) => periodOf(x).count(x) === count));
+  return [...same, (h + 12) % 24, ...shuffled(same.map((x) => (x + 12) % 24)), ...shuffled(hours)];
+}
+
+// What an answer says: the time in English, or (asked from a clock) its Thai.
+const timeAnswerText = (t, dir, style) => (dir === 'time' ? timePhrase(t.h, t.m, style).th : timeEnglish(t.h, t.m, style));
+
+function nextTimeQuestion() {
+  const quiz = (state.timeQuiz ||= { comebacks: [], seq: 0 });
+  quiz.seq += 1;
+  quiz.comebacks.forEach((c) => { c.in -= 1; });
+  const due = quiz.comebacks.findIndex((c) => c.in <= 0);
+  const q = due >= 0 ? quiz.comebacks.splice(due, 1)[0] : quizTime();
+  const dir = timeQuizDir();
+  const style = timeStyle();
+  const options = [{ h: q.h, m: q.m }];
+  const seen = new Set([timeAnswerText(q, dir, style)]);
+  for (const h of timeDecoys(q.h, style)) {
+    const t = { h, m: q.m };
+    const text = timeAnswerText(t, dir, style);
+    if (seen.has(text) || h === q.h) continue;
+    seen.add(text);
+    options.push(t);
+    if (options.length === 4) break;
+  }
+  Object.assign(quiz, { q: { h: q.h, m: q.m }, options: shuffled(options), picked: null, dir, style });
+  renderTimeQuiz();
+  const th = timePhrase(q.h, q.m, style).th;
+  if (dir === 'listen' || (dir === 'th' && timeSaysOnChange())) speak(th);
+}
+
+function renderTimeQuiz() {
+  const quiz = state.timeQuiz;
+  const { q, options, picked, dir, style } = quiz;
+  els.timeDirButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeDir === timeQuizDir())));
+  const answered = picked !== null;
+  const p = timePhrase(q.h, q.m, style);
+  if (!qClockParts) qClockParts = drawClock(els.timeQClock);
+  setClock(qClockParts, q.h, q.m);
+  // The clock is the question asked from a clock; for the others it's blank, no hands, till answered
+  // (so nothing moves when they come: the card keeps its height).
+  els.timeQClock.classList.toggle('blank', dir !== 'time' && !answered);
+  els.timeQPrompt.lang = dir === 'th' || (answered && dir === 'listen') ? 'th' : 'en';
+  els.timeQPrompt.className = 'time-q-prompt' + (els.timeQPrompt.lang === 'th' ? ' th' : '');
+  els.timeQPrompt.textContent = dir === 'time' ? timeEnglish(q.h, q.m, style) : dir === 'th' || answered ? p.th : '';
+  // The speaker: Thai and Listen have it from the start; from a clock, once answered (it'd say it).
+  els.timeQPlay.hidden = dir === 'time' && !answered;
+  els.timeQPlay.dataset.say = p.th;
+  els.timeQPlay.classList.toggle('big', dir === 'listen'); // Listen's question, and still once answered
+  fitTimeText(els.timeQPrompt, els.timeQPlay);
+  els.timeQReveal.textContent = !answered ? (dir === 'listen' ? 'What time do you hear?' : '')
+    : dir === 'time' ? `${p.th} · ${p.tl}` : `${p.tl} · ${p.en}${p.written ? ` · ${p.written}` : ''}`;
+  els.timeQReveal.classList.toggle('hint', !answered);
+  els.timeAnswers.classList.toggle('locked', answered);
+  els.timeAnswers.replaceChildren(...options.map((t, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'learn-pill' + (dir === 'time' ? ' thai-pill' : '');
+    if (dir === 'time') b.lang = 'th';
+    b.textContent = timeAnswerText(t, dir, style);
+    const right = t.h === q.h;
+    if (answered) b.classList.add(right ? 'correct' : i === picked ? 'wrong' : 'dimmed');
+    b.addEventListener('click', () => answerTime(i));
+    return b;
+  }));
+}
+
+function answerTime(i) {
+  const quiz = state.timeQuiz;
+  if (!quiz || quiz.picked !== null) return;
+  quiz.picked = i;
+  const right = quiz.options[i].h === quiz.q.h;
+  if (!right && !quiz.comebacks.some((c) => c.h === quiz.q.h && c.m === quiz.q.m)) quiz.comebacks.push({ ...quiz.q, in: 3 });
+  renderTimeQuiz();
+  if (quiz.dir !== 'listen' && timeSaysOnChange()) speak(timePhrase(quiz.q.h, quiz.q.m, quiz.style).th);
+  const seq = quiz.seq;
+  const s = getSettings();
+  setTimeout(() => {
+    if (state.timeQuiz?.seq !== seq || state.view !== 'time' || timePage() !== 'quiz') return; // moved on meanwhile
+    nextTimeQuestion();
+  }, (right ? s.learnPauseMs : s.wrongPauseMs) + (quiz.dir === 'listen' || timeSaysOnChange() ? 600 : 0));
 }
 
 // Dragging a hand: within 60% of the middle the hour's, else the minutes'.
@@ -7962,8 +8098,22 @@ function bindEvents() {
   els.timeStyleButtons.forEach((b) => b.addEventListener('click', () => {
     if (b.dataset.timeStyle === timeStyle()) return;
     setPreferences({ timeStyle: b.dataset.timeStyle });
-    setTime(state.time.h, state.time.m, { say: true });
+    els.timeStyleButtons.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
+    if (timePage() === 'quiz') nextTimeQuestion(); // a new question, said the other way
+    else setTime(state.time.h, state.time.m, { say: true });
   }));
+  els.timePageButtons.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.timePage === timePage()) return;
+    setPreferences({ timePage: b.dataset.timePage });
+    renderTimeSection();
+  }));
+  els.timeDirButtons.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.timeDir === timeQuizDir()) return;
+    setPreferences({ timeQuizDir: b.dataset.timeDir });
+    nextTimeQuestion();
+  }));
+  els.timeQPlay.append(speakerIcon());
+  els.timeQPlay.addEventListener('click', () => speakerPress(els.timeQPlay, els.timeQPlay.dataset.say));
   els.timePlay.append(speakerIcon());
   els.timePlay.addEventListener('click', () => speakerPress(els.timePlay, els.timePlay.dataset.say));
   els.timeClock.addEventListener('pointerdown', (e) => {
@@ -8196,7 +8346,11 @@ function bindEvents() {
       return;
     }
     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-    if (state.view === 'time') { // ← → move the clock 5 minutes
+    if (state.view === 'time') { // ← → move Explore's clock 5 minutes; 1–4 answer Quiz's question
+      if (timePage() === 'quiz') {
+        if (/^[1-4]$/.test(e.key)) answerTime(+e.key - 1);
+        return;
+      }
       if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
         e.preventDefault();
         stepTime(e.key === 'ArrowLeft' ? -5 : 5);
