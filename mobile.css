@@ -488,11 +488,14 @@ html.modal-open body { overflow: clip; }
 /* Quiz fills the screen (2026-10-21, the user's call: a taller phone left a gap under the answers):
    the answers at the foot, 18 over the tab bar as Cards' are, and the card taking the height between,
    its clock, question and answer line in the middle of it (.time-q centres them). The page is a
-   column down to the bar (body and .stage grow: styles.css), and so are .time and Quiz. Explore
-   keeps its height. .time is 100% wide, as its auto margins would shrink it to its content here. */
+   column down to the bar (body and .stage grow: styles.css), and so are .time and Quiz. .time is
+   100% wide, as its auto margins would shrink it to its content here. */
 .stage[data-view="time"] { display: flex; flex-direction: column; }
 .stage[data-view="time"] .time { flex: 1 0 auto; width: 100%; }
 .time-quiz, .time-q { flex: 1 0 auto; }
+/* Explore too (the user's call, the same day): its clock, band and time the screen's height between
+   them, the room left shared out evenly above, between and below them (10 apart at the least, its gap). */
+.time-explore { flex: 1 0 auto; justify-content: space-evenly; }
 .time-clock { width: min(200px, 50vw, 24vh); }
 .time-band-row { grid-template-rows: 32px auto; }
 .time-th { font-size: calc(30px * var(--fs, 1)); }

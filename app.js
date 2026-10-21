@@ -1162,11 +1162,11 @@ function fitText(el) {
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeText(); fitTimeQuiz(); }, 150);
+  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeSay(); fitTimeQuiz(); }, 150);
 });
 // The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
 // the fallback: fit again once it's in.
-document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); fitTimeText(); });
+document.fonts?.addEventListener?.('loadingdone', () => { fitCardText(); sizeLetterTiles(); fitTimeSay(); });
 
 function renderCard() {
   renderReviewOnly();
@@ -7673,8 +7673,8 @@ function renderTime() {
   renderTimeBand();
   const p = timePhrase(h, m, style);
   els.timeTh.textContent = p.th;
-  fitTimeText();
   els.timeTr.textContent = p.tl;
+  fitTimeSay();
   els.timeEn.textContent = p.en + (p.written ? ` · written ${p.written}` : '');
   els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}: drag its hands`);
   els.timePlay.dataset.say = p.th;
@@ -7686,15 +7686,23 @@ function renderTime() {
 // The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
 // mid-phrase on a phone), as Cards' text fits its card; at the least 18 px, past that it wraps.
 // Quiz's question too (fitTimeText(els.timeQPrompt, els.timeQPlay)), so its card keeps its height.
-function fitTimeText(el = els.timeTh, play = els.timePlay) {
+function fitTimeText(el = els.timeTh, play = els.timePlay, min = 18) {
   el.style.fontSize = '';
   el.classList.remove('wraps');
   if (els.timeSection.hidden || !el.offsetParent) return;
-  const room = el.parentElement.clientWidth - (play.hidden ? 0 : play.offsetWidth) - 4;
+  const room = el.parentElement.clientWidth - (play && !play.hidden ? play.offsetWidth : 0) - 4;
   if (el.scrollWidth <= room) return;
   const px = Math.floor((parseFloat(getComputedStyle(el).fontSize) * room) / el.scrollWidth);
-  el.style.fontSize = `${Math.max(18, px)}px`;
-  if (px < 18) el.classList.add('wraps');
+  el.style.fontSize = `${Math.max(min, px)}px`;
+  if (px < min) el.classList.add('wraps');
+}
+
+// Explore's Thai and its transliteration, each on one line: the time's lines keep one height, so with
+// the page's room shared out around them (mobile.css) the clock and band don't move as it changes
+// (a long transliteration wrapped at text size 2, 2026-10-21).
+function fitTimeSay() {
+  fitTimeText();
+  fitTimeText(els.timeTr, null, 13);
 }
 
 // The band: the six-hour clock's four quarters, a row each (2026-10-21, the user's call; am and pm

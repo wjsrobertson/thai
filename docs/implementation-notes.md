@@ -1863,6 +1863,15 @@ Settings always last.
   keep Explore fitting 390 × 664, the phone's clock is 24vh (29 before): 159 px there, 183 at 763,
   200 from 844. Checked (scratch `timescroll.py` and a label check): no scroll at 390 × 664, 763,
   844, 430 × 932 and 390 × 844 at text size 2; no label outside the band; no script errors.
+- **Explore fills the screen on a phone** (the user's call, 2026-10-21: the clock, the band and the
+  time with room between them, the page's height): `.time-explore` grows to the tab bar and shares
+  the room left evenly above, between and below its three parts (`space-evenly`, 10 apart at the
+  least): at 390 × 844 about 46 between them, at 664 the 10 it had (nothing to share). So that
+  nothing moves as the time changes, the time's lines keep one height: the transliteration on one
+  line too, shrunk to fit as the Thai is (`fitTimeSay`, down to 13 px; it wrapped for a long time at
+  text size 2, moving the clock and band 6 px), its line height its full size's. Checked (scratch
+  `exspace.py`) at 390 × 664, 763, 844, 430 × 932 and 390 × 844 at text size 2: the gaps the same
+  for 2 pm and 11:55 am, no scroll, Quiz unchanged; desktop as before.
 - **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
   midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
   `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).

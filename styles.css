@@ -2219,8 +2219,9 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
 .time-say { text-align: center; }
 .time-say-main { display: flex; align-items: center; justify-content: center; gap: 4px; }
 .time-th { min-width: 0; margin: 0; color: var(--ink); font-size: calc(32px * var(--fs, 1)); line-height: 1.4; white-space: nowrap; }
-.time-th.wraps { white-space: normal; }
-.time-tr { margin: 2px 0 0; color: var(--accent); font-style: italic; font-size: calc(17px * var(--fs, 1)); }
+/* One line (fitTimeSay), its height its full size's (normal's 1.15) when it's shrunk to fit. */
+.time-tr { margin: 2px 0 0; color: var(--accent); font-style: italic; font-size: calc(17px * var(--fs, 1)); line-height: calc(17px * 1.15 * var(--fs, 1)); white-space: nowrap; }
+:is(.time-th, .time-tr).wraps { white-space: normal; }
 .time-en { margin: 2px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
 /* Quiz: its directions as Cards' are, the question in a card, four answers in two rows. */
 .time-dirs { display: flex; width: 100%; }
