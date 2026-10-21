@@ -94,8 +94,6 @@ const els = {
   timeTr: document.getElementById('time-tr'),
   timeEn: document.getElementById('time-en'),
   timePlay: document.getElementById('time-play'),
-  timeParts: document.getElementById('time-parts'),
-  timeCaption: document.getElementById('time-caption'),
   timePageButtons: document.querySelectorAll('[data-time-page]'),
   timeExplore: document.getElementById('time-explore'),
   timeQuiz: document.getElementById('time-quiz'),
@@ -7681,23 +7679,8 @@ function renderTime() {
   els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}: drag its hands`);
   els.timePlay.dataset.say = p.th;
   els.timePlay.classList.toggle('playing', sayingNow(p.th));
-  els.timeParts.replaceChildren(...p.parts.map((part) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'time-part';
-    const period = PERIODS.find((x) => x.th === part.th); // a part of the day's word, in its colour
-    if (period) b.classList.add(`period-${period.id}`);
-    b.lang = 'th';
-    b.textContent = part.th;
-    b.setAttribute('aria-pressed', 'false');
-    b.addEventListener('click', () => {
-      els.timeParts.querySelectorAll('.time-part').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-      speak(part.th);
-      timeCaption(part);
-    });
-    return b;
-  }));
-  timeCaption(null, p.note);
+  // The time's words as buttons, and a caption with what one meant or a note on the time ("could be
+  // 6 am or 6 pm…"), went 2026-10-21 (the user's call: too busy). time.js still has them (parts, note).
 }
 
 // The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
@@ -7712,20 +7695,6 @@ function fitTimeText(el = els.timeTh, play = els.timePlay) {
   const px = Math.floor((parseFloat(getComputedStyle(el).fontSize) * room) / el.scrollWidth);
   el.style.fontSize = `${Math.max(18, px)}px`;
   if (px < 18) el.classList.add('wraps');
-}
-
-// Under the parts: what the tapped one means, or a word on this time.
-function timeCaption(part, note = '') {
-  if (!part) {
-    els.timeCaption.replaceChildren(note);
-    els.timeCaption.classList.toggle('note', !!note);
-    return;
-  }
-  els.timeCaption.classList.remove('note');
-  els.timeCaption.replaceChildren(
-    Object.assign(document.createElement('span'), { className: 'time-cap-th', lang: 'th', textContent: part.th }),
-    Object.assign(document.createElement('span'), { className: 'time-cap-tr', textContent: part.tl }),
-    Object.assign(document.createElement('span'), { className: 'time-cap-en', textContent: part.en }));
 }
 
 // The band: am then pm, twelve hours a row, a part of the day's name under its hours (centred under

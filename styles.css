@@ -2220,25 +2220,6 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
 .time-th.wraps { white-space: normal; }
 .time-tr { margin: 2px 0 0; color: var(--accent); font-style: italic; font-size: calc(17px * var(--fs, 1)); }
 .time-en { margin: 2px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
-/* Its parts, a part of the day's word in its colour; tapped, one says what it means under them. */
-.time-parts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-.time-part {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 2px 14px;
-  border: 1px solid var(--control-line);
-  border-radius: 22px;
-  background: var(--control);
-  color: var(--period, var(--ink));
-  font: inherit;
-  font-size: calc(20px * var(--fs, 1));
-  cursor: pointer;
-}
-.time-part[aria-pressed="true"] { border-color: var(--period, var(--accent)); background: color-mix(in srgb, var(--period, var(--accent)) 16%, var(--control)); }
-.time-caption { min-height: 2.8em; margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); line-height: 1.4; text-align: center; }
-.time-caption span + span::before { content: " · "; color: var(--muted); font-style: normal; }
-.time-cap-th { color: var(--ink); }
-.time-cap-tr { color: var(--accent); font-style: italic; }
 /* Quiz: its directions as Cards' are, the question in a card, four answers in two rows. */
 .time-dirs { display: flex; width: 100%; }
 .time-q {

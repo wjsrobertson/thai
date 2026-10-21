@@ -1811,6 +1811,13 @@ Settings always last.
   from the list's `data-view`s). A wider screen has Time in the top switch after Dictionary, and
   ⚙ for Settings as before. The view is `time` (`setView`, `renderTime`); the app still opens on
   Home.
+- **Less on the page** (the user's call, 2026-10-21: "too busy"): the time's words as buttons
+  (`#time-parts`, each said and explained when tapped) and the caption under them (`#time-caption`,
+  the tapped word's meaning, or a note on the time such as "could be 6 am or 6 pm…") went, with
+  their code and styles. Explore is the clock and its ‹ ›, the band, and the Thai with its ▶,
+  transliteration and English (and "written 14.30 น." for Official). time.js still makes `parts`
+  and `note`, unused. It fits without a scroll now at 390 × 664 too. Checked (scratch `time_probe.py`
+  without the parts' steps, `timescroll.py`): the hands, the band, ‹ ›, Official; no script errors.
 - **Behind a setting** (the user's call, the same day): Settings → App → **Dev features**, off by
   default (`devFeatures`, `applyDevFeatures`, `html.dev`). Off, the bar is as it was on master: Home,
   Words, Alphabet, Dictionary, Settings, no More, and no Time tab on a wider screen (styles.css,
