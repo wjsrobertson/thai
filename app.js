@@ -1162,7 +1162,7 @@ function fitText(el) {
 let fitTimer = null;
 window.addEventListener('resize', () => {
   clearTimeout(fitTimer);
-  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeText(); fitTimeText(els.timeQPrompt, els.timeQPlay); }, 150);
+  fitTimer = setTimeout(() => { fitCardText(); sizeLetterTiles(); fitTimeText(); fitTimeQuiz(); }, 150);
 });
 // The embedded Thai font can arrive after the first fit (font-display: swap), and it's wider than
 // the fallback: fit again once it's in.
@@ -7825,7 +7825,6 @@ function renderTimeQuiz() {
   els.timeQPlay.hidden = dir === 'time' && !answered;
   els.timeQPlay.dataset.say = p.th;
   els.timeQPlay.classList.toggle('big', dir === 'listen'); // Listen's question, and still once answered
-  fitTimeText(els.timeQPrompt, els.timeQPlay);
   els.timeQReveal.textContent = !answered ? (dir === 'listen' ? 'What time do you hear?' : '')
     : dir === 'time' ? `${p.th} · ${p.tl}` : `${p.tl} · ${p.en}${p.written ? ` · ${p.written}` : ''}`;
   els.timeQReveal.classList.toggle('hint', !answered);
@@ -7841,6 +7840,22 @@ function renderTimeQuiz() {
     b.addEventListener('click', () => answerTime(i));
     return b;
   }));
+  fitTimeQuiz();
+}
+
+// Quiz's parts keep their heights (styles.css, .time-q-say): the question's Thai shrinks to its line,
+// and the answer line and the answers to their boxes, down to 12 px, the style guide's least.
+function fitTimeQuiz() {
+  if (els.timeQuiz.hidden || els.timeSection.hidden) return;
+  fitTimeText(els.timeQPrompt, els.timeQPlay);
+  for (const el of [els.timeQReveal, ...els.timeAnswers.children]) {
+    el.style.fontSize = '';
+    let px = parseFloat(getComputedStyle(el).fontSize);
+    while (px > 12 && (el.scrollHeight > el.clientHeight + 1 || el.scrollWidth > el.clientWidth + 1)) {
+      px -= 1;
+      el.style.fontSize = `${px}px`;
+    }
+  }
 }
 
 function answerTime(i) {

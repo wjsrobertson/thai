@@ -2245,7 +2245,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   align-items: center;
   justify-content: center;
   gap: 6px;
-  min-height: 300px;
   padding: 16px;
   background: var(--panel);
   border: 1px solid var(--border);
@@ -2256,7 +2255,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Till answered, Thai's and Listen's clock has no hands and a plain rim. */
 .time-q-clock.blank :is(.clock-hand, .clock-pin) { visibility: hidden; }
 .time-q-clock.blank .clock-rim { stroke: var(--border); opacity: 1; }
-.time-q-say { display: flex; align-items: center; justify-content: center; gap: 4px; min-height: 48px; }
+/* One height in all three directions, so switching doesn't move anything (the user's call, 2026-10-21):
+   the clock always there (blank till answered), the line Listen's large ▶'s height, the answer line
+   two lines high, the answers one height; what's too long for them shrinks (fitTimeQuiz). */
+.time-q-say { display: flex; align-self: stretch; align-items: center; justify-content: center; gap: 4px; height: 96px; } /* the card's width: a long time's Thai shrinks to it */
 .time-q-prompt { min-width: 0; margin: 0; color: var(--ink); font-size: calc(30px * var(--fs, 1)); line-height: 1.4; white-space: nowrap; }
 .time-q-prompt.wraps { white-space: normal; }
 .time-q-prompt.th { font-size: calc(36px * var(--fs, 1)); }
@@ -2264,10 +2266,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Listen's question is its speaker, large. */
 .time-q-play.big { width: 96px; height: 96px; }
 .time-q-play.big .speaker-icon { width: 56px; height: 56px; }
-.time-q-reveal { min-height: 2.8em; margin: 0; line-height: 1.4; color: var(--accent); font-size: calc(17px * var(--fs, 1)); }
+.time-q-reveal { flex: none; height: 2.8em; overflow: hidden; margin: 0; line-height: 1.4; color: var(--accent); font-size: calc(17px * var(--fs, 1)); }
 .time-q-reveal.hint { color: var(--muted); }
 .time-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.time-answers .learn-pill { min-height: 64px; padding: 8px; font-size: calc(20px * var(--fs, 1)); }
+.time-answers .learn-pill { height: 64px; min-height: 0; padding: 4px 8px; overflow: hidden; font-size: calc(20px * var(--fs, 1)); }
 .time-answers .learn-pill.thai-pill { font-size: calc(24px * var(--fs, 1)); }
 
 /* ---------- the word dialog (showWordPop) ---------- */

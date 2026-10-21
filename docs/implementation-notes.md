@@ -1873,6 +1873,16 @@ long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
   line wrapped). The time's said (unless Listen, which said it), then the next after Settings'
   pauses (Cards → Pause after a right / wrong answer), unless the page was left meanwhile. 1–4 answer
   from a keyboard. The question's Thai keeps to one line (`fitTimeText`, as Explore's).
+- **One size in every direction** (the user's call, 2026-10-21: switching TH → Time, Time → TH and
+  Listen moved the card and the answers): the card's parts have fixed heights (the clock always
+  there, blank till answered; the line with the Thai or ▶ as tall as Listen's ▶, 96 px, 80 on a
+  phone; the answer line two lines), and the answers one height (64, 60 on a phone); what's too long
+  shrinks (`fitTimeQuiz`, down to 12 px; the question's line spans the card so a long time's Thai
+  shrinks inside it). Checked (scratch `timequiz3.py`, `timequiz5.py`): the card and the four answers
+  the same in all 24 states (three directions, asked and answered, Everyday and Official, each
+  visited twice) at 390 × 664, 390 × 844 at text size 2 and 1280 × 800; nothing overflowing; 60
+  questions' Thai inside the card. **To come:** a check in check_layout.py for this, once the
+  pages are settled (the user's call: not yet).
 - **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
   `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
   after the pause; Official; 300 questions with four different answers; the answers not moving when
