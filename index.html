@@ -39,7 +39,8 @@
     <!-- The pages' line icons (app.js PAGE_ICONS has the same paths) are the tabs', the home cards'
          and the topic button's (2026-10-12: the user's request, for one look; they were emoji). -->
     <!-- On a phone (mobile.css) the tabs are a bar along the bottom, each an icon over its name, and
-         there's no top bar: Home, Words, Alphabet, Dictionary, Settings (2026-10-14, the user's calls;
+         there's no top bar: Home, Alphabet, Words, Dictionary, Settings (2026-10-14, the user's calls; the
+         Alphabet before Words since 2026-10-21;
          Words was Topics till 2026-10-21, when it held your lists too: data-view "study", the topic's or
          list's List, Cards and Read in one, picked by the .study-switch). More, with Settings in its list, had the last place for a day; it's hidden
          unless Settings → App → Dev features is on (2026-10-21; below). The icons, Home and More are hidden on wider screens, where ⚙
@@ -48,8 +49,8 @@
          2026-10-12: shorter, and the text a little larger). Words is the study tab's now (2026-10-21). -->
     <nav class="tabs" role="tablist">
       <button type="button" class="tab tab-home" role="tab" data-view="home" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg><span class="tab-label">Home</span></button>
-      <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Words</span></button>
       <button type="button" class="tab" role="tab" data-view="alphabet" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg><span class="tab-label">Alphabet</span></button>
+      <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Words</span></button>
       <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg><span class="tab-label">Dictionary</span></button>
       <button type="button" class="tab tab-time" role="tab" data-view="time" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="tab-label">Time</span></button>
       <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
@@ -151,8 +152,16 @@
     <section class="home home-only" id="home-section">
       <!-- The three sections, as the tab bar has them (2026-10-14, the user's call: the home page went to
            Words, Alphabet and Dictionary, not to the pages inside them). Each card opens its section where
-           you last were in it (goTo). Words is first and across both columns; a card is a title and its
+           you last were in it (goTo). The Alphabet first, then Words, each across both columns (the user's
+           call, 2026-10-21; Words was first, and the Alphabet and Dictionary side by side under it), then
+           the Dictionary beside Time, or across both without it (styles.css); a card is a title and its
            text, or rows of a label and what it does (spans, since a button may only hold phrasing content). -->
+      <button type="button" class="home-card home-card-wide" data-go="alphabet">
+        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg>Alphabet</span>
+        <span class="home-card-text">
+          <span>Consonants, vowels and tones, with cards and writing practice.</span>
+        </span>
+      </button>
       <button type="button" class="home-card home-card-wide" data-go="study">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Words</span>
         <span class="home-card-list">
@@ -161,21 +170,15 @@
           <span class="home-card-row"><b>Read</b><span>Short stories that use the topic's words</span></span>
         </span>
       </button>
-      <button type="button" class="home-card" data-go="alphabet">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg>Alphabet</span>
-        <span class="home-card-text">
-          <span>Consonants, vowels and tones, with cards and writing practice.</span>
-        </span>
-      </button>
       <button type="button" class="home-card" data-go="dictionary">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg>Dictionary</span>
         <span class="home-card-text">
           <span>Browse or search in Thai, English or transliteration</span>
         </span>
       </button>
-      <!-- Time, with Settings → App → Dev features on (the user's call, 2026-10-21; html.dev): across both
-           columns on a wider screen, as Words is, rather than half a row on its own. -->
-      <button type="button" class="home-card home-card-wide home-card-time" data-go="time">
+      <!-- Time, with Settings → App → Dev features on (the user's call, 2026-10-21; html.dev): beside the
+           Dictionary on a wider screen. -->
+      <button type="button" class="home-card home-card-time" data-go="time">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>Time</span>
         <span class="home-card-text">
           <span>Telling the time in Thai, everyday and official, with a quiz.</span>
@@ -513,6 +516,25 @@
         </div>
       </details>
 
+      <!-- Writing (2026-10-15, the user's call: From memory passed a loose ธ): how strict its check is. The Alphabet's,
+           so before Words' List, Cards and Reading (the user's call, 2026-10-21). -->
+      <details class="settings-cat" data-cat="writing">
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>Writing</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="writing write from memory check strict strictness lenient threshold handwriting model sure confidence">
+            <label class="setting-row">
+              <span class="setting-label">Check</span>
+              <select id="setting-write-check">
+                <option value="lenient">Lenient</option>
+                <option value="normal">Normal</option>
+                <option value="strict">Strict</option>
+              </select>
+              <span class="setting-help" id="setting-write-check-help"></span>
+            </label>
+          </div>
+        </div>
+      </details>
+
       <details class="settings-cat" data-cat="wordlists">
         <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5h18v14H3zM3 10h18M3 15h18M9 10v9" /></svg>List</summary>
         <div class="setting-list">
@@ -671,24 +693,6 @@
               <span class="setting-label">Loop</span>
               <input type="checkbox" id="setting-read-stories-loop" />
               <span class="setting-help">Read plays the story again; Read all goes back to the first.</span>
-            </label>
-          </div>
-        </div>
-      </details>
-
-      <!-- Writing (2026-10-15, the user's call: From memory passed a loose ธ): how strict its check is. -->
-      <details class="settings-cat" data-cat="writing">
-        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" /></svg>Writing</summary>
-        <div class="setting-list">
-          <div class="setting-group" data-search="writing write from memory check strict strictness lenient threshold handwriting model sure confidence">
-            <label class="setting-row">
-              <span class="setting-label">Check</span>
-              <select id="setting-write-check">
-                <option value="lenient">Lenient</option>
-                <option value="normal">Normal</option>
-                <option value="strict">Strict</option>
-              </select>
-              <span class="setting-help" id="setting-write-check-help"></span>
             </label>
           </div>
         </div>

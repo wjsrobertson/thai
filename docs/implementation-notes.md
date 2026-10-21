@@ -2004,6 +2004,22 @@ they're the topics. The code keeps `study` (the view, `data-view`, `studyPage`).
 - **Checked** headless at 390 × 664 and 1280 × 800: the tab, Home's card and the top switch say
   Words; no script errors.
 
+## The Alphabet before Words (2026-10-21)
+
+The user's call: the Alphabet before Words in the tabs, on Home and in Settings.
+- **The tabs:** a phone's bar is Home, Alphabet, Words, Dictionary, Settings (or More, with dev
+  features); a wider screen's switch Alphabet, Words, Dictionary (and Time). Nothing goes by their
+  order: the code and check_layout.py find a tab by its `data-view`.
+- **Home:** the Alphabet's card, then Words', each across both columns on a wider screen (Words was
+  first and across both, the Alphabet and the Dictionary side by side under it; a half-width
+  Alphabet first would have stood alone). Then the Dictionary beside Time, or without Time (dev
+  features off) across both (`html:not(.dev)` in styles.css). A phone has one column, as before.
+- **Settings:** its sections are the pages', not the sections': Writing, the Alphabet's, now comes
+  before Words' List, Cards and Reading (Display, Audio, Writing, List, Cards, Reading, App,
+  Reset). Cards stays with Words', though the Alphabet has Cards too.
+- **Checked** (scratch `order.py`) at 390 × 664 and 1280 × 800, dev features off and on: the tabs,
+  Home's cards and their places, Settings' sections, its search; no script errors.
+
 ## Your lists' words newest first (2026-10-21)
 
 The user's call: a list's words newest added first, and a setting for it, newest first by default.

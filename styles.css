@@ -2597,7 +2597,9 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
   touch-action: manipulation;
 }
 .home-card:hover { border-color: var(--accent); }
-.home-card-wide { grid-column: 1 / -1; } /* Topics', across both columns above Alphabet and Dictionary */
+.home-card-wide { grid-column: 1 / -1; } /* the Alphabet's and Words', across both columns */
+/* The Dictionary beside Time (dev features), or without it across both, not half a row on its own. */
+html:not(.dev) .home-card[data-go="dictionary"] { grid-column: 1 / -1; }
 .home-card-title { display: flex; align-items: center; gap: 12px; font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
 .home-card-title .page-icon { width: 1.2em; height: 1.2em; flex: none; color: var(--accent); }
 /* Three rows: the label (with an accent dot) in its own column, so the descriptions line up. */
