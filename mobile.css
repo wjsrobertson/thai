@@ -484,6 +484,14 @@ html.modal-open body { overflow: clip; }
 /* With 12px over the top row now (2026-10-21), Quiz still fits 664: its gaps 10, as .time's (they
    were 14), and the page's foot 18, as Cards'. */
 .stage[data-view="time"] { padding-bottom: 18px; }
+/* Quiz fills the screen (2026-10-21, the user's call: a taller phone left a gap under the answers):
+   the answers at the foot, 18 over the tab bar as Cards' are, and the card taking the height between,
+   its clock, question and answer line in the middle of it (.time-q centres them). The page is a
+   column down to the bar (body and .stage grow: styles.css), and so are .time and Quiz. Explore
+   keeps its height. .time is 100% wide, as its auto margins would shrink it to its content here. */
+.stage[data-view="time"] { display: flex; flex-direction: column; }
+.stage[data-view="time"] .time { flex: 1 0 auto; width: 100%; }
+.time-quiz, .time-q { flex: 1 0 auto; }
 .time-clock { width: min(200px, 50vw, 29vh); }
 .time-band-row { grid-template-rows: 32px auto; }
 .time-th { font-size: calc(30px * var(--fs, 1)); }

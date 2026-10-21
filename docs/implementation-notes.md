@@ -1909,6 +1909,14 @@ long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
   desktop too (the user's call, the same day): its min-height of 40 went, so both rows are Cards' 26
   (34 with the group's frame). Checked (scratch `dirh.py`, `dirh2.py`): 44 / 15px /
   the same arrow and ▶ sizes as Words' and the Alphabet's; Quiz the same 24 states over (`timequiz3.py`).
+- **Quiz fills the screen on a phone** (the user's call, 2026-10-21: a gap under the answers on a
+  taller phone): the answers at the foot, 18 over the tab bar as Cards' are, and the card taking the
+  height between, its contents in the middle of it. CSS only (mobile.css): the stage a column on
+  Time, `.time`, Quiz and the card growing (`flex: 1 0 auto`); the card's still one size in every
+  direction, as it's the room left, not its contents. Explore unchanged. Checked (scratch
+  `timequiz3.py`, `timescroll.py`) at 390 × 664, 763 and 844, 430 × 932, and 390 × 844 at text
+  size 2: the answers 18 over the bar, no scroll, the card and answers the same in all 24 states;
+  1280 × 800 as before.
 - **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
   `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
   after the pause; Official; 300 questions with four different answers; the answers not moving when
