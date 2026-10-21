@@ -98,7 +98,7 @@ def web_checks(ws, size):
 
     topics = pages('study', '.study-switch', 'data-study-page', ('wordlist', 'flashcards', 'reading'), studyPage='wordlist')
     alpha = pages('alphabet', '.alpha-switch', 'data-alpha-page', ('letters', 'cards', 'write'), alphaPage='letters')
-    for label, seen in (("Topics' List | Cards | Reading", topics), ("The Alphabet's Letters | Cards | Write", alpha)):
+    for label, seen in (("Topics' List | Cards | Read", topics), ("The Alphabet's Letters | Cards | Write", alpha)):
         sw0 = seen[0][1]
         C(f'Web: {label} in one place on all three pages, in a row of its own above the topic button',
           all(same(sw, sw0) and sw['b'] <= pk['t'] for _, sw, pk in seen), ' / '.join(f'{n} {fmt(sw)}' for n, sw, _ in seen))
@@ -133,7 +133,7 @@ def checks(ws, size):
     # ---- The top row (2026-10-14) ----
     open_page(ws, 'study', studyPage='wordlist')
     pk, sw = R(ws, '#deck-button'), R(ws, '.study-switch')
-    C('Topics: the topic picker as tall as the List | Cards | Reading switch, tops level',
+    C('Topics: the topic picker as tall as the List | Cards | Read switch, tops level',
       near(pk and pk['h'], sw and sw['h']) and near(pk and pk['t'], sw and sw['t']), f"{fmt(pk)} / {fmt(sw)}")
     bar = R(ws, '.section-bar')
     went = scrolled_by(ws); time.sleep(0.5)

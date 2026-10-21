@@ -1742,6 +1742,12 @@ the user said yes to all of them.
   text size 2): the dialog clear above it, drags stopped but in the box, and as before once it goes.
   No layout check (the user's call).
 
+## Topics' third page says Read (2026-10-21)
+
+The user's call: the page switch's Reading is **Read** (its label, `aria-label` and `title`), and so is
+Home's Topics card row, so the three are List | Cards | Read. The page is still `reading` in the
+code, and Settings' section is still Reading.
+
 ## The new-version bar, one line and prominent (2026-10-19)
 
 The user's screenshot: "A new version is ready." wrapped to three lines beside a 32 px Reload, in a
