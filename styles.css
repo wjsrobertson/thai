@@ -2179,6 +2179,42 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .tones-head { padding: 12px 2px 4px; color: var(--muted); font-weight: 600; }
 .tones-panel { padding-top: 8px; }
 
+/* The word in the stories (contextSection), under the Tones as they are under the buttons: each line
+   as Read has it, its ▶ beside it, the Thai a step down from Read's and the word in the accent; the
+   story's name under it opens the story (2026-10-21). */
+.pop-context { margin: 16px 0 0; border-top: 1px solid var(--border); }
+.pop-actions + .pop-context { margin-top: 4px; }
+.ctx-line { display: flex; align-items: flex-start; gap: 4px; padding: 4px 0; }
+.ctx-line + .ctx-line { border-top: 1px solid var(--border); }
+.ctx-line .reader-play { margin-left: -10px; } /* its speaker in line with the heading */
+.ctx-body { flex: 1; min-width: 0; padding-top: 6px; }
+.ctx-th { margin: 0; color: var(--ink); font-size: calc(22px * var(--fs, 1)); line-height: 1.5; }
+.ctx-w { border-radius: 6px; transition: background-color .1s, color .1s; }
+.ctx-w.hit { color: var(--accent); }
+.ctx-w.speaking { color: var(--accent); background: color-mix(in srgb, var(--accent) 22%, transparent); }
+.ctx-tr, .ctx-en { margin: 2px 0 0; font-size: calc(15px * var(--fs, 1)); line-height: 1.4; }
+.ctx-tr { color: var(--accent); font-style: italic; }
+.ctx-en { color: var(--muted); }
+.ctx-from {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  margin-bottom: -4px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: calc(14px * var(--fs, 1));
+  text-align: left;
+  cursor: pointer;
+}
+.ctx-from:hover { color: var(--accent); }
+.ctx-from .arrow-icon { flex: none; }
+.ctx-more { display: block; width: 100%; min-height: 44px; margin: 6px 0 2px; }
+.ctx-more[hidden] { display: none; }
+
 /* A tone's curve (toneCurve), in its colour; the staff is three faint lines. */
 .tone-curve { overflow: visible; }
 .tone-curve .tone-line { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }

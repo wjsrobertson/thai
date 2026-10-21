@@ -1773,6 +1773,34 @@ The user's request, from a screenshot of Browse on Hard Vowels: a random button 
   the Alphabet's Cards the same, no scroll and no script errors. `check_layout.py` checks the place
   (What lines up).
 
+## The word dialog: the word in the stories (2026-10-21)
+
+The user's pick from a list of ideas ("words in context at the bottom of the word popup"): under the
+Tones, **In stories**, the story lines that use the word (`contextSection`).
+- **A line** is as Read has it: its ▶ (the sentence's recording, the words lit as it plays:
+  `lightSpokenWord` now looks in the dialog's lines too), the Thai with the word in the accent, the
+  transliteration from the story's own cards, the English, and the story's name with an arrow, which
+  opens the story on Read with the word lit (`openReading`, as the Dictionary's story hits do).
+  Three to start; **Show 5 more** adds more (the most is ไป's 800-odd). No section for a word in no
+  story (18% of them, e.g. ขมับ) or a letter.
+- **Which lines** (`storyExamples`, over `allStoryLines`, built once): whole sentences only (not the
+  rest of one carried over, whose English starts in lower case or the line's ends in a comma: the
+  shortest lines were often those); the Easy stories first, then Little Stories, Medium, Harder,
+  shortest first within each, one line a story before a second from any, a sentence once. A
+  speaker's label (คนขับ:) doesn't count. The Southern, Isan and Northern stories (those with a word
+  only in those topics) only for those topics' own words, so a standard word isn't shown among
+  dialect ones (ข้าว's shortest was an Isan line).
+- **Matching:** the word as a run of a line's words, whole: ไป not inside ไปรษณีย์, and
+  นักวิทยาศาสตร์ where a story splits it นัก|วิทยาศาสตร์; a phrase (หนุ่ม ๆ) the same way.
+- **A lone ๆ:** 15 story lines write มาก ๆ with a real space rather than มาก_ๆ, and Read's
+  transliteration gave the ๆ its name (mái yá-mók). It now says the word before it again, on Read
+  and in the dialog (nùm nùm).
+- **Checked** headless at 390 × 664 and 1280 × 800 (scratch `context_probe.py`, `context2.py`):
+  ข้าว's three (กินข้าวสิ, หิวข้าวงะ, กินข้าวหรือยัง) and Show 5 more; ไป's; หนุ่ม ๆ and
+  นักวิทยาศาสตร์ as runs; the Southern ลูกม่วง's Southern line; none for ขมับ; ▶ playing; the story's
+  name opening Eat Up! on Read with ข้าว lit; no script errors. No layout check (inside the dialog's
+  scrolling body; its place is unchanged).
+
 ## The Topics section is Words (2026-10-21)
 
 The user's call: with your lists in it as well as the topics, the section isn't Topics any more.

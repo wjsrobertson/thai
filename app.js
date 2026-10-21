@@ -5796,8 +5796,9 @@ function lightSpokenWord(playing, t) {
     let c = -1;
     for (let i = 0; i < times.length && times[i + 1] <= ms; i += 3) c = times[i];
     if (c >= 0) {
-      const row = [...els.readerLines.children].find((r) => r.dataset.say === speakingText);
-      span = row ? [...row.querySelectorAll('.rw[data-c0]')].find((x) => +x.dataset.c0 <= c && c < +x.dataset.c1) ?? null : null;
+      // Read's lines, or the word dialog's (contextSection).
+      const row = [...els.readerLines.children, ...els.wordModalBody.querySelectorAll('.ctx-line')].find((r) => r.dataset.say === speakingText);
+      span = row ? [...row.querySelectorAll('[data-c0]')].find((x) => +x.dataset.c0 <= c && c < +x.dataset.c1) ?? null : null;
     }
   }
   if (span === litWord) return;
@@ -6158,7 +6159,9 @@ function renderReader(topic) {
           span.addEventListener('click', pick);
           span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') pick(e); });
           th.append(span);
-          tr.push(card.translit + (label ? ':' : ''));
+          // A ๆ on its own (มาก ๆ, in 15 lines; most write มาก_ๆ, one word) says the word before it
+          // again, not its own name (mái yá-mók) (2026-10-21).
+          tr.push((w === 'ๆ' && tr.length ? tr[tr.length - 1] : card.translit) + (label ? ':' : ''));
         } else {
           th.append(w);
           if (w) tr.push(w + (label ? ':' : ''));
@@ -6367,9 +6370,11 @@ function showWordPop(anchor, card) {
   play.append(speakerIcon());
   play.addEventListener('click', () => speakerPress(play, cardSay(card)));
   actions.append(play);
-  // Under them, the word's tones (tones.js), closed to a row until tapped.
+  // Under them, the word's tones (tones.js), closed to a row until tapped; then the word in the
+  // stories (contextSection).
   const tones = toneSection(card, big);
-  els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []));
+  const context = contextSection(card);
+  els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []), ...(context ? [context] : []));
   if (!wordPop) wordPop = { lastFocus: document.activeElement };
   showWordModal();
   els.wordModalBody.scrollTop = 0;
@@ -6396,6 +6401,151 @@ function hideWordPop() {
   els.wordModal.hidden = true;
   setModalOpen(!!document.querySelector('.modal:not([hidden])'));
   if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true });
+}
+
+// ---------- the word in the stories (contextSection) ----------
+// At the foot of the word dialog, the lines of the stories that use it (2026-10-21, the user's pick
+// from a list of ideas: a word sticks better in a sentence). Each is the story's line as Read shows
+// it, the word picked out, with its ▶ (the words lit as it plays, as on Read) and the story's name,
+// which opens it there with the word lit (openReading). Three to start, five more a press.
+// Which lines: whole sentences (not the end of one carried over from the line before, whose English
+// starts in lower case or the line's ends in a comma), easiest stories first, then shortest, one a
+// story before a second from any. Not a speaker's label ("คนขับ:"). The Southern, Isan and Northern
+// stories only for their own words, so a standard word isn't shown among dialect ones.
+// A phrase (พูดช้า ๆ ได้ไหม) is a run of a line's words; a word is a whole one (ไป, not in ไปรษณีย์).
+const CONTEXT_FIRST = 3;
+const CONTEXT_MORE = 5;
+const DIALECT_CATEGORIES = new Set(['Southern Thai', 'Isan Thai', 'Northern Thai']);
+const STORY_GROUP_RANK = { Easy: 0, 'Little Stories': 1, Medium: 2, Harder: 3 };
+
+// A line's words in order: `space` before one a real space, `label` a speaker's.
+function lineWords(th) {
+  const words = [];
+  th.split(' ').forEach((chunk, i) => chunk.split('|').forEach((tok, j) => {
+    const label = tok.endsWith(':');
+    words.push({ w: (label ? tok.slice(0, -1) : tok).replace(/_/g, ' '), label, space: i > 0 && j === 0 });
+  }));
+  return words;
+}
+
+// A word only in the Southern, Isan or Northern topics.
+function dialectOnly(card) {
+  const topics = (state.cardIndex.get(cardKey(card))?.deckIds || []).map(deckOfId).filter((d) => d && !d.passage);
+  return topics.length > 0 && topics.every((d) => DIALECT_CATEGORIES.has(d.category));
+}
+
+// Every whole-sentence line of the stories, once, when first wanted.
+let storyLines = null;
+function allStoryLines() {
+  if (storyLines) return storyLines;
+  storyLines = [];
+  for (const d of state.decks) {
+    if (!d.passage) continue;
+    const dialect = d.cards.some(dialectOnly);
+    const rank = STORY_GROUP_RANK[d.group] ?? 4;
+    for (const line of d.passage) {
+      const en = line.en.trim();
+      if (/^[a-z]/.test(en) || /[,;]$/.test(en)) continue;
+      const say = sentenceText(line.th);
+      storyLines.push({ d, line, say, dialect, rank, words: lineWords(line.th) });
+    }
+  }
+  return storyLines;
+}
+
+// The lines with the word (or phrase), in the order to show them, each with where it is in the line.
+function storyExamples(card) {
+  const target = card.thai.replace(/ /g, '');
+  const dialectOk = dialectOnly(card);
+  const found = [];
+  const seen = new Set();
+  for (const l of allStoryLines()) {
+    if ((l.dialect && !dialectOk) || seen.has(l.say) || !l.say.replace(/ /g, '').includes(target)) continue;
+    const hits = new Set();
+    l.words.forEach((x, i) => {
+      if (x.label) return;
+      let run = '';
+      for (let j = i; j < l.words.length && !l.words[j].label && run.length < target.length; j++) {
+        run += l.words[j].w.replace(/ /g, '');
+        if (run === target) for (let k = i; k <= j; k++) hits.add(k);
+      }
+    });
+    if (!hits.size) continue;
+    seen.add(l.say);
+    found.push({ ...l, hits });
+  }
+  found.sort((a, b) => a.rank - b.rank || a.say.length - b.say.length);
+  const first = new Set();
+  const lead = found.filter((x) => !first.has(x.d.id) && first.add(x.d.id));
+  return [...lead, ...found.filter((x) => !lead.includes(x))];
+}
+
+function contextSection(card) {
+  if (card.alpha) return null; // a letter (the Alphabet's)
+  const found = storyExamples(card);
+  if (!found.length) return null;
+  loadWordTimings();
+  const box = document.createElement('div');
+  box.className = 'pop-context';
+  const lines = document.createElement('div');
+  const more = document.createElement('button');
+  more.type = 'button';
+  more.className = 'ghost ctx-more';
+  let shown = 0;
+  const show = (n) => {
+    lines.append(...found.slice(shown, shown + n).map((x) => contextLine(x, card)));
+    shown = Math.min(found.length, shown + n);
+    more.hidden = shown >= found.length;
+    more.textContent = `Show ${Math.min(CONTEXT_MORE, found.length - shown)} more`;
+  };
+  more.addEventListener('click', () => show(CONTEXT_MORE));
+  show(CONTEXT_FIRST);
+  box.append(Object.assign(document.createElement('div'), { className: 'tones-head', textContent: 'In stories' }), lines, more);
+  return box;
+}
+
+function contextLine(x, card) {
+  const row = document.createElement('div');
+  row.className = 'ctx-line';
+  row.dataset.say = x.say; // lightSpokenWord finds the line by it
+  const play = document.createElement('button');
+  play.type = 'button';
+  play.className = 'row-speak reader-play';
+  play.dataset.say = x.say;
+  play.title = 'Play the sentence';
+  play.setAttribute('aria-label', play.title);
+  play.append(speakerIcon());
+  play.addEventListener('click', () => speakerPress(play, x.say));
+  // The Thai, the transliteration from the story's own cards, as Read builds them (renderReader).
+  const own = new Map(x.d.cards.map((c) => [c.thai, c]));
+  const th = Object.assign(document.createElement('p'), { className: 'ctx-th', lang: 'th' });
+  const tr = [];
+  let at = 0;
+  x.words.forEach((word, i) => {
+    if (word.space) th.append(' ');
+    const c = word.label ? -1 : x.say.indexOf(word.w, at);
+    if (c >= 0) at = c + word.w.length;
+    const span = Object.assign(document.createElement('span'), { className: 'ctx-w' + (x.hits.has(i) ? ' hit' : ''), textContent: word.w });
+    if (c >= 0) Object.assign(span.dataset, { c0: c, c1: c + word.w.length });
+    th.append(span);
+    if (word.label) th.append(':');
+    const tl = word.w === 'ๆ' && tr.length ? tr[tr.length - 1] : own.get(word.w)?.translit; // as Read's (renderReader)
+    if (tl || word.w) tr.push((tl || word.w) + (word.label ? ':' : ''));
+  });
+  const from = document.createElement('button');
+  from.type = 'button';
+  from.className = 'ctx-from';
+  from.append(x.d.name, lineIcon('arrow-icon', '0 0 16 16', 'M2.5 8h10.5M9 4l4 4-4 4'));
+  from.title = `Open "${x.d.name}" on Read`;
+  from.addEventListener('click', () => openReading(x.d.id, card.thai));
+  const body = document.createElement('div');
+  body.className = 'ctx-body';
+  body.append(th,
+    Object.assign(document.createElement('p'), { className: 'ctx-tr', textContent: tr.join(' ') }),
+    Object.assign(document.createElement('p'), { className: 'ctx-en', textContent: x.line.en }),
+    from);
+  row.append(play, body);
+  return row;
 }
 
 // ---------- tones (tones.js) ----------
