@@ -1872,6 +1872,16 @@ Settings always last.
   text size 2, moving the clock and band 6 px), its line height its full size's. Checked (scratch
   `exspace.py`) at 390 × 664, 763, 844, 430 × 932 and 390 × 844 at text size 2: the gaps the same
   for 2 pm and 11:55 am, no scroll, Quiz unchanged; desktop as before.
+- **The band's names say themselves; the band sets the hour** (the user's calls, 2026-10-21): each
+  name under the hours (ตี, เช้า, เที่ยง, บ่าย, เย็น, ทุ่ม, เที่ยงคืน; all recorded) is a button
+  that says it (`speakerPress`), lit while it does (`markSpeakers`, as the speaker buttons; a tint
+  of its colour), its target wider than the word and down into the gap below, not up over the cells.
+  A tap on an hour or a name puts the clock on the hour (an hour's tap kept the minutes before): an
+  hour's says the time; a name's says just the name, and keeps the hour if it's one of the name's,
+  or else goes to its first (ทุ่ม at 9:35 pm → 9 pm; from 3:35 pm → 7 pm; เที่ยงคืน → midnight).
+  Checked (scratch `bandtap.py`, `bandtap2.py`, real clicks) at 390 × 844 and 1280 × 800: each
+  name its own clip, lit while it plays, the times as above; a point just under a cell still the
+  cell's; no script errors.
 - **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
   midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
   `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).

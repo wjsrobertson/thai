@@ -7571,7 +7571,7 @@ function markSpeakers() {
   const recall = state.review?.current && cardSay(state.cardIndex.get(state.review.current.key).card);
   els.speakButtons.forEach((b) => b.classList.toggle('playing', on(flash)));
   document.querySelectorAll('.review-speak').forEach((b) => b.classList.toggle('playing', on(recall)));
-  document.querySelectorAll('.row-speak, .letter-tile').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
+  document.querySelectorAll('.row-speak, .letter-tile, .time-band-label').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
 }
 
 function ttsAndWait(text, lang) {
@@ -7596,11 +7596,11 @@ function wait(ms) {
 // ---------- Time (time.js; a spike, 2026-10-21: branch 2026-10-21-spike-time) ----------
 // Explore: a clock to set, by dragging its hands (the long one by 5 minutes, carrying the hour round;
 // the short one by the hour), by ‹ › (5 minutes) or by the band, and the Thai for its time under it,
-// the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in two rows,
-// am and pm, each part of the day in its colour with the count its Thai uses (บ่าย 1–3, เย็น 4–6,
-// ทุ่ม 1–5); the clock's rim shows the parts for the half of the day it's in. The Thai's parts below
-// it each say what they are when tapped. A change says the time, as Cards' auto-play does (its A).
-// It opens on the time now, to the 5 minutes.
+// the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in the
+// six-hour clock's four quarters, each part of the day in its colour with the count its Thai uses
+// (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its hours saying itself when tapped; the clock's rim
+// shows the parts for the half of the day it's in. A change says the time, as Cards' auto-play does
+// (its A). It opens on the time now, to the 5 minutes.
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs = {}) => {
   const e = document.createElementNS(SVG_NS, tag);
@@ -7722,17 +7722,28 @@ function renderTimeBand() {
       cell.className = `time-cell period-${period.id}` + (h === state.time.h ? ' on' : '');
       cell.textContent = period.count(h);
       cell.setAttribute('aria-label', `${timeEnglish(h, 0)}: ${timePhrase(h, 0).th}`);
-      cell.addEventListener('click', () => setTime(h, state.time.m, { say: true }));
+      cell.addEventListener('click', () => setTime(h, 0, { say: true })); // on the hour (the user's call, 2026-10-21; it kept the minutes)
       row.append(cell);
     }
     for (let i = 0; i < hours.length;) {
       const period = periodOf(hours[i]);
       let n = 1;
       while (i + n < hours.length && periodOf(hours[i + n]) === period) n++;
-      const label = document.createElement('span');
+      // The name says itself when tapped, lit while it does (markSpeakers), and sets the clock on the
+      // hour: this hour if it's one of the name's, or else its first (the user's calls, 2026-10-21).
+      const run = hours.slice(i, i + n);
+      const label = document.createElement('button');
+      label.type = 'button';
       label.className = `time-band-label period-${period.id}` + (n === 1 && i + n === hours.length ? ' end' : '');
       label.lang = 'th';
       label.textContent = period.th;
+      label.dataset.say = period.th;
+      label.title = `Play ${period.th}`;
+      label.classList.toggle('playing', sayingNow(period.th));
+      label.addEventListener('click', () => {
+        speakerPress(label, period.th);
+        setTime(run.includes(state.time.h) ? state.time.h : run[0], 0);
+      });
       label.style.gridColumn = `${i + 1} / span ${n}`;
       row.append(label);
       i += n;
