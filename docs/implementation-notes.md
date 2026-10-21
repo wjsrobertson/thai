@@ -1749,6 +1749,31 @@ the user said yes to all of them.
   No layout check (the user's call). It's held where the page behind it was, not at the top (A field's keyboard: a
   drag closes it).
 
+## Topics: Saying the Date, and How Long & How Long Ago (2026-10-21)
+
+The user's call: of the Time section's ideas, Dates and "How long and when" go in Words as topics,
+where they weren't already. The words were (Months & Calendar has the months, วันที่, พ.ศ.; Days of
+the Week the days; Time Markers เมื่อ, ก่อน, นาน), but not the phrases, as Telling the Time: Minutes
+has them. Two topics in Basics → Time & Date, after the three Telling the Time ones:
+- **Saying the Date** (20): what's the date and what day (วันนี้วันที่เท่าไหร่, วันนี้วันอะไร), a
+  date the Thai way round (วันที่ยี่สิบเอ็ดตุลาคม; วันอังคารที่ยี่สิบเอ็ดตุลาคม), the year
+  (ปีสองพันห้าร้อยหกสิบเก้า, พุทธศักราช, คริสต์ศักราช), the start, middle and end of the month
+  (ต้นเดือน, กลางเดือน, ปลายเดือน, สิ้นปี), a birthday and the zodiac year (เกิดปีอะไร, the
+  Questions topic's card as it is), every 1st, from the 5th to the 10th, by the 30th, once a month,
+  putting off to Friday, a long weekend.
+- **How Long & How Long Ago** (22): how long (นานเท่าไหร่, ใช้เวลาประมาณสองชั่วโมง), hours and
+  halves (สองชั่วโมง, ครึ่งชั่วโมง, ชั่วโมงครึ่ง), from now (อีกสิบนาที, อีกไม่นาน), ago
+  (สามวันก่อน, สองปีที่แล้ว, นานแล้ว, ไม่นานมานี้), all day / night (ทั้งวัน, ทั้งคืน, ตลอดทั้งปี),
+  up to now (อยู่ที่นี่มาสองปีแล้ว), within a week, have you waited long (รอนานไหม / ไม่นานเลย).
+  Its description puts ชั่วโมง (how long) beside โมง (what time), the mix-up learners make.
+- **Phrases** list their `words` (each word's card, the right sense picked: วัน "day", ที่ the
+  ordinal, ถึง "until", เลย "at all"); เดือนละครั้ง is เดือน + ละ + ครั้ง (the longest-word split
+  found ละคร, "drama"). ต้นเดือน, กลางเดือน, ปลายเดือน and สิ้นปี are words, as ข้าวเหนียว is (no
+  ต้น card means "beginning"). Spoken เท่าไหร่ in the questions, with a note that it's เท่าไร in
+  writing. Checked against docs/thai-writing.md.
+- **The steps:** audit 0 errors (and nothing worth a look on the new cards; the tones as spelt),
+  stories.py check and sync (nothing to change), spelling.mjs --write, gen_audio.py.
+
 ## Browse: a random card, and ‹ › going round (2026-10-21)
 
 The user's request, from a screenshot of Browse on Hard Vowels: a random button between ‹ and ›,
