@@ -1853,6 +1853,16 @@ Settings always last.
   the part's name under its hours (a single hour's from its start, running on). A tap sets the hour.
   The cells are 30 px wide on a phone, under the style guide's 44: the hands and ‹ › are the main
   way; the band is the picture.
+  **Four rows since 2026-10-21** (the user's call: "a 6 hours split, each on a new line; this is
+  how Thais have the split, right?"): the six-hour clock's quarters, each counting one to six and
+  ending on the day's markers, as the traditional clock does: 1–6 am (ตี 1–5, then six in the
+  morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม 1–5, then midnight, once หกทุ่ม,
+  the sixth ทุ่ม). Not 12–5, 6–11…: those split the quarters' counts. `TIME_QUARTERS`; under each run
+  of a part, its name, and a quarter's last hour's (เช้า, เที่ยง, เที่ยงคืน) centred under it, its end
+  at the row's if it's wider (`.end`). The cells are now 59 px wide on a phone (still 32 tall). To
+  keep Explore fitting 390 × 664, the phone's clock is 24vh (29 before): 159 px there, 183 at 763,
+  200 from 844. Checked (scratch `timescroll.py` and a label check): no scroll at 390 × 664, 763,
+  844, 430 × 932 and 390 × 844 at text size 2; no label outside the band; no script errors.
 - **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
   midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
   `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).

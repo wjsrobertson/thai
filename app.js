@@ -1,7 +1,7 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable, consonantClass } from './spell.js';
 import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 import { KEDMANEE, sameThai, tidy, tidiedNote, firstWrong, clusters } from './typing.js';
-import { PERIODS, periodOf, timePhrase, timeEnglish } from './time.js';
+import { periodOf, timePhrase, timeEnglish } from './time.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -7697,13 +7697,17 @@ function fitTimeText(el = els.timeTh, play = els.timePlay) {
   if (px < 18) el.classList.add('wraps');
 }
 
-// The band: am then pm, twelve hours a row, a part of the day's name under its hours (centred under
-// them, or from the start of a single hour's: เที่ยงคืน, เที่ยง).
+// The band: the six-hour clock's four quarters, a row each (2026-10-21, the user's call; am and pm
+// rows of twelve before), each counting one to six and ending on the day's markers: 1–6 am (ตี, then
+// six in the morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม one to five, then
+// midnight, once หกทุ่ม). Under each run of a part of the day, its name: centred, or a single hour's
+// (the quarter's last) to the row's end.
+const TIME_QUARTERS = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 0]];
 function renderTimeBand() {
-  const rows = [0, 12].map((start) => {
+  const rows = TIME_QUARTERS.map((hours) => {
     const row = document.createElement('div');
     row.className = 'time-band-row';
-    for (let h = start; h < start + 12; h++) {
+    for (const h of hours) {
       const period = periodOf(h);
       const cell = document.createElement('button');
       cell.type = 'button';
@@ -7713,13 +7717,17 @@ function renderTimeBand() {
       cell.addEventListener('click', () => setTime(h, state.time.m, { say: true }));
       row.append(cell);
     }
-    for (const period of PERIODS.filter((p) => p.hours[0] >= start && p.hours[0] < start + 12)) {
+    for (let i = 0; i < hours.length;) {
+      const period = periodOf(hours[i]);
+      let n = 1;
+      while (i + n < hours.length && periodOf(hours[i + n]) === period) n++;
       const label = document.createElement('span');
-      label.className = `time-band-label period-${period.id}` + (period.hours.length === 1 ? ' single' : '');
+      label.className = `time-band-label period-${period.id}` + (n === 1 && i + n === hours.length ? ' end' : '');
       label.lang = 'th';
       label.textContent = period.th;
-      label.style.gridColumn = `${period.hours[0] - start + 1} / span ${period.hours.length}`;
+      label.style.gridColumn = `${i + 1} / span ${n}`;
       row.append(label);
+      i += n;
     }
     return row;
   });

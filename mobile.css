@@ -476,7 +476,8 @@ html.modal-open body { overflow: clip; }
 .reader-show { display: none; }
 
 /* ---------- Time (a spike, 2026-10-21) ---------- */
-/* The page fits 390 × 664 with a one-line time: closer together, the clock to the screen's height. */
+/* The page fits 390 × 664 with a one-line time: closer together, the clock to the screen's height
+   (24vh, 29 till the band's four rows, 2026-10-21). */
 .time, .time-explore, .time-quiz { gap: 10px; }
 /* Its switches as Words' and the Alphabet's on a phone (2026-10-21, the user's call: they were
    40px, under the 44 above, with 16px text): 44 tall, 15px text, the same padding. */
@@ -492,7 +493,7 @@ html.modal-open body { overflow: clip; }
 .stage[data-view="time"] { display: flex; flex-direction: column; }
 .stage[data-view="time"] .time { flex: 1 0 auto; width: 100%; }
 .time-quiz, .time-q { flex: 1 0 auto; }
-.time-clock { width: min(200px, 50vw, 29vh); }
+.time-clock { width: min(200px, 50vw, 24vh); }
 .time-band-row { grid-template-rows: 32px auto; }
 .time-th { font-size: calc(30px * var(--fs, 1)); }
 /* Quiz fits 390 × 664 in all three directions (Listen's the tallest: the clock, its ▶, two lines);
