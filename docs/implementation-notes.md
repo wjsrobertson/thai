@@ -1898,7 +1898,8 @@ long as topics in Words (on master: Saying the Date, How Long & How Long Ago).
   beaten mobile.css's 44 tap targets), with 15px text and 8 × 6 padding, as `.deck-picker-bar
   .seg-btn`; the directions' own flex, gap and 20px ▶ went, so the arrows and ▶ are Cards' too.
   Quiz's clock 142 on a phone (was 150), so it still fits 390 × 664. Explore scrolls 24 at 664. On a
-  desktop Time's rows stay 40 (Cards' are 26). Checked (scratch `dirh.py`, `dirh2.py`): 44 / 15px /
+  desktop too (the user's call, the same day): its min-height of 40 went, so both rows are Cards' 26
+  (34 with the group's frame). Checked (scratch `dirh.py`, `dirh2.py`): 44 / 15px /
   the same arrow and ▶ sizes as Words' and the Alphabet's; Quiz the same 24 states over (`timequiz3.py`).
 - **Checked** headless at 390 × 664, 390 × 844 at text size 2 and 1280 × 800 (scratch
   `timequiz_probe.py`, `timequiz2.py`): the three directions; a wrong answer marked and the next
