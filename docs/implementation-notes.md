@@ -1896,6 +1896,17 @@ Settings always last.
 - **Colours:** from the theme's own tokens, so all five themes have them (`.period-*`, `--period`):
   midnight and ทุ่ม `--tone-high` (purple), ตี `--easy` (blue), เช้า `--good` (green), เที่ยง
   `--accent` (gold), บ่าย a mix of `--accent` and `--again` (orange), เย็น `--again` (red).
+  **Day and night since 2026-10-21** (the user's call: the six, in the band's cells and round the
+  clock's rim, looked like "Freddy Krueger jumper colours"; of three mock-ups, all one grey, day and
+  night, and one gold tint strongest at noon, they took day and night, but its gold day tint came out
+  "poo coloured", brown on the dark themes, so the day is grey): the day's hours (เช้า, เที่ยง,
+  บ่าย, เย็น) a grey a step up from the panel (`--ink` 14% into `--panel`), their names `--muted`;
+  the night's (ตี, ทุ่ม, เที่ยงคืน, the counts for the dark) a blue tint (`--tone-low` 18%), their
+  names in it. `--tone-low` as it's the blue in every theme (`--easy` is sage in Night). The time's
+  hour, its cell and its arc on the rim, is in `--accent` (`--on-accent` text); the rest of the rim
+  is faint, day grey and night blue (`--period-fill`, `--period-name`, `--period-rim`). The names
+  still say themselves, lit with a tint of the day's grey or the night's blue. Checked (scratch
+  `colreal.py`) in all five themes at 2 pm and 9 pm; Quiz's clocks unchanged; no script errors.
 - **Audio:** every time every 5 minutes both ways (576) and their parts, 605 texts
   (`node tools/time_phrases.mjs --write` → data/time-phrases.json, which tools/gen_audio.py now
   records under `th`; a part that's a card's Thai keeps its sample). A change says the time when

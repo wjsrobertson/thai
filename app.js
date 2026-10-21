@@ -7597,9 +7597,9 @@ function wait(ms) {
 // Explore: a clock to set, by dragging its hands (the long one by 5 minutes, carrying the hour round;
 // the short one by the hour), by ‹ › (5 minutes) or by the band, and the Thai for its time under it,
 // the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in the
-// six-hour clock's four quarters, each part of the day in its colour with the count its Thai uses
-// (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its hours saying itself when tapped; the clock's rim
-// shows the parts for the half of the day it's in. A change says the time, as Cards' auto-play does
+// six-hour clock's four quarters, the day's hours grey and the night's blue, with the count its Thai
+// uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its hours saying itself when tapped; the clock's
+// rim shows day and night for the half of the day it's in. A change says the time, as Cards' auto-play does
 // (its A). It opens on the time now, to the 5 minutes.
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs = {}) => {
@@ -7618,7 +7618,7 @@ const clockPoint = (deg, r) => [100 + r * Math.sin((deg * Math.PI) / 180), 100 -
 // A clock in `svg` (Explore's, or a Quiz question's): its hands and rim, to set (setClock).
 function drawClock(svg) {
   svg.replaceChildren(svgEl('circle', { class: 'clock-face', cx: 100, cy: 100, r: 91 }));
-  // The rim: an hour's arc each, coloured by its part of the day (renderTime).
+  // The rim: an hour's arc each, coloured as day or night, the time's hour lit (setClock).
   const rim = [];
   for (let k = 0; k < 12; k++) {
     const [x0, y0] = clockPoint(k * 30 + 1, 96);

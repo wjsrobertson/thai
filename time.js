@@ -46,7 +46,7 @@ const WORDS = {
 
 // The day's parts, as the band shows them: the hours each covers, and what the band's cell says for
 // an hour (the count the Thai uses: บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), 12 for midnight and noon as on
-// the clock face. Each has its colour (styles.css, .period-<id>).
+// the clock face. Each is day or night in colour (styles.css, .period-<id>).
 export const PERIODS = [
   { id: 'midnight', ...WORDS.midnight, hours: [0], count: () => 12 },
   { id: 'tii', th: 'ตี', tl: 'tii', en: '1–5 am', hours: [1, 2, 3, 4, 5], count: (h) => h },
