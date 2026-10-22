@@ -8046,7 +8046,9 @@ function bindEvents() {
   }));
 
   // Deck picker
-  els.deckButton.addEventListener('click', () => (onAlphabet() ? toggleAlphaSets() : openDeckPicker()));
+  // While adding words to a list (Add words), the topic button picks the next place to add from, so
+  // the adding bar stays: a plain pick ended adding (the user's report, 2026-10-22). Done ends it.
+  els.deckButton.addEventListener('click', () => (onAlphabet() ? toggleAlphaSets() : openDeckPicker({ addTo: addingFrom() ? state.addingTo : null })));
   els.alphaSetItems.forEach((b) => b.addEventListener('click', () => setAlphaSet(b.dataset.alphaSet)));
   document.addEventListener('click', (e) => {
     if (!els.alphaSetMenu.hidden && !e.target.closest('#alpha-set-menu, #deck-button')) toggleAlphaSets(false);

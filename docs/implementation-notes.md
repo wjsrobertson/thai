@@ -1730,6 +1730,12 @@ the user said yes to all of them.
   page opens (`freshListCards`). Add words opens the picker ("Add words to '…'", Topics | My lists,
   without this list). Picking a topic or list shows it with a bar over it, "Adding words to …" and
   **Done** (`state.addingTo`, `#adding-bar`). Its 🔁 and Add all go into the list, and Done goes back to it.
+  **More topics while adding** (the user's report, 2026-10-22: a second topic picked from the topic
+  button lost the bar, a plain pick ending adding): while the List page is adding (`addingFrom`), the
+  topic button opens the picker as Add words does (its title, without the list), so each topic
+  picked keeps the bar; Done ends adding, and the button's picker is plain again. Checked (scratch
+  `addmore.py`) at 390 × 844 and 1280 × 800: the bar through three topics, gone after Done and after a
+  plain pick; no script errors.
 - **Storage:** `store.lists`, `[{ id, name, words: [cardKey…] }]`. `migrateLists` makes "My words" from
   `store.reviewWords` (in the order added) on the first load and **leaves reviewWords as it was**, so
   dropping the spike loses nothing on master. Settings → Reset → Clear Cards went (lists are deleted
