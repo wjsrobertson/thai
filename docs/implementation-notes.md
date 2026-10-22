@@ -1911,6 +1911,13 @@ Settings always last.
   (`node tools/time_phrases.mjs --write` → data/time-phrases.json, which tools/gen_audio.py now
   records under `th`; a part that's a card's Thai keeps its sample). A change says the time when
   Cards' auto-play (its A) is on. `time.js` is in sw.js's SHELL (v22).
+  **Always since 2026-10-22** (the user's report: a tap on an hour was sometimes silent, with
+  auto-play off; "clock sound should always be played if clicked"): Explore says the time whenever
+  it's set, whatever auto-play: an hour tapped, ‹ ›, a hand let go or the clock tapped, Everyday |
+  Official switched (`setTime`'s `say`, `dropHand`). Mute still silences it. Quiz still asks by
+  auto-play (`timeSaysOnChange`), as Cards does. Checked (scratch `timesay.py`, real clicks, auto-play
+  off) at 390 × 844 and 1280 × 800: each of those said its time, a name its name; with Mute, nothing;
+  no script errors.
 - **Fits** 390 × 664 for a time on one line (16 px over with the parts' caption line); a long one
   (บ่ายสองโมงสามสิบห้านาที) shrinks to its line; at text size 2 the parts take two rows and the page
   scrolls. `check_layout.py` opens Settings through More now (`#tab-settings` is hidden on a phone)

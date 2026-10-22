@@ -7599,8 +7599,10 @@ function wait(ms) {
 // the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in the
 // six-hour clock's four quarters, the day's hours grey and the night's blue, with the count its Thai
 // uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its hours saying itself when tapped; the clock's
-// rim shows day and night for the half of the day it's in. A change says the time, as Cards' auto-play does
-// (its A). It opens on the time now, to the 5 minutes.
+// rim shows day and night for the half of the day it's in. A change says the time, whatever Cards'
+// auto-play (its A): the user set it, so wants to hear it (the user's call, 2026-10-22; a tap on an
+// hour was silent with auto-play off). Mute still silences it. It opens on the time now, to the 5
+// minutes.
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs = {}) => {
   const e = document.createElementNS(SVG_NS, tag);
@@ -7608,7 +7610,7 @@ const svgEl = (tag, attrs = {}) => {
   return e;
 };
 const timeStyle = () => (getPreferences().timeStyle === 'official' ? 'official' : 'everyday');
-const timeSaysOnChange = () => getPreferences().autoPlay !== false;
+const timeSaysOnChange = () => getPreferences().autoPlay !== false; // Quiz's questions; Explore always says its time
 let clockParts = null; // Explore's clock's hands and rim, once drawn (drawClock)
 let clockDrag = null;  // 'hour' or 'minute' while a hand is dragged
 
@@ -7656,7 +7658,7 @@ function setClock(parts, h, m) {
 function setTime(h, m, { say = false } = {}) {
   state.time = { h: ((h % 24) + 24) % 24, m: ((m % 60) + 60) % 60 };
   renderTime();
-  if (say && timeSaysOnChange()) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th);
+  if (say) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th);
 }
 
 function stepTime(minutes) {
@@ -8199,7 +8201,7 @@ function bindEvents() {
     if (!clockDrag) return;
     clockDrag = null;
     els.timeClock.classList.remove('dragging');
-    if (timeSaysOnChange()) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th); // said once it's let go
+    speak(timePhrase(state.time.h, state.time.m, timeStyle()).th); // said once it's let go
   };
   els.timeClock.addEventListener('pointerup', dropHand);
   els.timeClock.addEventListener('pointercancel', dropHand);
