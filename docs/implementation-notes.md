@@ -1564,7 +1564,11 @@ the user said yes to all of them.
   at once and closes the dialog, as before. Topics and My lists only switch the pane; a choice is
   made by tapping a row. My lists has a row per list (with its progress, as a topic's) and
   **＋ New list**, which asks for a name in the confirm dialog's new text box (`askListName`;
-  `confirmDialog({ input })`).
+  `confirmDialog({ input })`). The new list is picked and, since 2026-10-22, its List page shown,
+  whichever page the picker was opened on (the user's call: from Cards it stayed on Cards, an empty
+  list's; the List page has Add words). Cancel leaves you where you were. Checked (scratch
+  `newlist.py`) from Cards, Read and List at 390 × 844 and 1280 × 800: each on List, the new list
+  picked; Cancel on Cards; no script errors.
 - **One choice for the three pages:** `state.currentDeckId` can now be `list:<id>` (resolveScope's
   `kind: 'list'`, with no decks; deckOf is each word's first topic). Everything (prefs.flashcardsBy
   `'all'`, the old name kept) applies to Cards and Reading (`studyScope()`). The List page keeps

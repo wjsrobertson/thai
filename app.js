@@ -1737,6 +1737,8 @@ function renderListsPane() {
       if (!name) return;
       const list = createList(name);
       pickScope(listScopeId(list.id));
+      // On its List page, to add words to it, from Cards, Read or Home too (the user's call, 2026-10-22).
+      if (state.view !== 'wordlist') setView('wordlist');
     });
     rows.push(add);
   }
