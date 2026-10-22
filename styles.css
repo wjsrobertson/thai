@@ -2225,6 +2225,7 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
 /* A quarter's last hour's (เที่ยงคืน): centred under it, and if it's wider (a large text size), its
    end at the row's, growing left: its box at least the hour's width, its text centred in it. */
 .time-band-label.end { justify-self: end; min-width: 100%; text-align: center; }
+.time-band-label.blank { visibility: hidden; } /* Official's, holding the names' line (renderTimeBand) */
 /* The Thai for the time, its ▶ beside it; its transliteration and English under it. */
 .time-say { text-align: center; }
 .time-say-main { display: flex; align-items: center; justify-content: center; gap: 4px; }
@@ -2232,7 +2233,9 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
 /* One line (fitTimeSay), its height its full size's (normal's 1.15) when it's shrunk to fit. */
 .time-tr { margin: 2px 0 0; color: var(--accent); font-style: italic; font-size: calc(17px * var(--fs, 1)); line-height: calc(17px * 1.15 * var(--fs, 1)); white-space: nowrap; }
 :is(.time-th, .time-tr).wraps { white-space: normal; }
-.time-en { margin: 2px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
+/* One line, its height set (Everyday's, 1.2): Official's "written 14.00 น." took the Thai font's
+   taller line, 7 px more, and the page jumped as the two were switched (2026-10-22). */
+.time-en { height: calc(16px * 1.2 * var(--fs, 1)); margin: 2px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: calc(16px * 1.2 * var(--fs, 1)); white-space: nowrap; }
 /* Quiz: its directions as Cards' are, the question in a card, four answers in two rows. */
 .time-dirs { display: flex; width: 100%; }
 .time-q {

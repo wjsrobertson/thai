@@ -7739,7 +7739,14 @@ function renderTimeBand() {
       cell.addEventListener('click', () => setTime(h, 0, { say: true })); // on the hour (the user's call, 2026-10-21; it kept the minutes)
       row.append(cell);
     }
-    if (style === 'official') return row;
+    // Official has no names: a blank line in their place, so the band is Everyday's height and the
+    // page doesn't jump as the two are switched (the user's call, 2026-10-22).
+    if (style === 'official') {
+      const blank = Object.assign(document.createElement('span'), { className: 'time-band-label blank', lang: 'th', textContent: 'ตี' });
+      blank.setAttribute('aria-hidden', 'true');
+      row.append(blank);
+      return row;
+    }
     for (let i = 0; i < hours.length;) {
       const period = periodOf(hours[i]);
       let n = 1;
