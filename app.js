@@ -7714,9 +7714,12 @@ function fitTimeSay() {
 // rows of twelve before), each counting one to six and ending on the day's markers: 1–6 am (ตี, then
 // six in the morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม one to five, then
 // midnight, once หกทุ่ม). Under each run of a part of the day, its name: centred, or a single hour's
-// (the quarter's last) to the row's end.
+// (the quarter's last) to the row's end. Official time has none of the names and counts 0–23
+// (สิบสามนาฬิกา, ศูนย์นาฬิกา), so there the cells are the 24 hours' numbers and the names go (the
+// user's call, 2026-10-22).
 const TIME_QUARTERS = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 0]];
 function renderTimeBand() {
+  const style = timeStyle();
   const rows = TIME_QUARTERS.map((hours) => {
     const row = document.createElement('div');
     row.className = 'time-band-row';
@@ -7725,11 +7728,12 @@ function renderTimeBand() {
       const cell = document.createElement('button');
       cell.type = 'button';
       cell.className = `time-cell period-${period.id}` + (h === state.time.h ? ' on' : '');
-      cell.textContent = period.count(h);
-      cell.setAttribute('aria-label', `${timeEnglish(h, 0)}: ${timePhrase(h, 0).th}`);
+      cell.textContent = style === 'official' ? h : period.count(h);
+      cell.setAttribute('aria-label', `${timeEnglish(h, 0, style)}: ${timePhrase(h, 0, style).th}`);
       cell.addEventListener('click', () => setTime(h, 0, { say: true })); // on the hour (the user's call, 2026-10-21; it kept the minutes)
       row.append(cell);
     }
+    if (style === 'official') return row;
     for (let i = 0; i < hours.length;) {
       const period = periodOf(hours[i]);
       let n = 1;
@@ -7812,7 +7816,7 @@ function preloadTimeAudio() {
         at(Math.floor(x / 60), x % 60);
       }
     }
-    for (const h of TIME_QUARTERS.flat()) say.add(periodOf(h).th);
+    if (style === 'everyday') for (const h of TIME_QUARTERS.flat()) say.add(periodOf(h).th); // the band's names
     for (let h = 0; h < 24; h++) at(h, 0);
   }
   queuePageAudio([...say].map((th) => ({ url: sampleUrl(th, 'th'), keep: true })).filter((e) => e.url));

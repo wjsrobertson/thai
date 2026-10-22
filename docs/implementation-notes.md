@@ -1882,6 +1882,14 @@ Settings always last.
   text size 2, moving the clock and band 6 px), its line height its full size's. Checked (scratch
   `exspace.py`) at 390 × 664, 763, 844, 430 × 932 and 390 × 844 at text size 2: the gaps the same
   for 2 pm and 11:55 am, no scroll, Quiz unchanged; desktop as before.
+- **Official's band: the 24 hours, no names** (the user's call, 2026-10-22: "should the time names be
+  there?"): official time is the hour 0–23 and นาฬิกา (สิบสามนาฬิกา, ศูนย์นาฬิกา), none of the day's
+  names, and Everyday's counts (บ่าย's 1, midnight's 12) said otherwise there. With Official the
+  cells are 1–23 and 0 in the same four rows, day and night tinted as before, with no names under
+  them (`renderTimeBand`, by `timeStyle()`); a cell's label is "14:00: สิบสี่นาฬิกา". The names
+  aren't preloaded then. The band is shorter (146 px to 238), the room shared out around it as
+  before. Checked (scratch `official.py`) at 390 × 664, 844, 844 at text size 2 and 1280 × 800:
+  Official, Everyday, Official again; 0 says ศูนย์นาฬิกา; no scroll; no script errors.
 - **The band's names say themselves; the band sets the hour** (the user's calls, 2026-10-21): each
   name under the hours (ตี, เช้า, เที่ยง, บ่าย, เย็น, ทุ่ม, เที่ยงคืน; all recorded) is a button
   that says it (`speakerPress`), lit while it does (`markSpeakers`, as the speaker buttons; a tint
