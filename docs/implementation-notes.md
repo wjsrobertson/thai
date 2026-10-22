@@ -1547,8 +1547,8 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
-- **The bar's end:** More last, its list Time and Settings, Settings last; no Settings or Time tab on
-  the bar (10-21; behind dev features till 10-22, Settings last without them).
+- **The phone's bar:** Alphabet, Words, Dictionary, Time, More; More's list Home and Settings,
+  Settings last (10-22; More had Time and Settings from 10-21, Home on the bar).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -2147,6 +2147,23 @@ Until now they were oldest first (the order they went in).
 The user's call: the page switch's Reading is **Read** (its label, `aria-label` and `title`), and so is
 Home's Topics card row, so the three are List | Cards | Read. The page is still `reading` in the
 code, and Settings' section is still Reading.
+
+## The phone's bar: Time on it, Home in More (2026-10-22)
+
+The user's call: the phone's tab bar is **Alphabet, Words, Dictionary, Time, More**, and More's list
+is **Home, Settings** (it was Home, Alphabet, Words, Dictionary, More, with Time and Settings in the
+list). `#tab-home` and `#tab-settings` are hidden on a phone (mobile.css), and More's Time row is a
+Home row (`data-view="home"`). A wider screen is as it was: Home in the corner, Time a tab, ⚙.
+
+**More lit on Home, but not at launch** (the user's call): More is lit while one of its pages shows
+(`markMore`, `MORE_VIEWS`, now Home), but the app opens on Home, and there More stays unlit until
+you've been somewhere else (`state.leftHome`, set by `setView` for any other page); coming back to
+Home, by More or a Home card's page and More, lights it. Settings opened and closed at launch doesn't
+count (it's a sheet, not a page). More's list marks Home as the current page either way.
+Checked (scratch `morehome.py`) at 390 × 844 and 1280 × 800: the bar and More's list in that order;
+More unlit at launch and after a reload, unlit on Words and Time, lit back on Home, lit with Settings
+open; the wider screen's bar unchanged; no script errors. check_layout.py's bar check is now the
+exact order and list (not run).
 
 ## Write's ‹ › gone with Cards on Recognition or Type (2026-10-22)
 

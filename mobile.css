@@ -305,10 +305,10 @@ html.type-kb #card .type-hint { bottom: 8px; max-width: calc(100% - 136px); }
 html.settings-open .tab[aria-selected="true"],
 html.more-open .tab[aria-selected="true"] { color: var(--muted); } /* only More lit, over its list */
 html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit while its page is open */
-/* Settings and Time are in More, the bar's last tab, lit while either shows (the Time spike,
-   2026-10-21; behind Settings → App → Dev features till 2026-10-22, the bar ending with Settings
-   without them). */
-.tab-settings, .tab-time { display: none; }
+/* Home and Settings are in More, the bar's last tab, lit while either shows (the user's call,
+   2026-10-22: Alphabet, Words, Dictionary, Time, More; Time and Settings were in it from 2026-10-21,
+   Home on the bar). Not lit on Home when the app opens, only on coming back to it (markMore). */
+.tab-home, .tab-settings { display: none; }
 
 /* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
    (.deck-button above; not styles.css's 220px, with three icons beside it). */
@@ -329,8 +329,8 @@ html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit wh
 .letter-pic { width: 112px; height: 112px; }
 
 /* ---------- More: its tab and its list ---------- */
-/* More is lit while its list is open, or one of its pages (Settings) is showing. (Alphabet and Words
-   were in its list until Study took Topics, Cards and Reading's three places, 2026-10-14.) */
+/* More is lit while its list is open, or one of its pages (Home, Settings) is showing. (Alphabet and
+   Words were in its list until Study took Topics, Cards and Reading's three places, 2026-10-14.) */
 .dots { stroke-width: 3; }
 .tab-more.current,
 .tab-more[aria-expanded="true"],

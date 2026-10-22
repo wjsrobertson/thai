@@ -262,6 +262,7 @@ const state = {
   timeName: null,           // Explore's band name tapped, { id, from: its run's first hour }, shown until the time changes (setTime)
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
+  leftHome: false,    // been anywhere but Home since the app opened (markMore)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
   dictLetter: null,   // the Dictionary's letter (ก…ฮ, or A…Z in English), or null for the grid (renderDictionary)
   dictLang: 'th',     // the Dictionary's way in: 'th' (ก–ฮ, Thai first) or 'en' (A–Z, English first); prefs.dictLang
@@ -3622,8 +3623,10 @@ function useSection(section) {
 
 // ---------- the phone's More list ----------
 
-// More, the phone's last tab, lists the pages without a tab of their own (Words, Settings; the
-// user's call, 2026-10-14, so new pages fit). Its tab is lit while one of them shows (markMore).
+// More, the phone's last tab, lists the pages without a tab of their own (Home and Settings since
+// 2026-10-22; the user's call, 2026-10-14, so new pages fit). Its tab is lit while one of them shows
+// (markMore), but not on Home as the app opens: only once you've been somewhere else and come back
+// (the user's call, 2026-10-22; `state.leftHome`).
 const MORE_VIEWS = new Set([...document.querySelectorAll('.more-item[data-view]')].map((b) => b.dataset.view));
 
 function openMore() {
@@ -3646,7 +3649,7 @@ function closeMore(refocus = false) {
 
 function markMore() {
   const here = state.settingsOpen ? 'settings' : pageNow();
-  els.tabMore.classList.toggle('current', MORE_VIEWS.has(pageNow()));
+  els.tabMore.classList.toggle('current', MORE_VIEWS.has(pageNow()) && (pageNow() !== 'home' || state.leftHome));
   for (const b of els.moreItems) {
     if ((b.dataset.view || b.dataset.action) === here) b.setAttribute('aria-current', 'page');
     else b.removeAttribute('aria-current');
@@ -3701,6 +3704,7 @@ function setView(view, { section = 'words' } = {}) {
   toggleAlphaSets(false);
   const entering = view === 'flashcards' && (!wasCards || section !== leavingSection);
   state.view = view;
+  if (view !== 'home') state.leftHome = true; // Home lights More from now on (markMore)
   els.stage.dataset.view = view;
   const page = pageNow();
   els.tabs.forEach((t) => {

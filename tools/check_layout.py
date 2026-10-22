@@ -179,14 +179,14 @@ def checks(ws, size):
       m and near(m['t'], bar['b'], 1.5) and near(m['b'], tabs['t'], 1.5), f"dialog {m and m['t']:.0f}–{m and m['b']:.0f}, row ends {bar['b']:.0f}, tabs from {tabs['t']:.0f}")
     tap(ws, '#word-modal-close')
 
-    # The bar ends with More, Time and Settings in its list, Settings last (the Time spike, 2026-10-21;
-    # behind dev features till 2026-10-22, the bar ending with Settings without them).
+    # The bar: Alphabet, Words, Dictionary, Time, More; Home and Settings in More's list, Settings last
+    # (the user's call, 2026-10-22; More had Time and Settings from 10-21, Home on the bar).
     shown = "JSON.stringify([...document.querySelectorAll('.tabs .tab')].filter(t => t.getClientRects().length).map(t => t.id || t.dataset.view))"
     tabs_shown = json.loads(js(ws, shown))
     tap(ws, '#tab-more', wait=0.6)
     more = json.loads(js(ws, "JSON.stringify([...document.querySelectorAll('.more-item')].filter(b => b.getClientRects().length).map(b => b.dataset.view || b.dataset.action))"))
-    C('The tab bar ends with More; its list has Time and Settings, Settings last (10-22)',
-      tabs_shown[-1:] == ['tab-more'] and 'tab-settings' not in tabs_shown and 'time' not in tabs_shown and more[-1:] == ['settings'] and 'time' in more, f"bar {tabs_shown}, More {more}")
+    C('The tab bar is Alphabet, Words, Dictionary, Time, More; More has Home and Settings (10-22)',
+      tabs_shown == ['alphabet', 'study', 'dictionary', 'time', 'tab-more'] and more == ['home', 'settings'], f"bar {tabs_shown}, More {more}")
     tap(ws, '.more-item[data-action=settings]', wait=1.0)
     ss = R(ws, '#settings-search')
     C("Settings: the search where the Dictionary's is, as tall (top, left, height)", same(ss, se, 'tlh'), f"{fmt(ss)} / {fmt(se)}")

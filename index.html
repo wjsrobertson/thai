@@ -42,7 +42,8 @@
          there's no top bar: Home, Alphabet, Words, Dictionary, Settings (2026-10-14, the user's calls; the
          Alphabet before Words since 2026-10-21;
          Words was Topics till 2026-10-21, when it held your lists too: data-view "study", the topic's or
-         list's List, Cards and Read in one, picked by the .study-switch). More, with Time and Settings in its list, has the last place (below). The icons, Home and More are hidden on wider screens, where ⚙
+         list's List, Cards and Read in one, picked by the .study-switch). On a phone (2026-10-22, the user's call): Alphabet, Words, Dictionary,
+         Time, then More, with Home and Settings in its list (below). The icons, Home and More are hidden on wider screens, where ⚙
          opens Settings. -->
     <!-- The tabs said Cards and Words for the Flashcards and Dictionary pages (the user's call,
          2026-10-12: shorter, and the text a little larger). Words is the study tab's now (2026-10-21). -->
@@ -54,9 +55,9 @@
       <button type="button" class="tab tab-time" role="tab" data-view="time" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="tab-label">Time</span></button>
       <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
       <!-- More (2026-10-14; hidden from that day, the user's call; back with the Time spike, 2026-10-21):
-           the phone bar's last tab, its list Time and Settings, Settings always last (the user's call),
-           #tab-settings and Time's tab hidden there (mobile.css). Behind Settings → App → Dev features
-           till 2026-10-22, when Time came out of it. -->
+           the phone bar's last tab, its list Home and Settings, Settings always last (the user's calls;
+           Time and Settings till 2026-10-22, when Time took a tab), #tab-home and #tab-settings hidden
+           there (mobile.css). -->
       <button type="button" class="tab tab-more" id="tab-more" aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path class="dots" d="M8 12h.01M12 12h.01M16 12h.01" /></svg><span class="tab-label">More</span></button>
     </nav>
     <div class="controls">
@@ -70,7 +71,7 @@
   <div id="more-menu" class="more-menu" hidden>
     <div class="more-backdrop" data-close></div>
     <div class="more-panel" role="menu" aria-labelledby="tab-more">
-      <button type="button" class="more-item" role="menuitem" data-view="time"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="more-label">Time</span><span class="more-chevron" aria-hidden="true">›</span></button>
+      <button type="button" class="more-item" role="menuitem" data-view="home"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg><span class="more-label">Home</span><span class="more-chevron" aria-hidden="true">›</span></button>
       <button type="button" class="more-item" role="menuitem" data-action="settings"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="more-label">Settings</span><span class="more-chevron" aria-hidden="true">›</span></button>
     </div>
   </div>
