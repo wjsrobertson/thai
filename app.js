@@ -6395,7 +6395,7 @@ function showWordPop(anchor, card) {
   actions.className = 'pop-actions';
   const key = cardKey(card);
   const rv = reviewButton(key, card.thai);
-  if (!card.alpha) actions.append(rv); // the Alphabet's Cards hold every letter: nothing to add
+  if (!card.alpha && !card.time) actions.append(rv); // the Alphabet's Cards hold every letter, and a time (Time's) isn't a card: nothing to add
   if (spellingFor(card)) {
     const sp = document.createElement('button');
     sp.type = 'button';
@@ -6431,7 +6431,7 @@ function showWordPop(anchor, card) {
 // On a phone the word (and letter) dialog sits between the pinned top row and the tab bar (mobile.css),
 // leaving both in sight and in reach (the user's call, 2026-10-14): it starts where the row ends.
 function showWordModal() {
-  const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .dict-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
+  const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .dict-top, .time-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.wordModal.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
   els.wordModal.hidden = false;
   setModalOpen(true);
@@ -7676,22 +7676,35 @@ function renderTime() {
   const { h, m } = state.time;
   const style = timeStyle();
   els.timeStyleButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeStyle === style)));
-  // A name tapped on the band (Everyday's): the name's Thai, transliteration and meaning in place of
-  // the time's, its hours lit on the rim, until the time changes (the user's call, 2026-10-22).
-  const name = style === 'everyday' && state.timeName ? PERIODS.find((x) => x.id === state.timeName.id) : null;
+  const name = timeNamePicked();
   setClock(clockParts, h, m, name ? name.hours : [h]);
   renderTimeBand();
-  const p = name ? { th: name.th, tl: name.tl, en: name.gloss, written: '' } : timePhrase(h, m, style);
-  els.timeTh.textContent = p.th;
-  els.timeTr.textContent = p.tl;
+  const said = timeCard();
+  els.timeTh.textContent = said.thai;
+  els.timeTr.textContent = said.translit;
   fitTimeSay();
-  els.timeEn.textContent = p.en + (p.written ? ` · written ${p.written}` : '');
+  els.timeEn.textContent = said.english;
   els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}: drag its hands`);
-  els.timePlay.dataset.say = p.th;
-  els.timePlay.classList.toggle('playing', sayingNow(p.th));
+  els.timePlay.dataset.say = said.thai;
+  els.timePlay.classList.toggle('playing', sayingNow(said.thai));
   // The time's words as buttons, and a caption with what one meant or a note on the time ("could be
   // 6 am or 6 pm…"), went 2026-10-21 (the user's call: too busy). time.js still has them (parts, note).
   preloadTimeAudio(); // the times around this one
+}
+
+// A name tapped on the band (Everyday's): the name's Thai, transliteration and meaning in place of
+// the time's, its hours lit on the rim, until the time changes (the user's call, 2026-10-22).
+const timeNamePicked = () => (timeStyle() === 'everyday' && state.timeName ? PERIODS.find((x) => x.id === state.timeName.id) : null);
+
+// What Explore's three lines say, as a card: the time's phrase, or a name's. A tap on any of them
+// opens it in the word dialog (showWordPop), the whole phrase with each syllable's tone, as a Topics
+// phrase row's transliteration and English do (the user's call, 2026-10-22). `time`: not a topic's
+// card, so no adding it to a list.
+function timeCard() {
+  const name = timeNamePicked();
+  if (name) return { thai: name.th, translit: name.tl, english: name.gloss, time: true };
+  const p = timePhrase(state.time.h, state.time.m, timeStyle());
+  return { thai: p.th, translit: p.tl, english: p.en + (p.written ? ` · written ${p.written}` : ''), time: true };
 }
 
 // The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
@@ -8209,6 +8222,7 @@ function bindEvents() {
   }));
   els.timeQPlay.append(speakerIcon());
   els.timeQPlay.addEventListener('click', () => speakerPress(els.timeQPlay, els.timeQPlay.dataset.say));
+  [els.timeTh, els.timeTr, els.timeEn].forEach((el) => el.addEventListener('click', () => showWordPop(null, timeCard())));
   els.timePlay.append(speakerIcon());
   els.timePlay.addEventListener('click', () => speakerPress(els.timePlay, els.timePlay.dataset.say));
   els.timeClock.addEventListener('pointerdown', (e) => {

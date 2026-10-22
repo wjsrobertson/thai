@@ -2228,6 +2228,7 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
 .time-band-label.blank { visibility: hidden; } /* Official's, holding the names' line (renderTimeBand) */
 /* The Thai for the time, its ▶ beside it; its transliteration and English under it. */
 .time-say { text-align: center; }
+.time-say :is(.time-th, .time-tr, .time-en) { cursor: pointer; } /* each opens the word dialog (timeCard) */
 .time-say-main { display: flex; align-items: center; justify-content: center; gap: 4px; }
 .time-th { min-width: 0; margin: 0; color: var(--ink); font-size: calc(32px * var(--fs, 1)); line-height: 1.4; white-space: nowrap; }
 /* One line (fitTimeSay), its height its full size's (normal's 1.15) when it's shrunk to fit. */

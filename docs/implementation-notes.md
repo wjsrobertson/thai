@@ -1882,6 +1882,20 @@ Settings always last.
   text size 2, moving the clock and band 6 px), its line height its full size's. Checked (scratch
   `exspace.py`) at 390 × 664, 763, 844, 430 × 932 and 390 × 844 at text size 2: the gaps the same
   for 2 pm and 11:55 am, no scroll, Quiz unchanged; desktop as before.
+- **The time in the word dialog** (the user's call, 2026-10-22: "so I can see tones etc. for each
+  syllable"; per phrase, their lean): a tap on Explore's Thai, transliteration or English opens the
+  word dialog (`showWordPop`) for what they say (`timeCard`): the time's phrase in the style shown
+  (บ่ายสองโมงครึ่ง, สิบเก้านาฬิกา, its English as the page's), or a picked name's (ทุ่ม, "a drum's
+  beat, 7–11 pm"). It's the whole phrase, as a Topics phrase row's transliteration and English give:
+  the big Thai (a letter tapped says its name), spell and play, Tones with a syllable each, and the
+  stories' lines that use it. No add to a list (`card.time`): a list holds topics' cards, and of
+  the 576 times only the 24 on the hour (Everyday) and a few more are one; the user was happy
+  without it. Every time phrase and name reads into syllables (`toneBreakdown`, all 570 and the
+  seven, none an exception: scratch `time_tones.mjs`). On a phone the dialog starts under Time's top
+  row, as under the other sections' (`showWordModal`, `.time-top`). Checked (scratch `timeword.py`,
+  real clicks) at 390 × 844, 390 × 664 and 1280 × 800: each line opens 2:30 pm's (bàai low, sɔ̌ɔng
+  rising, moong mid, khrʉ̂ng falling), said once; a picked ทุ่ม's; Official's; Escape closes; no
+  script errors.
 - **Official's band: the 24 hours, no names** (the user's call, 2026-10-22: "should the time names be
   there?"): official time is the hour 0–23 and นาฬิกา (สิบสามนาฬิกา, ศูนย์นาฬิกา), none of the day's
   names, and Everyday's counts (บ่าย's 1, midnight's 12) said otherwise there. With Official the
