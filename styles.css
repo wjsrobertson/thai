@@ -1912,8 +1912,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .stage:not([data-view="flashcards"]) .today-only,
 .stage:not([data-order="review"]) .today-only,
 .stage[data-order="review"] .card-wrap,
-/* Recognition is a stream you move through by answering: no ‹ › and no "3 / 24" (2026-10-08). Type too. */
-.stage:is([data-order="test"], [data-order="type"]) .nav-btn,
+/* Recognition is a stream you move through by answering: no ‹ › and no "3 / 24" (2026-10-08). Type too.
+   Cards' own ‹ › 🔀 only: the stage keeps Cards' order on every page, and `.nav-btn` hid Write's and
+   Time's ‹ › too while Words' Cards were on Recognition or Type (the user's report, 2026-10-22). */
+.stage:is([data-order="test"], [data-order="type"]) :is(#prev-btn, #next-btn, #random-btn),
 .stage:is([data-order="test"], [data-order="type"]) .pos-badge {
   display: none !important;
 }

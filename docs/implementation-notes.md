@@ -2080,6 +2080,16 @@ The user's call: the page switch's Reading is **Read** (its label, `aria-label` 
 Home's Topics card row, so the three are List | Cards | Read. The page is still `reading` in the
 code, and Settings' section is still Reading.
 
+## Write's ‹ › gone with Cards on Recognition or Type (2026-10-22)
+
+The user's report: Write's row had Clear and Check but no ‹ ›. The stage keeps Cards' order
+(`data-order`) on every page, and the rule hiding ‹ › in Recognition and Type, Cards' streams, hid
+every `.nav-btn`: Write's ‹ › and Time Explore's too, while Words' Cards were on either (Alphabet's
+Cards put Words' order back when left, so they didn't). The rule now names Cards' own,
+`#prev-btn`, `#next-btn`, `#random-btn`. Checked (scratch `writenav2.py`, `writenav3.py`) at
+390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
+shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
+
 ## The new-version bar, one line and prominent (2026-10-19)
 
 The user's screenshot: "A new version is ready." wrapped to three lines beside a 32 px Reload, in a
