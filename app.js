@@ -240,7 +240,7 @@ const DEFAULT_SETTINGS = {
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → List)
   listOrder: 'newest',            // your lists' words: 'newest' | 'oldest' added first (Settings → List; resolveListScope)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
-  devFeatures: false,             // pages still being tried out, now Time (Settings → App; applyDevFeatures)
+  devFeatures: false,             // pages still being tried out (Settings → App; applyDevFeatures): none now
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
   readStoriesLoop: true,          // Reading's Read / Read all start again when they finish (Settings → Reading)
   writeCheck: 'normal',           // Write → From memory: how sure the model must be, 'lenient' | 'normal' | 'strict' (WRITE_CHECK)
@@ -3794,14 +3794,10 @@ function mutedNotice() {
 // The Thai font: data-thai-font on <html> switches --thai-font in styles.css (looped is the default,
 // with no attribute). index.html applies the saved one before first paint.
 // Dev features (Settings → App, off by default; the user's call, 2026-10-21): pages still being tried
-// out, now Time. On, Time has a tab, and on a phone More takes Settings' place on the bar, with Time
-// and Settings in its list; off, the bar is as it was (html.dev: styles.css, mobile.css).
+// out, shown only with html.dev. Nothing's behind it now: Time was, its tab, Home's card and More, till
+// 2026-10-22, when it came out (the user's call: the setting kept for the next one).
 function applyDevFeatures() {
-  const on = !!getSettings().devFeatures;
-  document.documentElement.classList.toggle('dev', on);
-  if (on) return;
-  closeMore();
-  if (state.view === 'time') goTo('home');
+  document.documentElement.classList.toggle('dev', !!getSettings().devFeatures);
 }
 
 function applyThaiFont() {

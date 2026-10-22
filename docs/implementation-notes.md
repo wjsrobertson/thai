@@ -1547,8 +1547,8 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
-- **The bar's end** (the Time spike's branch): without dev features (the default), Settings last, no
-  More or Time; with them, More last, its list Time and Settings, Settings last (10-21).
+- **The bar's end:** More last, its list Time and Settings, Settings last; no Settings or Time tab on
+  the bar (10-21; behind dev features till 10-22, Settings last without them).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -1835,6 +1835,17 @@ Settings always last.
   `devprobe.py`) on a phone and 1280 × 800: off by default, on and off from Settings, kept over a
   reload, Settings still opening from the bar; no script errors. check_layout.py checks the bar both
   ways (not run).
+  **Out from behind it, 2026-10-22** (the user's call: "Time is no longer in dev mode"; the setting
+  kept, as it may be used again): Time's tab, More on a phone's bar (Time and Settings in its list)
+  and Home's Time card are always there (the `html:not(.dev)` rules went; on a phone `.tab-settings`
+  and `.tab-time` are always hidden). The Dictionary's Home card no longer spans both columns, as
+  Time's is beside it. Dev features is still in Settings → App, off by default, and still sets
+  `html.dev`, with nothing behind it ("Pages still being tried out. There are none at the moment.");
+  turning it off no longer closes More or leaves Time. check_layout.py now checks the bar once: More
+  last, Time and Settings in its list, and opens Settings from More (not run). Checked (scratch
+  `undev.py`) at 390 × 844 and 1280 × 800, with the setting off and on: the same bar, More's list,
+  Home's cards (Dictionary and Time side by side on the wider screen), Time opening from its tab,
+  More and its card; no script errors.
 - **Home's Time card** (the user's call, the same day), after the Dictionary's, with dev features
   on only: "Telling the time in Thai, everyday and official, with a quiz." (`.home-card-time`,
   `data-go="time"`). Across both columns on a wider screen, as Words' is, not half a row on its own.

@@ -42,8 +42,7 @@
          there's no top bar: Home, Alphabet, Words, Dictionary, Settings (2026-10-14, the user's calls; the
          Alphabet before Words since 2026-10-21;
          Words was Topics till 2026-10-21, when it held your lists too: data-view "study", the topic's or
-         list's List, Cards and Read in one, picked by the .study-switch). More, with Settings in its list, had the last place for a day; it's hidden
-         unless Settings → App → Dev features is on (2026-10-21; below). The icons, Home and More are hidden on wider screens, where ⚙
+         list's List, Cards and Read in one, picked by the .study-switch). More, with Time and Settings in its list, has the last place (below). The icons, Home and More are hidden on wider screens, where ⚙
          opens Settings. -->
     <!-- The tabs said Cards and Words for the Flashcards and Dictionary pages (the user's call,
          2026-10-12: shorter, and the text a little larger). Words is the study tab's now (2026-10-21). -->
@@ -54,10 +53,10 @@
       <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg><span class="tab-label">Dictionary</span></button>
       <button type="button" class="tab tab-time" role="tab" data-view="time" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="tab-label">Time</span></button>
       <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
-      <!-- More (2026-10-14; hidden from that day, the user's call): with Settings → App → Dev features on
-           (the Time spike, 2026-10-21), the phone bar's last tab, its list Time and Settings, Settings
-           always last (the user's call), and #tab-settings and Time's tab hidden; off (the default), the
-           bar ends with Settings and has no More (html.dev, mobile.css). -->
+      <!-- More (2026-10-14; hidden from that day, the user's call; back with the Time spike, 2026-10-21):
+           the phone bar's last tab, its list Time and Settings, Settings always last (the user's call),
+           #tab-settings and Time's tab hidden there (mobile.css). Behind Settings → App → Dev features
+           till 2026-10-22, when Time came out of it. -->
       <button type="button" class="tab tab-more" id="tab-more" aria-haspopup="menu" aria-expanded="false" aria-controls="more-menu"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path class="dots" d="M8 12h.01M12 12h.01M16 12h.01" /></svg><span class="tab-label">More</span></button>
     </nav>
     <div class="controls">
@@ -176,8 +175,7 @@
           <span>Browse or search in Thai, English or transliteration</span>
         </span>
       </button>
-      <!-- Time, with Settings → App → Dev features on (the user's call, 2026-10-21; html.dev): beside the
-           Dictionary on a wider screen. -->
+      <!-- Time (2026-10-21; behind Settings → App → Dev features till 2026-10-22): beside the Dictionary. -->
       <button type="button" class="home-card home-card-time" data-go="time">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>Time</span>
         <span class="home-card-text">
@@ -721,12 +719,13 @@
               <input type="file" id="backup-file" accept=".json,application/json" hidden />
             </div>
           </div>
-          <!-- Off by default (the user's call, 2026-10-21): applyDevFeatures. -->
-          <div class="setting-group" data-search="dev developer features experimental trial try new pages time clock more menu">
+          <!-- Off by default (the user's call, 2026-10-21): applyDevFeatures. Nothing's behind it since Time
+               came out (2026-10-22); kept for the next page tried out (the user's call). -->
+          <div class="setting-group" data-search="dev developer features experimental trial try new pages">
             <label class="setting-row">
               <span class="setting-label">Dev features</span>
               <input type="checkbox" id="setting-dev-features" />
-              <span class="setting-help">Pages still being tried out: Time. On a phone, More takes Settings' place on the bar, with both in its list.</span>
+              <span class="setting-help">Pages still being tried out. There are none at the moment.</span>
             </label>
           </div>
         </div>

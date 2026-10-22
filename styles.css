@@ -2163,9 +2163,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .stage:not([data-view="time"]) .time-only {
   display: none !important;
 }
-/* Its tab and Home's card only with Settings → App → Dev features on (the user's call, 2026-10-21;
-   applyDevFeatures). */
-html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
+/* Its tab and Home's card were behind Settings → App → Dev features from 2026-10-21 till 2026-10-22,
+   when Time came out of it (the user's calls). */
 /* The day's parts as day or night (2026-10-21, the user's call: six colours, one a part, looked like
    a striped jumper, and a gold tint for the day came out brown): the day's hours a plain grey a step
    up from the page, the night's (ตี, ทุ่ม, midnight, the counts for the dark) a blue tint, and the
@@ -2608,8 +2607,8 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
 }
 .home-card:hover { border-color: var(--accent); }
 .home-card-wide { grid-column: 1 / -1; } /* the Alphabet's and Words', across both columns */
-/* The Dictionary beside Time (dev features), or without it across both, not half a row on its own. */
-html:not(.dev) .home-card[data-go="dictionary"] { grid-column: 1 / -1; }
+/* The Dictionary and Time side by side under them (without Time, while it was behind dev features,
+   the Dictionary went across both). */
 .home-card-title { display: flex; align-items: center; gap: 12px; font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
 .home-card-title .page-icon { width: 1.2em; height: 1.2em; flex: none; color: var(--accent); }
 /* Three rows: the label (with an accent dot) in its own column, so the descriptions line up. */

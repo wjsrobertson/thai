@@ -179,12 +179,15 @@ def checks(ws, size):
       m and near(m['t'], bar['b'], 1.5) and near(m['b'], tabs['t'], 1.5), f"dialog {m and m['t']:.0f}–{m and m['b']:.0f}, row ends {bar['b']:.0f}, tabs from {tabs['t']:.0f}")
     tap(ws, '#word-modal-close')
 
-    # The bar as it was without dev features (the default, 2026-10-21): Settings last, no More or Time.
+    # The bar ends with More, Time and Settings in its list, Settings last (the Time spike, 2026-10-21;
+    # behind dev features till 2026-10-22, the bar ending with Settings without them).
     shown = "JSON.stringify([...document.querySelectorAll('.tabs .tab')].filter(t => t.getClientRects().length).map(t => t.id || t.dataset.view))"
     tabs_shown = json.loads(js(ws, shown))
-    C('Without dev features the tab bar ends with Settings, with no More or Time (10-21)',
-      tabs_shown[-1:] == ['tab-settings'] and 'tab-more' not in tabs_shown and 'time' not in tabs_shown, f"bar {tabs_shown}")
-    tap(ws, '#tab-settings', wait=1.0)
+    tap(ws, '#tab-more', wait=0.6)
+    more = json.loads(js(ws, "JSON.stringify([...document.querySelectorAll('.more-item')].filter(b => b.getClientRects().length).map(b => b.dataset.view || b.dataset.action))"))
+    C('The tab bar ends with More; its list has Time and Settings, Settings last (10-22)',
+      tabs_shown[-1:] == ['tab-more'] and 'tab-settings' not in tabs_shown and 'time' not in tabs_shown and more[-1:] == ['settings'] and 'time' in more, f"bar {tabs_shown}, More {more}")
+    tap(ws, '.more-item[data-action=settings]', wait=1.0)
     ss = R(ws, '#settings-search')
     C("Settings: the search where the Dictionary's is, as tall (top, left, height)", same(ss, se, 'tlh'), f"{fmt(ss)} / {fmt(se)}")
     C('Settings: no line under the search at rest', not js(ws, "document.getElementById('settings-modal').classList.contains('scrolled')"))
@@ -195,17 +198,6 @@ def checks(ws, size):
           same(ss, ss2, 't') and js(ws, "document.getElementById('settings-modal').classList.contains('scrolled')"), f"scrolled {went}px")
     else:
         C('Settings: the search stays put when the list scrolls (the list fits, nothing to scroll)', True, 'skipped')
-    # With dev features on (Settings → App; the Time spike, 2026-10-21), More, the bar's last tab, takes
-    # Settings' place: Time and Settings in its list, Settings last. Then off again.
-    js(ws, "document.getElementById('setting-dev-features').click()"); time.sleep(0.3)
-    js(ws, "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))"); time.sleep(0.6)
-    tabs_shown = json.loads(js(ws, shown))
-    tap(ws, '#tab-more', wait=0.6)
-    more = json.loads(js(ws, "JSON.stringify([...document.querySelectorAll('.more-item')].filter(b => b.getClientRects().length).map(b => b.dataset.view || b.dataset.action))"))
-    C('With dev features the tab bar ends with More; its list has Time and Settings, Settings last (10-21)',
-      tabs_shown[-1:] == ['tab-more'] and 'tab-settings' not in tabs_shown and more[-1:] == ['settings'] and 'time' in more, f"bar {tabs_shown}, More {more}")
-    tap(ws, '.more-item[data-action=settings]', wait=1.0)
-    js(ws, "document.getElementById('setting-dev-features').click()"); time.sleep(0.3)
     js(ws, "document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))"); time.sleep(0.6)
 
     # ---- Alphabet → Letters: the row above the letters (2026-10-15) ----
