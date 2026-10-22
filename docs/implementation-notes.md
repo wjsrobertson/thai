@@ -1900,6 +1900,18 @@ Settings always last.
   Checked (scratch `bandtap.py`, `bandtap2.py`, real clicks) at 390 × 844 and 1280 × 800: each
   name its own clip, lit while it plays, the times as above; a point just under a cell still the
   cell's; no script errors.
+  **A name tapped is picked** (the user's call, 2026-10-22): it's highlighted as an hour's cell is
+  when it's the time (`.time-band-label.on`, the accent; only the one tapped, as เช้า has two), and
+  the time's lines show the name instead: its Thai, transliteration and meaning (`gloss` in
+  time.js's PERIODS: "afternoon, 1–3 pm", "struck (a gong), 1–5 am", "a drum's beat, 7–11 pm"…),
+  ▶ saying the name. The rim lights the name's hours, and no cell is lit. The clock still goes to
+  the hour as above. Any other change of time ends it (`state.timeName`, cleared by `setTime`): an
+  hour, ‹ ›, a hand, Official, or a tap on the clock that moves nothing. A name's tap now says it
+  from the start even while it's playing (it was a speaker's press, which stopped it: the second
+  เช้า tapped while the first played was silent). Checked (scratch `namepick.py`, `namepick2.py`,
+  real clicks) at 390 × 664, 390 × 844 at text size 2 and 1280 × 800: each name's lines, its clip,
+  it alone lit, its hours on the rim; the page's gaps the same as for a time; each way back to the
+  time; no script errors.
 - **Its clips preloaded** (the user's call, 2026-10-21: "Download all audio" had them, all 605
   times and the band's names being in the manifest's Thai, but nothing fetched them ahead, so each
   came from the network the first time it played). `preloadTimeAudio`, through the queue a topic's

@@ -2215,11 +2215,13 @@ html:not(.dev) :is(.tab-time, .home-card-time) { display: none; }
   cursor: pointer;
 }
 .time-cell.on { background: var(--accent); color: var(--on-accent); font-weight: 700; }
-.time-band-label { position: relative; grid-row: 2; justify-self: center; margin: 0; border: 0; border-radius: 6px; padding: 2px 4px 0; background: none; color: var(--period-name);font: inherit; font-size: calc(14px * var(--fs, 1)); line-height: 1.3; white-space: nowrap; cursor: pointer; }
+.time-band-label { position: relative; grid-row: 2; justify-self: center; margin: 0; border: 0; border-radius: 6px; padding: 2px 4px 0; background: none; color: var(--period-name); font: inherit; font-size: calc(14px * var(--fs, 1)); line-height: 1.3; white-space: nowrap; cursor: pointer; }
 /* A button that says its name (renderTimeBand): a bigger target than the word, to the sides and down
    into the gap under it, not up over its hours' cells. Lit while it's said. */
 .time-band-label::after { content: ""; position: absolute; inset: 0 -10px -6px; }
 .time-band-label.playing { background: color-mix(in srgb, var(--period) 20%, transparent); }
+/* The name tapped (renderTime shows its lines), as an hour's cell is when it's the time's (2026-10-22). */
+.time-band-label.on { background: var(--accent); color: var(--on-accent); }
 /* A quarter's last hour's (เที่ยงคืน): centred under it, and if it's wider (a large text size), its
    end at the row's, growing left: its box at least the hour's width, its text centred in it. */
 .time-band-label.end { justify-self: end; min-width: 100%; text-align: center; }

@@ -46,15 +46,16 @@ const WORDS = {
 
 // The day's parts, as the band shows them: the hours each covers, and what the band's cell says for
 // an hour (the count the Thai uses: บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), 12 for midnight and noon as on
-// the clock face. Each is day or night in colour (styles.css, .period-<id>).
+// the clock face. Each is day or night in colour (styles.css, .period-<id>). `gloss`: what the name
+// means and when, shown in place of the time when the name's tapped (renderTime; one short line).
 export const PERIODS = [
-  { id: 'midnight', ...WORDS.midnight, hours: [0], count: () => 12 },
-  { id: 'tii', th: 'ตี', tl: 'tii', en: '1–5 am', hours: [1, 2, 3, 4, 5], count: (h) => h },
-  { id: 'chaao', th: 'เช้า', tl: 'cháao', en: '6–11 am', hours: [6, 7, 8, 9, 10, 11], count: (h) => h },
-  { id: 'noon', ...WORDS.noon, hours: [12], count: () => 12 },
-  { id: 'baai', th: 'บ่าย', tl: 'bàai', en: '1–3 pm', hours: [13, 14, 15], count: (h) => h - 12 },
-  { id: 'yen', th: 'เย็น', tl: 'yen', en: '4–6 pm', hours: [16, 17, 18], count: (h) => h - 12 },
-  { id: 'thum', th: 'ทุ่ม', tl: 'thûm', en: '7–11 pm', hours: [19, 20, 21, 22, 23], count: (h) => h - 18 },
+  { id: 'midnight', ...WORDS.midnight, gloss: 'midnight', hours: [0], count: () => 12 },
+  { id: 'tii', th: 'ตี', tl: 'tii', en: '1–5 am', gloss: 'struck (a gong), 1–5 am', hours: [1, 2, 3, 4, 5], count: (h) => h },
+  { id: 'chaao', th: 'เช้า', tl: 'cháao', en: '6–11 am', gloss: 'morning, 6–11 am', hours: [6, 7, 8, 9, 10, 11], count: (h) => h },
+  { id: 'noon', ...WORDS.noon, gloss: 'noon', hours: [12], count: () => 12 },
+  { id: 'baai', th: 'บ่าย', tl: 'bàai', en: '1–3 pm', gloss: 'afternoon, 1–3 pm', hours: [13, 14, 15], count: (h) => h - 12 },
+  { id: 'yen', th: 'เย็น', tl: 'yen', en: '4–6 pm', gloss: 'evening, 4–6 pm', hours: [16, 17, 18], count: (h) => h - 12 },
+  { id: 'thum', th: 'ทุ่ม', tl: 'thûm', en: '7–11 pm', gloss: 'a drum\'s beat, 7–11 pm', hours: [19, 20, 21, 22, 23], count: (h) => h - 18 },
 ];
 export const periodOf = (h) => PERIODS.find((p) => p.hours.includes(h));
 
