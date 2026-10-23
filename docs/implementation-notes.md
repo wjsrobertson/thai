@@ -1988,6 +1988,19 @@ Settings always last.
   (2:30) and on round to 3 pm; the short hand to the evening (ทุ่ม); a part's caption; Official
   (ยี่สิบนาฬิกา, written 20.00 น.); › past midnight (เที่ยงคืนสี่สิบนาที); Settings from More; no
   script errors. Not on the iPhone, and the recordings not yet listened to.
+- **Everyday only** (the user's call, 2026-10-23: "remove the 'Official' option, keeping only
+  Everyday"): the Everyday | Official switch went from the top row, leaving Explore | Quiz at the
+  width it had (280 px, centred), and with it what was Official's above, in Explore and Quiz
+  alike: the band's 0–23 and its blank names' line (`.time-band-label.blank`), "written 14.30 น.",
+  the official clock's Quiz decoys, `prefs.timeStyle` (a saved `official` is now ignored).
+  time.js says the time the everyday way only (`timeParts`, `timeEnglish`, `timePhrase` lost their
+  `style`, and นาฬิกา its word); git has the rest. The recordings: data/time-phrases.json is 304
+  texts (605 before), and the 290 recordings only Official used were deleted, so Download all
+  audio doesn't fetch them. Home's card says "the everyday way". The English line keeps its set
+  height. Checked (scratch `everyday_only.py`, real clicks, a saved `timeStyle: official`) at 390 ×
+  664, 763, 844, 430 × 932, 390 × 844 at text size 2 and 1280 × 800: no Official, the band's names
+  under every row, 2:30 pm said บ่ายสองโมงครึ่ง, the word dialog's tones, a name picked, Quiz's
+  three directions asked and answered; no scroll; no script errors.
 
 ## Time: Quiz (2026-10-21, the same spike)
 

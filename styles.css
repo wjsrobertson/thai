@@ -2176,7 +2176,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   --period: var(--tone-low); --period-fill: color-mix(in srgb, var(--tone-low) 18%, var(--panel)); --period-name: var(--tone-low); --period-rim: .35;
 }
 .time { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
-/* Explore | Quiz and Everyday | Official, side by side. */
+/* Explore | Quiz (Everyday | Official beside it went 2026-10-23). */
 .time-top { display: flex; justify-content: center; gap: 8px; }
 .time-top .segmented { display: flex; flex: 1 1 0; max-width: 280px; }
 /* As tall as Cards' (2026-10-21, the user's call: they were 40px here); a phone's 44 is mobile.css's. */
@@ -2224,7 +2224,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* A quarter's last hour's (เที่ยงคืน): centred under it, and if it's wider (a large text size), its
    end at the row's, growing left: its box at least the hour's width, its text centred in it. */
 .time-band-label.end { justify-self: end; min-width: 100%; text-align: center; }
-.time-band-label.blank { visibility: hidden; } /* Official's, holding the names' line (renderTimeBand) */
 /* The Thai for the time, its ▶ beside it; its transliteration and English under it. */
 .time-say { text-align: center; }
 .time-say :is(.time-th, .time-tr, .time-en) { cursor: pointer; } /* each opens the word dialog (timeCard) */
@@ -2233,8 +2232,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* One line (fitTimeSay), its height its full size's (normal's 1.15) when it's shrunk to fit. */
 .time-tr { margin: 2px 0 0; color: var(--accent); font-style: italic; font-size: calc(17px * var(--fs, 1)); line-height: calc(17px * 1.15 * var(--fs, 1)); white-space: nowrap; }
 :is(.time-th, .time-tr).wraps { white-space: normal; }
-/* One line, its height set (Everyday's, 1.2): Official's "written 14.00 น." took the Thai font's
-   taller line, 7 px more, and the page jumped as the two were switched (2026-10-22). */
+/* One line, its height set (1.2): a name's meaning or a time's English never moves what's under it
+   (it was for Everyday | Official, 2026-10-22, which went 2026-10-23). */
 .time-en { height: calc(16px * 1.2 * var(--fs, 1)); margin: 2px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: calc(16px * 1.2 * var(--fs, 1)); white-space: nowrap; }
 /* Quiz: its directions as Cards' are, the question in a card, four answers in two rows. */
 .time-dirs { display: flex; width: 100%; }

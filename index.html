@@ -180,7 +180,7 @@
       <button type="button" class="home-card home-card-time" data-go="time">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>Time</span>
         <span class="home-card-text">
-          <span>Telling the time in Thai, everyday and official, with a quiz.</span>
+          <span>Telling the time in Thai, the everyday way, with a quiz.</span>
         </span>
       </button>
     </section>
@@ -807,17 +807,14 @@
     </section>
 
     <!-- Time (renderTime; a spike, 2026-10-21: branch 2026-10-21-spike-time): Explore, a clock to set
-         and the Thai for its time, everyday or official, with the day's parts as a band. -->
+         and the Thai for its time, the everyday way, with the day's parts as a band. -->
     <section class="time time-only" id="time-section" hidden>
       <div class="time-top">
-        <!-- Explore | Quiz (prefs.timePage), and how the time is said, for both. -->
+        <!-- Explore | Quiz (prefs.timePage). Everyday | Official beside it went 2026-10-23 (the user's
+             call: Everyday only). -->
         <div class="segmented time-page-switch" role="radiogroup" aria-label="Time page">
           <button type="button" role="radio" class="seg-btn" data-time-page="explore" aria-checked="true">Explore</button>
           <button type="button" role="radio" class="seg-btn" data-time-page="quiz" aria-checked="false">Quiz</button>
-        </div>
-        <div class="segmented time-switch" role="radiogroup" aria-label="How the time is said">
-          <button type="button" role="radio" class="seg-btn" data-time-style="everyday" aria-checked="true">Everyday</button>
-          <button type="button" role="radio" class="seg-btn" data-time-style="official" aria-checked="false">Official</button>
         </div>
       </div>
       <div class="time-explore" id="time-explore">

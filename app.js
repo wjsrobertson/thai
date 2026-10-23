@@ -85,7 +85,6 @@ const els = {
   moreMenu: document.getElementById('more-menu'), // its list
   moreItems: document.querySelectorAll('.more-item'),
   timeSection: document.getElementById('time-section'),
-  timeStyleButtons: document.querySelectorAll('[data-time-style]'),
   timeClock: document.getElementById('time-clock'),
   timePrev: document.getElementById('time-prev'),
   timeNext: document.getElementById('time-next'),
@@ -7599,10 +7598,11 @@ function wait(ms) {
 // ---------- Time (time.js; a spike, 2026-10-21: branch 2026-10-21-spike-time) ----------
 // Explore: a clock to set, by dragging its hands (the long one by 5 minutes, carrying the hour round;
 // the short one by the hour), by ‹ › (5 minutes) or by the band, and the Thai for its time under it,
-// the everyday way or the official one (prefs.timeStyle). The band is the day's 24 hours in the
-// six-hour clock's four quarters, the day's hours grey and the night's blue, with the count its Thai
-// uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its hours saying itself when tapped; the clock's
-// rim shows day and night for the half of the day it's in. A change says the time, whatever Cards'
+// the everyday way (an Everyday | Official switch went 2026-10-23, the user's call: Everyday only).
+// The band is the day's 24 hours in the six-hour clock's four quarters, the day's hours grey and the
+// night's blue, with the count its Thai uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its
+// hours saying itself when tapped; the clock's rim shows day and night for the half of the day it's
+// in. A change says the time, whatever Cards'
 // auto-play (its A): the user set it, so wants to hear it (the user's call, 2026-10-22; a tap on an
 // hour was silent with auto-play off). Mute still silences it. It opens on the time now, to the 5
 // minutes.
@@ -7612,7 +7612,6 @@ const svgEl = (tag, attrs = {}) => {
   for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
   return e;
 };
-const timeStyle = () => (getPreferences().timeStyle === 'official' ? 'official' : 'everyday');
 const timeSaysOnChange = () => getPreferences().autoPlay !== false; // Quiz's questions; Explore always says its time
 let clockParts = null; // Explore's clock's hands and rim, once drawn (drawClock)
 let clockDrag = null;  // 'hour' or 'minute' while a hand is dragged
@@ -7663,7 +7662,7 @@ function setTime(h, m, { say = false, name = null } = {}) {
   state.time = { h: ((h % 24) + 24) % 24, m: ((m % 60) + 60) % 60 };
   state.timeName = name;
   renderTime();
-  if (say) speak(timePhrase(state.time.h, state.time.m, timeStyle()).th);
+  if (say) speak(timePhrase(state.time.h, state.time.m).th);
 }
 
 function stepTime(minutes) {
@@ -7674,8 +7673,6 @@ function stepTime(minutes) {
 function renderTime() {
   if (!clockParts) clockParts = drawClock(els.timeClock);
   const { h, m } = state.time;
-  const style = timeStyle();
-  els.timeStyleButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeStyle === style)));
   const name = timeNamePicked();
   setClock(clockParts, h, m, name ? name.hours : [h]);
   renderTimeBand();
@@ -7692,9 +7689,9 @@ function renderTime() {
   preloadTimeAudio(); // the times around this one
 }
 
-// A name tapped on the band (Everyday's): the name's Thai, transliteration and meaning in place of
-// the time's, its hours lit on the rim, until the time changes (the user's call, 2026-10-22).
-const timeNamePicked = () => (timeStyle() === 'everyday' && state.timeName ? PERIODS.find((x) => x.id === state.timeName.id) : null);
+// A name tapped on the band: the name's Thai, transliteration and meaning in place of the time's,
+// its hours lit on the rim, until the time changes (the user's call, 2026-10-22).
+const timeNamePicked = () => (state.timeName ? PERIODS.find((x) => x.id === state.timeName.id) : null);
 
 // What Explore's three lines say, as a card: the time's phrase, or a name's. A tap on any of them
 // opens it in the word dialog (showWordPop), the whole phrase with each syllable's tone, as a Topics
@@ -7703,8 +7700,8 @@ const timeNamePicked = () => (timeStyle() === 'everyday' && state.timeName ? PER
 function timeCard() {
   const name = timeNamePicked();
   if (name) return { thai: name.th, translit: name.tl, english: name.gloss, time: true };
-  const p = timePhrase(state.time.h, state.time.m, timeStyle());
-  return { thai: p.th, translit: p.tl, english: p.en + (p.written ? ` · written ${p.written}` : ''), time: true };
+  const p = timePhrase(state.time.h, state.time.m);
+  return { thai: p.th, translit: p.tl, english: p.en, time: true };
 }
 
 // The time's Thai on one line beside its ▶, smaller for a long one (บ่ายสองโมงสามสิบห้านาที wrapped
@@ -7733,12 +7730,9 @@ function fitTimeSay() {
 // rows of twelve before), each counting one to six and ending on the day's markers: 1–6 am (ตี, then
 // six in the morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม one to five, then
 // midnight, once หกทุ่ม). Under each run of a part of the day, its name: centred, or a single hour's
-// (the quarter's last) to the row's end. Official time has none of the names and counts 0–23
-// (สิบสามนาฬิกา, ศูนย์นาฬิกา), so there the cells are the 24 hours' numbers and the names go (the
-// user's call, 2026-10-22).
+// (the quarter's last) to the row's end.
 const TIME_QUARTERS = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 0]];
 function renderTimeBand() {
-  const style = timeStyle();
   const rows = TIME_QUARTERS.map((hours) => {
     const row = document.createElement('div');
     row.className = 'time-band-row';
@@ -7747,18 +7741,10 @@ function renderTimeBand() {
       const cell = document.createElement('button');
       cell.type = 'button';
       cell.className = `time-cell period-${period.id}` + (h === state.time.h && !state.timeName ? ' on' : '');
-      cell.textContent = style === 'official' ? h : period.count(h);
-      cell.setAttribute('aria-label', `${timeEnglish(h, 0, style)}: ${timePhrase(h, 0, style).th}`);
+      cell.textContent = period.count(h);
+      cell.setAttribute('aria-label', `${timeEnglish(h, 0)}: ${timePhrase(h, 0).th}`);
       cell.addEventListener('click', () => setTime(h, 0, { say: true })); // on the hour (the user's call, 2026-10-21; it kept the minutes)
       row.append(cell);
-    }
-    // Official has no names: a blank line in their place, so the band is Everyday's height and the
-    // page doesn't jump as the two are switched (the user's call, 2026-10-22).
-    if (style === 'official') {
-      const blank = Object.assign(document.createElement('span'), { className: 'time-band-label blank', lang: 'th', textContent: 'ตี' });
-      blank.setAttribute('aria-hidden', 'true');
-      row.append(blank);
-      return row;
     }
     for (let i = 0; i < hours.length;) {
       const period = periodOf(hours[i]);
@@ -7793,12 +7779,11 @@ function renderTimeBand() {
 // ---------- Time's Quiz (2026-10-21, the same spike) ----------
 // Recognition for times: a time in Thai (or heard) and four in English to pick from, or a clock and
 // four in Thai. The wrong answers are the mistakes learners make: the same number in the day's other
-// parts (บ่ายสองโมง's are ตีสอง and สองทุ่ม, 2 am and 8 pm), and the hour twelve away (2 am); in
-// the official clock, the hour twelve away and the one ending in the same digit (สิบสี่ and สี่).
+// parts (บ่ายสองโมง's are ตีสอง and สองทุ่ม, 2 am and 8 pm), and the hour twelve away (2 am).
 // The minutes are the question's in all four. Half are on the hour, a quarter half past, the rest
 // any 5 minutes. As in Recognition: right is green, wrong red and the right one green, then the
 // next after Settings' pauses (Cards → Pause after a right / wrong answer), and a time got wrong
-// comes back three questions later. Explore's Everyday | Official applies here too.
+// comes back three questions later.
 const TIME_DIRS = ['th', 'time', 'listen'];
 const timePage = () => (getPreferences().timePage === 'quiz' ? 'quiz' : 'explore');
 const timeQuizDir = () => (TIME_DIRS.includes(getPreferences().timeQuizDir) ? getPreferences().timeQuizDir : 'th');
@@ -7821,7 +7806,7 @@ function renderTimeSection() {
 // Time's clips, fetched ahead of playback as a topic's are (preloadDeckAudio; the user's call,
 // 2026-10-21: each was fetched the first time it played, unless Download all audio had them).
 // Explore: the clock's time and those within half an hour of it, nearest first, then the band's
-// names and the 24 hours on the hour, in the style shown (about 45 clips, ~450 KB), again as the
+// names and the 24 hours on the hour (about 45 clips, ~450 KB), again as the
 // clock moves (those loaded are skipped). Quiz: the question's and the next one's (nextTimeQuestion
 // picks it a question ahead). Held in memory, as a topic's Thai is, so they play at once.
 function preloadTimeAudio() {
@@ -7829,9 +7814,8 @@ function preloadTimeAudio() {
     queuePageAudio([]);
     return;
   }
-  const style = timeStyle();
   const say = new Set();
-  const at = (h, m) => say.add(timePhrase(h, m, style).th);
+  const at = (h, m) => say.add(timePhrase(h, m).th);
   if (timePage() === 'quiz') {
     const { q, ahead } = state.timeQuiz || {};
     if (q) at(q.h, q.m);
@@ -7844,7 +7828,7 @@ function preloadTimeAudio() {
         at(Math.floor(x / 60), x % 60);
       }
     }
-    if (style === 'everyday') for (const h of TIME_QUARTERS.flat()) say.add(periodOf(h).th); // the band's names
+    for (const h of TIME_QUARTERS.flat()) say.add(periodOf(h).th); // the band's names
     for (let h = 0; h < 24; h++) at(h, 0);
   }
   queuePageAudio([...say].map((th) => ({ url: sampleUrl(th, 'th'), keep: true })).filter((e) => e.url));
@@ -7857,18 +7841,15 @@ function quizTime() {
 }
 
 // The hours to offer beside h, likeliest mistakes first.
-function timeDecoys(h, style) {
+function timeDecoys(h) {
   const hours = [...Array(24).keys()].filter((x) => x !== h);
-  if (style === 'official') {
-    return [(h + 12) % 24, ...shuffled(hours.filter((x) => x % 10 === h % 10)), ...shuffled([(h + 1) % 24, (h + 23) % 24]), ...shuffled(hours)];
-  }
   const count = periodOf(h).count(h);
   const same = shuffled(hours.filter((x) => periodOf(x).count(x) === count));
   return [...same, (h + 12) % 24, ...shuffled(same.map((x) => (x + 12) % 24)), ...shuffled(hours)];
 }
 
 // What an answer says: the time in English, or (asked from a clock) its Thai.
-const timeAnswerText = (t, dir, style) => (dir === 'time' ? timePhrase(t.h, t.m, style).th : timeEnglish(t.h, t.m, style));
+const timeAnswerText = (t, dir) => (dir === 'time' ? timePhrase(t.h, t.m).th : timeEnglish(t.h, t.m));
 
 function nextTimeQuestion() {
   const quiz = (state.timeQuiz ||= { comebacks: [], seq: 0 });
@@ -7879,31 +7860,30 @@ function nextTimeQuestion() {
   const q = due >= 0 ? quiz.comebacks.splice(due, 1)[0] : quiz.ahead || quizTime();
   if (due < 0) quiz.ahead = null;
   const dir = timeQuizDir();
-  const style = timeStyle();
   const options = [{ h: q.h, m: q.m }];
-  const seen = new Set([timeAnswerText(q, dir, style)]);
-  for (const h of timeDecoys(q.h, style)) {
+  const seen = new Set([timeAnswerText(q, dir)]);
+  for (const h of timeDecoys(q.h)) {
     const t = { h, m: q.m };
-    const text = timeAnswerText(t, dir, style);
+    const text = timeAnswerText(t, dir);
     if (seen.has(text) || h === q.h) continue;
     seen.add(text);
     options.push(t);
     if (options.length === 4) break;
   }
-  Object.assign(quiz, { q: { h: q.h, m: q.m }, options: shuffled(options), picked: null, dir, style });
+  Object.assign(quiz, { q: { h: q.h, m: q.m }, options: shuffled(options), picked: null, dir });
   quiz.ahead ||= quizTime();
   renderTimeQuiz();
-  const th = timePhrase(q.h, q.m, style).th;
+  const th = timePhrase(q.h, q.m).th;
   if (dir === 'listen' || (dir === 'th' && timeSaysOnChange())) speak(th);
   preloadTimeAudio();
 }
 
 function renderTimeQuiz() {
   const quiz = state.timeQuiz;
-  const { q, options, picked, dir, style } = quiz;
+  const { q, options, picked, dir } = quiz;
   els.timeDirButtons.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.timeDir === timeQuizDir())));
   const answered = picked !== null;
-  const p = timePhrase(q.h, q.m, style);
+  const p = timePhrase(q.h, q.m);
   if (!qClockParts) qClockParts = drawClock(els.timeQClock);
   setClock(qClockParts, q.h, q.m);
   // The clock is the question asked from a clock; for the others it's blank, no hands, till answered
@@ -7911,13 +7891,13 @@ function renderTimeQuiz() {
   els.timeQClock.classList.toggle('blank', dir !== 'time' && !answered);
   els.timeQPrompt.lang = dir === 'th' || (answered && dir === 'listen') ? 'th' : 'en';
   els.timeQPrompt.className = 'time-q-prompt' + (els.timeQPrompt.lang === 'th' ? ' th' : '');
-  els.timeQPrompt.textContent = dir === 'time' ? timeEnglish(q.h, q.m, style) : dir === 'th' || answered ? p.th : '';
+  els.timeQPrompt.textContent = dir === 'time' ? timeEnglish(q.h, q.m) : dir === 'th' || answered ? p.th : '';
   // The speaker: Thai and Listen have it from the start; from a clock, once answered (it'd say it).
   els.timeQPlay.hidden = dir === 'time' && !answered;
   els.timeQPlay.dataset.say = p.th;
   els.timeQPlay.classList.toggle('big', dir === 'listen'); // Listen's question, and still once answered
   els.timeQReveal.textContent = !answered ? (dir === 'listen' ? 'What time do you hear?' : '')
-    : dir === 'time' ? `${p.th} · ${p.tl}` : `${p.tl} · ${p.en}${p.written ? ` · ${p.written}` : ''}`;
+    : dir === 'time' ? `${p.th} · ${p.tl}` : `${p.tl} · ${p.en}`;
   els.timeQReveal.classList.toggle('hint', !answered);
   els.timeAnswers.classList.toggle('locked', answered);
   els.timeAnswers.replaceChildren(...options.map((t, i) => {
@@ -7925,7 +7905,7 @@ function renderTimeQuiz() {
     b.type = 'button';
     b.className = 'learn-pill' + (dir === 'time' ? ' thai-pill' : '');
     if (dir === 'time') b.lang = 'th';
-    b.textContent = timeAnswerText(t, dir, style);
+    b.textContent = timeAnswerText(t, dir);
     const right = t.h === q.h;
     if (answered) b.classList.add(right ? 'correct' : i === picked ? 'wrong' : 'dimmed');
     b.addEventListener('click', () => answerTime(i));
@@ -7956,7 +7936,7 @@ function answerTime(i) {
   const right = quiz.options[i].h === quiz.q.h;
   if (!right && !quiz.comebacks.some((c) => c.h === quiz.q.h && c.m === quiz.q.m)) quiz.comebacks.push({ ...quiz.q, in: 3 });
   renderTimeQuiz();
-  if (quiz.dir !== 'listen' && timeSaysOnChange()) speak(timePhrase(quiz.q.h, quiz.q.m, quiz.style).th);
+  if (quiz.dir !== 'listen' && timeSaysOnChange()) speak(timePhrase(quiz.q.h, quiz.q.m).th);
   const seq = quiz.seq;
   const s = getSettings();
   setTimeout(() => {
@@ -8203,13 +8183,6 @@ function bindEvents() {
   // Time's clock (renderTime).
   els.timePrev.addEventListener('click', () => stepTime(-5));
   els.timeNext.addEventListener('click', () => stepTime(5));
-  els.timeStyleButtons.forEach((b) => b.addEventListener('click', () => {
-    if (b.dataset.timeStyle === timeStyle()) return;
-    setPreferences({ timeStyle: b.dataset.timeStyle });
-    els.timeStyleButtons.forEach((x) => x.setAttribute('aria-checked', String(x === b)));
-    if (timePage() === 'quiz') nextTimeQuestion(); // a new question, said the other way
-    else setTime(state.time.h, state.time.m, { say: true });
-  }));
   els.timePageButtons.forEach((b) => b.addEventListener('click', () => {
     if (b.dataset.timePage === timePage()) return;
     setPreferences({ timePage: b.dataset.timePage });
@@ -8239,7 +8212,7 @@ function bindEvents() {
     clockDrag = null;
     els.timeClock.classList.remove('dragging');
     if (state.timeName) setTime(state.time.h, state.time.m); // a tap that didn't move a hand: the time again
-    speak(timePhrase(state.time.h, state.time.m, timeStyle()).th); // said once it's let go
+    speak(timePhrase(state.time.h, state.time.m).th); // said once it's let go
   };
   els.timeClock.addEventListener('pointerup', dropHand);
   els.timeClock.addEventListener('pointercancel', dropHand);

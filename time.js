@@ -1,7 +1,8 @@
 // The Time section's Thai (2026-10-21, a spike: branch 2026-10-21-spike-time): any time of day said
-// the everyday way (the six-hour clock: ตี, …โมงเช้า, เที่ยง, บ่าย…, …โมงเย็น, …ทุ่ม) or the
-// official 24-hour way (…นาฬิกา…นาที), as parts that each mean something. No page code, so
-// tools/time_phrases.mjs can list every phrase for gen_audio.py to record.
+// the everyday way (the six-hour clock: ตี, …โมงเช้า, เที่ยง, บ่าย…, …โมงเย็น, …ทุ่ม), as parts
+// that each mean something. No page code, so tools/time_phrases.mjs can list every phrase for
+// gen_audio.py to record. The official 24-hour way (…นาฬิกา…นาที) went 2026-10-23 (the user's
+// call: Everyday only); git has it.
 //
 // The forms are the Telling the Time topics' (data/decks.json: time-telling-day, -night, -minutes):
 // เช้า and เย็น go once minutes are said (แปดโมงครึ่ง, 8:30 am), 7 pm with minutes is ทุ่ม
@@ -41,7 +42,6 @@ const WORDS = {
   thum: { th: 'ทุ่ม', tl: 'thûm', en: 'o\'clock, 7–11 pm (the drum once beaten for the evening hours)' },
   half: { th: 'ครึ่ง', tl: 'khrʉ̂ng', en: 'half past' },
   minutes: { th: 'นาที', tl: 'naa-thii', en: 'minutes' },
-  naalikaa: { th: 'นาฬิกา', tl: 'naa-lí-gaa', en: 'o\'clock, on the 24-hour clock' },
 };
 
 // The day's parts, as the band shows them: the hours each covers, and what the band's cell says for
@@ -72,60 +72,50 @@ function everydayHour(h, withMinutes) {
   return [thaiNumber(h - 18), WORDS.thum];
 }
 
-const minuteParts = (m, half) => (m === 0 ? [] : m === 30 && half ? [WORDS.half] : [thaiNumber(m), WORDS.minutes]);
+const minuteParts = (m) => (m === 0 ? [] : m === 30 ? [WORDS.half] : [thaiNumber(m), WORDS.minutes]);
 
-// `style`: 'everyday' or 'official'. h 0–23, m 0–59.
-export function timeParts(h, m, style = 'everyday') {
-  if (style === 'official') return [thaiNumber(h), WORDS.naalikaa, ...minuteParts(m, false)];
-  return [...everydayHour(h, m > 0), ...minuteParts(m, true)];
+// h 0–23, m 0–59.
+export function timeParts(h, m) {
+  return [...everydayHour(h, m > 0), ...minuteParts(m)];
 }
 
 const pad = (n) => String(n).padStart(2, '0');
 
-// The time in English, as the topics' cards give it: "6 am", "2:30 pm", noon, midnight; 24-hour "14:30".
-export function timeEnglish(h, m, style = 'everyday') {
-  if (style === 'official') return `${pad(h)}:${pad(m)}`;
+// The time in English, as the topics' cards give it: "6 am", "2:30 pm", noon, midnight.
+export function timeEnglish(h, m) {
   if (m === 0 && h === 0) return 'midnight';
   if (m === 0 && h === 12) return 'noon';
   return `${h % 12 || 12}${m ? `:${pad(m)}` : ''} ${h < 12 ? 'am' : 'pm'}`;
 }
 
-// { th, tl, en, parts, written, note }: `written` is how the official time is written (14.30 น.);
-// `note`, a word on what's easy to get wrong at that time.
-export function timePhrase(h, m, style = 'everyday') {
-  const parts = timeParts(h, m, style);
+// { th, tl, en, parts, note }: `note`, a word on what's easy to get wrong at that time.
+export function timePhrase(h, m) {
+  const parts = timeParts(h, m);
   const out = {
     th: parts.map((p) => p.th).join(''),
     tl: parts.map((p) => p.tl).join(' '),
-    en: timeEnglish(h, m, style),
+    en: timeEnglish(h, m),
     parts,
-    written: style === 'official' ? `${pad(h)}.${pad(m)} น.` : '',
     note: '',
   };
-  if (style === 'everyday') {
-    if ((h === 6 || h === 18) && m === 0) out.note = `Keep the ${h === 6 ? 'เช้า' : 'เย็น'}: หกโมง alone could be either.`;
-    else if ((h === 6 || h === 18) && m > 0) out.note = `${out.th} could be 6 am or 6 pm: add ตอนเช้า (in the morning) or ตอนเย็น (in the evening) if it isn't clear.`;
-    else if (h === 12 && m === 0) out.note = 'Never สิบสองโมง.';
-    else if (h === 13 && m === 0) out.note = 'The หนึ่ง (one) is left out: not บ่ายหนึ่งโมง.';
-    else if (h === 19 && m === 0) out.note = 'Often just ทุ่ม.';
-    else if ((h === 14 || h === 15) && m === 0) out.note = `Often just ${out.th.replace('โมง', '')}.`;
-    else if (h >= 7 && h <= 11 && m === 0) out.note = `Often just ${out.th.replace('เช้า', '')}.`;
-  } else if (m === 0) {
-    out.note = `In speech: ${timePhrase(h, 0).th}.`;
-  }
+  if ((h === 6 || h === 18) && m === 0) out.note = `Keep the ${h === 6 ? 'เช้า' : 'เย็น'}: หกโมง alone could be either.`;
+  else if ((h === 6 || h === 18) && m > 0) out.note = `${out.th} could be 6 am or 6 pm: add ตอนเช้า (in the morning) or ตอนเย็น (in the evening) if it isn't clear.`;
+  else if (h === 12 && m === 0) out.note = 'Never สิบสองโมง.';
+  else if (h === 13 && m === 0) out.note = 'The หนึ่ง (one) is left out: not บ่ายหนึ่งโมง.';
+  else if (h === 19 && m === 0) out.note = 'Often just ทุ่ม.';
+  else if ((h === 14 || h === 15) && m === 0) out.note = `Often just ${out.th.replace('โมง', '')}.`;
+  else if (h >= 7 && h <= 11 && m === 0) out.note = `Often just ${out.th.replace('เช้า', '')}.`;
   return out;
 }
 
-// Every phrase the page can show (both styles, every 5 minutes) and every part, for recording.
+// Every phrase the page can show (every 5 minutes) and every part, for recording.
 export function allTimeTexts() {
   const texts = new Set();
   for (let h = 0; h < 24; h++) {
     for (let m = 0; m < 60; m += 5) {
-      for (const style of ['everyday', 'official']) {
-        const p = timePhrase(h, m, style);
-        texts.add(p.th);
-        p.parts.forEach((x) => texts.add(x.th));
-      }
+      const p = timePhrase(h, m);
+      texts.add(p.th);
+      p.parts.forEach((x) => texts.add(x.th));
     }
   }
   return [...texts].sort();

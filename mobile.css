@@ -139,7 +139,7 @@ html.kb .tabs { display: none; }
 }
 .section-bar { display: flex; gap: 8px; }
 .dict-top { margin-bottom: 4px; } /* with its padding, the 16px it had */
-/* Time's Explore | Quiz and Everyday | Official the same (2026-10-21, the user's call: it sat at the
+/* Time's Explore | Quiz the same (2026-10-21, the user's call: it sat at the
    very top, without the 12px the other sections have above their row). Its padding stands in for
    .time's gap under it: 12, as under Topics' row. */
 .time-top { margin-bottom: -10px; }
