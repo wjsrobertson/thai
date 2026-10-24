@@ -2188,6 +2188,23 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Five vowels described better (2026-10-24)
+
+The user's report: some vowels' English was hard to pick in Cards ("short, as in 'about'", "short,
+as in 'cat'", "long, 'cat' drawn out"). Worked out with them, each short vowel now pairs with its
+long one, in words a British ear hears right:
+- **แอะ:** "ɛ — short, 'eh', as in 'bed'" (was 'cat': the user's call, "it is more like 'eh'", and
+  'cat' sat a letter from อะ's 'cut' in the choices). **แอ:** "ɛɛ — long, as in 'air'" (no r; Thai's
+  แอร์, air-con, has the vowel).
+- **เอะ:** "e — short, a clipped 'ay'" (was 'pet', which is แอะ's "eh" now), beside เอ's "like 'play'
+  without the glide".
+- **เออะ, เออ:** "short; / long; 'eau' with spread lips" (were 'about', two vowels, and "like 'fur'
+  without the r"), worded as อึ and อือ are, short or long the only difference (the user's call:
+  French 'eau' alone is โอ's pure o; เออ is it unrounded).
+14 cards in 7 topics (Short & Long Vowels, and Read's vowel topics). Card keys are `thai::english`,
+so their progress starts again. The English recorded again (the voice reads the IPA and 'eau' as
+written).
+
 ## The new-version bar, one line and prominent (2026-10-19)
 
 The user's screenshot: "A new version is ready." wrapped to three lines beside a 32 px Reload, in a
