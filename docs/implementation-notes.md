@@ -2206,6 +2206,27 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## The gloss sweep (2026-10-25)
+
+The last of the list: a sweep for glosses that mislead, as สินสอด (dowry), ใช่ (yes) and เกรงใจ
+(lose face) had. The 500 Spoken Thai cards read through, and every Thai word with two glosses close
+enough to be the same sense listed (word overlap of half or more).
+- **Merged** (the same sense, worded differently by topic; every copy, stories too, now one card):
+  ไม่เป็นไร ("no problem / it's fine", "never mind / it's OK", "never mind, it's fine" → "never mind
+  / it's fine"; the separate "no thanks" sense stays), ไม่สบาย, ถอดรองเท้า, ไม่เอา,
+  ค่าน้ำร้อนน้ำชา, หนังสือเดินทาง, ดอกบัว. 8 fewer distinct cards; progress on the merged wordings
+  resets.
+- **Notes** where the gloss hides the use: เป็น (never before an adjective), เดี๋ยว (elastic),
+  ชอบ (also "tends to"), แฟน (also a husband or wife), ไม่ค่อย (often a polite "bad"), กิน (also
+  medicine), คิดถึง (also "think of"), ข้าว (also a meal).
+- **Notes made the same on every copy** outside Thai Script, for cards copied into today's topics:
+  ใจเย็น, รถเข็น, ไปไหนมา, กินข้าวหรือยัง, เกรงใจ, ไว้หน้า, ผู้ใหญ่, and กิน (Register Ladders had
+  taken the Thai Script rhyme copy's note). 14 "different notes per topic" review items went.
+- **Checked:** the audit (0 errors, nothing new), stories.py check and sync (799 story copies
+  updated), spelling.mjs --write, gen_audio (8 new recordings, 0 failed), word_timings (nothing new).; in the app (scratch `gloss_probe.py`, 390 × 844): the merged
+  ไม่เป็นไร in Greetings and Thai Values, and the new notes on ชอบ, เป็น, เดี๋ยว, ถอดรองเท้า; no
+  page scroll, no script errors.
+
 ## Hierarchy words, savings circles, two euphemisms (2026-10-25)
 
 The sixth of the six gaps, smaller ones, each into a topic with room:
