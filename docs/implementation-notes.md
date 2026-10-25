@@ -2206,6 +2206,29 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Monks: Talking To and About (2026-10-25)
+
+The third of the six gaps: royal language had two topics, but the monk register, met far more
+often, had almost nothing. A topic in Culture & Values → Beliefs & Traditions, after Religion: Merit,
+Karma & Faiths (`religion-monks`, 24), with an `about` of three paragraphs (address by rank, a
+monk's own words and what you do for a monk, the changed verbs):
+- Address: หลวงพ่อ, หลวงพี่, หลวงตา, พระอาจารย์, เจ้าอาวาส, เณร (a copy). A monk's words: อาตมา,
+  โยม, เจริญพร. Dealing with monks: นิมนต์, ถวาย and กราบ (copies), ประเคน, บิณฑบาต (a copy),
+  ตักบาตร, สังฆทาน, จีวร, ให้พร, กรวดน้ำ. The verbs: ฉัน (a new sense of ฉัน), เพล, จำวัด, อาพาธ,
+  มรณภาพ.
+- **เสีย "to pass away"** in Life Events: Death, Funerals & Ordination (16): the everyday gentle
+  word had no card (เสีย had only "broken / spoiled / to lose"). Its English first had เสียชีวิต in
+  it; the audit wants Thai in the note, so it moved there.
+- **Stories** (5, Medium): Alms Before School, Inviting the Monks (a housewarming), Luang Ta in
+  Hospital, The Bottle of Water (a farang friend, and the cloth), The Old Abbot. ฉัน "I" and ฉัน
+  "eat (of a monk)" can't share a story (one card per word), so the two stories with monks eating
+  have no ฉัน narrator. Morning Alms, the first title, was taken (rs-morning-alms), so the story
+  was renamed before adding. The topic matches 6 stories; every card is in one.
+- **Checked:** the audit (0 errors, nothing new), stories.py check and sync, spelling.mjs --write,
+  gen_audio (87 new recordings, 0 failed), word_timings (33 lines, 0 failed, 0 clips replaced); in the app (scratch `topic_probe.py`, 390 × 844, and 390 ×
+  664 at text size 2): the topic's rows, about and stories, Inviting the Monks with every word a
+  card, no page scroll, no script errors.
+
 ## The polite names: peoples, gender, disability (2026-10-25)
 
 The second of the six gaps: the slur cards' notes pointed to neutral words that had no card
