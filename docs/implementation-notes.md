@@ -2206,6 +2206,40 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Pronouns in Practice and Nicknames (2026-10-25)
+
+The user asked how true Stuart Jay Raj's "ใช่ doesn't mean yes" and "คุณ doesn't mean you" are,
+then whether pronoun nuance deserved its own section, then "a bunch of nicknames is good, please
+proceed". The pronoun words were all there, across five topics; what was missing was how Thais
+choose, or skip, them. Two topics in Basics → First Words, after Pronouns: You, He, She & They:
+- **Pronouns in Practice** (`pronouns-in-practice`, 16): phrase cards, each one habit, with their
+  words: dropping the pronoun (ไปไหนมา, กินข้าวหรือยัง, copies of the existing cards), family and
+  role words as I and you (พี่ไปก่อนนะ, น้องชื่ออะไร, ป้าขายยังไงครับ, แม่บอกแล้วไง,
+  ครูขอถามหน่อยนะ), your own nickname as I (แพรไม่รู้ค่ะ, โอ๊ตขอโทษครับ), เรา and หนู both ways
+  (เราชื่ออะไรจ๊ะ, หนูทำเองค่ะ), คุณ polite and cold (คุณชื่ออะไร, a copy; คุณจะเอายังไง), and the
+  pairs (เค้าคิดถึงตัวเอง, ฉันรักเธอ, กูบอกมึงแล้ว). An `about` of five paragraphs: dropping,
+  family words, nicknames and ฉัน / หนู / เรา, คุณ's root and coldness, the pairs.
+- **Nicknames** (`pronouns-nicknames`, 18): ชื่อเล่น and ชื่อจริง (copies), 15 nicknames, and
+  เรียกชื่อเล่นก็ได้. An `about` of three paragraphs: what a ชื่อเล่น is, where they come from, and
+  that they work as pronouns.
+  - Chosen so the topic doesn't pick up stories it isn't about: the app counts a story for a topic
+    when they share two words by their Thai, so nicknames that are everyday words (หมู, ไก่, ส้ม,
+    เล็ก, ฝน) would bring in every cooking or weather story. Only นก, the classic, is one; the about
+    names the rest. Mostly names with no other card (แพร, ปุ๋ย, แนน, มิ้นท์, ตั้ม, โอ๊ต, เจมส์…),
+    and new senses for นก, พลอย and แป้ง.
+- **Notes** on cards that had none or differed by topic, the same on every copy (14): คุณ (its
+  root, distance), ผม, ดิฉัน, เรา (also you to a child), ครับ and ค่ะ (also the everyday yes), and
+  ชื่อเล่น. Four "different notes per topic" review items went with them.
+- **Stories** (6, Medium), each using two nicknames and two of the phrases: Call Me Prae, When She
+  Said คุณ, The Elephant Drawing, James at the Market, Old Mates, Love Songs at Karaoke. Pronouns in
+  Practice matches 7 stories, Nicknames 9 (with three older ones on names and forms); every new card
+  is in a story. แป้ง's transliteration follows the existing card's long vowel (pɛ̂ɛng).
+- **Checked:** the audit (0 errors, nothing new), stories.py check and sync (399 story copies took
+  the new notes), spelling.mjs --write, gen_audio (118 new recordings, 0 failed), word_timings
+  (41 lines, 0 failed, 0 clips replaced); in the app (scratch `pronouns_practice.py`, 390 × 844, and 390 × 664 at
+  text size 2): both topics with their rows, abouts and stories, a phrase split into its words in
+  Call Me Prae, แพร's word dialog, no page scroll, no script errors.
+
 ## Thai Values split; กาลเทศะ, face, เกรงใจ, กระบอกเสียง, ใช่, สินสอด (2026-10-25)
 
 The user asked whether five things were covered in depth: กาลเทศะ, กระบอกเสียง, เกรงใจ (which they
