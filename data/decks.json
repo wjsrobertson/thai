@@ -25084,7 +25084,7 @@
       "cards": [
         { "thai": "พี่ชาย", "translit": "phîi-chaai", "english": "older brother" },
         { "thai": "ผมยาว", "translit": "phǒm-yaao", "english": "long hair" },
-        { "thai": "ตาตี่", "translit": "taa-tìi", "english": "narrow eyes" },
+        { "thai": "ตาตี่", "translit": "taa-tìi", "english": "narrow eyes", "note": "Said of Thais too. Aimed at East Asians it mocks: ไอ้ตาตี่, slit-eyes." },
         { "thai": "เขา", "translit": "kháo", "english": "he / she / they", "say": "เค้า" },
         { "thai": "ใจง่าย", "translit": "jai-ngâai", "english": "easily won over", "note": "Often an unkind word for a woman who is \"easy\"." },
         { "thai": "ใคร", "translit": "khrai", "english": "who" },
@@ -25215,7 +25215,7 @@
         { "thai": "ผมตรง", "translit": "phǒm-trong", "english": "straight hair" },
         { "thai": "ตาสองชั้น", "translit": "taa-sɔ̌ɔng-chán", "english": "double eyelids" },
         { "thai": "ท้วม", "translit": "thúam", "english": "chubby, plump" },
-        { "thai": "ตาตี่", "translit": "taa-tìi", "english": "narrow eyes" },
+        { "thai": "ตาตี่", "translit": "taa-tìi", "english": "narrow eyes", "note": "Said of Thais too. Aimed at East Asians it mocks: ไอ้ตาตี่, slit-eyes." },
         { "thai": "ฟันเหยิน", "translit": "fan-yə̌ən", "english": "buck teeth" },
         { "thai": "แต่", "translit": "tɛ̀ɛ", "english": "but" },
         { "thai": "รูปร่าง", "translit": "rûup-râang", "english": "figure, build" },
@@ -65393,7 +65393,34 @@
         { "thai": "อีก้อ", "translit": "ii-gɔ̂ɔ", "english": "Akha (derogatory)", "note": "The old outsiders' name. Neutral: อาข่า." },
         { "thai": "ซาไก", "translit": "saa-gai", "english": "Maniq (derogatory) / savage", "note": "For the forest people of the south, like เงาะ, and thrown at anyone as \"primitive\". Neutral: มันนิ." },
         { "thai": "ไอ้มืด", "translit": "âi-mʉ̂ʉt", "english": "darkie (lit. the dark one)", "note": "Strong; aimed at Black people or dark-skinned Thais. Neutral: คนผิวสี." },
-        { "thai": "เมียฝรั่ง", "translit": "mia-fà-ràng", "english": "farang's wife (often a sneer)", "note": "Literally just a Westerner's wife, but often a sneer at Thai women, many from Isan, who marry Westerners." }
+        { "thai": "เมียฝรั่ง", "translit": "mia-fà-ràng", "english": "farang's wife (often a sneer)", "note": "Literally just a Westerner's wife, but often a sneer at Thai women, many from Isan, who marry Westerners." },
+        { "thai": "แกว", "translit": "gɛɛo", "english": "Vietnamese (derogatory, Isan)", "note": "Insulting from the start, unlike แขก or เจ๊ก. Neutral: คนเวียดนาม." },
+        { "thai": "จีนแดง", "translit": "jiin-dɛɛng", "english": "Red Chinese (Communist China)", "note": "A Cold War word, dated and hostile. Neutral: คนจีน, จีนแผ่นดินใหญ่." },
+        { "thai": "ชาวเขา", "translit": "chaao-khǎo", "english": "hill tribes (dated, othering)", "note": "From the English \"hill tribes\", and tied to security campaigns. Preferred: กลุ่มชาติพันธุ์, or each people's own name." }
+      ]
+    },
+    {
+      "id": "swear-slurs-jibes",
+      "category": "Slang & Swearing",
+      "group": "Swearing & Insults",
+      "name": "Slurs: Jibes, Sayings & Skin Colour",
+      "description": "Taunts, sayings and stereotypes about peoples, and the words around skin colour. ไอ้ before a neutral name (ไอ้เขมร, ไอ้พม่า, ไอ้ฝรั่ง) is how most nationalities are insulted. Here so you recognise them.",
+      "cards": [
+        { "thai": "ไอ้เขมร", "translit": "âi-khà-měen", "english": "bloody Cambodian", "note": "Contemptuous, and loud after the 2025 border clashes. Neutral: คนกัมพูชา." },
+        { "thai": "ไอ้พม่า", "translit": "âi-phá-mâa", "english": "bloody Burmese", "note": "Contemptuous, with the old wars behind it. Neutral: คนพม่า, คนเมียนมา." },
+        { "thai": "ไอ้ฝรั่ง", "translit": "âi-fà-ràng", "english": "bloody farang", "note": "ฝรั่ง alone is neutral; ไอ้ makes it rude." },
+        { "thai": "หน้าลาว", "translit": "nâa-laao", "english": "Lao-looking (an insult)", "note": "A put-down for looking provincial or Isan." },
+        { "thai": "ลูกเจ๊ก", "translit": "lûuk-jék", "english": "Chinese brat (lit. child of a Chink)", "note": "An old schoolyard taunt for Chinese-Thai children." },
+        { "thai": "ไอ้ตาตี่", "translit": "âi-taa-tìi", "english": "slit-eyes (to an East Asian man)", "note": "Mocking. ตาตี่ alone is just narrow eyes." },
+        { "thai": "ขี้งกแบบยิว", "translit": "khîi-ngók bɛ̀ɛp yiu", "english": "stingy like a Jew", "note": "An antisemitic stereotype; ยิว alone just means Jewish." },
+        { "thai": "เจองูเจอแขก ตีแขกก่อน", "translit": "jəə nguu jəə khɛ̀ɛk tii khɛ̀ɛk gɔ̀ɔn", "english": "meet a snake and an Indian, hit the Indian first", "note": "A well-known racist saying: trust the snake more. Its origin is unknown." },
+        { "thai": "ฝรั่งมังค่า", "translit": "fà-ràng-mang-khâa", "english": "Westerners (old, teasing)", "note": "First the English who came from Bengal, then any Westerner." },
+        { "thai": "ตาน้ำข้าว", "translit": "taa-náam-khâao", "english": "pale-eyed (lit. rice-water eyes)", "note": "Of Westerners' blue or grey eyes; describing more than insulting." },
+        { "thai": "ไทยมุง", "translit": "thai-mung", "english": "Thai rubberneckers", "note": "Thais mocking themselves: the crowd that gathers round any accident or fight." },
+        { "thai": "ดำปี๋", "translit": "dam-pǐi", "english": "pitch-black (of skin, blunt)", "note": "Rude about a person; Thai beauty prizes pale skin." },
+        { "thai": "ผิวคล้ำ", "translit": "phǐu-khlám", "english": "dark-skinned (neutral)", "note": "The plain word to use." },
+        { "thai": "ผิวสองสี", "translit": "phǐu-sɔ̌ɔng-sǐi", "english": "tanned / olive (lit. two-tone skin)", "note": "The polite word for a medium-dark Thai complexion." },
+        { "thai": "ขาวอมชมพู", "translit": "khǎao-om-chom-phuu", "english": "fair with a pink glow (the beauty ideal)", "note": "The phrase of every skin-whitening advert." }
       ]
     },
     {
@@ -66005,7 +66032,7 @@
         { "thai": "ผมหงอก", "translit": "phǒm-ngɔ̀ɔk", "english": "grey hair" },
         { "thai": "หัวล้าน", "translit": "hǔa-láan", "english": "bald" },
         { "thai": "ตาโต", "translit": "taa-too", "english": "big eyes" },
-        { "thai": "ตาตี่", "translit": "taa-tìi", "english": "narrow eyes" },
+        { "thai": "ตาตี่", "translit": "taa-tìi", "english": "narrow eyes", "note": "Said of Thais too. Aimed at East Asians it mocks: ไอ้ตาตี่, slit-eyes." },
         { "thai": "ตาสองชั้น", "translit": "taa-sɔ̌ɔng-chán", "english": "double eyelids" },
         { "thai": "จมูกโด่ง", "translit": "jà-mùuk-dòong", "english": "high-bridged nose", "note": "Much admired." },
         { "thai": "ลักยิ้ม", "translit": "lák-yím", "english": "dimple" },

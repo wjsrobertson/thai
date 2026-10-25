@@ -2206,6 +2206,29 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Slurs: Jibes, Sayings & Skin Colour (2026-10-25)
+
+The user asked for the racial slurs still missing, then "need more like it, can split into more
+cards if need be". Each was checked against Thai sources first (Silpa magazine on แขก แม้ว แกว เจ๊ก
+and on the snake saying and ฝรั่งมังค่า; a Pantip list of the ไอ้ + nationality insults; Thai PBS on
+ชาวเขา). Three I'd suggested, เจ๊กตื่นไฟ, ดำตับเป็ด and ดำเหมือนตอตะโก, turned up nowhere and were
+dropped, as were ฝรั่งหัวดำ, ยุ่นปี่ and คลั่งฝรั่ง.
+- **Slurs: Peoples & Foreigners**, now full at 25: แกว (Vietnamese, Isan; insulting from the start),
+  จีนแดง (Cold War), ชาวเขา (dated; กลุ่มชาติพันธุ์ preferred).
+- A new topic after it, **Slurs: Jibes, Sayings & Skin Colour** (`swear-slurs-jibes`, 15): ไอ้เขมร,
+  ไอ้พม่า, ไอ้ฝรั่ง (its description says ไอ้ before a neutral name is how most nationalities are
+  insulted), หน้าลาว, ลูกเจ๊ก, ไอ้ตาตี่, ขี้งกแบบยิว, the saying เจองูเจอแขก ตีแขกก่อน, ฝรั่งมังค่า,
+  ตาน้ำข้าว, ไทยมุง, and skin colour: ดำปี๋, with ผิวคล้ำ, ผิวสองสี and ขาวอมชมพู as the neutral and
+  ideal words.
+- ตาตี่ in Looks keeps its card and now notes the mocking use (its story copies synced).
+- The saying's transliteration has no comma (the audit allows none); a space marks the break.
+- The new topic matches no stories; left so, as for the two below.
+- **Checked:** the audit (0 errors; the only new review item was ตาตี่'s story copies, gone after
+  sync), stories.py check and sync, spelling.mjs --write, gen_audio (45 new recordings, 0 failed,
+  none dropped); in the app (scratch `slurs4.py`, 390 × 844, and 390 × 664 at text size 2): the new
+  topic with its 15 cards, the saying's row wrapping at its space, Peoples with 25, no page scroll,
+  no script errors.
+
 ## Slurs: Disability, Age, Class & Politics, and more names for peoples (2026-10-25)
 
 The user asked what similar slurs the app was missing, then "add and push". None of these was a card:
