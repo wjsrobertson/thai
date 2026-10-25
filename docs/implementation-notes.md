@@ -2206,6 +2206,23 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Hierarchy words, savings circles, two euphemisms (2026-10-25)
+
+The sixth of the six gaps, smaller ones, each into a topic with room:
+- **Thai Values: Gratitude, Hierarchy & Nation** (16): ผู้น้อย (the other half of ผู้ใหญ่),
+  ลูกพี่ (the boss, the big man) with ลูกน้อง (a copy), and เด็กฝาก (a job given as a favour, close
+  to เด็กเส้น), after เส้น.
+- **Banking: Exchange, Loans & Tax** (23): เล่นแชร์ (rotating savings circles), and แชร์ลูกโซ่, a
+  copy of the card in Too Good to Be True; a new card was first written for it, and the audit's
+  "one gloss broader than the other" showed the existing one.
+- **Bathroom: Toilets & Fittings** (20): ไปทำธุระ, the errand that covers the loo, with its words.
+- **Periods, Contraception & Sexual Health** (17): วันนั้นของเดือน.
+- **Stories** (3, Medium): The Owner's Nephew (เด็กฝาก, ลูกพี่, ผู้น้อย), Auntie's Savings Circle
+  (เล่นแชร์ and a pyramid scheme), The Swimming Lesson (วันนั้นของเดือน, ไปทำธุระ). Every new card is
+  in one; each topic still matches 5 or more.
+- **Checked:** the audit (0 errors, nothing new), stories.py check, spelling.mjs --write, gen_audio
+  (35 new recordings, 0 failed), word_timings (18 lines, 0 failed, 0 clips replaced).
+
 ## Smiles (2026-10-25)
 
 The fifth of the six gaps: none of the kinds of smile had a card. A topic in People & Relationships
