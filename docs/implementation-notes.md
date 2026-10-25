@@ -2206,6 +2206,38 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Thai Values split; กาลเทศะ, face, เกรงใจ, กระบอกเสียง, ใช่, สินสอด (2026-10-25)
+
+The user asked whether five things were covered in depth: กาลเทศะ, กระบอกเสียง, เกรงใจ (which they
+had as "lose face": that's เสียหน้า), สินสอด (as "dowry?") and ใช่. Four were there; กระบอกเสียง
+wasn't, and Thai Values (25) had no room for more, so it's split, the first half keeping its id:
+- **Thai Values: Face & Consideration** (`values-concepts`, 18): face, เกรงใจ, กาลเทศะ and the
+  easy-going words, with five new cards: ขี้เกรงใจ, หน้าแตก, ขายหน้า, ไม่รู้จักกาลเทศะ and
+  ผิดกาลเทศะ (the last two list their words). กาลเทศะ's note now gives its parts, กาล + เทศะ.
+- **Thai Values: Gratitude, Hierarchy & Nation** (`values-concepts-gratitude`, after it, 12):
+  บุญคุณ, กตัญญู, elders and respect, เส้น and patronage, the nation words.
+- **กระบอกเสียง** "mouthpiece (lit. sound tube)" in Government: Parliament & Parties (19), after
+  รัฐบาล; its note points to โฆษก for the official spokesperson.
+- **ใช่** in Everyday Responses (21), before ไม่ใช่; it had a card only as a Thai Script spelling
+  example. Its note, on both copies, says how yes works: ใช่ answers "is it…?"; to "do you want…?"
+  or "can you…?" Thai repeats the verb (เอา, ได้) or says ครับ / ค่ะ.
+- **สินสอด** is now "bride price", not "bride price (dowry)": the note says the groom's side pays the
+  bride's parents, the other way round from a dowry. Word lists naming the old English (3, in
+  สินสอดทองหมั้น) follow it.
+- **Stories** (6, Medium): The Funeral Selfie (ไม่รู้จักกาลเทศะ, ผิดกาลเทศะ, ขายหน้า), The Karaoke
+  Confession (หน้าแตก, ไว้หน้า), The Shy Girlfriend (ใช่, ขี้เกรงใจ, ไม่ต้องเกรงใจ), The Mouthpiece
+  (กระบอกเสียง, โฆษก), and for the second half, at 3 stories after the split, The Sponsor (บุญคุณ,
+  อุปถัมภ์, กตัญญู) and Who You Know (เส้น, ระบบอุปถัมภ์). เส้น pinned to "connections", not noodle.
+  An id rs-connections already existed (Connections); the second story was renamed before it could
+  replace it.
+- Face & Consideration matches 11 stories, Gratitude 5; every new card is in a story.
+- **Checked:** the audit (0 errors, nothing new), stories.py check and sync (0 problems; 37 story
+  copies of ใช่ took the new note), spelling.mjs --write, gen_audio (60 new recordings, 0 failed; the
+  old English recording of สินสอด removed), word_timings (39 lines, 0 failed); in the app (scratch
+  `values_split.py`, 390 × 844, and 390 × 664 at text size 2): both halves picked with their cards
+  and stories, the new rows' notes, ใช่ in Everyday Responses, สินสอด's English, no page scroll, no
+  script errors.
+
 ## นม as milk (2026-10-25)
 
 The gap noted below, fixed at the user's word: นม's only card was the slang "tits (lit. milk)", so
