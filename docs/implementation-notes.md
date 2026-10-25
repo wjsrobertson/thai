@@ -2223,8 +2223,8 @@ enough to be the same sense listed (word overlap of half or more).
   ใจเย็น, รถเข็น, ไปไหนมา, กินข้าวหรือยัง, เกรงใจ, ไว้หน้า, ผู้ใหญ่, and กิน (Register Ladders had
   taken the Thai Script rhyme copy's note). 14 "different notes per topic" review items went.
 - **Checked:** the audit (0 errors, nothing new), stories.py check and sync (799 story copies
-  updated), spelling.mjs --write, gen_audio (8 new recordings, 0 failed), word_timings (nothing new).; in the app (scratch `gloss_probe.py`, 390 × 844): the merged
-  ไม่เป็นไร in Greetings and Thai Values, and the new notes on ชอบ, เป็น, เดี๋ยว, ถอดรองเท้า; no
+  updated), spelling.mjs --write, gen_audio (8 new recordings, 0 failed), word_timings (nothing new); in the app (scratch
+  `gloss_probe.py`, 390 × 844): the merged ไม่เป็นไร in Greetings and Thai Values, and the new notes on ชอบ, เป็น, เดี๋ยว, ถอดรองเท้า; no
   page scroll, no script errors.
 
 ## Hierarchy words, savings circles, two euphemisms (2026-10-25)
