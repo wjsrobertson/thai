@@ -2204,6 +2204,11 @@ long one, in words a British ear hears right:
 14 cards in 7 topics (Short & Long Vowels, and Read's vowel topics). Card keys are `thai::english`,
 so their progress starts again. The English recorded again (the voice reads the IPA and 'eau' as
 written).
+**Two more, 2026-10-25** (the user's report: neither sounded like its word): อะ "a — short, as in
+'bat'" (was 'cut', the American textbooks' cue; a British 'bat' is Thai's short a, the user's
+pick) and อิ "i — short, a clipped 'ee'" (was 'bit', a looser vowel; the user's 'we' is อี's long
+ee, so "clipped", as เอะ's and โอะ's are). 8 cards in 4 topics. อุ's 'put' has bit's problem (a
+looser vowel than Thai's short oo) but stays, the user's call.
 
 ## The new-version bar, one line and prominent (2026-10-19)
 
