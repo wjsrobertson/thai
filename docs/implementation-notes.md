@@ -2206,6 +2206,33 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## The polite names: peoples, gender, disability (2026-10-25)
+
+The second of the six gaps: the slur cards' notes pointed to neutral words that had no card
+(คนจีน, คนเวียดนาม, คนกัมพูชา, คนพม่า, คนตาบอด…), and the respectful words for gender and
+disability were missing beside the slang. Two topics in Culture & Values → Values & Etiquette,
+after Etiquette & Taboos, each with a short `about`:
+- **Peoples: The Polite Names** (`values-peoples`, 18): the six peoples cards added to Countries
+  earlier the same day (คนผิวสี, ยิว, ม้ง, อาข่า, ไทใหญ่, กลุ่มชาติพันธุ์) moved here, and Countries
+  back to its own 19 and its old description; new: คนผิวดำ, มอญ, มันนิ, ลูกจีน,
+  คนไทยเชื้อสายจีน, เสื่อผืนหมอนใบ (the mat and pillow the first Chinese came with), ไทยมุสลิม,
+  คนอีสาน, คนเหนือ, คนใต้, คนกรุงเทพ, คนต่างจังหวัด.
+- **Gender & Disability: The Polite Words** (`values-polite-gender-disability`, 19): เกย์ and
+  สมรสเท่าเทียม (copies), คนข้ามเพศ, ผู้หญิงข้ามเพศ, ผู้ชายข้ามเพศ, สาวประเภทสอง (dated),
+  หญิงรักหญิง, ชายรักชาย, ความหลากหลายทางเพศ (หลาก is low: làak); คนพิการ, ตาบอด, รถเข็น
+  (copies), ผู้พิการ, คนตาบอด, หูหนวก, คนหูหนวก, ภาษามือ, ไม้เท้า, ทางลาด.
+- **Countries: Asia & ASEAN** (21): คนจีน, จีนแผ่นดินใหญ่, คนลาว, คนพม่า, เมียนมา (the official
+  name), คนเมียนมา, คนกัมพูชา, คนเวียดนาม; the คน + country ones list their words.
+- **Stories** (9, Medium): Where Everyone's From (the regions), The Family Project (ลูกจีน,
+  เสื่อผืนหมอนใบ), Lunch with a New Friend (ไทยมุสลิม), The Factory Floor (not everyone from
+  เมียนมา is พม่า), The People of the Forest (มันนิ, not ซาไก), Talking with My Hands (ภาษามือ), The
+  First Day (marriage equality), Grandma's New Words (คนข้ามเพศ), The Ramp. Peoples matches 6
+  stories, Gender & Disability 6, Asia & ASEAN 8; every new card is in one.
+- **Checked:** the audit (0 errors, nothing new), stories.py check and sync, spelling.mjs --write,
+  gen_audio (141 new recordings, 0 failed), word_timings (59 lines, 0 failed, 0 clips replaced); in the app (scratch `topic_probe.py`, 390 × 844, and 390 ×
+  664 at text size 2): both topics' rows, abouts and stories, Countries' 19, a story with every word
+  a card, no page scroll, no script errors.
+
 ## Saying No Without Saying No (2026-10-25)
 
 The user asked what else the app was missing after the slur, values and pronoun work; of the six
