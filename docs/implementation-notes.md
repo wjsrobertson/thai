@@ -2206,6 +2206,26 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Slurs split, and names for peoples and foreigners (2026-10-25)
+
+The user asked what แขก, แขกดำ and แขกขาว mean, then what other such names the app was missing.
+Slurs (24 of 25 cards) had no room, so it's split along its two halves, the first keeping its id:
+**Slurs: Sex & Gender** (`swear-slurs`, 14 cards: women, LGBTQ+ people) and **Slurs: Peoples &
+Foreigners** (`swear-slurs-peoples`, after it, 17): its 10 ethnic cards and 7 new, each with the
+neutral word in its note where there is one: แขกขาว, ญวน (dated), ไอ้กัน (Yank), เงี้ยว (Shan;
+ไทใหญ่), กะเหรี่ยง used as "hillbilly", นิโกร (คนผิวสี), จีนเทา (the 2020s "grey Chinese"). The
+friendly names went where they're used: ตี๋, หมวย, อาแปะ and อาซิ้ม (all from Teochew) after เฮีย
+and เจ๊ in **Forms of Address: Family Terms** (17); ลูกครึ่ง (half-Thai) in **People** (21).
+- Card keys unchanged for the moved cards, so their progress stays; a saved current topic of the old
+  id opens Sex & Gender.
+- Each half now matches 4 stories (`stories.py coverage`), one under the usual 5; left so, as
+  several topics are, rather than new stories built on slurs unasked.
+- **Checked:** the audit (0 errors, the tones as spelt; nothing new worth a look), stories.py check
+  and sync, spelling.mjs --write, gen_audio (38 new recordings, 0 failed, none dropped); in the app
+  (scratch `slursplit.py`, `slursplit2.py`, 390 × 844): both Slurs topics and Family Terms picked
+  with their cards, the old id opening the first half; People checked in the data (the probe's
+  picker search couldn't single it out); no script errors.
+
 ## Where Words Begin and End, a topic (2026-10-25)
 
 The user asked how to read Thai without spaces (which consonants pair up, when ห is silent, a

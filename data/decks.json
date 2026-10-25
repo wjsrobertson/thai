@@ -128,6 +128,7 @@
         { "thai": "ครอบครัว", "translit": "khrɔ̂ɔp-khrua", "english": "family" },
         { "thai": "ฝรั่ง", "translit": "fà-ràng", "english": "Westerner", "note": "Neutral, not an insult. Also = guava." },
         { "thai": "ชาวต่างชาติ", "translit": "chaao-tàang-châat", "english": "foreigner" },
+        { "thai": "ลูกครึ่ง", "translit": "lûuk-khrʉ̂ng", "english": "half-Thai / mixed race (lit. half child)", "note": "Neutral and common: many Thai stars are ลูกครึ่ง." },
         { "thai": "เจ้าของ", "translit": "jâo-khɔ̌ɔng", "english": "owner" },
         { "thai": "เพื่อนบ้าน", "translit": "phʉ̂an-bâan", "english": "neighbour" }
       ]
@@ -65345,8 +65346,8 @@
       "id": "swear-slurs",
       "category": "Slang & Swearing",
       "group": "Swearing & Insults",
-      "name": "Slurs",
-      "description": "Slurs against women, LGBTQ+ people and ethnic groups. Here so you recognise them — several are the most hurtful words in the language.",
+      "name": "Slurs: Sex & Gender",
+      "description": "Slurs against women and LGBTQ+ people. Here so you recognise them — several are the most hurtful words in the language.",
       "cards": [
         { "thai": "ดอกทอง", "translit": "dɔ̀ɔk-thɔɔng", "english": "slut (lit. golden flower)", "note": "Very strong slur for women; teasing among close female friends." },
         { "thai": "อีดอก", "translit": "ii-dɔ̀ɔk", "english": "bitch / slut", "note": "Strong. Ruled unlawful as an insult." },
@@ -65361,7 +65362,16 @@
         { "thai": "ประเทือง", "translit": "prà-thʉang", "english": "trans woman / effeminate man (derogatory)", "note": "Strong, dated. From an old song; used to mock." },
         { "thai": "สายเหลือง", "translit": "sǎai-lʉ̌ang", "english": "gay man (crude, lit. yellow line)", "note": "Strong — an anal-sex reference." },
         { "thai": "ขุดทอง", "translit": "khùt-thɔɔng", "english": "gay man (crude, lit. digging for gold)", "note": "Strong — same reference." },
-        { "thai": "ไส้เดือน", "translit": "sâi-dʉan", "english": "gay man (derogatory, lit. earthworm)", "note": "Strong; on lists of terms to avoid." },
+        { "thai": "ไส้เดือน", "translit": "sâi-dʉan", "english": "gay man (derogatory, lit. earthworm)", "note": "Strong; on lists of terms to avoid." }
+      ]
+    },
+    {
+      "id": "swear-slurs-peoples",
+      "category": "Slang & Swearing",
+      "group": "Swearing & Insults",
+      "name": "Slurs: Peoples & Foreigners",
+      "description": "Slurs and loaded names for ethnic groups and foreigners. Here so you recognise them, with the neutral word to use instead.",
+      "cards": [
         { "thai": "เจ๊ก", "translit": "jék", "english": "Chink (Chinese)", "note": "Strong ethnic slur." },
         { "thai": "แขก", "translit": "khɛ̀ɛk", "english": "Indian / South Asian / Muslim (lit. guest)", "note": "Neutral in many contexts, derogatory in others — tone decides." },
         { "thai": "แขกดำ", "translit": "khɛ̀ɛk-dam", "english": "dark-skinned South Asian (derogatory)", "note": "Strong." },
@@ -65371,7 +65381,14 @@
         { "thai": "ลาว", "translit": "laao", "english": "Lao, used as \"hick\"", "note": "Insulting when aimed at an unsophisticated Thai person." },
         { "thai": "เงาะ", "translit": "ngɔ́", "english": "Negrito / curly-haired dark person (lit. rambutan)", "note": "Strong ethnic slur." },
         { "thai": "ฝรั่งขี้นก", "translit": "fà-ràng-khîi-nók", "english": "trashy westerner / wannabe (lit. bird-shit guava)", "note": "Derogatory." },
-        { "thai": "ต่างด้าว", "translit": "tàang-dâao", "english": "alien (said of migrant workers)", "note": "Derogatory in this use." }
+        { "thai": "ต่างด้าว", "translit": "tàang-dâao", "english": "alien (said of migrant workers)", "note": "Derogatory in this use." },
+        { "thai": "แขกขาว", "translit": "khɛ̀ɛk-khǎao", "english": "light-skinned South Asian or Arab (lit. white guest)", "note": "Milder than แขกดำ, but still a skin-colour label that many dislike." },
+        { "thai": "ญวน", "translit": "yuan", "english": "Vietnamese (dated)", "note": "The old name; it can sound contemptuous now. Neutral: คนเวียดนาม." },
+        { "thai": "ไอ้กัน", "translit": "âi-gan", "english": "Yank (American)", "note": "Mildly contemptuous; from อเมริกัน, in the Vietnam War years." },
+        { "thai": "เงี้ยว", "translit": "ngíao", "english": "Shan (derogatory)", "note": "Old and insulting. Neutral: ไทใหญ่." },
+        { "thai": "กะเหรี่ยง", "translit": "gà-rìang", "english": "Karen, used as \"hillbilly\"", "note": "The Karen people's name; insulting when aimed at someone as backward." },
+        { "thai": "นิโกร", "translit": "ní-groo", "english": "negro (dated, offensive)", "note": "Polite: คนผิวสี or คนผิวดำ." },
+        { "thai": "จีนเทา", "translit": "jiin-thao", "english": "Chinese in shady business (lit. grey Chinese)", "note": "A 2020s news word for Chinese nationals in grey or illegal business." }
       ]
     },
     {
@@ -66408,6 +66425,10 @@
         { "thai": "ตา", "translit": "taa", "english": "grandpa (any old man)", "note": "Also = eye." },
         { "thai": "เฮีย", "translit": "hia", "english": "older brother (Chinese-Thai)", "note": "For Chinese-Thai men and shop owners." },
         { "thai": "เจ๊", "translit": "jée", "english": "older sister (Chinese-Thai)", "note": "For Chinese-Thai women and shop owners." },
+        { "thai": "ตี๋", "translit": "tǐi", "english": "young Chinese-Thai man / boy", "note": "Affectionate, from Teochew; อาตี๋ to call one. Also a common nickname." },
+        { "thai": "หมวย", "translit": "mǔai", "english": "young Chinese-Thai woman / girl", "note": "Affectionate, from Teochew; อาหมวย to call one. Also a common nickname." },
+        { "thai": "อาแปะ", "translit": "aa-pɛ̀", "english": "old Chinese-Thai man / uncle", "note": "Friendly, from Teochew: the old man who runs the shop." },
+        { "thai": "อาซิ้ม", "translit": "aa-sím", "english": "old Chinese-Thai woman / auntie", "note": "Friendly, from Teochew." },
         { "thai": "ท่าน", "translit": "thân", "english": "you / he / she (very respectful)" },
         { "thai": "เรียกว่าอะไรดี", "translit": "rîak wâa à-rai dii", "english": "what should I call you?", "words": ["เรียก::to call (a name / summon)", "ว่า::that (reporting) / to say", "อะไร::what", "ดี::good"] }
       ]
