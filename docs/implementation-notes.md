@@ -2206,6 +2206,32 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Where Words Begin and End, a topic (2026-10-25)
+
+The user asked how to read Thai without spaces (which consonants pair up, when ห is silent, a
+hidden o or a hidden a, where a word ends), then whether the app had all of it: it had the letter
+rules (Leading ห & อ; Clusters & Odd Spellings) but not the reading ones. Now **Thai Script → Tones
+& Reading → Where Words Begin and End** (`script-word-breaks`), after Clusters & Odd Spellings, 20
+cards, each a spelling example with the point as its English (as the other Thai Script topics), and
+an `about` of four paragraphs: syllable starts, word ends, then speech.
+- **Syllables:** a hidden o or a (คน, สมุด; ถนน worked from the end), a cluster as one letter (กลม),
+  ตล not a cluster (ตลาด), the front-vowel trap (เสมอ) against a cluster's (เพลง), a front vowel
+  starting a syllable (รถไฟ), tone marks (พี่น้อง).
+- **Words:** ◌์ (สัปดาห์), ๆ (เด็ก ๆ), a space between sentences (ไปไหนมา กินข้าวหรือยัง), one-syllable
+  words (แม่ไปตลาด), an unwritten-a syllable leaning on the next (ขนมปัง), Pali and Sanskrit
+  spellings (ประวัติศาสตร์), grammar words as signposts (พรุ่งนี้จะไปทะเล, ไปไหนครับ). The three
+  sentences list their `words`. ตากลม is in the `about`; its card stays in Homophones & Homographs.
+- **Speech:** a cluster's r dropped (ครับ), r said l (รถ), English loans' clusters (ฟรี).
+- Every word's transliteration is the one the app's other cards use. Notes give letter pairs in
+  Latin (t + l, f + r), not Thai, so the voice isn't asked to read a fragment.
+- **Cleanup:** ปลา's note listed 14 true clusters, missing ผล (ผลัก phlàk); it lists the 15 now, and
+  ผลไม้'s says its ผล isn't that cluster.
+- **Checked:** the audit (0 errors, nothing new worth a look), stories.py check and sync (nothing to
+  change; Thai Script topics need no stories), spelling.mjs --write, gen_audio (23 new recordings, 0
+  failed, none dropped); the topic found in the picker, its List with the four paragraphs and 20
+  rows, Recognition, and ปลา's and ผลไม้'s new notes (scratch `wordbreaks.py`) at 390 × 844 and
+  1280 × 800; no script errors.
+
 ## Five vowels described better (2026-10-24)
 
 The user's report: some vowels' English was hard to pick in Cards ("short, as in 'about'", "short,

@@ -1732,7 +1732,7 @@
       "description": "Clusters, silent letters, unwritten vowels and other spellings that don't read the way they look, and a few everyday words not said with their written tone.",
       "about": "ฑ, ฤ and the silent endings come from Pali and Sanskrit words, spelt as in those languages. ฑ is usually th, but d in a few words such as บัณฑิต. ฤ is a vowel letter: rʉ on its own and after ค น พ ม ห, ri after ก ต ท ป ศ ส, and rəə in ฤกษ์. A final ติ or ตุ is often not read (ญาติ yâat), but the ติ comes back in many compounds (อุบัติเหตุ ù-bàt-tì-hèet).\n\nฉัน, ไหม and เขา are spelt to be rising but said high in everyday speech; read aloud carefully, they keep the written tone.",
       "cards": [
-        { "thai": "ปลา", "translit": "plaa", "english": "true cluster: both letters are said", "note": "fish. Clusters: กร กล กว ขร ขล ขว คร คล คว ปร ปล พร พล ตร." },
+        { "thai": "ปลา", "translit": "plaa", "english": "true cluster: both letters are said", "note": "fish. The 15 clusters: กร กล กว ขร ขล ขว คร คล คว ตร ปร ปล ผล พร พล." },
         { "thai": "ขวา", "translit": "khwǎa", "english": "a cluster takes the first letter's class", "note": "right (side). ข is high class, so it is rising." },
         { "thai": "ทราย", "translit": "saai", "english": "th + r at the start reads s", "note": "sand. Also ทราบ (to know), ทรง (shape; royal)." },
         { "thai": "จริง", "translit": "jing", "english": "r after j or s is silent", "note": "true. Also สร้าง sâang (build), ศรี (glorious)." },
@@ -1742,7 +1742,7 @@
         { "thai": "ธรรม", "translit": "tham", "english": "double r reads a", "note": "dhamma (the Buddha's teaching). Also กรรม gam (karma)." },
         { "thai": "พร", "translit": "phɔɔn", "english": "a lone r after a consonant reads ɔɔn", "note": "blessing. Also จร (wander)." },
         { "thai": "สบาย", "translit": "sà-baai", "english": "unwritten short a", "note": "well, comfortable. ส + บาย; the a between them isn't written." },
-        { "thai": "ผลไม้", "translit": "phǒn-lá-máai", "english": "unwritten o, then an unwritten a", "note": "fruit. ผล = phǒn, then a linking la." },
+        { "thai": "ผลไม้", "translit": "phǒn-lá-máai", "english": "unwritten o, then an unwritten a", "note": "fruit. ผล = phǒn, then a linking la: here ผล isn't the cluster it is in ผลัก phlàk (to push)." },
         { "thai": "บริษัท", "translit": "bɔɔ-rí-sàt", "english": "unwritten ɔɔ after b", "note": "company. Also บริการ (service)." },
         { "thai": "ก็", "translit": "gɔ̂", "english": "one-off spelling read gɔ̂", "note": "then, also. The shortener stands in for a tone mark: said like ก้อ, short." },
         { "thai": "บัณฑิต", "translit": "ban-dìt", "english": "tho montho read as d", "note": "graduate. Read this way, ฑ also takes mid-class tones, like ด: ดิต dìt is low." },
@@ -1756,6 +1756,36 @@
         { "thai": "ฉัน", "translit": "chán", "english": "said high, though spelt rising", "note": "I, me (informal, mostly women). The rules give chǎn (ฉ is high class), as in Pronouns and in careful reading; in speech it's chán.", "say": "ชั้น" },
         { "thai": "ไหม", "translit": "mái", "english": "said high, though spelt rising (chat respells it)", "note": "yes/no question particle. The rules give mǎi (ห leads ม), the careful reading; in speech it's mái, and chat often spells it มั้ย.", "say": "มั้ย" },
         { "thai": "เขา", "translit": "kháo", "english": "the pronoun is said high; the hill keeps its rising tone", "note": "he, she, they. The rules give khǎo, which is how เขา (hill, horn) is said. Chat often spells the pronoun เค้า.", "say": "เค้า" }
+      ]
+    },
+    {
+      "id": "script-word-breaks",
+      "category": "Thai Script",
+      "group": "Tones & Reading",
+      "name": "Where Words Begin and End",
+      "description": "Thai writes no spaces between words: where syllables and words begin and end, and which vowel isn't written.",
+      "about": "Thai leaves no spaces between words, only between phrases and sentences. Reading it comes down to where each syllable starts and which syllables make a word.\n\nWhere a syllable starts: a front vowel (เ แ โ ไ ใ) is written before the consonant it's said after, so a syllable starts at it, and a tone mark sits over the letter a syllable starts with. Where two letters have no vowel written between them, look at the second: if it ends the syllable, the vowel is o (คน khon); if it starts the next one, the first letter takes a short a (สมุด sà-mùt). With no vowels at all, work from the end (ถนน thà-nǒn). A true cluster counts as one letter (กลม glom), and a front vowel before two letters that aren't a cluster belongs to the second (เสมอ sà-mə̌ə).\n\nWhere a word ends: native Thai words are mostly one syllable, so take each syllable as a word first. A syllable with an unwritten a leans on the next, so its word goes on. ◌์ and ๆ end a word. Letters such as ศ ษ ธ ภ ฐ ณ mark a long word from Pali or Sanskrit. The small grammar words are signposts: จะ, ไม่ and กำลัง come just before a verb, and ครับ, ค่ะ, นะ and ไหม end a sentence. A few strings read two ways, and only the sentence decides: ตากลม is ตา กลม, round eyes, or ตาก ลม, to sit out in the breeze.\n\nIn speech, clusters soften: the r often drops (ครับ as kháp) or turns to l (รถ as lót). English loans bring clusters Thai doesn't have, such as f + r in ฟรี.",
+      "cards": [
+        { "thai": "คน", "translit": "khon", "english": "two letters alone: an unwritten o between them", "note": "person. Nothing follows the second letter, so it ends the syllable, with an o before it: นก nók (bird), รถ rót (car), ผม phǒm (I; hair)." },
+        { "thai": "สมุด", "translit": "sà-mùt", "english": "the second letter has its own vowel: an unwritten a before it", "note": "exercise book. ม has its own vowel, ◌ุ, so it starts the second syllable, and ส, left alone, takes a short a. Also สนุก sà-nùk (fun), สบาย sà-baai (well)." },
+        { "thai": "ถนน", "translit": "thà-nǒn", "english": "no vowels written: the last two letters pair up", "note": "road, street. Work from the end: the two น make a syllable with an o, and ถ, left alone, takes an a. ถ leads น, so that syllable is rising. Also ขนม khà-nǒm (snack)." },
+        { "thai": "กลม", "translit": "glom", "english": "a cluster counts as one letter", "note": "round. k + l is a true cluster, so the o goes before ม: glom, not gà-lom. Also ครบ khróp (complete)." },
+        { "thai": "ตลาด", "translit": "tà-làat", "english": "t + l isn't a cluster: an unwritten a", "note": "market. t + l isn't one of the 15 clusters, so ต takes a short a and the rest is a syllable of its own. ต lends ล its mid class, so that syllable is low, not falling." },
+        { "thai": "เสมอ", "translit": "sà-mə̌ə", "english": "a front vowel can belong to the second letter", "note": "always. The vowel เ–อ goes with ม, not ส, and ส takes a short a. ส leads ม, so the second syllable is rising. Also เฉลย chà-lə̌əi (the answers, as to a quiz)." },
+        { "thai": "เพลง", "translit": "phleeng", "english": "before a cluster, a front vowel covers both letters", "note": "song. p + l is a true cluster, so the เ is the vowel of both letters. Also เปล่า plàao (empty; no), แปลก plɛ̀ɛk (strange)." },
+        { "thai": "รถไฟ", "translit": "rót-fai", "english": "a front vowel starts a new syllable", "note": "train. ไ is written before ฟ, so a syllable begins at ไ: รถ, then ไฟ. เ แ โ ใ do the same." },
+        { "thai": "พี่น้อง", "translit": "phîi-nɔ́ɔng", "english": "each tone mark points to a syllable", "note": "brothers and sisters. A tone mark sits over the letter its syllable starts with (over the second when it's a cluster, as in ครั้ง, or led by ห, as in หน้า), so ◌่ and ◌้ mark two syllables: พี่, น้อง." },
+        { "thai": "สัปดาห์", "translit": "sàp-daa", "english": "the silencer marks the end of a word", "note": "week. ◌์ silences the letter under it, and nearly always the word ends there: จันทร์ (Monday), ศุกร์ (Friday)." },
+        { "thai": "เด็ก ๆ", "translit": "dèk dèk", "english": "the repeat mark ends the word before it", "note": "the kids. ๆ says the word before it again, so that word ends just before it: ช้า ๆ cháa cháa (slowly)." },
+        { "thai": "ไปไหนมา กินข้าวหรือยัง", "translit": "pai nǎi maa gin khâao rʉ̌ʉ-yang", "english": "a space ends a phrase or sentence, not a word", "note": "Where have you been? Have you eaten? Thai leaves a space where English puts a comma or a full stop, and none between words." },
+        { "thai": "แม่ไปตลาด", "translit": "mɛ̂ɛ pai tà-làat", "english": "most syllables are words on their own", "note": "Mum's gone to the market. Native Thai words are mostly one syllable, so take each syllable as a word first: แม่, ไป, then ตลาด, two syllables as its first has an unwritten a.", "words": ["แม่::mother / mum", "ไป::to go", "ตลาด::market"] },
+        { "thai": "ขนมปัง", "translit": "khà-nǒm-pang", "english": "an unwritten-a syllable almost never ends a word", "note": "bread. ข takes an unwritten a, so it leans on what comes next, and the word goes on: ขนม (snack), then ปัง (bread)." },
+        { "thai": "ประวัติศาสตร์", "translit": "prà-wàt-tì-sàat", "english": "Pali and Sanskrit spellings make long words", "note": "history. Letters such as ศ ษ ธ ภ ฐ ณ, and ◌์, mark a learned word, and its syllables run on: four here. Also มหาวิทยาลัย má-hǎa-wít-thá-yaa-lai (university)." },
+        { "thai": "พรุ่งนี้จะไปทะเล", "translit": "phrûng-níi jà pai thá-lee", "english": "'will' comes just before a verb", "note": "We're going to the sea tomorrow. จะ (will) comes just before a verb, so a new word starts after it: พรุ่งนี้, จะ, ไป, ทะเล. ไม่ (not) and กำลัง (-ing) do the same.", "words": ["พรุ่งนี้::tomorrow", "จะ::will / going to", "ไป::to go", "ทะเล::sea / ocean"] },
+        { "thai": "ไปไหนครับ", "translit": "pai nǎi khráp", "english": "a particle closes a sentence", "note": "Where are you going? ครับ, ค่ะ, นะ and ไหม close a sentence, so whatever comes next starts a new one.", "words": ["ไป::to go", "ไหน::where / which", "ครับ::polite particle (male)"] },
+        { "thai": "ครับ", "translit": "khráp", "english": "in quick speech a cluster's r often drops", "note": "the polite particle (male). Often said kháp, as if spelt คับ; ปลา (fish) can come out as ปา. Careful speech and the news keep the r." },
+        { "thai": "รถ", "translit": "rót", "english": "r is often said as l", "note": "car. Many Thais say ร as ล in everyday speech, so รถ comes out lót; careful speech keeps a tapped r." },
+        { "thai": "ฟรี", "translit": "frii", "english": "English loans bring new clusters", "note": "free (of charge). f + r isn't one of Thai's 15 clusters, but loanwords keep it, as they do b + l and d + r: บล็อก blɔ́k (block; blog), ดราม่า draa-mâa (drama)." }
       ]
     },
     {
