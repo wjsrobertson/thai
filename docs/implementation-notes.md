@@ -2206,6 +2206,21 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Smiles (2026-10-25)
+
+The fifth of the six gaps: none of the kinds of smile had a card. A topic in People & Relationships
+→ Character & Feelings, after Emotions: Moods & Body Feelings (`people-smiles`, 16), with an
+`about` of three paragraphs: why Thais smile, the smiles by kind (happy, awkward, unkind, brave),
+and reading them.
+- ยิ้ม and ยิ้มแย้ม (copies), สยามเมืองยิ้ม, ยิ้มหวาน, ยิ้มแป้น, ยิ้มกริ่ม, ยิ้มมุมปาก, ยิ้มเยาะ,
+  ยิ้มแห้ง, ยิ้มเจื่อน, ยิ้มแหย, ยิ้มสู้, ยิ้มรับ, ยิ้มทั้งน้ำตา, ยิ้มไม่ออก, หน้าบึ้ง.
+- **Stories** (5, Medium): The Wrong Name, Smiling Through (a vendor after a flood), The Promotion,
+  The Land of Smiles, School Photo Day. The topic matches 5 stories; every card is in one.
+- **Checked:** the audit (0 errors, nothing new), stories.py check, spelling.mjs --write, gen_audio
+  (73 new recordings, 0 failed), word_timings (29 lines, 0 failed, 0 clips replaced); in the app (scratch `topic_probe.py`, 390 × 844, and 390 × 664 at
+  text size 2): the topic's rows, about and stories, The Wrong Name with every word a card, no page
+  scroll, no script errors.
+
 ## Register Ladders: Eat, Sleep, Ill, Die (2026-10-25)
 
 The fourth of the six gaps: the words were mostly there, scattered across Verbs, Health, Royal
