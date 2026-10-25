@@ -1680,6 +1680,10 @@ function pickScope(id) {
   selectDeck(id); // rebuilds Flashcards (and a Review session) if its scope changed
   renderDeckButton();
   closeDeckPicker();
+  // A new topic or list starts at its top, not where the last one was scrolled to; the same one
+  // again stays put (above). After the close: the page is locked while the picker is open (the
+  // user's call, 2026-10-25).
+  window.scrollTo(0, 0);
 }
 
 // The picker's tabs (the lists spike, 2026-10-20; until then Cards' dialog had Everything | By
@@ -2095,8 +2099,10 @@ function closeDeckPicker() {
   els.deckPicker.hidden = true;
   setModalOpen(false);
   els.deckButton.setAttribute('aria-expanded', 'false');
+  // Without preventScroll, focusing the topic button scrolled the page to it: picking the same
+  // topic again jumped a scrolled-down list (the probe, 2026-10-25: 1500 to 1104).
   if (state.lastFocus && typeof state.lastFocus.focus === 'function') {
-    state.lastFocus.focus();
+    state.lastFocus.focus({ preventScroll: true });
   }
 }
 

@@ -2206,6 +2206,25 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## A new topic starts at its top (2026-10-25)
+
+The user's report: scrolled halfway down a topic's List, choosing another topic from the picker
+opened it halfway down; it should start at the top, and choosing the same topic again should stay
+where it was.
+- `pickScope`: a new choice scrolls the page to the top, after `closeDeckPicker` (the page is locked
+  by html.modal-open while the picker is open). The same choice again returns early, as before.
+- `closeDeckPicker`: focus goes back to the topic button with `preventScroll`. Without it, focusing
+  the button scrolled the page to it, so the same topic again jumped too (the old code in the probe:
+  List 2462 to 2156, Read 230 to 0).
+- Every page the picker serves (List, Cards, Read) and both its tabs (Topics, My Words) take the
+  same path. The other ways a topic changes (deleting a list, Done adding, Read's "Try all of") are
+  left as they were; the user asked about the picker.
+- **Checked** (scratch `picker_top.py`: the topic button, real typing in the search, a tap on the
+  row; 390 × 664, 390 × 844, and 430 × 932 at text size 2): on List and Read, scrolled halfway,
+  the same topic again stays exactly where it was (2462, 230…), another topic opens at 0; no script
+  errors. Before the change the probe gave 2407 for another topic. On a wide screen the topic
+  button scrolls away with the page, so the picker is only opened from near the top there.
+
 ## The gloss sweep (2026-10-25)
 
 The last of the list: a sweep for glosses that mislead, as สินสอด (dowry), ใช่ (yes) and เกรงใจ
