@@ -2206,6 +2206,29 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Saying No Without Saying No (2026-10-25)
+
+The user asked what else the app was missing after the slur, values and pronoun work; of the six
+gaps found they said "go ahead with them all. Particularly interested in" this one, then "add
+stories with them too. commit and push as you go". A Conversation topic after Plans & Invitations
+(`conv-saying-no`, 19), with an `about` of five paragraphs: why a flat ไม่ is rare, putting it off,
+reasons nobody checks, offers that go round twice, and hearing a yes.
+- Putting it off: ไว้คราวหน้า, ไว้ก่อน, เดี๋ยวดูก่อน, ขอคิดดูก่อน (a copy), เดี๋ยวค่อยว่ากัน.
+  Reasons: ไม่สะดวก (a copy), ไม่ค่อยว่าง, ติดธุระ. Vague: คงไม่ได้, ยังไม่แน่. Offers: เกรงใจจัง,
+  ไม่เป็นไร as a new sense "no thanks (declining an offer)", ไม่ต้องหรอก, อิ่มแล้ว. Yeses with a
+  shrug: ก็ได้, แล้วแต่ (copies), ได้มั้ง. The hard ones: ไม่เอา (a copy), ไม่ได้จริง ๆ. Every new
+  phrase whose parts have cards lists its words (ไว้คราวหน้า doesn't: คราวหน้า has no card).
+- Notes, on every copy: ไม่เอา (blunt but for family and friends); ก็ได้ (the shrug) now the same in
+  both topics.
+- **Stories** (5, Medium): Next Time (a farang friend's invitations), The Second Helping (the offer
+  that goes round twice), The Insurance Calls (three soft noes and a hard one), The Sunday Shift (no
+  to a boss), Grandma's Maybe (ได้มั้ง that means no). The topic matches 6 stories; every card is in
+  one.
+- **Checked:** the audit (0 errors, nothing new), stories.py check, spelling.mjs --write, gen_audio
+  (69 new recordings, 0 failed), word_timings (0 clips replaced); in the app (scratch `topic_probe.py`, 390 × 844, and 390 × 664 at text
+  size 2): the topic's rows, about and stories, The Second Helping with every word a card, no page
+  scroll, no script errors.
+
 ## Pronouns in Practice and Nicknames (2026-10-25)
 
 The user asked how true Stuart Jay Raj's "ใช่ doesn't mean yes" and "คุณ doesn't mean you" are,
