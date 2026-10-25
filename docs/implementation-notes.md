@@ -2206,6 +2206,43 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Stories for the slur topics (2026-10-25)
+
+The user asked for stories for the new slur topics. 23 Medium stories, each a small scene in which
+a slur is used the way Thais use it and someone answers it (as The Drunk at the Bar and The New
+Kid). Every card in the four slur topics is now in a story, and each topic has at least 5 (Sex &
+Gender 5, Peoples & Foreigners 9, Jibes 5, Disability, Age, Class & Politics 5).
+- **The stories:**
+  - Uncle and the Border News; The Farang Who Understood; The Whitening Cream; The Crowd at the
+    Crossroads; Grandpa's School Days; The Doctor Boyfriend; The Blind Masseur; The Goalkeeper;
+    The Old Man on the Bus; The Cousin from Bangkok; The Family Group Chat; The Bánh Mì Stall;
+    The Makeup Live.
+  - Coffee from the Hills; The Old War Film; My Sister in England; The Gossip Next Door; The
+    Building Site; The New Intern; No Signal; At the Stadium; The Comedy Show.
+  - Names on Our Soi: the friendly ones (อาแปะ อาซิ้ม ตี๋ หมวย บัง ก๊ะ), so Family Terms' new cards
+    have a story too.
+- **New cards the stories needed:**
+  - Countries: Nationality, Languages & the West (now 25): the polite names the slur notes point
+    to, คนผิวสี, ยิว, ม้ง, อาข่า, ไทใหญ่, กลุ่มชาติพันธุ์.
+  - ตาบอด in Disability, Age, Class & Politics (16).
+  - ล้อ "to tease, make fun of" in Personality: Quirks (24); ล้อ had only "wheel", which The New Kid
+    and rs-boxing-camp-slur were showing for "tease". Both now pin the new card.
+  - ขี้งกแบบยิว now lists its words (ขี้งก, แบบ, ยิว).
+- **A duplicate fixed:** the Jibes topic's ผิวคล้ำ and ผิวสองสี (added the same day) repeated Looks'
+  cards with new English; they're now the same cards ("dark skin", "light-brown skin"), with
+  notes, in both topics.
+- Senses were pinned where the common one was wrong: ที่ as "that / which" where it's relative;
+  ตา, ยาย, ป้า, ลุง as family or as any older person; บัง, not "to block". Words with no card were
+  written round (provinces, stickers, เบียด, ตะคอก).
+- A gap seen on the way, not fixed: นม's only card is the slang "tits (lit. milk)"; milk itself is
+  only in compounds (นมสด).
+- **Checked:** stories.py check (0 problems) and coverage (97.92% of cards in a story), the audit
+  (0 errors, nothing new), spelling.mjs --write, gen_audio (180 new recordings, 0 failed; the two
+  English recordings of the merged duplicates removed), word_timings (144 lines, 0 failed, 0 clips
+  replaced); in the app (scratch `slurstories.py`, 390 × 844, and 390 × 664 at text size 2): each
+  slur topic's Read lists its stories, The Doctor Boyfriend opens with every word a card, the
+  saying's word dialog shows its tones, no page scroll, no script errors.
+
 ## Slurs: Jibes, Sayings & Skin Colour (2026-10-25)
 
 The user asked for the racial slurs still missing, then "need more like it, can split into more
