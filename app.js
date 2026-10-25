@@ -8031,8 +8031,9 @@ function bindEvents() {
   markScrolled();
   els.settingsSection.addEventListener('scroll', markSettingsScrolled, { passive: true });
   // A tap on the tab bar or the pinned row, left uncovered by the word dialog on a phone, closes it and
-  // then does what it does (on pointerdown, before a tapped search box takes the focus).
-  for (const bar of document.querySelectorAll('.tabs, .section-bar, .dict-top')) {
+  // then does what it does (on pointerdown, before a tapped search box takes the focus). Time's row
+  // too (2026-10-25, the user's report: Quiz tapped with Explore's time in the dialog left it open).
+  for (const bar of document.querySelectorAll('.tabs, .section-bar, .dict-top, .time-top')) {
     bar.addEventListener('pointerdown', () => { if (wordPop) hideWordPop(); }, { capture: true });
   }
 

@@ -2012,6 +2012,13 @@ Settings always last.
   mouse events) at 390 × 664, 763, 844, 430 × 932, 390 × 844 at text size 2 and 1280 × 800: no
   names, rows 12 apart; a drag of either hand and a tap on the clock change nothing and say
   nothing; ›, ‹ and an hour set and say the time; midnight's rim lit; no scroll; no script errors.
+- **Explore | Quiz closes the word dialog** (the user's report, 2026-10-25: Quiz tapped with the
+  time's dialog open left it open): on a phone the dialog leaves the pinned row uncovered, and a tap
+  on Words', the Alphabet's or the Dictionary's row, or the tab bar, closes it first (pointerdown,
+  capture); `.time-top` was missing from that list. On a wider screen the dialog's panel covers the
+  switch, as every section's, so it's closed first there as anywhere (Escape, or beside it).
+  Checked (scratch `timepop_quiz.py`, real clicks) at 390 × 664 and 844: the Thai's and the
+  English's dialog, Quiz: closed, Quiz shown; Explore back; no script errors.
 
 ## Time: Quiz (2026-10-21, the same spike)
 
