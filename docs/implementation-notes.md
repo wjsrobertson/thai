@@ -2206,6 +2206,26 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Register Ladders: Eat, Sleep, Ill, Die (2026-10-25)
+
+The fourth of the six gaps: the words were mostly there, scattered across Verbs, Health, Royal
+Language, the death topic and Monks, with nothing lining them up. A topic in Culture & Values →
+Language & Literature, after Royal Language: Ceremony & Address (`cul-register-ladders`, 21), with
+an `about` of four paragraphs: the verb changes with the person and the place; eat, sleep and ill
+from rude to royal; die, with the most rungs; the word follows the person, not the listener.
+- Copies of the existing cards (แดก, กิน, ทาน, รับประทาน, ฉัน, เสวย; นอน, จำวัด, บรรทม;
+  ไม่สบาย, ป่วย, อาพาธ; ซี้แหงแก๋, ตาย, เสีย, เสียชีวิต, ถึงแก่กรรม, มรณภาพ, สวรรคต), and two new:
+  ประชวร (ill, royal) and ไปสบายแล้ว (has gone to rest).
+- นอน was first copied from a Tone Pairs topic, partners and all; the audit caught it ("bad
+  partners"), and the plain card from Everyday Verbs replaced it.
+- **Stories** (2, Medium): Mum's Word Lesson (a farang dad learns six ways to eat, and which never
+  to say to Grandma) and Three Ways to Say It (one death, told by a friend, a newspaper and a
+  ten-year-old). The common rungs already match many stories: 37 in all.
+- **Checked:** the audit (0 errors, nothing new), stories.py check, spelling.mjs --write, gen_audio
+  (20 new recordings, 0 failed), word_timings (13 lines, 0 failed, 0 clips replaced); in the app (scratch `topic_probe.py`, 390 × 844, and 390 × 664 at
+  text size 2): the topic's rows, about and stories, Mum's Word Lesson with every word a card, no
+  page scroll, no script errors.
+
 ## Monks: Talking To and About (2026-10-25)
 
 The third of the six gaps: royal language had two topics, but the monk register, met far more
