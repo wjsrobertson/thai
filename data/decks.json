@@ -8246,7 +8246,7 @@
         { "thai": "ผู้สาว", "translit": "phûu-sǎao", "english": "young woman", "note": "Central: หญิงสาว." },
         { "thai": "เต้น", "translit": "tên", "english": "to dance" },
         { "thai": "กัน", "translit": "gan", "english": "together / each other", "note": "g. Compare คัน (kh) itchy." },
-        { "thai": "เสี่ยว", "translit": "sìao", "english": "friend for life (a sworn bond)", "note": "An Isan custom. In Bangkok slang, เสี่ยว now also means \"tacky\"." },
+        { "thai": "เสี่ยว", "translit": "sìao", "english": "friend for life (a sworn bond)", "note": "An Isan custom. In Bangkok slang, เสี่ยว now also means \"tacky\", a use many Isan people find insulting." },
         { "thai": "ของ", "translit": "khɔ̌ɔng", "english": "of / belonging to" },
         { "thai": "ข้อย", "translit": "khɔ̂i", "english": "I / me", "note": "Central: ฉัน / ผม." },
         { "thai": "ก็", "translit": "gɔ̂", "english": "then / also / well…", "note": "Multi-purpose linker. ก็ได้ = that's OK." },
@@ -65388,7 +65388,36 @@
         { "thai": "เงี้ยว", "translit": "ngíao", "english": "Shan (derogatory)", "note": "Old and insulting. Neutral: ไทใหญ่." },
         { "thai": "กะเหรี่ยง", "translit": "gà-rìang", "english": "Karen, used as \"hillbilly\"", "note": "The Karen people's name; insulting when aimed at someone as backward." },
         { "thai": "นิโกร", "translit": "ní-groo", "english": "negro (dated, offensive)", "note": "Polite: คนผิวสี or คนผิวดำ." },
-        { "thai": "จีนเทา", "translit": "jiin-thao", "english": "Chinese in shady business (lit. grey Chinese)", "note": "A 2020s news word for Chinese nationals in grey or illegal business." }
+        { "thai": "จีนเทา", "translit": "jiin-thao", "english": "Chinese in shady business (lit. grey Chinese)", "note": "A 2020s news word for Chinese nationals in grey or illegal business." },
+        { "thai": "แม้ว", "translit": "mɛ́ɛo", "english": "Hmong (derogatory)", "note": "Old and insulting; they call themselves ม้ง. Also a nickname for Thaksin." },
+        { "thai": "อีก้อ", "translit": "ii-gɔ̂ɔ", "english": "Akha (derogatory)", "note": "The old outsiders' name. Neutral: อาข่า." },
+        { "thai": "ซาไก", "translit": "saa-gai", "english": "Maniq (derogatory) / savage", "note": "For the forest people of the south, like เงาะ, and thrown at anyone as \"primitive\". Neutral: มันนิ." },
+        { "thai": "ไอ้มืด", "translit": "âi-mʉ̂ʉt", "english": "darkie (lit. the dark one)", "note": "Strong; aimed at Black people or dark-skinned Thais. Neutral: คนผิวสี." },
+        { "thai": "เมียฝรั่ง", "translit": "mia-fà-ràng", "english": "farang's wife (often a sneer)", "note": "Literally just a Westerner's wife, but often a sneer at Thai women, many from Isan, who marry Westerners." }
+      ]
+    },
+    {
+      "id": "swear-slurs-disability-class",
+      "category": "Slang & Swearing",
+      "group": "Swearing & Insults",
+      "name": "Slurs: Disability, Age, Class & Politics",
+      "description": "Slurs about disability, old age, class and the countryside, and the names the sides in Thai politics call each other. Here so you recognise them, with the neutral word where there is one.",
+      "cards": [
+        { "thai": "ไอ้ง่อย", "translit": "âi-ngɔ̂i", "english": "you cripple", "note": "Strong. Neutral: คนพิการ." },
+        { "thai": "ไอ้บอด", "translit": "âi-bɔ̀ɔt", "english": "blind man (contemptuous)", "note": "Strong. Neutral: คนตาบอด." },
+        { "thai": "ไอ้ใบ้", "translit": "âi-bâi", "english": "dummy (lit. mute)", "note": "Contemptuous, to a man who cannot speak." },
+        { "thai": "ไอ้เป๋", "translit": "âi-pěe", "english": "gimp (lit. limping)", "note": "Contemptuous, to a man with a limp." },
+        { "thai": "ไอ้แคระ", "translit": "âi-khrɛ́", "english": "midget / dwarf", "note": "Strong." },
+        { "thai": "คนพิการ", "translit": "khon-phí-gaan", "english": "disabled person (neutral)", "note": "The word to use; ผู้พิการ is more formal." },
+        { "thai": "เฒ่าหัวงู", "translit": "thâo-hǔa-nguu", "english": "dirty old man (lit. snake-headed old man)", "note": "Common and cutting." },
+        { "thai": "ไอ้แก่", "translit": "âi-gɛ̀ɛ", "english": "old fart (to a man)", "note": "Rude. Polite: ผู้สูงอายุ." },
+        { "thai": "อีแก่", "translit": "ii-gɛ̀ɛ", "english": "old hag", "note": "Rude. Polite: ผู้สูงอายุ." },
+        { "thai": "บ้านนอก", "translit": "bâan-nɔ̂ɔk", "english": "the sticks / hick", "note": "Neutral for your home province, as in กลับบ้านนอก; a put-down for a person: คนบ้านนอก." },
+        { "thai": "ตาสีตาสา", "translit": "taa-sǐi-taa-sǎa", "english": "village nobodies (condescending)", "note": "For poor country folk, like \"Tom, Dick and Harry\"." },
+        { "thai": "ขี้ข้า", "translit": "khîi-khâa", "english": "lackey / slave (contemptuous)", "note": "Strong; ข้า is an old word for a servant." },
+        { "thai": "ควายแดง", "translit": "khwaai-dɛɛng", "english": "redshirt (lit. red buffalo)", "note": "Strong in politics: ควาย = idiot. The other side gets สลิ่ม." },
+        { "thai": "สามกีบ", "translit": "sǎam-gìip", "english": "pro-democracy protester (lit. three hooves)", "note": "Strong in politics; aimed at young progressives since about 2019." },
+        { "thai": "ชังชาติ", "translit": "chang-châat", "english": "nation-hater", "note": "Aimed at critics of the government and the establishment." }
       ]
     },
     {
@@ -65765,7 +65794,7 @@
         { "thai": "แม่ใหญ่", "translit": "mɛ̂ɛ-yài", "english": "grandmother / old woman", "note": "Central: คุณยาย / ย่า." },
         { "thai": "ผู้บ่าว", "translit": "phûu-bàao", "english": "young man", "note": "Central: ชายหนุ่ม." },
         { "thai": "ผู้สาว", "translit": "phûu-sǎao", "english": "young woman", "note": "Central: หญิงสาว." },
-        { "thai": "เสี่ยว", "translit": "sìao", "english": "friend for life (a sworn bond)", "note": "An Isan custom. In Bangkok slang, เสี่ยว now also means \"tacky\"." },
+        { "thai": "เสี่ยว", "translit": "sìao", "english": "friend for life (a sworn bond)", "note": "An Isan custom. In Bangkok slang, เสี่ยว now also means \"tacky\", a use many Isan people find insulting." },
         { "thai": "ม่วน", "translit": "mûan", "english": "fun", "note": "Central: สนุก. Northern Thai uses it too." },
         { "thai": "ม่วนซื่น", "translit": "mûan sʉ̂ʉn", "english": "joyful / great fun", "note": "Central: สนุกสนาน.", "words": ["ม่วน::fun", "ซื่น::cheerful, joyful (Isan)"] },
         { "thai": "คึดฮอด", "translit": "khʉ́t hɔ̂ɔt", "english": "to miss (someone)", "note": "Central: คิดถึง.", "words": ["คึด::to think (Isan)", "ฮอด::to reach (Isan; with \"think\" = to miss)"] },
@@ -66429,6 +66458,8 @@
         { "thai": "หมวย", "translit": "mǔai", "english": "young Chinese-Thai woman / girl", "note": "Affectionate, from Teochew; อาหมวย to call one. Also a common nickname." },
         { "thai": "อาแปะ", "translit": "aa-pɛ̀", "english": "old Chinese-Thai man / uncle", "note": "Friendly, from Teochew: the old man who runs the shop." },
         { "thai": "อาซิ้ม", "translit": "aa-sím", "english": "old Chinese-Thai woman / auntie", "note": "Friendly, from Teochew." },
+        { "thai": "บัง", "translit": "bang", "english": "older brother (Muslim)", "note": "For Muslim men, from Malay abang: บังขายโรตี is the roti man." },
+        { "thai": "ก๊ะ", "translit": "gá", "english": "older sister (Muslim)", "note": "For Muslim women, from Malay kak; mostly in the south." },
         { "thai": "ท่าน", "translit": "thân", "english": "you / he / she (very respectful)" },
         { "thai": "เรียกว่าอะไรดี", "translit": "rîak wâa à-rai dii", "english": "what should I call you?", "words": ["เรียก::to call (a name / summon)", "ว่า::that (reporting) / to say", "อะไร::what", "ดี::good"] }
       ]

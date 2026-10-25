@@ -2206,6 +2206,26 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Slurs: Disability, Age, Class & Politics, and more names for peoples (2026-10-25)
+
+The user asked what similar slurs the app was missing, then "add and push". None of these was a card:
+- **Slurs: Peoples & Foreigners** (22): แม้ว (Hmong; ม้ง), อีก้อ (Akha; อาข่า), ซาไก (Maniq, and
+  "primitive"; มันนิ), ไอ้มืด (darkie; คนผิวสี), เมียฝรั่ง (often a sneer).
+- **Forms of Address: Family Terms** (19): บัง and ก๊ะ, the Muslim older brother and sister (from
+  Malay), after the Chinese-Thai names.
+- A new topic after it, **Slurs: Disability, Age, Class & Politics** (`swear-slurs-disability-class`,
+  15): disability (ไอ้ง่อย, ไอ้บอด, ไอ้ใบ้, ไอ้เป๋, ไอ้แคระ, and the word to use, คนพิการ), age
+  (เฒ่าหัวงู, ไอ้แก่, อีแก่), class and the countryside (บ้านนอก, ตาสีตาสา, ขี้ข้า), politics (ควายแดง,
+  สามกีบ, ชังชาติ; สลิ่ม stays in Insults). The name is long, but 44-character names already fit.
+  สามกีบ's card gives the meaning, not an origin story (accounts differ).
+- เสี่ยว's note (Isan: People & Feelings) now says many Isan people find the Bangkok "tacky" insulting.
+- The new topic matches no stories (Peoples still 4); left so, as for the split below.
+- **Checked:** the audit (0 errors, nothing new, the tones as spelt), stories.py check and sync,
+  spelling.mjs --write, gen_audio (58 new recordings, 0 failed, none dropped); in the app (scratch
+  `slurs3.py`, `slurs3b.py`, 390 × 844 and 390 × 664 at text size 2): the new topic picked with its 15
+  cards, its name cut short with "…" on the topic button as other long names are and whole in the
+  heading, no page scroll; Peoples with 22, Family Terms with 19; no script errors.
+
 ## Slurs split, and names for peoples and foreigners (2026-10-25)
 
 The user asked what แขก, แขกดำ and แขกขาว mean, then what other such names the app was missing.
