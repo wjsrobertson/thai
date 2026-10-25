@@ -2206,6 +2206,20 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## นม as milk (2026-10-25)
+
+The gap noted below, fixed at the user's word: นม's only card was the slang "tits (lit. milk)", so
+seven stories showed that where they meant milk (The Shopping List, The Birth, Animal Families,
+Grams & Centimetres, Seed to Tree, Shopping Maths, The Sheep Farm), and the word lists of ให้นมลูก
+and สัตว์เลี้ยงลูกด้วยนม pointed at it.
+- A card นม "milk" in **Drinks** (21), before นมสด, its note "Also breast; in slang, tits."
+- The seven stories now pin "milk"; The Locker Room keeps the slang, which it means.
+- The phrase cards' word lists, in topics and story copies (7), now name นม::milk.
+- **Checked:** stories.py check and sync (0 problems), the audit (0 errors, nothing new; no word
+  list names the slang card), spelling.mjs --write, gen_audio (1 new recording, 0 failed);
+  `stories.py show` gives นม = milk in the seven stories and the slang in The Locker Room (not
+  checked in a browser: data only, the reader reads each story's own card).
+
 ## Stories for the slur topics (2026-10-25)
 
 The user asked for stories for the new slur topics. 23 Medium stories, each a small scene in which
