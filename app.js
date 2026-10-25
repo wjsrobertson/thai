@@ -1,7 +1,7 @@
 import { letterSpelling, letterStep, schoolSpelling, vowelSpelling, isSpellable, consonantClass } from './spell.js';
 import { toneBreakdown, tableTone, TABLE_COLUMNS, TONE_THAI, CLASS_NAMES, MARK_NAMES } from './tones.js';
 import { KEDMANEE, sameThai, tidy, tidiedNote, firstWrong, clusters } from './typing.js';
-import { PERIODS, periodOf, timePhrase, timeEnglish } from './time.js';
+import { periodOf, timePhrase, timeEnglish } from './time.js';
 
 // Learn Thai — flashcard app
 // Plain JS module, no build step. Loads decks from data/decks.json, schedules reviews with FSRS
@@ -256,9 +256,8 @@ const state = {
   pos: 0,             // index into queue
   randomAt: null,     // { queue, pos }: the card 🔀 drew, shown as "? / n" till ‹ › move on (goRandom)
   randomBag: null,    // { queue, left }: the places 🔀 hasn't drawn yet
-  timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, style, comebacks, seq, ahead: the next new time } (nextTimeQuestion)
+  timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, comebacks, seq, ahead: the next new time } (nextTimeQuestion)
   time: (() => { const d = new Date(); const at = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5 % 1440; return { h: Math.floor(at / 60), m: at % 60 }; })(), // Time's clock (renderTime): now, to the 5 minutes
-  timeName: null,           // Explore's band name tapped, { id, from: its run's first hour }, shown until the time changes (setTime)
   showingBack: false,
   section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
   leftHome: false,    // been anywhere but Home since the app opened (markMore)
@@ -7573,7 +7572,7 @@ function markSpeakers() {
   const recall = state.review?.current && cardSay(state.cardIndex.get(state.review.current.key).card);
   els.speakButtons.forEach((b) => b.classList.toggle('playing', on(flash)));
   document.querySelectorAll('.review-speak').forEach((b) => b.classList.toggle('playing', on(recall)));
-  document.querySelectorAll('.row-speak, .letter-tile, .time-band-label').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
+  document.querySelectorAll('.row-speak, .letter-tile').forEach((b) => b.classList.toggle('playing', on(b.dataset.say)));
 }
 
 function ttsAndWait(text, lang) {
@@ -7596,16 +7595,15 @@ function wait(ms) {
 }
 
 // ---------- Time (time.js; a spike, 2026-10-21: branch 2026-10-21-spike-time) ----------
-// Explore: a clock to set, by dragging its hands (the long one by 5 minutes, carrying the hour round;
-// the short one by the hour), by ‹ › (5 minutes) or by the band, and the Thai for its time under it,
-// the everyday way (an Everyday | Official switch went 2026-10-23, the user's call: Everyday only).
-// The band is the day's 24 hours in the six-hour clock's four quarters, the day's hours grey and the
-// night's blue, with the count its Thai uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5), its name under its
-// hours saying itself when tapped; the clock's rim shows day and night for the half of the day it's
-// in. A change says the time, whatever Cards'
-// auto-play (its A): the user set it, so wants to hear it (the user's call, 2026-10-22; a tap on an
-// hour was silent with auto-play off). Mute still silences it. It opens on the time now, to the 5
-// minutes.
+// Explore: a clock, set by ‹ › (5 minutes) or by the band (on the hour), and the Thai for its time
+// under it, the everyday way (an Everyday | Official switch went 2026-10-23, the user's call). The
+// clock only shows the time: dragging its hands went 2026-10-25 (the user's call: only the band and
+// ‹ › set it). The band is the day's 24 hours in the six-hour clock's four quarters, the day's hours
+// grey and the night's blue, with the count its Thai uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5); the
+// clock's rim shows day and night for the half of the day it's in. A change says the time, whatever
+// Cards' auto-play (its A): the user set it, so wants to hear it (the user's call, 2026-10-22; a tap
+// on an hour was silent with auto-play off). Mute still silences it. It opens on the time now, to the
+// 5 minutes.
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const svgEl = (tag, attrs = {}) => {
   const e = document.createElementNS(SVG_NS, tag);
@@ -7614,7 +7612,6 @@ const svgEl = (tag, attrs = {}) => {
 };
 const timeSaysOnChange = () => getPreferences().autoPlay !== false; // Quiz's questions; Explore always says its time
 let clockParts = null; // Explore's clock's hands and rim, once drawn (drawClock)
-let clockDrag = null;  // 'hour' or 'minute' while a hand is dragged
 
 // A point on the clock: `deg` clockwise from 12, `r` from the middle (the face is 0 0 200 200).
 const clockPoint = (deg, r) => [100 + r * Math.sin((deg * Math.PI) / 180), 100 - r * Math.cos((deg * Math.PI) / 180)];
@@ -7649,18 +7646,16 @@ function drawClock(svg) {
   return { hour, minute, rim };
 }
 
-// The hands at h:m, and the rim the half of the day it's in, the hour's arc lit (or `lit`'s: a name's).
-function setClock(parts, h, m, lit = [h]) {
+// The hands at h:m, and the rim the half of the day it's in, the hour's arc lit.
+function setClock(parts, h, m) {
   parts.hour.setAttribute('transform', `rotate(${(h % 12) * 30 + m / 2} 100 100)`);
   parts.minute.setAttribute('transform', `rotate(${m * 6} 100 100)`);
   const half = h < 12 ? 0 : 12;
-  parts.rim.forEach((arc, k) => arc.setAttribute('class', `clock-rim period-${periodOf(half + k).id}` + (lit.includes(half + k) ? ' on' : '')));
+  parts.rim.forEach((arc, k) => arc.setAttribute('class', `clock-rim period-${periodOf(half + k).id}` + (half + k === h ? ' on' : '')));
 }
 
-// `name`: a band's name tapped, shown until the time's set some other way.
-function setTime(h, m, { say = false, name = null } = {}) {
+function setTime(h, m, { say = false } = {}) {
   state.time = { h: ((h % 24) + 24) % 24, m: ((m % 60) + 60) % 60 };
-  state.timeName = name;
   renderTime();
   if (say) speak(timePhrase(state.time.h, state.time.m).th);
 }
@@ -7673,15 +7668,14 @@ function stepTime(minutes) {
 function renderTime() {
   if (!clockParts) clockParts = drawClock(els.timeClock);
   const { h, m } = state.time;
-  const name = timeNamePicked();
-  setClock(clockParts, h, m, name ? name.hours : [h]);
+  setClock(clockParts, h, m);
   renderTimeBand();
   const said = timeCard();
   els.timeTh.textContent = said.thai;
   els.timeTr.textContent = said.translit;
   fitTimeSay();
   els.timeEn.textContent = said.english;
-  els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}: drag its hands`);
+  els.timeClock.setAttribute('aria-label', `Clock at ${timeEnglish(h, m)}`);
   els.timePlay.dataset.say = said.thai;
   els.timePlay.classList.toggle('playing', sayingNow(said.thai));
   // The time's words as buttons, and a caption with what one meant or a note on the time ("could be
@@ -7689,17 +7683,11 @@ function renderTime() {
   preloadTimeAudio(); // the times around this one
 }
 
-// A name tapped on the band: the name's Thai, transliteration and meaning in place of the time's,
-// its hours lit on the rim, until the time changes (the user's call, 2026-10-22).
-const timeNamePicked = () => (state.timeName ? PERIODS.find((x) => x.id === state.timeName.id) : null);
-
-// What Explore's three lines say, as a card: the time's phrase, or a name's. A tap on any of them
+// What Explore's three lines say, as a card: the time's phrase. A tap on any of them
 // opens it in the word dialog (showWordPop), the whole phrase with each syllable's tone, as a Topics
 // phrase row's transliteration and English do (the user's call, 2026-10-22). `time`: not a topic's
 // card, so no adding it to a list.
 function timeCard() {
-  const name = timeNamePicked();
-  if (name) return { thai: name.th, translit: name.tl, english: name.gloss, time: true };
   const p = timePhrase(state.time.h, state.time.m);
   return { thai: p.th, translit: p.tl, english: p.en, time: true };
 }
@@ -7729,8 +7717,8 @@ function fitTimeSay() {
 // The band: the six-hour clock's four quarters, a row each (2026-10-21, the user's call; am and pm
 // rows of twelve before), each counting one to six and ending on the day's markers: 1–6 am (ตี, then
 // six in the morning), 7 am–noon, 1–6 pm (บ่าย, เย็น), 7 pm–midnight (ทุ่ม one to five, then
-// midnight, once หกทุ่ม). Under each run of a part of the day, its name: centred, or a single hour's
-// (the quarter's last) to the row's end.
+// midnight, once หกทุ่ม). The parts' names under their hours, each said and picked when tapped,
+// went 2026-10-25 (the user's call: "redundant"; the hour's Thai says them).
 const TIME_QUARTERS = [[1, 2, 3, 4, 5, 6], [7, 8, 9, 10, 11, 12], [13, 14, 15, 16, 17, 18], [19, 20, 21, 22, 23, 0]];
 function renderTimeBand() {
   const rows = TIME_QUARTERS.map((hours) => {
@@ -7740,36 +7728,11 @@ function renderTimeBand() {
       const period = periodOf(h);
       const cell = document.createElement('button');
       cell.type = 'button';
-      cell.className = `time-cell period-${period.id}` + (h === state.time.h && !state.timeName ? ' on' : '');
+      cell.className = `time-cell period-${period.id}` + (h === state.time.h ? ' on' : '');
       cell.textContent = period.count(h);
       cell.setAttribute('aria-label', `${timeEnglish(h, 0)}: ${timePhrase(h, 0).th}`);
       cell.addEventListener('click', () => setTime(h, 0, { say: true })); // on the hour (the user's call, 2026-10-21; it kept the minutes)
       row.append(cell);
-    }
-    for (let i = 0; i < hours.length;) {
-      const period = periodOf(hours[i]);
-      let n = 1;
-      while (i + n < hours.length && periodOf(hours[i + n]) === period) n++;
-      // The name says itself when tapped, lit while it does (markSpeakers), and sets the clock on the
-      // hour: this hour if it's one of the name's, or else its first (the user's calls, 2026-10-21);
-      // it's then picked, the time's lines its own (renderTime, 2026-10-22).
-      const run = hours.slice(i, i + n);
-      const label = document.createElement('button');
-      label.type = 'button';
-      label.className = `time-band-label period-${period.id}` + (n === 1 && i + n === hours.length ? ' end' : '')
-        + (state.timeName?.from === run[0] ? ' on' : ''); // the one tapped (เช้า has two)
-      label.lang = 'th';
-      label.textContent = period.th;
-      label.dataset.say = period.th;
-      label.title = `Play ${period.th}`;
-      label.classList.toggle('playing', sayingNow(period.th));
-      label.addEventListener('click', () => {
-        speak(period.th); // from the start, even while it's playing: a pick, not a speaker's stop (the other เช้า)
-        setTime(run.includes(state.time.h) ? state.time.h : run[0], 0, { name: { id: period.id, from: run[0] } });
-      });
-      label.style.gridColumn = `${i + 1} / span ${n}`;
-      row.append(label);
-      i += n;
     }
     return row;
   });
@@ -7805,9 +7768,8 @@ function renderTimeSection() {
 
 // Time's clips, fetched ahead of playback as a topic's are (preloadDeckAudio; the user's call,
 // 2026-10-21: each was fetched the first time it played, unless Download all audio had them).
-// Explore: the clock's time and those within half an hour of it, nearest first, then the band's
-// names and the 24 hours on the hour (about 45 clips, ~450 KB), again as the
-// clock moves (those loaded are skipped). Quiz: the question's and the next one's (nextTimeQuestion
+// Explore: the clock's time and those within half an hour of it, nearest first, then the 24 hours
+// on the hour (about 40 clips, ~400 KB), again as the clock moves (those loaded are skipped). Quiz: the question's and the next one's (nextTimeQuestion
 // picks it a question ahead). Held in memory, as a topic's Thai is, so they play at once.
 function preloadTimeAudio() {
   if (getSettings().audioSource !== 'samples') {
@@ -7828,7 +7790,6 @@ function preloadTimeAudio() {
         at(Math.floor(x / 60), x % 60);
       }
     }
-    for (const h of TIME_QUARTERS.flat()) say.add(periodOf(h).th); // the band's names
     for (let h = 0; h < 24; h++) at(h, 0);
   }
   queuePageAudio([...say].map((th) => ({ url: sampleUrl(th, 'th'), keep: true })).filter((e) => e.url));
@@ -7943,29 +7904,6 @@ function answerTime(i) {
     if (state.timeQuiz?.seq !== seq || state.view !== 'time' || timePage() !== 'quiz') return; // moved on meanwhile
     nextTimeQuestion();
   }, (right ? s.learnPauseMs : s.wrongPauseMs) + (quiz.dir === 'listen' || timeSaysOnChange() ? 600 : 0));
-}
-
-// Dragging a hand: within 60% of the middle the hour's, else the minutes'.
-function clockAt(e) {
-  const r = els.timeClock.getBoundingClientRect();
-  const x = e.clientX - (r.left + r.width / 2);
-  const y = e.clientY - (r.top + r.height / 2);
-  return { deg: ((Math.atan2(x, -y) * 180) / Math.PI + 360) % 360, d: Math.hypot(x, y) / (r.width / 2) };
-}
-function moveHand(deg) {
-  const { h, m } = state.time;
-  if (clockDrag === 'minute') {
-    const mm = (Math.round(deg / 30) * 5) % 60;
-    if (mm === m) return;
-    // Past 12 the hour goes on (or back), as a real clock's does.
-    const hh = m >= 45 && mm <= 15 ? h + 1 : m <= 15 && mm >= 45 ? h - 1 : h;
-    setTime(hh, mm);
-  } else {
-    const h12 = Math.round((((deg - m / 2) % 360) + 360) % 360 / 30) % 12;
-    // Of the two hours it could be, am or pm, the one nearer the hour it was: so a drag goes on round.
-    const near = [h12, h12 + 12].sort((a, b) => Math.min(Math.abs(a - h), 24 - Math.abs(a - h)) - Math.min(Math.abs(b - h), 24 - Math.abs(b - h)))[0];
-    if (near !== h) setTime(near, m);
-  }
 }
 
 // ---------- wiring ----------
@@ -8198,24 +8136,6 @@ function bindEvents() {
   [els.timeTh, els.timeTr, els.timeEn].forEach((el) => el.addEventListener('click', () => showWordPop(null, timeCard())));
   els.timePlay.append(speakerIcon());
   els.timePlay.addEventListener('click', () => speakerPress(els.timePlay, els.timePlay.dataset.say));
-  els.timeClock.addEventListener('pointerdown', (e) => {
-    const { deg, d } = clockAt(e);
-    if (d > 1.05) return;
-    clockDrag = d < 0.6 ? 'hour' : 'minute';
-    els.timeClock.setPointerCapture(e.pointerId);
-    els.timeClock.classList.add('dragging');
-    moveHand(deg);
-  });
-  els.timeClock.addEventListener('pointermove', (e) => { if (clockDrag) moveHand(clockAt(e).deg); });
-  const dropHand = () => {
-    if (!clockDrag) return;
-    clockDrag = null;
-    els.timeClock.classList.remove('dragging');
-    if (state.timeName) setTime(state.time.h, state.time.m); // a tap that didn't move a hand: the time again
-    speak(timePhrase(state.time.h, state.time.m).th); // said once it's let go
-  };
-  els.timeClock.addEventListener('pointerup', dropHand);
-  els.timeClock.addEventListener('pointercancel', dropHand);
   els.prevBtn.addEventListener('click', goPrev);
   els.nextBtn.addEventListener('click', goNext);
   els.randomBtn.addEventListener('click', goRandom);

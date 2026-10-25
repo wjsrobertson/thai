@@ -2170,10 +2170,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    up from the page, the night's (ตี, ทุ่ม, midnight, the counts for the dark) a blue tint, and the
    time's hour in the accent. --tone-low is the blue in every theme (--easy is sage in Night). */
 :is(.period-chaao, .period-noon, .period-baai, .period-yen) {
-  --period: var(--ink); --period-fill: color-mix(in srgb, var(--ink) 14%, var(--panel)); --period-name: var(--muted); --period-rim: .2;
+  --period: var(--ink); --period-fill: color-mix(in srgb, var(--ink) 14%, var(--panel)); --period-rim: .2;
 }
 :is(.period-tii, .period-thum, .period-midnight) {
-  --period: var(--tone-low); --period-fill: color-mix(in srgb, var(--tone-low) 18%, var(--panel)); --period-name: var(--tone-low); --period-rim: .35;
+  --period: var(--tone-low); --period-fill: color-mix(in srgb, var(--tone-low) 18%, var(--panel)); --period-rim: .35;
 }
 .time { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 /* Explore | Quiz (Everyday | Official beside it went 2026-10-23). */
@@ -2185,8 +2185,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .time-explore[hidden], .time-quiz[hidden] { display: none; }
 /* The clock, ‹ › either side. Dragging a hand doesn't scroll the page. */
 .time-clock-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
-.time-clock { width: min(220px, 52vw); aspect-ratio: 1; flex: none; overflow: visible; touch-action: none; user-select: none; -webkit-user-select: none; cursor: grab; }
-.time-clock.dragging { cursor: grabbing; }
+/* It only shows the time: its hands aren't dragged (2026-10-25, the user's call). */
+.time-clock { width: min(220px, 52vw); aspect-ratio: 1; flex: none; overflow: visible; }
 .clock-face { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
 .clock-rim { fill: none; stroke: var(--period, var(--border)); stroke-width: 7; opacity: var(--period-rim, .3); }
 .clock-rim.on { stroke: var(--accent); opacity: 1; }
@@ -2197,12 +2197,11 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .clock-hand.hour { stroke: var(--ink); stroke-width: 7; }
 .clock-hand.minute { stroke: var(--accent); stroke-width: 4; }
 .clock-pin { fill: var(--accent); }
-/* The band: twelve hours a row, the count the Thai uses in each, the part's name under its hours. */
-.time-band { display: flex; flex-direction: column; gap: 6px; }
-/* minmax(0, …): a single hour's name (เที่ยงคืน) runs on under the next hours, not widening its own. */
-.time-band-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: 36px auto; gap: 0 2px; }
+/* The band: six hours a row, the count the Thai uses in each. The parts' names under them went
+   2026-10-25 (the user's call: "redundant"), the rows 12 apart, closer than the names' line kept them. */
+.time-band { display: flex; flex-direction: column; gap: 12px; }
+.time-band-row { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-template-rows: 36px; gap: 0 2px; }
 .time-cell {
-  grid-row: 1;
   min-width: 0;
   padding: 0;
   border: 0;
@@ -2214,16 +2213,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   cursor: pointer;
 }
 .time-cell.on { background: var(--accent); color: var(--on-accent); font-weight: 700; }
-.time-band-label { position: relative; grid-row: 2; justify-self: center; margin: 0; border: 0; border-radius: 6px; padding: 2px 4px 0; background: none; color: var(--period-name); font: inherit; font-size: calc(14px * var(--fs, 1)); line-height: 1.3; white-space: nowrap; cursor: pointer; }
-/* A button that says its name (renderTimeBand): a bigger target than the word, to the sides and down
-   into the gap under it, not up over its hours' cells. Lit while it's said. */
-.time-band-label::after { content: ""; position: absolute; inset: 0 -10px -6px; }
-.time-band-label.playing { background: color-mix(in srgb, var(--period) 20%, transparent); }
-/* The name tapped (renderTime shows its lines), as an hour's cell is when it's the time's (2026-10-22). */
-.time-band-label.on { background: var(--accent); color: var(--on-accent); }
-/* A quarter's last hour's (เที่ยงคืน): centred under it, and if it's wider (a large text size), its
-   end at the row's, growing left: its box at least the hour's width, its text centred in it. */
-.time-band-label.end { justify-self: end; min-width: 100%; text-align: center; }
 /* The Thai for the time, its ▶ beside it; its transliteration and English under it. */
 .time-say { text-align: center; }
 .time-say :is(.time-th, .time-tr, .time-en) { cursor: pointer; } /* each opens the word dialog (timeCard) */
@@ -2249,7 +2238,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   border-radius: 14px;
   text-align: center;
 }
-.time-clock.time-q-clock { width: min(170px, 44vw); cursor: default; touch-action: auto; } /* not dragged; over mobile.css's .time-clock */
+.time-clock.time-q-clock { width: min(170px, 44vw); } /* over mobile.css's .time-clock */
 /* Till answered, Thai's and Listen's clock has no hands and a plain rim. */
 .time-q-clock.blank :is(.clock-hand, .clock-pin) { visibility: hidden; }
 .time-q-clock.blank .clock-rim { stroke: var(--border); opacity: 1; }

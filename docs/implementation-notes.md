@@ -2001,6 +2001,17 @@ Settings always last.
   664, 763, 844, 430 × 932, 390 × 844 at text size 2 and 1280 × 800: no Official, the band's names
   under every row, 2:30 pm said บ่ายสองโมงครึ่ง, the word dialog's tones, a name picked, Quiz's
   three directions asked and answered; no scroll; no script errors.
+- **No names on the band, and a clock that only shows the time** (the user's call, 2026-10-25: the
+  names under the hours "are redundant", and "only the number buttons and arrows should be
+  clickable"): the band is its four rows of hours, 12 px apart (the names' line kept them about
+  29 apart), and with the names went their picking (`state.timeName`, `timeNamePicked`, the
+  periods' `gloss`), their clips' preloading and their styles (`.time-band-label`,
+  `--period-name`). The clock's hands aren't dragged or tapped any more (`clockAt`, `moveHand`, the
+  pointer handlers, its grab cursor gone); ‹ ›, ← → and the band set the time, and the Thai, its
+  transliteration and English still open the word dialog. Checked (scratch `nonames.py`, real
+  mouse events) at 390 × 664, 763, 844, 430 × 932, 390 × 844 at text size 2 and 1280 × 800: no
+  names, rows 12 apart; a drag of either hand and a tap on the clock change nothing and say
+  nothing; ›, ‹ and an hour set and say the time; midnight's rim lit; no scroll; no script errors.
 
 ## Time: Quiz (2026-10-21, the same spike)
 

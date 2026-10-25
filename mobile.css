@@ -497,7 +497,7 @@ html.modal-open body { overflow: clip; }
    them, the room left shared out evenly above, between and below them (10 apart at the least, its gap). */
 .time-explore { flex: 1 0 auto; justify-content: space-evenly; }
 .time-clock { width: min(200px, 50vw, 24vh); }
-.time-band-row { grid-template-rows: 32px auto; }
+.time-band-row { grid-template-rows: 32px; }
 .time-th { font-size: calc(30px * var(--fs, 1)); }
 /* Quiz fits 390 × 664 in all three directions (Listen's the tallest: the clock, its ▶, two lines);
    the clock 142 (150 till the switches grew to 44, 2026-10-21). */
