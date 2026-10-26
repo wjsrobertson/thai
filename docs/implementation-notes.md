@@ -2216,6 +2216,16 @@ and the other two-half proverbs there go without one too. Its words all have car
 War & Battle). Checked: the audit (0 errors), stories.py check and sync (no changes),
 spelling.mjs --write, gen_audio (3 new recordings, 0 failed).
 
+**A story for it** (the user's ask): Bed at Half-Time (Medium, `rs-bed-at-half-time`). Man United
+are two down to Liverpool at half-time, Dad goes to bed, Grandpa says the saying, and United win
+three-two. Two school-football comebacks already exist (The Final Minute, The Last-Minute Goal), so
+this one is about the one who gave up too early. The proverb is one token with `_` for its space, as
+in Grandma's Proverbs. ประตู, แพ้ and อยู่ are pinned to goal, lose and the ongoing อยู่. The draft
+used แน่ ๆ and วันรุ่งขึ้น, which have no cards, so they became แน่ and เช้าวันอาทิตย์. Checked:
+the audit (0 errors), stories.py check, sync and coverage (no topic dropped; the same 7 under 5
+stories), spelling.mjs --write (no change), gen_audio (10 new, 0 failed), word_timings (9 lines, 0
+failed, 0 clips replaced).
+
 ## A new topic starts at its top (2026-10-25)
 
 The user's report: scrolled halfway down a topic's List, choosing another topic from the picker
