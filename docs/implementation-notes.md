@@ -2206,14 +2206,26 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
-## ศึกยังไม่จบ อย่าเพิ่งนับศพทหาร (2026-10-26)
+## สงครามยังไม่จบ อย่าเพิ่งนับศพทหาร (2026-10-26)
 
 The user asked about a saying they half remembered ("the army hasn't been defeated yet", meaning
-there's still time) and confirmed this one. It's a card in **Idioms & Proverbs: Wisdom** (24), the
+there's still time) and confirmed this one.
+
+**First written ศึกยังไม่จบ …, corrected the same day.** The user was told it's more like
+สงครามยังไม่จบ อย่าพึ่งนับศพทหาร. สงคราม is right: that's the form in headlines (Thai Post,
+Komchadluek, MGR, TopNews), on Pantip and on thai-language.com, and the ศึก form had no exact hits.
+พึ่ง isn't: อย่าเพิ่ง is the standard spelling and every one of those sources uses it. Changed: both
+cards (romanised sǒng-khraam yang mâi jòp …, the note "Lit. the war isn't over …"), Grandpa's line
+in the story and its English ("before the war's over"). Added to docs/thai-writing.md. สงคราม has a
+card already (War & Battle). Checked: the audit (0 errors), stories.py check, sync (0 changes) and
+coverage (unchanged), spelling.mjs --write (no change), gen_audio (2 new, 0 failed), word_timings
+(1 line, 0 failed, 0 clips replaced).
+
+It's a card in **Idioms & Proverbs: Wisdom** (24), the
 advice proverbs, after ลูกไม้หล่นไม่ไกลต้น: "it's not over till it's over", with the literal image
 in the note. It has no word list: its two halves are split by a space, which no word key can span,
-and the other two-half proverbs there go without one too. Its words all have cards already (ศึก in
-War & Battle). Checked: the audit (0 errors), stories.py check and sync (no changes),
+and the other two-half proverbs there go without one too. Its words all have cards already (สงคราม,
+once ศึก, in War & Battle). Checked: the audit (0 errors), stories.py check and sync (no changes),
 spelling.mjs --write, gen_audio (3 new recordings, 0 failed).
 
 **A story for it** (the user's ask): Bed at Half-Time (Medium, `rs-bed-at-half-time`). Man United

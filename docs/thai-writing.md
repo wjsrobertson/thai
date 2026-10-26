@@ -50,6 +50,11 @@ These are the mistakes it kept finding.
   ออกใบสั่ง; ขว้างระเบิด; เมาหนัก.
 - Set phrases: จับผิดคน (จับคนผิด means "arrest the guilty one"); ไม่ต้อง means "no need", not
   "not allowed" (that's ห้าม); ร้องเพลงไม่เป็น.
+- **Sayings in their usual words.** A proverb or idiom is fixed: a near-synonym makes a variant
+  nobody says. Search the exact phrase in quotes before adding one. ศึกยังไม่จบ อย่าเพิ่งนับศพทหาร
+  had no hits; the saying is สงครามยังไม่จบ … (headlines, Pantip, thai-language.com). The user's
+  catch, 2026-10-26.
+- อย่าเพิ่ง ("not yet") is spelt เพิ่ง. อย่าพึ่ง is common but wrong: พึ่ง means "to rely on".
 
 ## Register
 
