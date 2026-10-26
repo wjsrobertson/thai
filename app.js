@@ -5381,6 +5381,7 @@ async function deleteList(id) {
   // Showing it: the next list, or the first topic.
   if (state.currentDeckId === listScopeId(id)) {
     selectDeck(store.lists[0] ? listScopeId(store.lists[0].id) : state.decks.find((d) => !d.passage).id);
+    window.scrollTo(0, 0); // the new choice at its top, as the picker's (pickScope; the user's call, 2026-10-26)
   }
   toast(`Deleted '${list.name}'`);
 }
@@ -5396,8 +5397,10 @@ function openAddWords(id) {
 function doneAdding() {
   const id = state.addingTo;
   state.addingTo = null;
-  if (id && listById(id)) selectDeck(listScopeId(id));
-  else renderWordlist();
+  if (id && listById(id)) {
+    selectDeck(listScopeId(id));
+    window.scrollTo(0, 0); // back to the list at its top, not where the topic was scrolled to (2026-10-26)
+  } else renderWordlist();
 }
 
 // Sets el's text, drawing each → as the SVG arrow (.arrow-icon), since the → glyph sits low in
@@ -5963,7 +5966,10 @@ function renderReadingList() {
       wider.type = 'button';
       wider.className = 'ghost';
       wider.textContent = `Try all of ${cat}`;
-      wider.addEventListener('click', () => selectDeck(`cat:${cat}`));
+      wider.addEventListener('click', () => {
+        selectDeck(`cat:${cat}`);
+        window.scrollTo(0, 0); // the category's stories from the top (2026-10-26)
+      });
       empty.append(wider);
     }
     els.readingList.replaceChildren(empty);

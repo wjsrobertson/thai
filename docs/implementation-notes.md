@@ -2217,8 +2217,15 @@ where it was.
   the button scrolled the page to it, so the same topic again jumped too (the old code in the probe:
   List 2462 to 2156, Read 230 to 0).
 - Every page the picker serves (List, Cards, Read) and both its tabs (Topics, My Words) take the
-  same path. The other ways a topic changes (deleting a list, Done adding, Read's "Try all of") are
-  left as they were; the user asked about the picker.
+  same path.
+- **The other ways a topic changes, the next day** (the user's "please do those cases too",
+  2026-10-26): deleting the list you're on (`deleteList`, after its confirm dialog has given focus
+  back), Done after Add words (`doneAdding`, back to the list), and Read's "Try all of" (the empty
+  Read page's button) each scroll to the top after `selectDeck`. Checked (scratch
+  `other_switches.py`, the same three sizes): Done from halfway down a topic (1437 to 1527) comes
+  back to the list at 0; deleting the list you're on lands on the next list at 0, and Try all of on
+  the category's stories at 0, though neither can be reached far from the top (Delete is under the
+  pinned row once the page moves; an empty Read page doesn't scroll); no script errors.
 - **Checked** (scratch `picker_top.py`: the topic button, real typing in the search, a tap on the
   row; 390 × 664, 390 × 844, and 430 × 932 at text size 2): on List and Read, scrolled halfway,
   the same topic again stays exactly where it was (2462, 230…), another topic opens at 0; no script
