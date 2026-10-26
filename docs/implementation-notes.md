@@ -2206,6 +2206,16 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## ศึกยังไม่จบ อย่าเพิ่งนับศพทหาร (2026-10-26)
+
+The user asked about a saying they half remembered ("the army hasn't been defeated yet", meaning
+there's still time) and confirmed this one. It's a card in **Idioms & Proverbs: Wisdom** (24), the
+advice proverbs, after ลูกไม้หล่นไม่ไกลต้น: "it's not over till it's over", with the literal image
+in the note. It has no word list: its two halves are split by a space, which no word key can span,
+and the other two-half proverbs there go without one too. Its words all have cards already (ศึก in
+War & Battle). Checked: the audit (0 errors), stories.py check and sync (no changes),
+spelling.mjs --write, gen_audio (3 new recordings, 0 failed).
+
 ## A new topic starts at its top (2026-10-25)
 
 The user's report: scrolled halfway down a topic's List, choosing another topic from the picker

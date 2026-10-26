@@ -70855,6 +70855,7 @@
         { "thai": "เส้นผมบังภูเขา", "translit": "sên-phǒm bang phuu-khǎo", "english": "can't see what's right in front of you", "note": "Lit. a hair hides the mountain.", "words": ["เส้นผม::a hair, strand of hair", "บัง::to block / cover", "ภูเขา::mountain"] },
         { "thai": "งมเข็มในมหาสมุทร", "translit": "ngom khěm nai má-hǎa-sà-mùt", "english": "a needle in a haystack", "note": "Lit. groping for a needle in the ocean.", "words": ["งม::to grope for (underwater)", "เข็ม::needle", "ใน::in / inside", "มหาสมุทร::ocean"] },
         { "thai": "ลูกไม้หล่นไม่ไกลต้น", "translit": "lûuk-máai lòn mâi glai tôn", "english": "the apple doesn't fall far from the tree", "note": "Lit. the fruit doesn't fall far from the tree.", "words": ["ลูกไม้::fruit (of a tree); trick", "หล่น::to fall, drop", "ไม่::not / no", "ไกล::far (from)", "ต้น::trunk, base (of a tree)"] },
+        { "thai": "ศึกยังไม่จบ อย่าเพิ่งนับศพทหาร", "translit": "sʉ̀k yang mâi jòp yàa phə̂ng náp sòp thá-hǎan", "english": "it's not over till it's over", "note": "Lit. the battle isn't over, so don't count the dead soldiers yet." },
         { "thai": "หลิ่ว", "translit": "lìu", "english": "to half-close (an eye), squint" },
         { "thai": "ลูกไม้", "translit": "lûuk-máai", "english": "fruit (of a tree); trick" },
         { "thai": "หล่น", "translit": "lòn", "english": "to fall, drop" },
