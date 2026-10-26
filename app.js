@@ -8455,7 +8455,8 @@ window.addEventListener('appinstalled', () => {
 function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return; // also absent over plain http on a LAN address
   // The app opens from the saved copy; sw.js checks for a new version in the background and
-  // says so when it has stored one, and a reload then shows it.
+  // says so when it has stored one with new code or looks, and a reload then shows it. New cards
+  // and stories alone come without a word, at the next launch.
   navigator.serviceWorker.addEventListener('message', (e) => {
     if (e.data?.type === 'update-ready') els.updateBar.hidden = false;
   });

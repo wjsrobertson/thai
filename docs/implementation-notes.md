@@ -5717,8 +5717,39 @@ works on the GitHub Pages site but not over `http://192.168.0.239`.
     - If any file's ETag or Last-Modified changed, the whole set is stored together, so the page
       never mixes files from two versions (a new `app.js` with an old `index.html` would break).
     - Open pages then get an `update-ready` message, and show a "A new version is ready ·
-      Reload" bar (`#update-bar`).
+      Reload" bar (`#update-bar`), but only if the code or looks changed (below).
     - Offline, or if a file fails, the current version stays.
+  - **Why the bar came after every push** (the user, 2026-10-26: "it tells me there is a new
+    upgrade available even though I have just upgraded it"):
+    - GitHub Pages stamps every file with the publish time. Its ETag is `"<mtime hex>-<size
+      hex>"`, so an icon unchanged since 2026-10-04 gets a new ETag on every push. Any push, even
+      notes only, looked like a new version.
+    - Pushes are frequent: 12 on 2026-10-25 between 20:49 and 23:37 (the user's time), mostly cards
+      and stories from Claude sessions. So the bar was nearly always about a real newer version.
+    - **Ruled out:** the CDN gives the same ETag from every cache node, and its 304s keep the weak
+      `W/` ETag of the gzip copy, so a stored copy and a fresh one compare equal.
+  - **What changed (2026-10-26, the user's call):**
+    - **The bar only for code or looks:** once a new version is stored, any file outside `data/`
+      whose ETag changed has its bytes compared with the stored copy (`store()`). If none differ,
+      nothing is said: new cards, stories, audio lists and the handwriting model are just there at
+      the next launch. A notes-only push changes nothing at all.
+    - **Wait for it to settle:** a publish takes about 30 s (deployment statuses: 17–49 s from
+      `in_progress` to `success`), and a check in the middle could store some files new and some
+      old. A changed set is stored only once the same versions have been seen `SETTLE_MS` (60 s)
+      apart. If they moved in between, it waits again, up to `LOOKS` (5) looks, then leaves it
+      to the next launch.
+    - **The first look is saved** in the shell cache under `update-pending` (not a file on the
+      site), so a worker stopped mid-wait (iPhones stop them) carries on from it. If the next
+      launch sees the same versions a minute or more later, it stores them straight away. The
+      cost: a session shorter than a minute picks up an update one launch later.
+    - **A new `sw.js`** is a code change too: the new worker notes on install that it's replacing
+      one (`registration.active`), and tells open pages once it has taken over. Its install still
+      fetches the set without waiting for it to settle; `sw.js` changes are rare.
+    - **Tested in Chromium:** `sw_settle.py` in the screenshots folder serves a copy of the app
+      with the wait cut to 4 s and edits files between launches: data only, a restamp with the
+      same bytes, a CSS change, a file that changes again during the wait, a worker stopped
+      mid-wait, and a new `sw.js`. All 15 checks pass. Chromium sometimes checks for a new
+      `sw.js` 15 s or more after the launch; when it has, the bar follows within a second.
   - **Anything else on the site** is still network-first with the 4 s fallback.
   - **Audio** is served from the saved-clip store when it's there, else fetched and saved. Clip
     names are content hashes, so a saved clip never goes stale.
