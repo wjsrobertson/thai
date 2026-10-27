@@ -2219,6 +2219,21 @@ spelled the same, which stays.
   Bus "young (woman)"). Progress on the two old keys resets.
 - **Checked:** the audit (0 errors), stories.py check and sync (0 problems), spelling.mjs --write,
   gen_audio (1 new recording; the two old English clips removed).
+- **An audit for more, the same day:** of the 224 Thai words with more than one Dictionary row,
+  almost all are different senses (ผม hair / I), slang or insult senses (ควาย), the Classifiers
+  topics' own cards (48 words), kinship and address (ตา, ยาย, ป้า, ลุง), or the Spoken cards'
+  every-sense glosses (33 words). Five were the same sense worded twice, and were merged (the
+  user's call), each with one gloss and note for every topic and story:
+  - อกหัก "heartbroken (lit. broken chest)"; เด็กแว้น "teenage street racer (lit. vroom kid)";
+    ไหว้ครู "teacher-honouring ceremony", its note covering the fight and the musicians';
+    and two phrases, ต่างกัน "different (from each other)" and เหมือนกัน "the same / alike / me
+    too".
+  - stories.py sync moved the 20 story copies, each word now having one sense; gen_audio made 2
+    recordings, and the 7 old English clips were removed.
+  - **Offered, not chosen:** a narrower sense in one topic (ครั้ง "rep", ลูกน้อง "henchman",
+    เข่า "knee (strike)", รูปร่าง, เอา), and one word split by part of speech, as สาว was: ปิด and
+    เปิด in Adjectives, the Prepositions cards for ถึง, ตาม, ผ่าน, ข้าม, ให้, หน้า, หลัง, ใต้, and
+    แพ้.
 
 ## สงครามยังไม่จบ อย่าเพิ่งนับศพทหาร (2026-10-26)
 
