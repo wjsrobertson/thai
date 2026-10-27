@@ -2206,6 +2206,26 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## The Dictionary leaves out classifiers that count themselves (2026-10-27)
+
+After the duplicate audit below, the user asked which near-duplicate rows the Dictionary could
+leave out. Their call: the 19 classifier cards that count the word itself, whose "(classifier)
+bowls" row sat under ชาม "bowl" and added little: กระป๋อง, กล่อง, ขบวน, คน, จาน, ชั่วโมง, ชาม, ชุด,
+ตอน, ถุง, บท, ปี, ผล, วง, วัน, ห้อง, เครื่อง, เพลง, แห่ง (`DICT_SELF_CLASSIFIERS`, `isSelfClassifier`
+in app.js; only their "(classifier) …" card, so the noun stays).
+- **Kept:** the classifiers that count other things (คัน cars, ตัว animals, ลูก fruit and balls,
+  หลัง houses). A rule matching the glosses would have caught ใบ, ต้น and รูป too, so it's a list.
+- **Offered, not chosen:** the Spoken cards as a set (most hold a sense no other card has:
+  เครื่อง "machine", เมือง "city", บาง "some", หลาย "many"), and the kinship and address pairs (ตา,
+  ยาย, ป้า, ลุง).
+- **What's lost:** the Dictionary no longer says ชาม is its own classifier, and a plural search
+  ("rooms", "hours") no longer finds those words (the search doesn't match "room" from "rooms").
+  The cards are unchanged in their Classifiers topics.
+- **Checked** (scratch `dict_classifiers.py`, 390 × 844): "classifier" lists 57 rows, none of the
+  19 cards (แห่ง only as its Spoken card); ชาม finds "bowl" alone, ห้อง "room" and "bar, measure",
+  "people" คน "person / people"; ใบ, ตัว, ลูก, คัน and หลัง's classifier rows still there; no
+  script errors.
+
 ## สาว's two "young woman" cards merged (2026-10-27)
 
 The user saw สาว twice in the Dictionary, which lists one row per card key (Thai + English):

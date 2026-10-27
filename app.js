@@ -4465,8 +4465,9 @@ function wordRow(c, cols, words) {
 
 // ---------- Dictionary (2026-10-12, the user's idea; an experiment) ----------
 
-// Every word in the topics (not phrases, Thai Script's spelling examples, or the stories' copies), one row
-// per card key, in Thai dictionary order (Intl.Collator 'th' files เ แ โ ใ ไ words under their
+// Every word in the topics (not phrases, Thai Script's spelling examples, the stories' copies, or
+// classifiers that count themselves), one row per card key, in Thai dictionary order (Intl.Collator
+// 'th' files เ แ โ ใ ไ words under their
 // consonant: เกิด under ก). The way in is a ก–ฮ grid with a search box above: a letter lists its
 // words, and the search (wordSearch, as the topic picker's) lists its matches, both in a table like
 // the Topics page's (wordRow), with its word dialog and buttons.
@@ -4488,6 +4489,15 @@ function isPhrase(c) {
   return c.words?.length > 1 || /\s/.test(c.thai.replace(/\s+ๆ/g, 'ๆ'));
 }
 
+// Classifiers that count the word itself are left out (the user's call, 2026-10-27): ชาม's
+// "(classifier) bowls" sat under "bowl" and added little. Those counting other things (คัน: cars,
+// ตัว: animals) stay. A list, not a rule on the glosses, which would also catch ใบ, ต้น and รูป.
+const DICT_SELF_CLASSIFIERS = new Set(('กระป๋อง กล่อง ขบวน คน จาน ชั่วโมง ชาม ชุด ตอน ถุง บท ปี ผล วง วัน '
+  + 'ห้อง เครื่อง เพลง แห่ง').split(' '));
+function isSelfClassifier(c) {
+  return DICT_SELF_CLASSIFIERS.has(c.thai) && c.english.startsWith('(classifier)');
+}
+
 function buildDictionary() {
   if (dictEntries) return;
   const seen = new Map();
@@ -4495,7 +4505,7 @@ function buildDictionary() {
     if (d.passage || d.category === 'Thai Script') continue;
     for (const c of d.cards) {
       const key = cardKey(c);
-      if (!seen.has(key) && /^[ก-ฮเ-ไฤฦ]/.test(c.thai) && !isPhrase(c)) seen.set(key, { ...c, key, first: dictLetterOf(c.thai) });
+      if (!seen.has(key) && /^[ก-ฮเ-ไฤฦ]/.test(c.thai) && !isPhrase(c) && !isSelfClassifier(c)) seen.set(key, { ...c, key, first: dictLetterOf(c.thai) });
     }
   }
   const thaiOrder = new Intl.Collator('th');
