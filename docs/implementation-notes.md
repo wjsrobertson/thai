@@ -2206,6 +2206,20 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## สาว's two "young woman" cards merged (2026-10-27)
+
+The user saw สาว twice in the Dictionary, which lists one row per card key (Thai + English):
+"young woman / girl" (People, Spoken 241–260) and "young (woman)" (Adjectives: Size, Looks &
+Age) were the same sense worded two ways. Merged, at the user's call, as **"young woman / girl;
+young (of a woman)"**, the noun and the adjective, so the card reads right in all three topics. The
+Dictionary now has two สาว rows: this one and "to pull in, hand over hand", a different word
+spelled the same, which stays.
+- **Every copy:** the three topic cards, and the ten stories that held either wording (exported,
+  the pick changed, added back; 8 had "young woman / girl", The Winter Coat and The Old Man on the
+  Bus "young (woman)"). Progress on the two old keys resets.
+- **Checked:** the audit (0 errors), stories.py check and sync (0 problems), spelling.mjs --write,
+  gen_audio (1 new recording; the two old English clips removed).
+
 ## สงครามยังไม่จบ อย่าเพิ่งนับศพทหาร (2026-10-26)
 
 The user asked about a saying they half remembered ("the army hasn't been defeated yet", meaning
