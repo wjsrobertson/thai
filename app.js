@@ -1878,12 +1878,29 @@ function renderDeckPicker() {
 const WORD_HITS_SHOWN = 40;
 let searchIndex = null;
 
-// Transliteration, loosely: no tone marks, hyphens or spaces, ʉ ɔ ɛ ə as u o e e (ue and ae typed
-// for them too), and doubled letters single, so "nuea", "nua" and "nʉ̂a" all meet.
+// Transliteration, loosely: no tone marks, hyphens or spaces, ʉ ɔ ɛ ə as u o e e (ue, ae and oe
+// typed for them too), and doubled letters single, so "nuea", "nua" and "nʉ̂a" all meet.
 function looseTranslit(s) {
   return s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
-    .replace(/ʉ/g, 'u').replace(/ɔ/g, 'o').replace(/[ɛə]/g, 'e').replace(/ue/g, 'u').replace(/ae/g, 'e')
+    .replace(/ʉ/g, 'u').replace(/ɔ/g, 'o').replace(/[ɛə]/g, 'e').replace(/ue/g, 'u').replace(/[ao]e/g, 'e')
     .replace(/[^a-z]/g, '').replace(/(.)\1+/g, '$1');
+}
+
+// Looser still, by sound (2026-10-27, after the user typed "pr" for a "phr" word): the consonants an
+// ear or a romanisation mixes up meet too: p ph bp, t th dt, k kh g (not the g of ng), ch j; so
+// "prom" finds พร้อม, "kai" ไก่, "bpai" ไป. Takes looseTranslit's result.
+function soundTranslit(loose) {
+  return loose.replace(/bp/g, 'p').replace(/dt/g, 't').replace(/([ptk])h/g, '$1').replace(/ch/g, 'j')
+    .replace(/ng/g, 'N').replace(/g/g, 'k').replace(/N/g, 'ng').replace(/(.)\1+/g, '$1');
+}
+
+// Thai, by sound (2026-10-27): no tone marks, ็ or ์, and letters that sound the same at the start
+// of a syllable as one (ข ฃ ค ฅ ฆ, ส ศ ษ ซ, ท ธ ฑ ฒ ถ ฐ, พ ผ ภ…), ใ as ไ, so a word typed as it
+// sounds finds its spelling: "คาว" finds ข้าว, "พาสา" ภาษา.
+const THAI_SOUND_ALIKE = { ข: 'ค', ฃ: 'ค', ฅ: 'ค', ฆ: 'ค', ศ: 'ส', ษ: 'ส', ซ: 'ส', ธ: 'ท', ฑ: 'ท', ฒ: 'ท', ถ: 'ท', ฐ: 'ท',
+  ผ: 'พ', ภ: 'พ', ฝ: 'ฟ', ฉ: 'ช', ฌ: 'ช', ณ: 'น', ฬ: 'ล', ญ: 'ย', ฏ: 'ต', ฎ: 'ด', ฮ: 'ห', ใ: 'ไ' };
+function looseThai(s) {
+  return s.replace(/[\s็-์]/g, '').replace(/[ขฃฅฆศษซธฑฒถฐผภฝฉฌณฬญฏฎฮใ]/g, (ch) => THAI_SOUND_ALIKE[ch]);
 }
 
 function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
@@ -1891,15 +1908,18 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
     searchIndex = [...state.cardIndex].map(([key, { card, deckIds }]) => ({
       key, card, deckIds,
       thai: card.thai.replace(/\s/g, ''),
+      thaiLoose: looseThai(card.thai),
       english: card.english.toLowerCase(),
       parts: card.english.toLowerCase().replace(/\([^)]*\)/g, '').split(/[/,;]/).map((s) => s.trim()),
       translit: looseTranslit(card.translit || ''),
     }));
+    for (const w of searchIndex) w.sound = soundTranslit(w.translit);
   }
   const thai = /[฀-๿]/.test(query);
   const q = thai ? query.replace(/\s/g, '') : query.toLowerCase();
   if (!thai && q.length < 2) return { hits: [], total: 0 };
-  const qt = thai ? '' : looseTranslit(q);
+  const qt = thai ? looseThai(q) : looseTranslit(q);
+  const qs = thai ? '' : soundTranslit(qt);
   const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const wholeWord = new RegExp(`(^|[^a-z])${esc}($|[^a-z])`);
   const wordStart = new RegExp(`(^|[^a-z])${esc}`);
@@ -1910,6 +1930,12 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
       if (w.thai === q) score = 0;
       else if (w.thai.startsWith(q)) score = 2;
       else if (w.thai.includes(q)) score = 3;
+      // By sound, each just behind its spelt kind: "ไก" finds ไก่ (1.75) before ไก่ชน (2).
+      if (score > 0) {
+        if (w.thaiLoose === qt) score = Math.min(score, 1.75);
+        else if (w.thaiLoose.startsWith(qt)) score = Math.min(score, 2.5);
+        else if (w.thaiLoose.includes(qt)) score = Math.min(score, 3.5);
+      }
     } else {
       if (w.english === q) score = 0;
       else if (w.parts.includes(q)) score = 1;
@@ -1917,11 +1943,15 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
       else if (wordStart.test(w.english)) score = 2;
       else if (w.english.includes(q)) score = 3;
       // Just behind an English match of the same kind, so "same" finds "about the same" before
-      // เสมอ (sà-mə̌ə, loosely "same"), but "nam" finds น้ำ before "name".
-      if (qt.length >= 2 && score > 0) {
+      // เสมอ (sà-mə̌ə, loosely "same"), but "nam" finds น้ำ before "name"; the whole word by
+      // sound just behind that, so "chai" finds ชาย and ใช่ before ใจ (jai). A start, by sound
+      // and from 2 letters, is level with an English word start (2026-10-27): "pr" had put 182
+      // of those (problem, price…) before พร้อม and พระ, at 2.5 from 3 letters.
+      if (qs.length >= 2 && score > 0) {
         if (w.translit === qt) score = Math.min(score, 1.75);
-        else if (qt.length >= 3 && w.translit.startsWith(qt)) score = Math.min(score, 2.5);
-        else if (qt.length >= 3 && w.translit.includes(qt)) score = Math.min(score, 3.5);
+        else if (w.sound === qs) score = Math.min(score, 1.8);
+        else if (w.sound.startsWith(qs)) score = Math.min(score, 2);
+        else if (qs.length >= 3 && w.sound.includes(qs)) score = Math.min(score, 3.5);
       }
     }
     if (score < 4 && (!keep || keep(w))) hits.push({ ...w, score });
@@ -4361,13 +4391,13 @@ function wordsFor(key) {
   els.wordlistSearch.value = '';
 }
 
-// The List page's search, kept in list order: a Thai query finds the Thai (spaces ignored), anything
-// else the English, or the transliteration loosely (looseTranslit).
+// The List page's search, kept in list order: a Thai query finds the Thai, anything else the
+// English, or the transliteration; both by sound (looseThai, soundTranslit), as wordSearch's.
 function wordMatches(c, q) {
-  if (/[\u0E00-\u0E7F]/.test(q)) return c.thai.replace(/\s/g, '').includes(q.replace(/\s/g, ''));
+  if (/[\u0E00-\u0E7F]/.test(q)) return looseThai(c.thai).includes(looseThai(q));
   if (c.english.toLowerCase().includes(q.toLowerCase())) return true;
-  const qt = looseTranslit(q);
-  return qt.length >= 2 && looseTranslit(c.translit || '').includes(qt);
+  const qs = soundTranslit(looseTranslit(q));
+  return qs.length >= 2 && soundTranslit(looseTranslit(c.translit || '')).includes(qs);
 }
 
 // The List page's rows for a list, afresh (they're kept while it's open: listsChanged).

@@ -2206,6 +2206,34 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Search by sound (2026-10-27)
+
+The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
+a looser match on transliteration and Thai. Two reasons it failed: p and ph never met (looseTranslit
+folded vowels, tones and length, not aspiration), and a transliteration start counted only from 3
+letters, at 2.5, behind every English word start (2). "prom" didn't find พร้อม either.
+- **Transliteration by sound** (`soundTranslit`, on top of `looseTranslit`): p ph bp, t th dt,
+  k kh g (not the g of ng), ch j meet, so "prom" finds พร้อม, "kai" ไก่ and ไข่, "bpai" ไป, "chao"
+  เจ้า; oe is ə now too. Vowels aren't folded beyond what they were: "dee" for ดี (dii) would need
+  e and i to meet, and then เป็น would be ปิ่น.
+- **Ranking:** the whole word as spelt 1.75 (as before), by sound 1.8, so "chai" lists ชาย, ใช่, ใช้
+  before ใจ; a start by sound from 2 letters 2, level with an English word start (it was 2.5, from
+  3); contains 3.5, from 3. "pr" now has พระ at 11 and พร้อม at 71 of 381 (the Dictionary shows
+  200); "pra" has พระ first. English searches are unchanged at the top (dog, time, eat, water,
+  rice, house, same, nam: the same first six).
+- **Thai by sound** (`looseThai`, `THAI_SOUND_ALIKE`): no tone marks, ็ or ์, and letters that sound
+  the same at a syllable's start as one (ข ฃ ค ฅ ฆ; ส ศ ษ ซ; ท ธ ฑ ฒ ถ ฐ; พ ผ ภ; ฟ ฝ; ช ฉ ฌ; น ณ;
+  ล ฬ; ย ญ; ต ฏ; ด ฎ; ห ฮ), ใ as ไ. Each tier just behind its spelt kind: "คาว" finds ขาว, ข้าว,
+  ข่าว; "พาสา" ภาษา; "พรอม" พร้อม; "ไจ" ใจ.
+- **Where:** `wordSearch` (the Dictionary and the topic picker's word search) and the List page's
+  search (`wordMatches`).
+- **Noticed:** 8 cards are transliterated with bp/dt for ป/ต (ปฏัก bpà-dtàk, ตอนแรก, ต้อนรับ,
+  ตรวจสอบ, วิตามิน, แปรง, ตัดสิน, ประจำปี), unlike the rest; search now finds them either way.
+- **Checked** (scratch `dict_search.py`, 390 × 844, the Dictionary): pr 200 of 381, พร้อม at row
+  71; prom, พร้อม at 1 (พรม first); pra, พระ first; kai, ไก่ at 2; chai, ใช่ at 1 (ชาย first);
+  คาว, ข้าว at 1; พาสา and พรอม first; dog, หมา first; no script errors. `wordMatches` in node:
+  ขอบคุณ found by kop, khop, gop, kopkun, คอบ, ขอบคุน.
+
 ## The Dictionary leaves out classifiers that count themselves (2026-10-27)
 
 After the duplicate audit below, the user asked which near-duplicate rows the Dictionary could
