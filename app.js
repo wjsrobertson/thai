@@ -5260,7 +5260,7 @@ function toggleInTarget(key, thai, on) {
   const name = setInTarget([key], on);
   if (back) toast(`✓ Re-added ${thai} to '${name}'`, { tone: 'good' });
   else if (on) toastAdded([key], thai);
-  else toast(`Removed ${thai} from '${name}'`);
+  else toastRemoved([key], thai, name);
 }
 
 // A word's 🔁 (its rows, word search, the word dialog), in three states (the user's pick, 2026-10-20):
@@ -5295,6 +5295,13 @@ function toastAdded(keys, what) {
   toast(`✓ Added ${what} to '${list.name}'` + (also.length ? ` · also in ${listNames(also)}` : ''), { tone: 'good', action: addingFrom() ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
 }
 
+// The toast after taking words out (🔁's ✓, or Remove all), with Move (the user's request, 2026-11-01:
+// a word meant for another list). Move opens Change's dialog with no list ticked (they're in none of
+// them now), and a tap puts them in that one. While adding words to a list, no Move, as toastAdded.
+function toastRemoved(keys, what, name) {
+  toast(`Removed ${what} from '${name}'`, { action: addingFrom() ? null : { label: 'Move', fn: () => openMoveWords(keys, what, null) } });
+}
+
 // Whether the List page shows a topic (or list) that words are being added from (Add words).
 const addingFrom = () => !!state.addingTo && state.view === 'wordlist' && state.currentDeckId !== listScopeId(state.addingTo);
 
@@ -5321,6 +5328,7 @@ function listNames(lists) {
 // Change's dialog, "Put กิน in": your lists, the one they're in ticked, then ＋ New list. A tap on a
 // list moves them and closes it (the user's pick, 2026-10-20: one tap for the usual one-off, rather
 // than choosing then Done). "Add new words there too", above, makes that list the target too.
+// fromId is null for words just taken out (toastRemoved's Move): nothing to take them out of.
 function openMoveWords(keys, what, fromId) {
   state.moving = { lastFocus: document.activeElement };
   els.moveTitle.textContent = `Put ${what} in`;
@@ -5378,7 +5386,7 @@ function moveWordsTo(keys, what, fromId, toId) {
     return;
   }
   const out = new Set(keys);
-  changeList(fromId, (l) => { l.words = l.words.filter((k) => !out.has(k)); });
+  if (fromId) changeList(fromId, (l) => { l.words = l.words.filter((k) => !out.has(k)); });
   const to = changeList(toId, (l) => {
     const have = new Set(l.words);
     l.words.push(...keys.filter((k) => !have.has(k)));
@@ -8274,8 +8282,9 @@ function bindEvents() {
         setting: 'confirmRemoveAll',
       });
       if (ok) {
-        setInTarget(state.listCards.map((c) => c.key), false);
-        toast(`Removed ${n} words from '${name}'`);
+        const keys = state.listCards.map((c) => c.key);
+        setInTarget(keys, false);
+        toastRemoved(keys, `${n} words`, name);
       }
       return;
     }

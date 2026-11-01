@@ -1625,6 +1625,14 @@ the user said yes to all of them.
   - Checked in headless Chromium at 390 × 664 (text size 1 and 2) and 1280 × 800 (`move_probe.py`,
     `move_probe2.py`): the 5 s, a move with and without the tick, from the word dialog, ＋ New list,
     Escape, Add all's 22 words, a long name wrapping, taps passing under the message.
+  - **Move, on the remove toast** (the user's request, 2026-11-01). "Removed กิน from 'My words'"
+    (🔁's ✓ anywhere, or Add all's Remove all: "Removed 25 words") has a **Move** button, opening the
+    same "Put … in" with no list ticked, since the words are in none of them now (`toastRemoved`;
+    `openMoveWords` with `fromId` null, so `moveWordsTo` only adds). A tap puts them in that list,
+    the one they came out of included, saying "✓ Moved … to '…'" with Change. No Move while adding
+    words, as there's no Change there. Checked in headless Chromium at 390 × 664 (text size 1 and 2)
+    and 1280 × 800 (`remove_move_probe.py`): a word and Remove all's 25 moved to another list, a word
+    put back in its own, Escape changing nothing, no Move while adding.
 - **The List page in pages, with a search** (the user's call, the same day: a list can grow without
   end). As Reading's stories, but 25 rows at a time (`WORD_PAGE`; 10 is too few for words), with
   **Show 25 more · N left** under the table (`#wordlist-more`, `pagedWords`). **Search these words**
