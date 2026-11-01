@@ -1894,6 +1894,48 @@ function soundTranslit(loose) {
     .replace(/ng/g, 'N').replace(/g/g, 'k').replace(/N/g, 'ng').replace(/(.)\1+/g, '$1');
 }
 
+// Popular romanisation (2026-11-01, the user's request: "peng yai bang" found nothing), as signs,
+// menus and phrasebooks spell Thai, read the app's way: ee as i (dee, ดี), oo as u (pood, พูด), eu as
+// ʉ (neung, หนึ่ง), a silent r after a vowel (aharn, อาหาร), and a syllable's end: y as i (aroy), w as
+// o, or u after i (laew, hiw), b d s as p t t (kob, pood, sawasdee). A second reading of the query
+// (translitKeys), not a replacement: the app's own ee and oo (เพลง phleeng, โมง moong) still match.
+function popularTranslit(s) {
+  const end = '(?![aeiouy])'; // a syllable's end: no vowel after
+  return s.toLowerCase().replace(/ee/g, 'i').replace(/oo/g, 'u').replace(/eu/g, 'u')
+    .replace(new RegExp(`([aeiou])r${end}`, 'g'), '$1')
+    .replace(new RegExp(`([aeiou])y${end}`, 'g'), '$1i')
+    .replace(new RegExp(`iw${end}`, 'g'), 'iu').replace(new RegExp(`([aeou])w${end}`, 'g'), '$1o')
+    .replace(new RegExp(`([aeiou])b${end}`, 'g'), '$1p').replace(new RegExp(`([aeiou])[ds]${end}`, 'g'), '$1t');
+}
+
+// A typed transliteration's sound keys: as typed, then as popular romanisation reads it if that
+// differs; and how many letters a near miss may be out (startDistance): 1 from 5 letters, 2 from 9.
+function translitKeys(q) {
+  const plain = soundTranslit(looseTranslit(q));
+  const popular = soundTranslit(looseTranslit(popularTranslit(q)));
+  return { keys: popular === plain ? [plain] : [plain, popular], edits: plain.length >= 9 ? 2 : plain.length >= 5 ? 1 : 0 };
+}
+
+// Near misses (2026-11-01): the fewest letters to change, add or drop in the query to make it the
+// start of a card's sound key, or most + 1 once it's past `most`. Levenshtein with the key's end left
+// free, so "pengyaibang" is 1 from pengaibang (pen ngai bâang); the key is cut to the query's length
+// plus `most`, all a start within `most` can use.
+function startDistance(q, t, most) {
+  t = t.slice(0, q.length + most);
+  let prev = Array.from({ length: t.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= q.length; i++) {
+    const cur = [i];
+    let best = i;
+    for (let j = 1; j <= t.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (q[i - 1] === t[j - 1] ? 0 : 1));
+      if (cur[j] < best) best = cur[j];
+    }
+    if (best > most) return most + 1;
+    prev = cur;
+  }
+  return Math.min(...prev);
+}
+
 // Thai, by sound (2026-10-27): no tone marks, ็ or ์, and letters that sound the same at the start
 // of a syllable as one (ข ฃ ค ฅ ฆ, ส ศ ษ ซ, ท ธ ฑ ฒ ถ ฐ, พ ผ ภ…), ใ as ไ, so a word typed as it
 // sounds finds its spelling: "คาว" finds ข้าว, "พาสา" ภาษา.
@@ -1919,7 +1961,7 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
   const q = thai ? query.replace(/\s/g, '') : query.toLowerCase();
   if (!thai && q.length < 2) return { hits: [], total: 0 };
   const qt = thai ? looseThai(q) : looseTranslit(q);
-  const qs = thai ? '' : soundTranslit(qt);
+  const { keys, edits } = thai ? { keys: [], edits: 0 } : translitKeys(q);
   const esc = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const wholeWord = new RegExp(`(^|[^a-z])${esc}($|[^a-z])`);
   const wordStart = new RegExp(`(^|[^a-z])${esc}`);
@@ -1947,14 +1989,28 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
       // sound just behind that, so "chai" finds ชาย and ใช่ before ใจ (jai). A start, by sound
       // and from 2 letters, is level with an English word start (2026-10-27): "pr" had put 182
       // of those (problem, price…) before พร้อม and พระ, at 2.5 from 3 letters.
-      if (qs.length >= 2 && score > 0) {
+      // The popular romanisation's reading (popularTranslit) a step behind each (2026-11-01).
+      if (keys[0].length >= 2 && score > 0) {
         if (w.translit === qt) score = Math.min(score, 1.75);
-        else if (w.sound === qs) score = Math.min(score, 1.8);
-        else if (w.sound.startsWith(qs)) score = Math.min(score, 2);
-        else if (qs.length >= 3 && w.sound.includes(qs)) score = Math.min(score, 3.5);
+        keys.forEach((k, i) => {
+          const lag = i * 0.05;
+          if (w.sound === k) score = Math.min(score, 1.8 + lag);
+          else if (w.sound.startsWith(k)) score = Math.min(score, 2 + lag);
+          else if (k.length >= 3 && w.sound.includes(k)) score = Math.min(score, 3.5 + lag);
+        });
       }
     }
     if (score < 4 && (!keep || keep(w))) hits.push({ ...w, score });
+  }
+  // Near misses, only when nothing else matched (2026-11-01): the start of a card's sound 1 or 2
+  // letters out (startDistance), the fewer first. With matches as well they'd trail a long tail
+  // ("neung" added 132 to its 31), and odd ones: "kob kun" ended with ข่มขืน.
+  if (!hits.length && edits) {
+    for (const w of searchIndex) {
+      if (keep && !keep(w)) continue;
+      const d = Math.min(...keys.map((k) => startDistance(k, w.sound, edits)));
+      if (d <= edits) hits.push({ ...w, score: 3.7 + d / 10 });
+    }
   }
   hits.sort((a, b) => a.score - b.score || a.thai.length - b.thai.length);
   return { hits: hits.slice(0, limit), total: hits.length };
@@ -4368,7 +4424,9 @@ function renderWordlist() {
 const WORD_PAGE = 25;
 function listedWords() {
   const q = state.wordQuery.trim();
-  return q ? state.listCards.filter((c) => wordMatches(c, q)) : state.listCards;
+  if (!q) return state.listCards;
+  const found = state.listCards.filter((c) => wordMatches(c, q));
+  return found.length ? found : state.listCards.filter((c) => wordMatches(c, q, true));
 }
 
 function pagedWords(rows) {
@@ -4392,12 +4450,16 @@ function wordsFor(key) {
 }
 
 // The List page's search, kept in list order: a Thai query finds the Thai, anything else the
-// English, or the transliteration; both by sound (looseThai, soundTranslit), as wordSearch's.
-function wordMatches(c, q) {
-  if (/[\u0E00-\u0E7F]/.test(q)) return looseThai(c.thai).includes(looseThai(q));
+// English, or the transliteration; both by sound (looseThai, soundTranslit), as wordSearch's, and the
+// transliteration as popular romanisation reads it too. `near`: near misses only (startDistance),
+// which listedWords tries when nothing matches, since here they'd be mixed in, not ranked last.
+function wordMatches(c, q, near = false) {
+  if (/[\u0E00-\u0E7F]/.test(q)) return !near && looseThai(c.thai).includes(looseThai(q));
+  const { keys, edits } = translitKeys(q);
+  const sound = soundTranslit(looseTranslit(c.translit || ''));
+  if (near) return !!edits && keys.some((k) => startDistance(k, sound, edits) <= edits);
   if (c.english.toLowerCase().includes(q.toLowerCase())) return true;
-  const qs = soundTranslit(looseTranslit(q));
-  return qs.length >= 2 && soundTranslit(looseTranslit(c.translit || '')).includes(qs);
+  return keys[0].length >= 2 && keys.some((k) => sound.includes(k));
 }
 
 // The List page's rows for a list, afresh (they're kept while it's open: listsChanged).

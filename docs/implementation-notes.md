@@ -2214,6 +2214,35 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## Search: popular romanisation and near misses (2026-11-01)
+
+After เป็นไงบ้าง went in (below), the user asked for "peng yai bang" to find it, "something like
+soundex". Soundex wasn't it: it drops vowels, where short Thai words mostly differ (kai, kao, koi,
+kui as one), and keeps y and ng apart anyway. Two layers on top of search by sound instead, in
+`wordSearch` (the topic picker and the Dictionary) and the List page's `wordMatches`:
+- **Popular romanisation** (`popularTranslit`): the spellings of signs, menus and phrasebooks, read
+  the app's way: ee as i, oo as u, eu as ʉ; a silent r after a vowel (aharn); at a syllable's end
+  y as i (aroy), w as o, or u after i (laew, hiw), b d s as p t t (kob, pood, sawasdee). It's a
+  second reading of the query (`translitKeys`), each of its matches 0.05 behind the same kind as
+  typed, so the app's own ee and oo still match (phleeng เพลง, moong โมง).
+- **Near misses** (`startDistance`): a card whose sound key starts within 1 letter of the query's
+  (from 5 letters; 2 from 9), by Levenshtein with the key's end left free, scored 3.8 or 3.9.
+  **Only when nothing else matches**: allowed beside other matches they trailed long tails ("neung"
+  added 132 to its 31) and odd ones ("kob kun" ended with ข่มขืน). The List page's search, a
+  filter not a ranking, does the same (`listedWords`).
+- **Measured on every card** with the new `tools/search_check.mjs`, which runs app.js's own
+  `wordSearch` and `wordMatches` in node (`--app` runs an older app.js, for before and after):
+  "peng yai bang" finds เป็นไงบ้าง alone; "peng yai" it and แพงไป; "sawadee krap" สวัสดีครับ;
+  "mai pen lai" ไม่เป็นไร; "sawadee" สวัสดี first; "sabai dee mai", "kob kun", "aharn", "aroy",
+  "pood", "laew", "hiw", "chok dee" find theirs first. Across 54 common searches, English and
+  transliterated (water, house, rice, dog, hello, teacher, nam, chai, prom, kin, dee…), the top six
+  are as before but for three: "dee" now has ดี first, "north" has โน้ต (nóot) and "airport"
+  หลายโพด among them. In node a search takes 1–4 ms, one with a near-miss pass 6–15.
+- **Checked** in headless Chromium at 390 × 664 (scratch `loose_search_probe.py`): the picker's
+  "peng yai bang", "sawadee krap", "mai pen lai", "aharn", "kob kun", "water"; the Dictionary's
+  "sawadee", "aroy", "pood", "kob kun"; no script errors. The Dictionary still has no เป็นไงบ้าง:
+  it lists no phrases (the user's call, 2026-10-12).
+
 ## เป็นไงบ้าง in Greetings, จ้า out (2026-11-01)
 
 The user asked whether the app had "peng yai bang", "how are you?". It didn't: เป็นไงบ้าง was only
@@ -2229,7 +2258,8 @@ in a note on the Southern พันพรือมั่ง ("Central: เป็
 - **Not in the Dictionary:** it's a phrase (`words`), and the Dictionary lists words only (the
   user's call, 2026-10-12; สบายดีไหม isn't there either). The topic picker's search finds it:
   "how are you" (4 rows, with สบายดีไหม and the Isan and Southern ones), "how's it going",
-  "pen ngai bang", เป็นไง. "peng yai bang" doesn't: y for the ง of ไง is too far by sound.
+  "pen ngai bang", เป็นไง. "peng yai bang" didn't (y for the ง of ไง was too far by sound) until
+  the near misses above.
 - Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change; Greetings
   isn't among the topics with fewer than 5 stories), spelling.mjs --write (no change), gen_audio.py
   (3 new: the English, งานเป็นไงบ้าง, เป็นยังไงบ้าง; เป็นไงบ้าง already had one). Checked in headless
@@ -2244,7 +2274,8 @@ letters, at 2.5, behind every English word start (2). "prom" didn't find พร�
 - **Transliteration by sound** (`soundTranslit`, on top of `looseTranslit`): p ph bp, t th dt,
   k kh g (not the g of ng), ch j meet, so "prom" finds พร้อม, "kai" ไก่ and ไข่, "bpai" ไป, "chao"
   เจ้า; oe is ə now too. Vowels aren't folded beyond what they were: "dee" for ดี (dii) would need
-  e and i to meet, and then เป็น would be ปิ่น.
+  e and i to meet, and then เป็น would be ปิ่น. (Since 2026-11-01 "dee" does find ดี, by a second
+  reading of the query only: see "Search: popular romanisation and near misses".)
 - **Ranking:** the whole word as spelt 1.75 (as before), by sound 1.8, so "chai" lists ชาย, ใช่, ใช้
   before ใจ; a start by sound from 2 letters 2, level with an English word start (it was 2.5, from
   3); contains 3.5, from 3. "pr" now has พระ at 11 and พร้อม at 71 of 381 (the Dictionary shows
