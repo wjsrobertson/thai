@@ -2214,6 +2214,27 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## เป็นไงบ้าง in Greetings, จ้า out (2026-11-01)
+
+The user asked whether the app had "peng yai bang", "how are you?". It didn't: เป็นไงบ้าง was only
+in a note on the Southern พันพรือมั่ง ("Central: เป็นไงบ้าง."). It's standard Thai, not Southern.
+- **The card**, after สบายดีไหม: เป็นไงบ้าง, pen ngai bâang, "how's it going? / how are you?
+  (casual)", with its words (เป็น, ไง, บ้าง) and a note: to someone you know, often catching up;
+  after a subject, งานเป็นไงบ้าง = how's work going?; full form เป็นยังไงบ้าง. "how are you?" is in
+  the English because the search doesn't read notes.
+- **Greetings was full (25)**, and the user asked for something to move out, to another topic: จ้า
+  "yes / OK (friendly)", the one card there that isn't a greeting, thanks, sorry, goodbye or a
+  core polite particle. The same card is already in Casual Particles: Answers, Cute & Rude, so
+  nothing else changed; ดีจ้า stays.
+- **Not in the Dictionary:** it's a phrase (`words`), and the Dictionary lists words only (the
+  user's call, 2026-10-12; สบายดีไหม isn't there either). The topic picker's search finds it:
+  "how are you" (4 rows, with สบายดีไหม and the Isan and Southern ones), "how's it going",
+  "pen ngai bang", เป็นไง. "peng yai bang" doesn't: y for the ง of ไง is too far by sound.
+- Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change; Greetings
+  isn't among the topics with fewer than 5 stories), spelling.mjs --write (no change), gen_audio.py
+  (3 new: the English, งานเป็นไงบ้าง, เป็นยังไงบ้าง; เป็นไงบ้าง already had one). Checked in headless
+  Chromium at 390 × 664 (scratch `penngai_probe.py`).
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for

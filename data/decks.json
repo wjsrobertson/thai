@@ -26,11 +26,11 @@
         { "thai": "ฝันดี", "translit": "fǎn-dii", "english": "sweet dreams / good night" },
         { "thai": "ยินดีที่ได้รู้จัก", "translit": "yin-dii thîi dâai rúu-jàk", "english": "nice to meet you", "words": ["ยินดี::glad / pleased", "ที่::at", "ได้::can / get / did", "รู้จัก::to know (a person / place)"] },
         { "thai": "สบายดีไหม", "translit": "sà-baai-dii mǎi", "english": "how are you?", "words": ["สบายดี::I'm fine", "ไหม::yes/no question particle"] },
+        { "thai": "เป็นไงบ้าง", "translit": "pen ngai bâang", "english": "how's it going? / how are you? (casual)", "note": "To someone you know, often catching up. After a subject it asks about that: งานเป็นไงบ้าง = how's work going? Full form: เป็นยังไงบ้าง.", "words": ["เป็น::to be (identity / role)", "ไง::how / so? / you know / hey", "บ้าง::some / any (at all)"] },
         { "thai": "สบายดี", "translit": "sà-baai-dii", "english": "I'm fine" },
         { "thai": "ครับ", "translit": "khráp", "english": "polite particle (male)", "note": "The polite ending for men, statement or question. Also the everyday yes: ครับ alone agrees or shows you're listening, and ครับ? answers when someone calls you." },
         { "thai": "ค่ะ", "translit": "khâ", "english": "polite particle (female, statement)", "note": "Falling tone, for statements; คะ (high) asks. Also the everyday yes: ค่ะ alone agrees or shows you're listening." },
         { "thai": "คะ", "translit": "khá", "english": "polite particle (female, question)" },
-        { "thai": "จ้า", "translit": "jâa", "english": "yes / OK (friendly, drawn-out)", "note": "Shop staff and friends: ได้จ้า = sure thing!" },
         { "thai": "ราตรีสวัสดิ์", "translit": "raa-trii sà-wàt", "english": "good night (formal)", "words": ["ราตรี::night (formal)", "สวัสดิ์::well-being, blessing (formal)"] }
       ]
     },
