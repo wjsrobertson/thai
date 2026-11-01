@@ -2214,6 +2214,34 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
 
+## 34 everyday phrases, and Catching Up & Good Wishes (2026-11-01)
+
+After เป็นไงบ้าง (below) the user asked what else was missing. I checked about 280 everyday phrases
+(from my own list) against the topic cards: about 150 were there, some in other words (ช่างมันเถอะ,
+พูดช้า ๆ ได้ไหม, แปลว่าอะไร, คิดเงิน, เดี๋ยวก่อน), and many of the rest are two known words together
+(อร่อยมาก, ไม่ชอบ) that need no card. The user approved these 34 set phrases and where they went:
+- **Catching Up & Good Wishes** (new, `greetings-catching-up`, Basics → First Words, after Greetings,
+  which is full): ไม่ได้เจอกันนาน, ทำอะไรอยู่, เรื่อย ๆ, แล้วเจอกัน, เจอกันใหม่, ดูแลตัวเองนะ,
+  สุขสันต์วันเกิด, สวัสดีปีใหม่, หายไว ๆ นะ, เสียใจด้วย, ดีใจด้วย, สู้ ๆ, ทานให้อร่อยนะ.
+- **Everyday Responses** (now 25): ไม่มีปัญหา, อะไรก็ได้, ไม่ต้องรีบ, ตามสบาย.
+- **Opinions & Reactions:** จริงด้วย, ว่าแล้ว, งั้นเหรอ. **Plans & Invitations:** ไปกันเถอะ,
+  เอาไงดี, ขอโทษที่มาสาย. **Customer Service:** รอสักครู่. **Moods & Body Feelings:** ไม่มีอะไร,
+  เป็นอะไรไหม, ไหวไหม. **Past, Present & Future:** เสร็จแล้ว.
+- **Survival Phrases** (now 20): นี่อะไร, ไกลไหม, จอดตรงนี้, เปิดมิเตอร์ได้ไหม (after ห้องน้ำอยู่ที่ไหน);
+  ดูเฉย ๆ, สแกนได้ไหม (after ลดได้ไหม).
+- Each phrase lists its words (`words`), but หายไว ๆ นะ: the audit wants the words to spell the
+  phrase exactly, and ไว ๆ has no card, so it has none, as พูดช้า ๆ ได้ไหม. เรื่อย ๆ and สู้ ๆ are
+  doubled words, so words, and in the Dictionary. Notes say who says it and when, with a related
+  form where there's a common one (ไม่ได้เจอกันนานเลย, ทำไงดี, กินให้อร่อยนะ, จอดข้างหน้า).
+- **No stories yet** for the new topic (`stories.py coverage`: 0, with 7 older topics under 5).
+- **Not checked:** the candidates came from my own list, so they may share its blind spots; the most
+  common phrases in Thai film and TV subtitles would be a wider net (needs a download, not done).
+- Data steps: audit_decks.py --errors (0; the full audit flags none of the new cards), stories.py
+  check and sync (nothing to change), spelling.mjs --write, gen_audio.py (79 new, 0 failed).
+  Checked in headless Chromium at 390 × 664 (scratch `catchup_probe.py`): the new topic's 13 rows,
+  Survival Phrases' 20, Everyday Responses' 25; "long time no see", "happy birthday", "stop here",
+  "su su" and "mai mee panha" finding theirs; no script errors.
+
 ## Search: popular romanisation and near misses (2026-11-01)
 
 After เป็นไงบ้าง went in (below), the user asked for "peng yai bang" to find it, "something like

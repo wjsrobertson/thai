@@ -35,6 +35,28 @@
       ]
     },
     {
+      "id": "greetings-catching-up",
+      "category": "Basics",
+      "group": "First Words",
+      "name": "Catching Up & Good Wishes",
+      "description": "Long time no see, what are you up to, see you later, and what to say for a birthday, New Year, illness or news.",
+      "cards": [
+        { "thai": "ไม่ได้เจอกันนาน", "translit": "mâi dâai jəə gan naan", "english": "long time no see", "note": "Often with เลย: ไม่ได้เจอกันนานเลย.", "words": ["ไม่::not / no", "ได้::can / get / did", "เจอ::to meet / find / run into", "กัน::together / each other", "นาน::for a long time"] },
+        { "thai": "ทำอะไรอยู่", "translit": "tham à-rai yùu", "english": "what are you up to?", "note": "อยู่ after a verb: going on now. A usual first message to a friend.", "words": ["ทำ::to do / to make", "อะไร::what", "อยู่::ongoing (after verb)"] },
+        { "thai": "เรื่อย ๆ", "translit": "rʉ̂ai rʉ̂ai", "english": "so-so / same as ever", "note": "The usual answer to เป็นไงบ้าง: nothing much new." },
+        { "thai": "แล้วเจอกัน", "translit": "lɛ́ɛo jəə gan", "english": "see you (later)", "note": "With a time: แล้วเจอกันตอนเย็น = see you this evening.", "words": ["แล้ว::already / and then", "เจอ::to meet / find / run into", "กัน::together / each other"] },
+        { "thai": "เจอกันใหม่", "translit": "jəə gan mài", "english": "see you again / till next time", "note": "TV presenters sign off with the formal แล้วพบกันใหม่.", "words": ["เจอ::to meet / find / run into", "กัน::together / each other", "ใหม่::new / again"] },
+        { "thai": "ดูแลตัวเองนะ", "translit": "duu-lɛɛ tua-eeng ná", "english": "take care (of yourself)", "note": "On parting, or to someone unwell.", "words": ["ดูแล::to look after", "ตัวเอง::oneself / you (cute, between couples)", "นะ::softener / \"you know?\""] },
+        { "thai": "สุขสันต์วันเกิด", "translit": "sùk-sǎn wan-gə̀ət", "english": "happy birthday", "words": ["สุขสันต์::happy (in greetings)", "วันเกิด::birthday"] },
+        { "thai": "สวัสดีปีใหม่", "translit": "sà-wàt-dii pii-mài", "english": "happy New Year", "note": "สวัสดี here is a blessing, not hello. At Songkran: สวัสดีปีใหม่ไทย.", "words": ["สวัสดี::hello / goodbye", "ปีใหม่::New Year (international)"] },
+        { "thai": "หายไว ๆ นะ", "translit": "hǎai wai wai ná", "english": "get well soon", "note": "หาย = to get better (it also means to disappear)." },
+        { "thai": "เสียใจด้วย", "translit": "sǐa-jai dûai", "english": "I'm sorry (to hear that)", "note": "Sympathy, for bad news or a death; an apology is ขอโทษ.", "words": ["เสียใจ::sorry / sad", "ด้วย::too / also / with / please"] },
+        { "thai": "ดีใจด้วย", "translit": "dii-jai dûai", "english": "I'm happy for you", "note": "For good news; ยินดีด้วย is more formal.", "words": ["ดีใจ::happy / glad", "ด้วย::too / also / with / please"] },
+        { "thai": "สู้ ๆ", "translit": "sûu sûu", "english": "you can do it! / hang in there", "note": "Lit. fight, fight! Before an exam or a match, or in hard times." },
+        { "thai": "ทานให้อร่อยนะ", "translit": "thaan hâi à-rɔ̀i ná", "english": "enjoy your meal", "note": "Staff or a host, as the food comes. Friends: กินให้อร่อยนะ.", "words": ["ทาน::to eat (polite)", "ให้::to give / let / for", "อร่อย::delicious", "นะ::softener / \"you know?\""] }
+      ]
+    },
+    {
       "id": "phrases",
       "category": "Basics",
       "group": "First Words",
@@ -47,9 +69,15 @@
         { "thai": "ฉันไม่เข้าใจ", "translit": "chǎn mâi khâo-jai", "english": "I don't understand (female)", "words": ["ฉัน::I / me (female, informal)", "ไม่::not / no", "เข้าใจ::to understand"] },
         { "thai": "พูดภาษาอังกฤษได้ไหม", "translit": "phûut phaa-sǎa ang-grìt dâai mǎi", "english": "do you speak English?", "words": ["พูด::to speak / say", "ภาษา::language", "อังกฤษ::England, the UK", "ได้::can / get / did", "ไหม::yes/no question particle"] },
         { "thai": "ห้องน้ำอยู่ที่ไหน", "translit": "hɔ̂ng-náam yùu thîi-nǎi", "english": "where is the bathroom?", "words": ["ห้องน้ำ::bathroom / toilet", "อยู่::to be at / stay / live", "ที่ไหน::where"] },
+        { "thai": "นี่อะไร", "translit": "nîi à-rai", "english": "what's this?", "note": "Politer: อันนี้คืออะไรครับ / คะ.", "words": ["นี่::this (here) / hey, look", "อะไร::what"] },
+        { "thai": "ไกลไหม", "translit": "glai mǎi", "english": "is it far?", "words": ["ไกล::far (from)", "ไหม::yes/no question particle"] },
+        { "thai": "จอดตรงนี้", "translit": "jɔ̀ɔt trong-níi", "english": "stop here", "note": "To a taxi or motorbike taxi; add ครับ / ค่ะ. Up ahead: จอดข้างหน้า.", "words": ["จอด::to stop / park", "ตรงนี้::right here"] },
+        { "thai": "เปิดมิเตอร์ได้ไหม", "translit": "pə̀ət mí-tə̂ə dâai mǎi", "english": "can you use the meter?", "note": "Some Bangkok taxi drivers quote a fixed price instead.", "words": ["เปิด::to open / turn on", "มิเตอร์::meter", "ได้::can / get / did", "ไหม::yes/no question particle"] },
         { "thai": "เท่าไหร่ครับ", "translit": "thâo-rài kráp", "english": "how much? (male)", "words": ["เท่าไหร่::how much / how many", "ครับ::polite particle (male)"] },
         { "thai": "แพงไป", "translit": "phɛɛng pai", "english": "too expensive", "words": ["แพง::expensive", "ไป::to go"] },
         { "thai": "ลดได้ไหม", "translit": "lót dâai mǎi", "english": "can you give a discount?", "words": ["ลด::to reduce / give a discount", "ได้::can / get / did", "ไหม::yes/no question particle"] },
+        { "thai": "ดูเฉย ๆ", "translit": "duu chə̌əi chə̌əi", "english": "just looking", "note": "To a shop assistant; add ครับ / ค่ะ.", "words": ["ดู::to look / to watch", "เฉย ๆ::just (nothing special) / so-so"] },
+        { "thai": "สแกนได้ไหม", "translit": "sà-gɛɛn dâai mǎi", "english": "can I pay by QR code?", "note": "Many shops and stalls show a PromptPay QR code to scan with a banking app.", "words": ["สแกน::to scan", "ได้::can / get / did", "ไหม::yes/no question particle"] },
         { "thai": "ขอ … หน่อย", "translit": "khɔ̌ɔ ... nɔ̀i", "english": "may I have …, please" },
         { "thai": "ช่วยด้วย", "translit": "chûai dûai", "english": "help!", "words": ["ช่วย::to help / please (do)", "ด้วย::with (by means of)"] },
         { "thai": "ไม่เอา", "translit": "mâi ao", "english": "I don't want it / no thanks", "words": ["ไม่::not / no", "เอา::to take / want (a thing)"], "note": "Blunt: fine with family and close friends, rude to a host or anyone senior." },
@@ -897,6 +925,9 @@
         { "thai": "อาจจะ", "translit": "àat-jà", "english": "maybe" },
         { "thai": "ไม่รู้สิ", "translit": "mâi rúu sì", "english": "I dunno", "note": "สิ makes it a shrug.", "words": ["ไม่::not / no", "รู้::to know (information)", "สิ::emphatic / \"do it\""] },
         { "thai": "ไม่น่าเชื่อ", "translit": "mâi nâa chʉ̂a", "english": "unbelievable", "words": ["ไม่::not / no", "น่า::worth …ing / -able", "เชื่อ::to believe"] },
+        { "thai": "จริงด้วย", "translit": "jing dûai", "english": "that's true! / you're right", "note": "When someone points out something you hadn't noticed.", "words": ["จริง::true / real", "ด้วย::too / also / with / please"] },
+        { "thai": "ว่าแล้ว", "translit": "wâa lɛ́ɛo", "english": "I knew it!", "note": "When things turn out as you thought; also ว่าแล้วเชียว.", "words": ["ว่า::that (reporting) / to say", "แล้ว::already / and then"] },
+        { "thai": "งั้นเหรอ", "translit": "ngán rə̌ə", "english": "is that so? / oh, really?", "note": "Mild surprise. งั้น is the spoken form of อย่างนั้น.", "words": ["งั้น::like that / then / in that case", "เหรอ::really? / is that so?"] },
         { "thai": "เสียดาย", "translit": "sǐa-daai", "english": "what a pity / that's a shame" },
         { "thai": "คุ้ม", "translit": "khúm", "english": "worth it / good value" }
       ]
@@ -925,6 +956,10 @@
         { "thai": "เดินทางปลอดภัยนะ", "translit": "dəən-thaang plɔ̀ɔt-phai ná", "english": "have a safe trip", "words": ["เดินทาง::to travel", "ปลอดภัย::safe", "นะ::softener / \"you know?\""] },
         { "thai": "ใช่", "translit": "châi", "english": "yes / that's right", "note": "For \"is it…?\", and ใช่ไหม, \"right?\". Not an all-purpose yes: to \"do you want…?\" or \"can you…?\" Thai repeats the verb (เอา, ได้), or just says ครับ / ค่ะ." },
         { "thai": "ไม่ใช่", "translit": "mâi châi", "english": "is not / not", "words": ["ไม่::not / no", "ใช่::yes / that's right"] },
+        { "thai": "ไม่มีปัญหา", "translit": "mâi mii pan-hǎa", "english": "no problem", "words": ["ไม่::not / no", "มี::to have / there is", "ปัญหา::problem"] },
+        { "thai": "อะไรก็ได้", "translit": "à-rai gɔ̂-dâai", "english": "anything's fine / whatever", "note": "Also ที่ไหนก็ได้ = anywhere, เมื่อไหร่ก็ได้ = any time.", "words": ["อะไร::what", "ก็ได้::that's fine too / whatever"] },
+        { "thai": "ไม่ต้องรีบ", "translit": "mâi tɔ̂ng rîip", "english": "no rush / take your time", "words": ["ไม่ต้อง::don't have to / no need", "รีบ::to hurry"] },
+        { "thai": "ตามสบาย", "translit": "taam sà-baai", "english": "make yourself at home / as you like", "note": "From a host, or staff: เลือกดูตามสบาย = take your time looking.", "words": ["ตาม::to follow / according to", "สบาย::comfortable / well"] },
         { "thai": "แป๊บ", "translit": "pɛ́p", "english": "a moment, a sec" },
         { "thai": "โชค", "translit": "chôok", "english": "luck" },
         { "thai": "ช่าง", "translit": "châng", "english": "let it be (in never mind, forget it)" }
@@ -953,6 +988,9 @@
         { "thai": "จะไปสายนิดหน่อย", "translit": "jà pai sǎai nít-nɔ̀i", "english": "I'll be a bit late", "words": ["จะ::will / going to", "ไป::to go", "สาย::late (morning) / line, cable", "นิดหน่อย::a little bit"] },
         { "thai": "ถึงแล้ว", "translit": "thʉ̌ng lɛ́ɛo", "english": "I'm here / I've arrived", "words": ["ถึง::to arrive / reach / until", "แล้ว::already / and then"] },
         { "thai": "อยู่ไหนแล้ว", "translit": "yùu nǎi lɛ́ɛo", "english": "where are you now?", "note": "What a friend texts when you're late.", "words": ["อยู่::to be at / stay / live", "ไหน::where / which", "แล้ว::already / and then"] },
+        { "thai": "ไปกันเถอะ", "translit": "pai gan thə̀", "english": "let's go", "note": "Casually just ไปกัน.", "words": ["ไป::to go", "กัน::together / each other", "เถอะ::let's / go ahead and (suggestion)"] },
+        { "thai": "เอาไงดี", "translit": "ao ngai dii", "english": "what shall we do?", "note": "Weighing up what to do next. ทำไงดี = what should I do?", "words": ["เอา::to take / want (a thing)", "ไง::how / so? / you know / hey", "ดี::good"] },
+        { "thai": "ขอโทษที่มาสาย", "translit": "khɔ̌ɔ-thôot thîi maa sǎai", "english": "sorry I'm late", "note": "ที่ = for (that): ขอโทษที่ให้รอ = sorry to keep you waiting.", "words": ["ขอโทษ::sorry / excuse me", "ที่::that / which / at / place", "มา::to come", "สาย::late (morning) / line, cable"] },
         { "thai": "วันหลัง", "translit": "wan-lǎng", "english": "another day, some other time" }
       ]
     },
@@ -2975,6 +3013,7 @@
       "description": "Thai verbs never change: small words around them show when. Each card is a short sentence; the note gives the pattern.",
       "cards": [
         { "thai": "กินข้าวแล้ว", "translit": "gin khâao lɛ́ɛo", "english": "I've eaten (already)", "note": "Verb + แล้ว = already, done.", "words": ["กิน::to eat", "ข้าว::rice", "แล้ว::already / and then"] },
+        { "thai": "เสร็จแล้ว", "translit": "sèt lɛ́ɛo", "english": "done / finished", "note": "แล้ว: it has happened. Not yet: ยังไม่เสร็จ.", "words": ["เสร็จ::finished / done", "แล้ว::already / and then"] },
         { "thai": "กินข้าวหรือยัง", "translit": "gin khâao rʉ̌ʉ-yang", "english": "have you eaten yet?", "note": "Really a greeting, like \"how are you?\". …หรือยัง = …yet? Answer กินแล้ว, or ยัง (not yet).", "words": ["กิน::to eat", "ข้าว::rice", "หรือยัง::… yet? (question tag)"] },
         { "thai": "ยังไม่ได้กิน", "translit": "yang mâi dâai gin", "english": "I haven't eaten yet", "note": "ยังไม่ได้ + verb = haven't … yet.", "words": ["ยัง::still / yet / not yet", "ไม่::not / no", "ได้::can / get / did", "กิน::to eat"] },
         { "thai": "เขากำลังทำงานอยู่", "translit": "kháo gam-lang tham-ngaan yùu", "english": "she's working (right now)", "note": "กำลัง + verb + อยู่ = be …-ing. Either half can be left out.", "words": ["เขา::he / she / they", "กำลัง::currently / -ing (before verb)", "ทำงาน::to work", "อยู่::to be at / stay / live"] },
@@ -69950,6 +69989,9 @@
         { "thai": "ง่วง", "translit": "ngûang", "english": "sleepy" },
         { "thai": "เหนื่อย", "translit": "nʉ̀ai", "english": "tired" },
         { "thai": "ไม่สบาย", "translit": "mâi sà-baai", "english": "unwell / sick", "words": ["ไม่::not / no", "สบาย::comfortable / well"] },
+        { "thai": "ไม่มีอะไร", "translit": "mâi mii à-rai", "english": "it's nothing / nothing", "note": "The answer to เป็นอะไร (what's wrong?).", "words": ["ไม่::not / no", "มี::to have / there is", "อะไร::what"] },
+        { "thai": "เป็นอะไรไหม", "translit": "pen à-rai mǎi", "english": "are you all right?", "note": "After a fall, a bump or bad news. เป็นอะไร = what's wrong?", "words": ["เป็น::to be (identity / role)", "อะไร::what", "ไหม::yes/no question particle"] },
+        { "thai": "ไหวไหม", "translit": "wǎi mǎi", "english": "can you manage? / are you OK?", "note": "Tired, hurt, or the chilli: เผ็ดไหวไหม = too spicy for you? The answer: ไหว or ไม่ไหว.", "words": ["ไหว::able to cope / manage", "ไหม::yes/no question particle"] },
         { "thai": "สบาย ๆ", "translit": "sà-baai sà-baai", "english": "chill / easy / no worries" },
         { "thai": "เศร้า", "translit": "sâo", "english": "sad" },
         { "thai": "สงบ", "translit": "sà-ngòp", "english": "calm / peaceful" },
@@ -73847,6 +73889,7 @@
         { "thai": "มีอะไรให้ช่วยไหม", "translit": "mii à-rai hâi chûai mǎi", "english": "how can I help you?", "words": ["มี::to have / there is", "อะไร::what", "ให้::to give / let / for", "ช่วย::to help / please (do)", "ไหม::yes/no question particle"] },
         { "thai": "ยินดีให้บริการ", "translit": "yin-dii hâi bɔɔ-rí-gaan", "english": "happy to help / at your service", "words": ["ยินดี::glad / pleased", "ให้::to give / let / for", "บริการ::service; to serve"] },
         { "thai": "ขอโทษที่ให้รอ", "translit": "khɔ̌ɔ-thôot thîi hâi rɔɔ", "english": "sorry to keep you waiting", "words": ["ขอโทษ::sorry / excuse me", "ที่::at", "ให้::to give / let / for", "รอ::to wait"] },
+        { "thai": "รอสักครู่", "translit": "rɔɔ sàk-khrûu", "english": "one moment, please", "note": "Polite: staff, a receptionist, the phone. Friends: รอแป๊บนึง.", "words": ["รอ::to wait", "สักครู่::a moment"] },
         { "thai": "เดี๋ยวตรวจสอบให้", "translit": "dǐao trùat-sɔ̀ɔp hâi", "english": "I'll check for you", "words": ["เดี๋ยว::in a moment / wait", "ตรวจสอบ::to check / investigate", "ให้::to give / let / for"] },
         { "thai": "แล้วจะแจ้งกลับ", "translit": "lɛ́ɛo jà jɛ̂ɛng glàp", "english": "I'll get back to you", "note": "แจ้งกลับ = to let (someone) know back.", "words": ["แล้ว::already / and then", "จะ::will / going to", "แจ้ง::to report / inform", "กลับ::to return / go back"] },
         { "thai": "แจ้งปัญหา", "translit": "jɛ̂ɛng pan-hǎa", "english": "to report a problem", "words": ["แจ้ง::to report / inform", "ปัญหา::problem"] },
