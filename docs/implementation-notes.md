@@ -2233,7 +2233,22 @@ After เป็นไงบ้าง (below) the user asked what else was missin
   phrase exactly, and ไว ๆ has no card, so it has none, as พูดช้า ๆ ได้ไหม. เรื่อย ๆ and สู้ ๆ are
   doubled words, so words, and in the Dictionary. Notes say who says it and when, with a related
   form where there's a common one (ไม่ได้เจอกันนานเลย, ทำไงดี, กินให้อร่อยนะ, จอดข้างหน้า).
-- **No stories yet** for the new topic (`stories.py coverage`: 0, with 7 older topics under 5).
+- **Six stories for the new topic** (the user's request, 2026-11-02; Easy, each with at least two
+  of its phrases, all 14 cards between them): Long Time No See (a university friend at a coffee
+  shop), My Sister's Birthday (a message, and her new job), Get Well Soon (a friend in hospital
+  after a motorbike fall), New Year's Eve Dinner (a full riverside restaurant, the countdown), Sad
+  News Next Door (the neighbour's dog has died), The Last Lesson (leaving Thai lessons for
+  England). They use some of the other new phrases too (รอสักครู่, เอาไงดี, ขอโทษที่มาสาย,
+  เป็นอะไรไหม, ไม่มีอะไร). Speech fits the speakers: male friends without particles, ป้า and the
+  teacher with จ้ะ / จ๊ะ, the narrator to ป้า with คะ and หนู. Senses pinned where the default was
+  wrong: ที่ ordinal in วันที่ 31, ป้า "auntie", อาทิตย์ "week", เลย "at all" after a negative, อยู่
+  "ongoing". Words without a card were written round (ว่าง ๆ, ถอยหลัง, สักพัก, พลุ), except **ขอให้**
+  ("may … / wishing you …"), which wishes start with: a new card in the topic (now 14).
+  (`stories.py add`, source in the session scratchpad; the topic lists all six by the app's rule.)
+  Data steps: audit_decks.py --errors (0), stories.py check (1,408 stories, 0 problems) and sync,
+  coverage (the topic off the under-5 list), spelling.mjs --write, gen_audio.py (57 new),
+  word_timings.py (47 lines, 0 failed). Checked in headless Chromium at 390 × 664 (scratch
+  `catchup_stories_probe.py`): Reading on the topic lists all six, My Sister's Birthday opens.
 - **Not checked:** the candidates came from my own list, so they may share its blind spots; the most
   common phrases in Thai film and TV subtitles would be a wider net (needs a download, not done).
 - Data steps: audit_decks.py --errors (0; the full audit flags none of the new cards), stories.py
