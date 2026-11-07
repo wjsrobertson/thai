@@ -71985,7 +71985,7 @@
       "id": "food-drinks-desserts",
       "category": "Food & Drink",
       "name": "Drinks",
-      "description": "Iced tea and coffee, juices and fizzy drinks, alcohol, \"cheers!\" (ชน!) and the morning after.",
+      "description": "Iced tea and coffee, juices and fizzy drinks, alcohol, \"cheers!\" (ชน!, ชนแก้ว!) and the morning after.",
       "cards": [
         { "thai": "ชาเย็น", "translit": "chaa-yen", "english": "Thai iced tea" },
         { "thai": "ชาดำเย็น", "translit": "chaa-dam-yen", "english": "iced black tea" },
@@ -72004,6 +72004,7 @@
         { "thai": "ไวน์", "translit": "wai", "english": "wine" },
         { "thai": "ค็อกเทล", "translit": "khɔ́k-theen", "english": "cocktail" },
         { "thai": "ชน", "translit": "chon", "english": "cheers! (lit. clink)" },
+        { "thai": "ชนแก้ว", "translit": "chon-gɛ̂ɛo", "english": "cheers! / a toast (lit. clink glasses)", "note": "The toast itself, or an invitation: ชนแก้วกันหน่อย = let's have a toast. Often cut to ชน!" },
         { "thai": "หมดแก้ว", "translit": "mòt-gɛ̂ɛo", "english": "bottoms up (lit. finish the glass)" },
         { "thai": "เมา", "translit": "mao", "english": "drunk" },
         { "thai": "แฮงค์", "translit": "hɛɛng", "english": "hungover" },

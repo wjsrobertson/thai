@@ -2322,6 +2322,19 @@ The user asked for both fixes:
 - Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
   spelling.mjs --write (no change), gen_audio.py (1 new: the English; วาฬ already had one).
 
+## ชนแก้ว in Drinks (2026-11-07)
+
+The user heard "chon gaeo" for "cheers" and asked whether it was right and in the app. Drinks had
+only the short ชน "cheers! (lit. clink)"; A Night Out has ยกแก้วขึ้นชนกัน.
+- **The card** (Drinks, now 22), between ชน and หมดแก้ว: ชนแก้ว, chon-gɛ̂ɛo, "cheers! / a toast (lit.
+  clink glasses)"; the note gives ชนแก้วกันหน่อย "let's have a toast" and that it's often cut to ชน!
+  Drinks' description now says (ชน!, ชนแก้ว!).
+- **No `words`,** like หมดแก้ว beside it: แก้ว here is a drinking glass, and its only cards are the
+  material and the classifier (ขออีกแก้ว uses the classifier, where it is one). แก้วน้ำ is the noun.
+- **Search** (tools/search_check.mjs): "chon gaeo", "chon kaew" and "cheers" all find it.
+- Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
+  spelling.mjs --write (no change), gen_audio.py (3 new: ชนแก้ว, ชนแก้วกันหน่อย, the English).
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
