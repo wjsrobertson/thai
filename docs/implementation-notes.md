@@ -2335,6 +2335,27 @@ only the short ชน "cheers! (lit. clink)"; A Night Out has ยกแก้ว
 - Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
   spelling.mjs --write (no change), gen_audio.py (3 new: ชนแก้ว, ชนแก้วกันหน่อย, the English).
 
+## Search: aw as ɔ (2026-11-07)
+
+The user heard โทษที as "taw tee", and asked for the search to find it. Popular romanisation
+(`popularTranslit`) read aw with no vowel after only as ao (w as o, for laew), while phrasebooks
+write ɔ as aw: gaw gai, paw, maw, khawp khun.
+- **A third reading** of the query (`translitKeys`): `popularTranslit(q, true)` makes that aw ɔ
+  first, 0.05 behind the ao reading (so 0.1 behind the query as typed). The keys are deduplicated,
+  so most queries still have one or two.
+- **Measured** with tools/search_check.mjs, the old app.js against the new, on 70 searches. Now
+  first: "taw tee" โทษที (nothing before), "gaw gai" ก, "khawp khun" ขอบคุณ, "kaw thot" ขอโทษ,
+  "sawng" สอง, "hawm" หอม, "rawng" รอง/ร้อง, "maw" มอ/หมอ (were near misses or nothing). Unchanged
+  top six for the rest: the 2026-11-01 list ("peng yai bang", "sawadee krap", "kob kun", "aharn",
+  "aroy"…), English (water, house, dog, draw, saw, awake, lawyer…) and short ones (paw, law, taw,
+  kaw, chaw). Short aw queries now list more (kaw 171 → 451, taw 88 → 270), all below the matches
+  that were there. "outlaw" now has one near miss (จุดหลอมเหลว) where it had nothing.
+- **Not changed: "tot tee"** finds โทษที third, after เตาะแตะ and ท้อแท้: the query as typed (ee
+  as the app's ee) matches them, ahead of the popular reading (ee as i), by design.
+- **Checked** in headless Chromium at 390 × 664 (scratch `aw_search_probe.py`): the picker's
+  "taw tee" (โทษที first), "gaw gai", "khawp khun", "peng yai bang", "water"; the Dictionary's
+  "taw tee" (โทษที first), "sawng", "kob kun"; no script errors.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
