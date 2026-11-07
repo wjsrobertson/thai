@@ -2356,6 +2356,16 @@ write ɔ as aw: gaw gai, paw, maw, khawp khun.
   "taw tee" (โทษที first), "gaw gai", "khawp khun", "peng yai bang", "water"; the Dictionary's
   "taw tee" (โทษที first), "sawng", "kob kun"; no script errors.
 
+## ไปไหน's note: วะ ๆ out (2026-11-07)
+
+ไปไหน "where are you going?" (Travel & Transport: Tickets & Taxi Talk, and a story) said to answer
+วะ ๆ ("around") if you don't want to say. I didn't know it as a reply and found no source for it;
+the user asked for it checked and fixed. Learner guides (learnthaifromawhiteguy.com, thaizer.com)
+give ไปเที่ยว and ไปธุระ as the usual answers, and say a vague one is fine since the question is a
+greeting. The note now says so, as ไปไหนมา's already gives ไปธุระมา. Data steps: audit (0), stories
+check and sync (nothing to change), spelling (no change), gen_audio.py (2 new: ไปเที่ยว, ไปธุระ;
+  วะ ๆ's clip deleted, as nothing else used it).
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
