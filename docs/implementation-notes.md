@@ -2364,7 +2364,35 @@ the user asked for it checked and fixed. Learner guides (learnthaifromawhiteguy.
 give ไปเที่ยว and ไปธุระ as the usual answers, and say a vague one is fine since the question is a
 greeting. The note now says so, as ไปไหนมา's already gives ไปธุระมา. Data steps: audit (0), stories
 check and sync (nothing to change), spelling (no change), gen_audio.py (2 new: ไปเที่ยว, ไปธุระ;
-  วะ ๆ's clip deleted, as nothing else used it).
+วะ ๆ's clip deleted, as nothing else used it).
+
+## Staying Vague: Nosy Questions (2026-11-07)
+
+The user asked whether the app had vague answers, such as to what you earn. It had none for personal
+questions: Saying No Without Saying No has vague answers to invitations, and Small Talk: Questions
+said Thais ask about salary freely but had no salary question. I proposed a topic, a question then
+its dodges, and the user approved it as listed.
+- **Staying Vague: Nosy Questions** (new, `conv-staying-vague`, Conversation, after Saying No
+  Without Saying No; 25, full), with an `about` on why vague answers are normal and which are for
+  friends only:
+  - Money: เงินเดือนเท่าไหร่; พอกินพอใช้, พอมีพอกิน, ไม่มากหรอก, ไม่บอกหรอก.
+  - Prices: ซื้อมาเท่าไหร่; ไม่แพงหรอก, จำไม่ได้แล้ว.
+  - Age: อายุเท่าไหร่ (shared); ทายดูสิ, ความลับ (shared).
+  - Love life: มีแฟนหรือยัง, แต่งงานหรือยัง (shared); ยังไม่เจอคนที่ใช่, ยังไม่รีบ.
+  - Where to: ไปไหน (shared); ไปธุระ, ไปเที่ยว, แถวนี้แหละ.
+  - How's life: เรื่อย ๆ, เฉย ๆ (shared); ก็งั้น ๆ.
+  - Any question: ประมาณนั้น, เรื่องมันยาว, ไว้ค่อยเล่าให้ฟัง.
+- **Small Talk: Questions** (now 20): เงินเดือนเท่าไหร่, the same card, after ทำงานอะไร.
+- **Words:** every new phrase lists its words but ก็งั้น ๆ (no งั้น ๆ card). Picks: ให้ "for
+  (someone)" in เล่าให้ฟัง, ที่ "that / which" in คนที่ใช่, มา "to come" in ซื้อมา (as elsewhere).
+- **Search** (tools/search_check.mjs): "how much do you earn", "por gin por chai", "phor mee phor
+  gin", "long story", "pai thiao" find theirs first.
+- **Stories:** none yet; coverage lists it among the topics with fewer than 5 (1, by shared cards).
+- Data steps: audit_decks.py --errors (0; no new "worth a look"), stories.py check and sync
+  (nothing to change), spelling.mjs --write (no change), gen_audio.py (39 new: the cards, their
+  English and the Thai in notes). Script: scratchpad `add_vague.py`.
+- **Checked** in headless Chromium at 390 × 664 (scratch `vague_probe.py`): the List page with its
+  about, no sideways scroll, the picker's search; no script errors.
 
 ## Search by sound (2026-10-27)
 

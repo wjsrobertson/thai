@@ -862,6 +862,7 @@
         { "thai": "ชื่อเล่นอะไร", "translit": "chʉ̂ʉ-lên à-rai", "english": "what's your nickname?", "note": "Most Thais go by a short nickname, even at work.", "words": ["ชื่อเล่น::nickname", "อะไร::what"] },
         { "thai": "มาจากไหน", "translit": "maa jàak nǎi", "english": "where are you from?", "words": ["มา::to come", "จาก::from", "ไหน::where / which"] },
         { "thai": "ทำงานอะไร", "translit": "tham-ngaan à-rai", "english": "what do you do (for work)?", "words": ["ทำงาน::to work", "อะไร::what"] },
+        { "thai": "เงินเดือนเท่าไหร่", "translit": "ngən-dʉan thâo-rài", "english": "how much do you earn? (lit. salary how much)", "note": "Thais ask it freely; a vague answer is normal. Also ได้เงินเดือนเท่าไหร่.", "words": ["เงินเดือน::salary", "เท่าไหร่::how much / how many"] },
         { "thai": "อายุเท่าไหร่", "translit": "aa-yú thâo-rài", "english": "how old are you?", "note": "Age decides who is พี่ and who is น้อง, so it comes up early.", "words": ["อายุ::age", "เท่าไหร่::how much / how many"] },
         { "thai": "อยู่เมืองไทยนานแค่ไหนแล้ว", "translit": "yùu mʉang-thai naan khɛ̂ɛ-nǎi lɛ́ɛo", "english": "how long have you been in Thailand?", "words": ["อยู่::to be at / stay / live", "เมืองไทย::Thailand", "นาน::for a long time", "แค่::only / just", "ไหน::where / which", "แล้ว::already / and then"] },
         { "thai": "มาเที่ยวหรือมาทำงาน", "translit": "maa thîao rʉ̌ʉ maa tham-ngaan", "english": "are you here on holiday or for work?", "words": ["มา::to come", "เที่ยว::to go out / travel for fun", "หรือ::or / (question tag)", "มา::to come", "ทำงาน::to work"] },
@@ -1021,6 +1022,40 @@
         { "thai": "ได้มั้ง", "translit": "dâai máng", "english": "I suppose so", "note": "A yes so weak it may be a no.", "words": ["ได้::can / get / did", "มั้ง::probably / I guess"] },
         { "thai": "ไม่เอา", "translit": "mâi ao", "english": "I don't want it / no thanks", "words": ["ไม่::not / no", "เอา::to take / want (a thing)"], "note": "Blunt: fine with family and close friends, rude to a host or anyone senior." },
         { "thai": "ไม่ได้จริง ๆ", "translit": "mâi dâai jing-jing", "english": "I really can't", "note": "After the soft noes, the hard one, still said gently.", "words": ["ไม่::not / no", "ได้::can / get / did", "จริง ๆ::really / truly"] }
+      ]
+    },
+    {
+      "id": "conv-staying-vague",
+      "category": "Conversation",
+      "name": "Staying Vague: Nosy Questions",
+      "description": "Pay, prices, age, love life and where you're off to: the questions Thais ask freely, and the vague answers that are just as normal.",
+      "about": "Thais ask what you earn, what you paid and why you aren't married without meaning to pry, and a vague answer is just as normal: nobody presses for the number. Each question here comes before its answers.\n\nMoney: พอกินพอใช้ is the usual answer about pay, and พอมีพอกิน about how well off you are. หรอก softens a no: ไม่มากหรอก, ไม่แพงหรอก. ไม่บอกหรอก and ทายดูสิ are for friends, with a smile.\n\nAny question: ประมาณนั้น, เรื่องมันยาว and ไว้ค่อยเล่าให้ฟัง close it politely, and the asker hears that you'd rather not say.",
+      "cards": [
+        { "thai": "เงินเดือนเท่าไหร่", "translit": "ngən-dʉan thâo-rài", "english": "how much do you earn? (lit. salary how much)", "note": "Thais ask it freely; a vague answer is normal. Also ได้เงินเดือนเท่าไหร่.", "words": ["เงินเดือน::salary", "เท่าไหร่::how much / how many"] },
+        { "thai": "พอกินพอใช้", "translit": "phɔɔ gin phɔɔ chái", "english": "enough to get by (lit. enough to eat, enough to spend)", "note": "The usual answer about pay: not rich, not poor.", "words": ["พอ::enough / as soon as", "กิน::to eat", "พอ::enough / as soon as", "ใช้::to use"] },
+        { "thai": "พอมีพอกิน", "translit": "phɔɔ mii phɔɔ gin", "english": "I get by fine / comfortably off (lit. enough to have, enough to eat)", "note": "Modest but comfortable. Also of a family: ครอบครัวพอมีพอกิน.", "words": ["พอ::enough / as soon as", "มี::to have / there is", "พอ::enough / as soon as", "กิน::to eat"] },
+        { "thai": "ไม่มากหรอก", "translit": "mâi mâak rɔ̀ɔk", "english": "not much, really", "note": "หรอก softens it.", "words": ["ไม่::not / no", "มาก::very / a lot", "หรอก::particle softening denials"] },
+        { "thai": "ไม่บอกหรอก", "translit": "mâi bɔ̀ɔk rɔ̀ɔk", "english": "not telling!", "note": "Teasing, with a smile: to friends, not to anyone senior.", "words": ["ไม่::not / no", "บอก::to tell / say", "หรอก::particle softening denials"] },
+        { "thai": "ซื้อมาเท่าไหร่", "translit": "sʉ́ʉ maa thâo-rài", "english": "how much did you pay (for it)?", "note": "Asked about a phone, a car or a house as freely as about pay.", "words": ["ซื้อ::to buy", "มา::to come", "เท่าไหร่::how much / how many"] },
+        { "thai": "ไม่แพงหรอก", "translit": "mâi phɛɛng rɔ̀ɔk", "english": "it wasn't expensive", "note": "An answer without a number.", "words": ["ไม่::not / no", "แพง::expensive", "หรอก::particle softening denials"] },
+        { "thai": "จำไม่ได้แล้ว", "translit": "jam mâi dâai lɛ́ɛo", "english": "I don't remember any more", "note": "A price you'd rather not give is easily forgotten.", "words": ["จำ::to remember", "ไม่::not / no", "ได้::can / get / did", "แล้ว::already / and then"] },
+        { "thai": "อายุเท่าไหร่", "translit": "aa-yú thâo-rài", "english": "how old are you?", "note": "Age decides who is พี่ and who is น้อง, so it comes up early.", "words": ["อายุ::age", "เท่าไหร่::how much / how many"] },
+        { "thai": "ทายดูสิ", "translit": "thaai duu sì", "english": "guess!", "note": "The playful answer to อายุเท่าไหร่. ดู = try and see.", "words": ["ทาย::to guess", "ดู::to look / to watch", "สิ::emphatic / \"do it\""] },
+        { "thai": "ความลับ", "translit": "khwaam-láp", "english": "secret" },
+        { "thai": "มีแฟนหรือยัง", "translit": "mii fɛɛn rʉ̌ʉ-yang", "english": "do you have a boyfriend / girlfriend?", "words": ["มี::to have / there is", "แฟน::boyfriend / girlfriend / partner", "หรือยัง::… yet? (question tag)"] },
+        { "thai": "แต่งงานหรือยัง", "translit": "tɛ̀ng-ngaan rʉ̌ʉ-yang", "english": "are you married?", "note": "Lit. \"married yet?\". The polite answer if not is ยัง (not yet).", "words": ["แต่งงาน::to marry", "หรือยัง::… yet? (question tag)"] },
+        { "thai": "ยังไม่เจอคนที่ใช่", "translit": "yang mâi jəə khon thîi châi", "english": "I haven't met the right one yet", "note": "คนที่ใช่ = the right one (lit. the person who is it).", "words": ["ยัง::still / yet / not yet", "ไม่::not / no", "เจอ::to meet / find / run into", "คน::person / people", "ที่::that / which / at / place", "ใช่::yes / that's right"] },
+        { "thai": "ยังไม่รีบ", "translit": "yang mâi rîip", "english": "I'm in no rush", "note": "To แต่งงานหรือยัง, or when people ask about children.", "words": ["ยัง::still / yet / not yet", "ไม่::not / no", "รีบ::to hurry"] },
+        { "thai": "ไปไหน", "translit": "pai nǎi", "english": "where are you going?", "note": "Also a casual greeting; a vague answer is fine: ไปเที่ยว (out and about) or ไปธุระ (on an errand).", "words": ["ไป::to go", "ไหน::where / which"] },
+        { "thai": "ไปธุระ", "translit": "pai thú-rá", "english": "on an errand / on business", "note": "The vague answer to ไปไหน. Asking what the ธุระ is, is pushing.", "words": ["ไป::to go", "ธุระ::business, errand (something to see to)"] },
+        { "thai": "ไปเที่ยว", "translit": "pai thîao", "english": "out and about / going out (for fun)", "note": "The other vague answer to ไปไหน. Also to go on a trip: ไปเที่ยวเชียงใหม่.", "words": ["ไป::to go", "เที่ยว::to go out / travel for fun"] },
+        { "thai": "แถวนี้แหละ", "translit": "thɛ̌ɛo níi lɛ̀", "english": "just around here", "note": "แหละ = just, that's all.", "words": ["แถว::around / in the area of", "นี้::this (after a noun)", "แหละ::that's exactly it"] },
+        { "thai": "เรื่อย ๆ", "translit": "rʉ̂ai rʉ̂ai", "english": "so-so / same as ever", "note": "The usual answer to เป็นไงบ้าง: nothing much new." },
+        { "thai": "เฉย ๆ", "translit": "chə̌əi chə̌əi", "english": "just (nothing special) / so-so", "note": "ถามเฉย ๆ = just asking." },
+        { "thai": "ก็งั้น ๆ", "translit": "gɔ̂ ngán ngán", "english": "meh / not bad, not great", "note": "About a job, a film, a meal or life in general. Also ก็งั้น ๆ แหละ." },
+        { "thai": "ประมาณนั้น", "translit": "prà-maan nán", "english": "something like that", "note": "Answers without the details.", "words": ["ประมาณ::about / approximately", "นั้น::that (after a noun)"] },
+        { "thai": "เรื่องมันยาว", "translit": "rʉ̂ang man yaao", "english": "it's a long story", "note": "Often followed by ไว้ค่อยเล่าให้ฟัง.", "words": ["เรื่อง::story / matter / about", "มัน::it / (rude) he, she", "ยาว::long"] },
+        { "thai": "ไว้ค่อยเล่าให้ฟัง", "translit": "wái khɔ̂i lâo hâi fang", "english": "I'll tell you some other time", "note": "Often never.", "words": ["ไว้::(keep / for later)", "ค่อย::then (and only then) / gradually", "เล่า::to tell (a story)", "ให้::for (someone)", "ฟัง::to listen"] }
       ]
     },
     {
