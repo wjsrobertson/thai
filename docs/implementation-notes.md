@@ -2387,12 +2387,26 @@ its dodges, and the user approved it as listed.
   (someone)" in เล่าให้ฟัง, ที่ "that / which" in คนที่ใช่, มา "to come" in ซื้อมา (as elsewhere).
 - **Search** (tools/search_check.mjs): "how much do you earn", "por gin por chai", "phor mee phor
   gin", "long story", "pai thiao" find theirs first.
-- **Stories:** none yet; coverage lists it among the topics with fewer than 5 (1, by shared cards).
 - Data steps: audit_decks.py --errors (0; no new "worth a look"), stories.py check and sync
   (nothing to change), spelling.mjs --write (no change), gen_audio.py (39 new: the cards, their
   English and the Thai in notes). Script: scratchpad `add_vague.py`.
 - **Checked** in headless Chromium at 390 × 664 (scratch `vague_probe.py`): the List page with its
   about, no sideways scroll, the picker's search; no script errors.
+- **Six stories** (the user's request, the same day; Easy, 8–9 lines, each with 4 or 5 of the
+  topic's cards, all 25 in a story between them, เฉย ๆ in older ones): The Chatty Taxi Driver (pay
+  and love life, on the way to the airport; he hands over his son's number), How Much Was It? (a
+  colleague and a new phone), Songkran Questions (an aunt: married, work, pay), Guess My Age (a man
+  at a birthday party), The Auntie Next Door (ไปไหน every morning, and a new girlfriend), A Long
+  Story (an old friend asks why I quit). Speech fits the speakers: the taxi driver ครับ and the
+  nurse ค่ะ/คะ; ป้า จ๊ะ and the nephew ครับ; male friends and colleagues without particles. Senses
+  pinned: นั่ง "to ride (as a passenger)" in a taxi, ป้า "auntie (any older woman)" for the
+  neighbour (a real aunt at Songkran), หน้า "in front of", คน the classifier in ผู้ชายคนหนึ่ง, ที่
+  "at" or "that" (ก่อนที่), ด้วย "too". No new cards were needed. (`stories.py add`, source
+  scratchpad `vague_stories.json`.) Data steps: audit (0), stories.py check (1,414 stories, 0
+  problems) and sync, coverage (the topic off the under-5 list), spelling.mjs --write,
+  gen_audio.py (50 new, 0 failed), word_timings.py (48 lines, 0 failed). Checked in headless
+  Chromium at 390 × 664 (scratch `vague_stories_probe.py`): Reading on the topic lists all six and
+  The Nosy Auntie, The Chatty Taxi Driver opens; no script errors.
 
 ## Search by sound (2026-10-27)
 
