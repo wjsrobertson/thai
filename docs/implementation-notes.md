@@ -2308,6 +2308,20 @@ in a note on the Southern พันพรือมั่ง ("Central: เป็
   (3 new: the English, งานเป็นไงบ้าง, เป็นยังไงบ้าง; เป็นไงบ้าง already had one). Checked in headless
   Chromium at 390 × 664 (scratch `penngai_probe.py`).
 
+## ฬ at the end of a word: วาฬ (2026-11-07)
+
+The user heard วาฬ end in n and expected l, since ฬ is an l. The rule was in the app (Final
+Consonant Sounds, Final Sound Families, the letter's note), but ฬ never appeared at the end of a
+word: ร and ล had examples (อาหาร, ฟุตบอล), and ฬ's only example, กีฬา, has it starting a syllable.
+The user asked for both fixes:
+- **The ฬ letter note** (in Alphabet in Order, Low Class — Sonorants and The Ten Sonorants) now
+  says "Final: -n (วาฬ waan)", like ร's and ล's.
+- **Final Consonant Sounds** (now 17): วาฬ, "the 'star kite' l at the end sounds n", note "whale",
+  after ฟุตบอล. The English follows ญ's card ("the 'woman' y…"). It's a new card key, separate from
+  Sea & River Life's วาฬ "whale", as นก and กิน are here.
+- Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
+  spelling.mjs --write (no change), gen_audio.py (1 new: the English; วาฬ already had one).
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for

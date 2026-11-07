@@ -1247,7 +1247,7 @@
         { "thai": "ษ", "translit": "sɔ̌ɔ rʉʉ-sǐi", "english": "s — hermit", "note": "High class. Final: -t. Sanskrit words: ภาษา (language), พิเศษ (special).", "say": "สอ ฤๅษี" },
         { "thai": "ส", "translit": "sɔ̌ɔ sʉ̌a", "english": "s — tiger", "note": "High class. Final: -t. The everyday high-class s: สวย sǔai (pretty).", "say": "สอ เสือ" },
         { "thai": "ห", "translit": "hɔ̌ɔ hìip", "english": "h — chest (box)", "note": "High class. Never a final. A silent ห in front of a low sonorant makes it high: หมา mǎa (dog).", "say": "หอ หีบ" },
-        { "thai": "ฬ", "translit": "lɔɔ jù-laa", "english": "l — star kite", "note": "Low class. Final: -n. Rare: จุฬา (star kite), กีฬา gii-laa (sport).", "say": "ลอ จุฬา" },
+        { "thai": "ฬ", "translit": "lɔɔ jù-laa", "english": "l — star kite", "note": "Low class. Final: -n (วาฬ waan). Rare: จุฬา (star kite), กีฬา gii-laa (sport).", "say": "ลอ จุฬา" },
         { "thai": "อ", "translit": "ɔɔ àang", "english": "silent carrier — basin", "note": "Mid class. Silent at the start of a syllable that begins with a vowel (อาหาร aa-hǎan); also the vowel ɔɔ (พอ phɔɔ).", "say": "ออ อ่าง" },
         { "thai": "ฮ", "translit": "hɔɔ nók-hûuk", "english": "h — owl", "note": "Low class. Never a final. Mostly sounds and loans: ฮา haa (funny).", "say": "ฮอ นกฮูก" }
       ]
@@ -1343,7 +1343,7 @@
         { "thai": "ร", "translit": "rɔɔ rʉa", "english": "r — boat", "note": "Low class. Final: -n (อาหาร aa-hǎan). Often said as l in casual speech.", "say": "รอ เรือ" },
         { "thai": "ล", "translit": "lɔɔ ling", "english": "l — monkey", "note": "Low class. Final: -n (ฟุตบอล fút-bɔɔn).", "say": "ลอ ลิง" },
         { "thai": "ว", "translit": "wɔɔ wɛ̌ɛn", "english": "w — ring", "note": "Low class. As a final, an o glide: ขาว khǎao (white). Also part of the vowel ua.", "say": "วอ แหวน" },
-        { "thai": "ฬ", "translit": "lɔɔ jù-laa", "english": "l — star kite", "note": "Low class. Final: -n. Rare: จุฬา (star kite), กีฬา gii-laa (sport).", "say": "ลอ จุฬา" },
+        { "thai": "ฬ", "translit": "lɔɔ jù-laa", "english": "l — star kite", "note": "Low class. Final: -n (วาฬ waan). Rare: จุฬา (star kite), กีฬา gii-laa (sport).", "say": "ลอ จุฬา" },
         { "thai": "งูใหญ่นอนอยู่ ณ ริมวัด โมฬีโลก", "translit": "nguu yài nɔɔn yùu ná rim wát moo-lii-lôok", "english": "a big snake lies beside Wat Molilok", "note": "Thai children's rhyme for the low sonorants: ง ญ น ย ณ ร ว ม ฬ ล. A silent ห can lead any of them except ณ and ฬ." }
       ]
     },
@@ -1782,6 +1782,7 @@
         { "thai": "ภาพ", "translit": "phâap", "english": "ph at the end sounds p", "note": "picture" },
         { "thai": "อาหาร", "translit": "aa-hǎan", "english": "r at the end sounds n", "note": "food" },
         { "thai": "ฟุตบอล", "translit": "fút-bɔɔn", "english": "l at the end sounds n", "note": "football" },
+        { "thai": "วาฬ", "translit": "waan", "english": "the 'star kite' l at the end sounds n", "note": "whale" },
         { "thai": "บุญ", "translit": "bun", "english": "the 'woman' y at the end sounds n", "note": "merit (Buddhist)" }
       ]
     },
@@ -37601,7 +37602,7 @@
         { "thai": "ร", "translit": "rɔɔ rʉa", "english": "r — boat", "note": "Low class. Final: -n (อาหาร aa-hǎan). Often said as l in casual speech.", "say": "รอ เรือ" },
         { "thai": "ล", "translit": "lɔɔ ling", "english": "l — monkey", "note": "Low class. Final: -n (ฟุตบอล fút-bɔɔn).", "say": "ลอ ลิง" },
         { "thai": "ว", "translit": "wɔɔ wɛ̌ɛn", "english": "w — ring", "note": "Low class. As a final, an o glide: ขาว khǎao (white). Also part of the vowel ua.", "say": "วอ แหวน" },
-        { "thai": "ฬ", "translit": "lɔɔ jù-laa", "english": "l — star kite", "note": "Low class. Final: -n. Rare: จุฬา (star kite), กีฬา gii-laa (sport).", "say": "ลอ จุฬา" },
+        { "thai": "ฬ", "translit": "lɔɔ jù-laa", "english": "l — star kite", "note": "Low class. Final: -n (วาฬ waan). Rare: จุฬา (star kite), กีฬา gii-laa (sport).", "say": "ลอ จุฬา" },
         { "thai": "จุฬา", "translit": "jù-laa", "english": "star-shaped kite", "note": "The name word of ฬ: ฬ จุฬา." },
         { "thai": "เป็น", "translit": "pen", "english": "to be (identity / role)", "note": "Links two nouns: เขาเป็นครู. Never before an adjective: เขาสวย, not เขาเป็นสวย." },
         { "thai": "ว่าว", "translit": "wâao", "english": "kite" },
