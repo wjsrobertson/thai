@@ -2444,6 +2444,13 @@ Happy, Sad & Scared after โมโห (now 16), its words ความ and โ�
 audit (0), stories.py check and sync (nothing to change), spelling.mjs --write, gen_audio.py (2 new,
 0 failed). Checked with tools/search_check.mjs only.
 
+Six more the same day, which I found while checking and the user approved, in the same topic (now
+22): หงุดหงิด, อารมณ์เสีย and หัวเสีย after โมโห, common in speech and with no card; ความเศร้า and
+ความเหงา after เสียใจ, ความอิจฉา after ความโกรธ, because "sadness", "jealousy" and "loneliness" found
+nothing. The ความ nouns' notes say they're mostly written. Audit (0), stories.py (nothing to change),
+gen_audio.py (16 new, 0 failed). "grumpy", "bad mood", "pissed off", "envy" and "ngut ngit" find
+theirs first (tools/search_check.mjs); data only, so no browser check.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
