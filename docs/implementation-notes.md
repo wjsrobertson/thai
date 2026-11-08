@@ -2408,6 +2408,34 @@ its dodges, and the user approved it as listed.
   Chromium at 390 × 664 (scratch `vague_stories_probe.py`): Reading on the topic lists all six and
   The Nosy Auntie, The Chatty Taxi Driver opens; no script errors.
 
+## Farming: Rice & Crops (2026-11-08)
+
+The user found "harvest" missing and asked what else was. Search found nothing for harvest,
+fertiliser, sickle or scarecrow, and there was no farming topic: เกี่ยว "to reap (rice)" was in Core
+Words, ชาวนา in Jobs, รถไถ in Vehicles. I proposed a topic and the user approved it as listed.
+- **Farming: Rice & Crops** (new, `nature-farming`, Nature & Animals; 25, full). In Plants &
+  Landscapes, after Plants: Kinds of Tree & Plant, not after Farm Animals as proposed: that would
+  have split the Kinds of Animal group.
+  - Who and where: เกษตรกร, ชาวนา, ทุ่งนา (shared); ทำนา.
+  - Planting: รถไถ (shared); ไถนา, ต้นกล้า, ดำนา, หว่าน, ปุ๋ย, ยาฆ่าแมลง, ชลประทาน.
+  - Harvest: เก็บเกี่ยว, ฤดูเก็บเกี่ยว, เกี่ยวข้าว, เคียว, รถเกี่ยวข้าว, ข้าวเปลือก, โรงสี, ผลผลิต.
+  - Other crops: ชาวไร่, ชาวสวน, อ้อย, มันสำปะหลัง, กรีดยาง.
+  - Left out for room: หุ่นไล่กา, ยุ้งข้าว, จอบ, ข้าวหอมมะลิ, วัชพืช.
+- **Words:** listed where the word's card is close to the sense meant (เปลือก "shell" for a husk,
+  สวน "garden" for an orchard, ไร่ the land unit for a farm; the notes give the sense). None on ไถนา
+  (ไถ's card is "to clipper"), ต้นกล้า (กล้า "to dare"), ดำนา (ดำ "black"), โรงสี (สี "colour").
+- **Translit:** เก็บเกี่ยว gèp-gìao and กรีดยาง grìit-yaang, with the g of those words' own cards (the
+  proposal had k and kr). ผลผลิต phǒn-phà-lìt, three syllables: Volubilis gives phonphalit, and it
+  has no linking la, unlike ผลไม้.
+- **Search** (tools/search_check.mjs): "harvest" finds four, เก็บเกี่ยว first; "fertiliser", "sickle",
+  "sugarcane", "cassava", "irrigation", "kep kiao", "tham na", "chao rai" find theirs first.
+  "fertilizer" with a z still finds nothing: the app's English is British.
+- Data steps: audit_decks.py --errors (0; nothing new in "worth a look"), stories.py check and sync
+  (1,414 stories, 0 problems, nothing to change), spelling.mjs --write, gen_audio.py (50 new, 0
+  failed). No stories written for it yet. Script: scratchpad `add_farming.py`.
+- **Checked** in headless Chromium at 390 × 664 (scratch `farming_probe.py`): the List page, no
+  sideways scroll, the picker's search; no script errors.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
