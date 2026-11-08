@@ -463,6 +463,35 @@
       ]
     },
     {
+      "id": "body-parts-more",
+      "category": "Basics",
+      "group": "Everyday Words",
+      "name": "Body: More Parts, Blinks & Breaths",
+      "description": "Forehead, thumb, palm, eyelid, throat and scars; yawning, blinking, glancing, sipping and holding your breath.",
+      "cards": [
+        { "thai": "หน้าผาก", "translit": "nâa-phàak", "english": "forehead" },
+        { "thai": "หัวแม่มือ", "translit": "hǔa-mɛ̂ɛ-mʉʉ", "english": "thumb", "note": "Lit. \"head mother hand\"." },
+        { "thai": "ฝ่ามือ", "translit": "fàa-mʉʉ", "english": "palm (of the hand)", "note": "ฝ่าเท้า = sole of the foot." },
+        { "thai": "แข้ง", "translit": "khɛ̂ng", "english": "shin", "note": "แข้งขา = legs in general." },
+        { "thai": "ผิวพรรณ", "translit": "phǐu-phan", "english": "complexion", "note": "ผิว = skin." },
+        { "thai": "เปลือกตา", "translit": "plʉ̀ak-taa", "english": "eyelid", "note": "Lit. \"eye shell\"." },
+        { "thai": "คอหอย", "translit": "khɔɔ-hɔ̌ɔi", "english": "throat" },
+        { "thai": "หน้าท้อง", "translit": "nâa-thɔ́ɔng", "english": "belly, abdomen", "note": "Also the abs: กล้ามหน้าท้อง." },
+        { "thai": "กำปั้น", "translit": "gam-pân", "english": "fist", "note": "กำ = to clench." },
+        { "thai": "แผลเป็น", "translit": "phlɛ̌ɛ-pen", "english": "scar", "note": "แผล = wound." },
+        { "thai": "มดลูก", "translit": "mót-lûuk", "english": "womb, uterus" },
+        { "thai": "สิว", "translit": "sǐu", "english": "acne, a spot", "note": "เป็นสิว = to have spots." },
+        { "thai": "หาว", "translit": "hǎao", "english": "to yawn" },
+        { "thai": "กะพริบ", "translit": "gà-phríp", "english": "to blink", "note": "กะพริบตา = to blink your eyes." },
+        { "thai": "เหม่อ", "translit": "mə̀ə", "english": "to stare blankly", "note": "เหม่อลอย = to be miles away." },
+        { "thai": "ชำเลือง", "translit": "cham-lʉang", "english": "to glance sideways" },
+        { "thai": "จิบ", "translit": "jìp", "english": "to sip" },
+        { "thai": "สูด", "translit": "sùut", "english": "to breathe in, sniff", "note": "สูดหายใจลึก ๆ = to breathe in deeply." },
+        { "thai": "กลั้น", "translit": "glân", "english": "to hold in (breath, laughter)", "note": "กลั้นหายใจ = to hold your breath." },
+        { "thai": "อัมพาต", "translit": "am-má-phâat", "english": "paralysis", "note": "Often after a stroke." }
+      ]
+    },
+    {
       "id": "colors",
       "category": "Basics",
       "group": "Everyday Words",
@@ -589,6 +618,74 @@
       ]
     },
     {
+      "id": "adjectives-shape-surface",
+      "category": "Basics",
+      "group": "Everyday Words",
+      "name": "Adjectives: Shape, Surface & Size",
+      "description": "Loose, taut, shallow, flat, bumpy, steep, tiny, vast, durable, shady, muggy, crowded.",
+      "cards": [
+        { "thai": "หลวม", "translit": "lǔam", "english": "loose, baggy", "note": "Opposite: คับ." },
+        { "thai": "ตึง", "translit": "tʉng", "english": "taut, tight", "note": "Also tense: ตึงเครียด." },
+        { "thai": "ตื้น", "translit": "tʉ̂ʉn", "english": "shallow", "note": "Opposite: ลึก." },
+        { "thai": "แบน", "translit": "bɛɛn", "english": "flat", "note": "ยางแบน = a flat tyre." },
+        { "thai": "ซีด", "translit": "sîit", "english": "pale", "note": "หน้าซีด = to go pale." },
+        { "thai": "เหนียว", "translit": "nǐao", "english": "sticky, tough", "note": "เนื้อเหนียว = tough meat. ข้าวเหนียว = sticky rice." },
+        { "thai": "เนียน", "translit": "nian", "english": "smooth; slick", "note": "Of skin, or of an act: ทำเนียน = to act as if nothing happened." },
+        { "thai": "ขรุขระ", "translit": "khrù-khrà", "english": "bumpy, rough" },
+        { "thai": "ขุ่น", "translit": "khùn", "english": "murky, cloudy", "note": "น้ำขุ่น = murky water." },
+        { "thai": "ชัน", "translit": "chan", "english": "steep" },
+        { "thai": "เฉียง", "translit": "chǐang", "english": "slanted, diagonal", "note": "ตะวันออกเฉียงเหนือ = north-east." },
+        { "thai": "จิ๋ว", "translit": "jǐu", "english": "tiny" },
+        { "thai": "ใหญ่โต", "translit": "yài-too", "english": "huge, grand" },
+        { "thai": "กว้างใหญ่", "translit": "gwâang-yài", "english": "vast" },
+        { "thai": "มหาศาล", "translit": "má-hǎa-sǎan", "english": "enormous (of an amount)" },
+        { "thai": "ทนทาน", "translit": "thon-thaan", "english": "durable" },
+        { "thai": "เข้มข้น", "translit": "khêm-khôn", "english": "concentrated, intense, thick" },
+        { "thai": "ปานกลาง", "translit": "paan-glaang", "english": "moderate, medium" },
+        { "thai": "ร่มรื่น", "translit": "rôm-rʉ̂ʉn", "english": "shady and pleasant" },
+        { "thai": "อบอ้าว", "translit": "òp-âao", "english": "muggy, stuffy" },
+        { "thai": "กลางแจ้ง", "translit": "glaang-jɛ̂ɛng", "english": "outdoors, in the open" },
+        { "thai": "แออัด", "translit": "ɛɛ-àt", "english": "overcrowded" },
+        { "thai": "เปลี่ยว", "translit": "plìao", "english": "deserted, lonely (of a place)", "note": "ซอยเปลี่ยว = a deserted lane." },
+        { "thai": "เงียบเหงา", "translit": "ngîap-ngǎo", "english": "quiet and lonely" },
+        { "thai": "ถาวร", "translit": "thǎa-wɔɔn", "english": "permanent" }
+      ]
+    },
+    {
+      "id": "adjectives-style-manners",
+      "category": "Basics",
+      "group": "Everyday Words",
+      "name": "Adjectives: Style, Manners & State",
+      "description": "Cool, chic, luxurious, modern, out of date, famous, weird, aggressive, biased, slapdash, messy.",
+      "cards": [
+        { "thai": "เท่", "translit": "thêe", "english": "cool, stylish" },
+        { "thai": "เก๋", "translit": "gěe", "english": "chic" },
+        { "thai": "หรูหรา", "translit": "rǔu-rǎa", "english": "luxurious" },
+        { "thai": "ทันสมัย", "translit": "than-sà-mǎi", "english": "modern, up to date" },
+        { "thai": "สมัยใหม่", "translit": "sà-mǎi-mài", "english": "modern, of today" },
+        { "thai": "ล้าสมัย", "translit": "láa-sà-mǎi", "english": "out of date" },
+        { "thai": "เก่าแก่", "translit": "gào-gɛ̀ɛ", "english": "ancient, very old" },
+        { "thai": "โด่งดัง", "translit": "dòong-dang", "english": "famous, widely known" },
+        { "thai": "พิลึก", "translit": "phí-lʉ́k", "english": "weird" },
+        { "thai": "กำพร้า", "translit": "gam-phráa", "english": "orphaned", "note": "เด็กกำพร้า = an orphan." },
+        { "thai": "ตะกละ", "translit": "tà-glà", "english": "greedy about food" },
+        { "thai": "เชื่อง", "translit": "chʉ̂ang", "english": "tame" },
+        { "thai": "ดุร้าย", "translit": "dù-ráai", "english": "fierce, savage" },
+        { "thai": "ก้าวร้าว", "translit": "gâao-ráao", "english": "aggressive" },
+        { "thai": "ลำเอียง", "translit": "lam-iang", "english": "biased" },
+        { "thai": "มักง่าย", "translit": "mák-ngâai", "english": "slapdash, careless" },
+        { "thai": "เกะกะ", "translit": "gè-gà", "english": "in the way, cluttered" },
+        { "thai": "เลอะเทอะ", "translit": "lə́-thə́", "english": "messy, dirty" },
+        { "thai": "อับอาย", "translit": "àp-aai", "english": "ashamed, humiliated" },
+        { "thai": "กลางคน", "translit": "glaang-khon", "english": "middle-aged" },
+        { "thai": "ตรงไปตรงมา", "translit": "trong-pai-trong-maa", "english": "straightforward, direct" },
+        { "thai": "สม่ำเสมอ", "translit": "sà-màm-sà-mə̌ə", "english": "regular, steady" },
+        { "thai": "ครบถ้วน", "translit": "khróp-thûan", "english": "complete" },
+        { "thai": "ขัดข้อง", "translit": "khàt-khɔ̂ng", "english": "out of order, with a snag", "note": "ไม่ขัดข้อง = no objection." },
+        { "thai": "เปลือง", "translit": "plʉang", "english": "wasteful, uses up a lot", "note": "เปลืองน้ำมัน = It uses a lot of fuel." }
+      ]
+    },
+    {
       "id": "basics-materials",
       "category": "Basics",
       "group": "Everyday Words",
@@ -616,6 +713,29 @@
         { "thai": "หิน", "translit": "hǐn", "english": "rock / stone" },
         { "thai": "ปูน", "translit": "puun", "english": "cement / concrete" },
         { "thai": "ดินเผา", "translit": "din-phǎo", "english": "terracotta", "note": "Lit. \"burnt earth\"." }
+      ]
+    },
+    {
+      "id": "basics-jewels-fuel",
+      "category": "Basics",
+      "group": "Everyday Words",
+      "name": "Jewels, Machines & Fuel",
+      "description": "Pearls, jade, rubies and crowns; marble, coal, fuel and mines; machines, arrows and fireworks.",
+      "cards": [
+        { "thai": "เครื่องประดับ", "translit": "khrʉ̂ang-prà-dàp", "english": "jewellery, accessories" },
+        { "thai": "ไข่มุก", "translit": "khài-múk", "english": "pearl", "note": "ชาไข่มุก = bubble tea." },
+        { "thai": "ลูกปัด", "translit": "lûuk-pàt", "english": "bead" },
+        { "thai": "หยก", "translit": "yòk", "english": "jade" },
+        { "thai": "ทับทิม", "translit": "tháp-thim", "english": "ruby; pomegranate" },
+        { "thai": "มงกุฎ", "translit": "mong-gùt", "english": "crown" },
+        { "thai": "หินอ่อน", "translit": "hǐn-ɔ̀ɔn", "english": "marble", "note": "Lit. \"soft stone\"." },
+        { "thai": "ถ่านหิน", "translit": "thàan-hǐn", "english": "coal", "note": "Lit. \"stone charcoal\"." },
+        { "thai": "เชื้อเพลิง", "translit": "chʉ́a-phləəng", "english": "fuel" },
+        { "thai": "เครื่องจักร", "translit": "khrʉ̂ang-jàk", "english": "machine, machinery" },
+        { "thai": "โปรตีน", "translit": "proo-tiin", "english": "protein" },
+        { "thai": "ลูกศร", "translit": "lûuk-sɔ̌ɔn", "english": "arrow" },
+        { "thai": "พลุ", "translit": "phlú", "english": "firework, flare" },
+        { "thai": "เหมือง", "translit": "mʉ̌ang", "english": "mine", "note": "เหมืองแร่ = a mine. Tin mines made Phuket rich." }
       ]
     },
     {
@@ -1086,6 +1206,103 @@
         { "thai": "หลุด", "translit": "lùt", "english": "to come loose, slip off; to drop (a call)" },
         { "thai": "แอด", "translit": "ɛ̀t", "english": "to add (on an app)" },
         { "thai": "สักครู่", "translit": "sàk-khrûu", "english": "a moment" }
+      ]
+    },
+    {
+      "id": "conv-chunks-commands",
+      "category": "Conversation",
+      "name": "Spoken Chunks: Orders & Enough Already",
+      "description": "What people say as one unit: get up, come in, wait a moment, that's enough, never mind.",
+      "cards": [
+        { "thai": "ลุกขึ้น", "translit": "lúk-khʉ̂n", "english": "get up!", "note": "Stand up, or get out of bed.", "words": ["ลุก::to get up / rise", "ขึ้น::to go up / get on"] },
+        { "thai": "นั่งลง", "translit": "nâng-long", "english": "sit down", "note": "ลง makes it \"down\". นั่งก่อนสิ is the friendlier way to offer a seat.", "words": ["นั่ง::to sit", "ลง::to go down / get off"] },
+        { "thai": "ขึ้นรถ", "translit": "khʉ̂n-rót", "english": "get in the car", "note": "Also to get on a bus or train. Getting off: ลงรถ.", "words": ["ขึ้น::to go up / get on", "รถ::car / vehicle"] },
+        { "thai": "เข้ามา", "translit": "khâo-maa", "english": "come in", "note": "มา = towards me. Compare เข้าไป.", "words": ["เข้า::to enter / go in", "มา::to come"] },
+        { "thai": "เข้าไป", "translit": "khâo-pai", "english": "go in", "note": "ไป = away from me. Compare เข้ามา.", "words": ["เข้า::to enter / go in", "ไป::to go"] },
+        { "thai": "ออกมา", "translit": "ɔ̀ɔk-maa", "english": "come out", "note": "ออกไป = go out, away from me.", "words": ["ออก::to go out / exit / leave", "มา::to come"] },
+        { "thai": "กลับมา", "translit": "glàp-maa", "english": "come back", "note": "กลับไป = go back, away from here.", "words": ["กลับ::to return / go back", "มา::to come"] },
+        { "thai": "ลงมา", "translit": "long-maa", "english": "come down", "note": "ลงไป = go down, away from me.", "words": ["ลง::to go down / get off", "มา::to come"] },
+        { "thai": "จำไว้", "translit": "jam-wái", "english": "remember that", "note": "A warning or a lesson. ไว้ = keep it.", "words": ["จำ::to remember", "ไว้::(keep / for later)"] },
+        { "thai": "รอเดี๋ยว", "translit": "rɔɔ dǐao", "english": "wait a moment", "note": "More casual: รอแป๊บ.", "words": ["รอ::to wait", "เดี๋ยว::in a moment / wait"] },
+        { "thai": "เอาล่ะ", "translit": "ao lâ", "english": "right then", "note": "To start something, or to sum up.", "words": ["เอา::to take / want (a thing)", "ล่ะ::\"so?\" / \"and what about?\""] },
+        { "thai": "พอแล้ว", "translit": "phɔɔ lɛ́ɛo", "english": "that's enough", "note": "Also when offered more food: that's enough, thanks.", "words": ["พอ::enough / as soon as", "แล้ว::already / and then"] },
+        { "thai": "พอที", "translit": "phɔɔ-thii", "english": "stop it, enough!", "note": "Sharper than พอแล้ว." },
+        { "thai": "พอกันที", "translit": "phɔɔ gan thii", "english": "enough already, I've had it", "note": "Ending it for good: a person, a job or a habit." },
+        { "thai": "ช่างเถอะ", "translit": "châng thə̀", "english": "never mind", "note": "ช่าง here = let it be. More casual: ช่างมันเถอะ.", "words": ["ช่าง::let it be (in never mind, forget it)", "เถอะ::let's / go ahead and (suggestion)"] },
+        { "thai": "เอาเถอะ", "translit": "ao thə̀", "english": "oh, all right", "note": "Giving in, or ending an argument.", "words": ["เอา::to take / want (a thing)", "เถอะ::let's / go ahead and (suggestion)"] },
+        { "thai": "เชื่อเถอะ", "translit": "chʉ̂a thə̀", "english": "believe me", "words": ["เชื่อ::to believe", "เถอะ::let's / go ahead and (suggestion)"] },
+        { "thai": "ล้อเล่น", "translit": "lɔ́ɔ-lên", "english": "just kidding", "note": "ล้อ = to tease. พูดเล่น means the same." }
+      ]
+    },
+    {
+      "id": "conv-chunks-linking",
+      "category": "Conversation",
+      "name": "Spoken Chunks: Linking What You Say",
+      "description": "In that case, otherwise, by the way, let's just say: the words that hold spoken Thai together.",
+      "cards": [
+        { "thai": "ถ้าอย่างนั้น", "translit": "thâa yàang-nán", "english": "in that case", "note": "Casual: งั้น.", "words": ["ถ้า::if", "อย่างนั้น::like that"] },
+        { "thai": "ไม่งั้น", "translit": "mâi ngán", "english": "otherwise, or else", "note": "Short for ไม่อย่างนั้น. รีบไป ไม่งั้นตกรถ = Hurry, or you'll miss the bus." },
+        { "thai": "ว่าแต่", "translit": "wâa-tɛ̀ɛ", "english": "by the way", "note": "Changes the subject: ว่าแต่ กินข้าวหรือยัง." },
+        { "thai": "เอาเป็นว่า", "translit": "ao pen wâa", "english": "let's just say", "note": "Cuts a long answer short, or settles a plan.", "words": ["เอา::to take / want (a thing)", "เป็น::to be (identity / role)", "ว่า::that (reporting) / to say"] },
+        { "thai": "ดูเหมือนว่า", "translit": "duu mʉ̌an wâa", "english": "it seems that", "note": "ดูเหมือน alone means the same.", "words": ["ดู::to look / to watch", "เหมือน::like / as / similar", "ว่า::that (reporting) / to say"] },
+        { "thai": "หมายความว่า", "translit": "mǎai-khwaam wâa", "english": "that means", "note": "หมายความว่าอะไร = What does that mean?", "words": ["หมายความ::to mean (to say)", "ว่า::that (reporting) / to say"] },
+        { "thai": "แสดงว่า", "translit": "sà-dɛɛng wâa", "english": "so that means", "note": "Drawing a conclusion: ไฟปิด แสดงว่าไม่มีใครอยู่ = The lights are off, so no one's in.", "words": ["แสดง::to show / act, perform", "ว่า::that (reporting) / to say"] },
+        { "thai": "อย่างนั้น", "translit": "yàang-nán", "english": "like that", "note": "Spoken: อย่างงั้น, งั้น.", "words": ["อย่าง::kind / like / as", "นั้น::that (after a noun)"] },
+        { "thai": "อย่างนี้", "translit": "yàang-níi", "english": "like this", "note": "Spoken: อย่างงี้, งี้.", "words": ["อย่าง::kind / like / as", "นี้::this (after a noun)"] },
+        { "thai": "แบบนี้", "translit": "bɛ̀ɛp-níi", "english": "like this, this kind", "note": "Everyday, more than อย่างนี้. แบบนั้น = like that.", "words": ["แบบ::kind / style / like…", "นี้::this (after a noun)"] },
+        { "thai": "อยู่แล้ว", "translit": "yùu lɛ́ɛo", "english": "of course, already", "note": "รู้อยู่แล้ว = I already know.", "words": ["อยู่::ongoing (after verb)", "แล้ว::already / and then"] },
+        { "thai": "ก่อนอื่น", "translit": "gɔ̀ɔn ʉ̀ʉn", "english": "first of all", "words": ["ก่อน::before / first", "อื่น::other / else"] },
+        { "thai": "หรือไง", "translit": "rʉ̌ʉ ngai", "english": "or what?", "note": "Adds a challenge: บ้าหรือไง = Are you crazy or what?", "words": ["หรือ::or / (question tag)", "ไง::how / so? / you know / hey"] },
+        { "thai": "เป็นไง", "translit": "pen ngai", "english": "how is it?", "note": "Short for เป็นอย่างไร. เป็นไงบ้าง = How are things?", "words": ["เป็น::to be (identity / role)", "ไง::how / so? / you know / hey"] },
+        { "thai": "รึเปล่า", "translit": "rʉ́ plào", "english": "or not?", "note": "How หรือเปล่า is said, and often written in chat." }
+      ]
+    },
+    {
+      "id": "conv-chunks-reactions",
+      "category": "Conversation",
+      "name": "Spoken Chunks: Reactions",
+      "description": "Impossible, not bad, nonsense, good heavens, wow, yuck: what comes out before you've thought about it.",
+      "cards": [
+        { "thai": "เป็นไปไม่ได้", "translit": "pen-pai mâi dâai", "english": "impossible" },
+        { "thai": "เป็นไปได้", "translit": "pen-pai dâai", "english": "possible", "note": "เป็นไปได้ไหม = Is it possible?" },
+        { "thai": "ไม่เลว", "translit": "mâi leeo", "english": "not bad", "note": "Praise: it means quite good.", "words": ["ไม่::not / no", "เลว::evil / rotten"] },
+        { "thai": "ไร้สาระ", "translit": "rái-sǎa-rá", "english": "nonsense, pointless", "note": "ไร้ = without. สาระ = substance." },
+        { "thai": "ช่วยไม่ได้", "translit": "chûai mâi dâai", "english": "it can't be helped", "note": "A shrug at bad luck, or a warning: ไม่ฟังก็ช่วยไม่ได้.", "words": ["ช่วย::to help / please (do)", "ไม่::not / no", "ได้::can / get / did"] },
+        { "thai": "ห่วยแตก", "translit": "hùai-tɛ̀ɛk", "english": "crap, rubbish", "note": "Rude-ish, among friends." },
+        { "thai": "คุณพระช่วย", "translit": "khun-phrá chûai", "english": "good heavens!", "note": "Lit. \"may the sacred help\". Often just คุณพระ!" },
+        { "thai": "ด้วยความยินดี", "translit": "dûai khwaam-yin-dii", "english": "with pleasure", "note": "A formal \"you're welcome\"." },
+        { "thai": "ขอแสดงความยินดี", "translit": "khɔ̌ɔ sà-dɛɛng khwaam-yin-dii", "english": "congratulations", "note": "Formal. Among friends: ยินดีด้วย." },
+        { "thai": "โอ้โฮ", "translit": "ôo-hoo", "english": "wow!", "note": "Surprise or awe." },
+        { "thai": "โอย", "translit": "ooi", "english": "ow!", "note": "Sharper: โอ๊ย." },
+        { "thai": "แหวะ", "translit": "wɛ̀", "english": "yuck!" },
+        { "thai": "พุทโธ่", "translit": "phút-thôo", "english": "oh dear!", "note": "From \"the Buddha\". Pity, or mild annoyance." },
+        { "thai": "โอ๋", "translit": "ǒo", "english": "there, there", "note": "To a crying child: โอ๋ ๆ ไม่ร้องนะ." }
+      ]
+    },
+    {
+      "id": "conv-chunks-time",
+      "category": "Conversation",
+      "name": "Spoken Chunks: Time & Amounts",
+      "description": "Everything, anyone, all the time, once more, again, these days, someday, sooner or later.",
+      "cards": [
+        { "thai": "ทุกอย่าง", "translit": "thúk yàang", "english": "everything", "words": ["ทุก::every", "อย่าง::kind / like / as"] },
+        { "thai": "บางอย่าง", "translit": "baang yàang", "english": "something, some things", "words": ["บาง::some", "อย่าง::kind / like / as"] },
+        { "thai": "อะไรก็ตาม", "translit": "à-rai gɔ̂ taam", "english": "whatever, anything", "note": "อะไรก็ได้ = Anything is fine.", "words": ["อะไร::what", "ก็::then / also / well…", "ตาม::to follow / according to"] },
+        { "thai": "ใครก็ได้", "translit": "khrai gɔ̂ dâai", "english": "anyone", "note": "ใครก็ได้ ช่วยด้วย = Someone, anyone, help!", "words": ["ใคร::who", "ก็::then / also / well…", "ได้::can / get / did"] },
+        { "thai": "ตลอดเวลา", "translit": "tà-lɔ̀ɔt wee-laa", "english": "all the time", "words": ["ตลอด::always / throughout / all the time", "เวลา::time / when"] },
+        { "thai": "อีกครั้ง", "translit": "ìik khráng", "english": "once more", "words": ["อีก::again / more / another", "ครั้ง::(classifier) times / occurrences"] },
+        { "thai": "อีกแล้ว", "translit": "ìik lɛ́ɛo", "english": "again!", "note": "Annoyed: ฝนตกอีกแล้ว = It's raining again!", "words": ["อีก::again / more / another", "แล้ว::already / and then"] },
+        { "thai": "อีกที", "translit": "ìik thii", "english": "one more time", "note": "Casual อีกครั้ง. พูดอีกทีได้ไหม = Can you say that again?" },
+        { "thai": "ช่วงนี้", "translit": "chûang-níi", "english": "these days, lately", "words": ["ช่วง::period / range", "นี้::this (after a noun)"] },
+        { "thai": "คราวนี้", "translit": "khraao-níi", "english": "this time", "note": "คราวหน้า = next time." },
+        { "thai": "จู่ ๆ", "translit": "jùu jùu", "english": "suddenly, out of nowhere", "note": "จู่ ๆ ก็ร้องไห้ = She suddenly burst into tears." },
+        { "thai": "นานมาแล้ว", "translit": "naan maa lɛ́ɛo", "english": "long ago", "note": "How a story begins.", "words": ["นาน::for a long time", "มา::to come", "แล้ว::already / and then"] },
+        { "thai": "สักวัน", "translit": "sàk wan", "english": "someday", "note": "Fuller: สักวันหนึ่ง.", "words": ["สัก::just (one) / about", "วัน::day"] },
+        { "thai": "ไม่ช้าก็เร็ว", "translit": "mâi cháa gɔ̂ reo", "english": "sooner or later", "words": ["ไม่::not / no", "ช้า::slow", "ก็::then / also / well…", "เร็ว::fast / quick"] },
+        { "thai": "เช้ามืด", "translit": "cháao-mʉ̂ʉt", "english": "before dawn", "note": "Lit. \"dark morning\"." },
+        { "thai": "หัวค่ำ", "translit": "hǔa-khâm", "english": "early evening", "note": "Just after dark." },
+        { "thai": "รุ่งเช้า", "translit": "rûng-cháao", "english": "early morning; the next morning", "note": "รุ่ง = dawn." },
+        { "thai": "ประเดี๋ยว", "translit": "prà-dǐao", "english": "in a moment", "note": "The full, older form of เดี๋ยว." }
       ]
     },
     {
@@ -2957,6 +3174,105 @@
         { "thai": "โผล่", "translit": "phlòo", "english": "to pop out / appear" },
         { "thai": "เซ", "translit": "see", "english": "to stagger / sway", "note": "เดินเซ = to walk unsteadily (drunk or dizzy)." },
         { "thai": "ล้ม", "translit": "lóm", "english": "to fall over", "note": "ล้มลง = to fall down. Also to topple (a government)." }
+      ]
+    },
+    {
+      "id": "verbs-body-moves",
+      "category": "Grammar",
+      "group": "Verbs",
+      "name": "Everyday Actions: Body Moves",
+      "description": "Trip, kneel, duck, reach, squeeze in, lean, push, swing, carry by the handle.",
+      "cards": [
+        { "thai": "สะดุด", "translit": "sà-dùt", "english": "to trip, stumble", "note": "สะดุดตา = to catch the eye." },
+        { "thai": "สะดุ้ง", "translit": "sà-dûng", "english": "to flinch, jump with a start", "note": "สะดุ้งตื่น = to wake with a start." },
+        { "thai": "หกล้ม", "translit": "hòk-lóm", "english": "to fall over", "note": "ล้ม = to fall." },
+        { "thai": "คุกเข่า", "translit": "khúk-khào", "english": "to kneel", "note": "เข่า = knee." },
+        { "thai": "เงย", "translit": "ngəəi", "english": "to look up, lift your head", "note": "เงยหน้า = to look up." },
+        { "thai": "เอื้อม", "translit": "ʉ̂am", "english": "to reach for", "note": "เอื้อมมือ = to stretch out a hand." },
+        { "thai": "โอบ", "translit": "òop", "english": "to put an arm round", "note": "โอบกอด = to embrace." },
+        { "thai": "เบียด", "translit": "bìat", "english": "to squeeze in, crowd", "note": "เบียดขึ้นรถเมล์ = to squeeze onto a bus." },
+        { "thai": "มุด", "translit": "mút", "english": "to duck under, squeeze through", "note": "มุดรั้ว = to crawl under a fence." },
+        { "thai": "คลำ", "translit": "khlam", "english": "to feel around, grope", "note": "คลำทาง = to feel your way." },
+        { "thai": "กระโจน", "translit": "grà-joon", "english": "to leap" },
+        { "thai": "เกร็ง", "translit": "greng", "english": "to tense up", "note": "Also to be nervous and stiff." },
+        { "thai": "ดิ้น", "translit": "dîn", "english": "to wriggle, thrash" },
+        { "thai": "พิง", "translit": "phing", "english": "to lean on", "note": "พิงกำแพง = to lean on a wall." },
+        { "thai": "เข็น", "translit": "khěn", "english": "to push (on wheels)", "note": "รถเข็น = a trolley or cart." },
+        { "thai": "ลอด", "translit": "lɔ̂ɔt", "english": "to pass under or through", "note": "ลอดใต้สะพาน = to pass under a bridge." },
+        { "thai": "ห้อย", "translit": "hɔ̂i", "english": "to dangle, hang", "note": "ห้อยพระ = to wear an amulet." },
+        { "thai": "แกว่ง", "translit": "gwɛ̀ng", "english": "to swing, sway" },
+        { "thai": "กลิ้ง", "translit": "glîng", "english": "to roll" },
+        { "thai": "จูง", "translit": "juung", "english": "to lead (by the hand or a lead)", "note": "จูงมือ = to lead by the hand. จูงหมา = to walk a dog." },
+        { "thai": "หิ้ว", "translit": "hîu", "english": "to carry (by a handle)", "note": "หิ้วถุง = to carry a bag." },
+        { "thai": "สะพาย", "translit": "sà-phaai", "english": "to carry on the shoulder", "note": "กระเป๋าสะพาย = a shoulder bag." },
+        { "thai": "นอนเล่น", "translit": "nɔɔn-lên", "english": "to lounge around", "note": "Lit. \"lie down for fun\". Not quite asleep." },
+        { "thai": "กัดฟัน", "translit": "gàt-fan", "english": "to grit your teeth", "note": "Also to bear something: กัดฟันทำต่อ." },
+        { "thai": "ถอยหลัง", "translit": "thɔ̌ɔi-lǎng", "english": "to reverse, back up", "note": "Also of going backwards in life." }
+      ]
+    },
+    {
+      "id": "verbs-soak-twist-smash",
+      "category": "Grammar",
+      "group": "Verbs",
+      "name": "Everyday Actions: Soak, Twist & Smash",
+      "description": "Soak, splash, dip, pour, roll up, wring, knit, dye, stuff, pluck, slam, repair.",
+      "cards": [
+        { "thai": "แช่", "translit": "chɛ̂ɛ", "english": "to soak", "note": "แช่น้ำ = to soak in water. แช่เย็น = to chill." },
+        { "thai": "สาด", "translit": "sàat", "english": "to splash, throw (water)", "note": "สาดน้ำ = what people do at Songkran." },
+        { "thai": "ทุบ", "translit": "thúp", "english": "to smash, pound", "note": "ทุบกระเทียม = to crush garlic." },
+        { "thai": "รื้อ", "translit": "rʉ́ʉ", "english": "to pull apart, demolish", "note": "รื้อบ้าน = to pull down a house." },
+        { "thai": "ม้วน", "translit": "múan", "english": "to roll up", "note": "Also a roll, as of toilet paper." },
+        { "thai": "บิด", "translit": "bìt", "english": "to twist, wring", "note": "บิดผ้า = to wring out a cloth." },
+        { "thai": "คว่ำ", "translit": "khwâm", "english": "to turn over, face down", "note": "รถคว่ำ = The car overturned. นอนคว่ำ = to lie face down." },
+        { "thai": "จุ่ม", "translit": "jùm", "english": "to dip", "note": "จุ่มน้ำจิ้ม = to dip in sauce." },
+        { "thai": "ราด", "translit": "râat", "english": "to pour over", "note": "ข้าวราดแกง = curry over rice." },
+        { "thai": "ถัก", "translit": "thàk", "english": "to knit, plait", "note": "ถักเปีย = to plait hair." },
+        { "thai": "ย้อม", "translit": "yɔ́ɔm", "english": "to dye", "note": "ย้อมผม = to dye your hair." },
+        { "thai": "ควัก", "translit": "khwák", "english": "to pull out (of a pocket or bag)", "note": "ควักเงิน = to pay up." },
+        { "thai": "ยัด", "translit": "yát", "english": "to stuff, cram", "note": "ยัดใส่กระเป๋า = to cram into a bag." },
+        { "thai": "เด็ด", "translit": "dèt", "english": "to pluck, pick off", "note": "Also excellent: เลขเด็ด = a hot lottery tip." },
+        { "thai": "พ่น", "translit": "phôn", "english": "to spray", "note": "พ่นสี = to spray paint." },
+        { "thai": "กระแทก", "translit": "grà-thɛ̂ɛk", "english": "to slam, bang into" },
+        { "thai": "ปลิว", "translit": "pliu", "english": "to blow away (in the wind)" },
+        { "thai": "ซ่อมแซม", "translit": "sɔ̂m-sɛɛm", "english": "to repair", "note": "More formal than ซ่อม." },
+        { "thai": "ลัด", "translit": "lát", "english": "to take a short cut", "note": "ทางลัด = a short cut." },
+        { "thai": "จ่ายตลาด", "translit": "jàai tà-làat", "english": "to do the food shopping", "note": "Lit. \"pay the market\"." },
+        { "thai": "ค้างคืน", "translit": "kháang-khʉʉn", "english": "to stay overnight", "note": "ค้าง = to stay on. คืน = night." },
+        { "thai": "ขอยืม", "translit": "khɔ̌ɔ-yʉʉm", "english": "to borrow", "note": "Asking politely: ขอยืมปากกาหน่อย." }
+      ]
+    },
+    {
+      "id": "verbs-people",
+      "category": "Grammar",
+      "group": "Verbs",
+      "name": "People Verbs: Care, Promises & Telling Off",
+      "description": "Comfort, bully, care about, promise, warn, tell off, take advantage, gossip, dream of.",
+      "cards": [
+        { "thai": "ปลอบ", "translit": "plɔ̀ɔp", "english": "to comfort, soothe", "note": "ปลอบใจ = to console." },
+        { "thai": "ลังเล", "translit": "lang-lee", "english": "to hesitate" },
+        { "thai": "จงใจ", "translit": "jong-jai", "english": "to do on purpose", "note": "ไม่ได้จงใจ = I didn't mean to." },
+        { "thai": "เผอิญ", "translit": "phà-əən", "english": "to happen to, by chance", "note": "เผอิญเจอกัน = We happened to meet." },
+        { "thai": "รังแก", "translit": "rang-gɛɛ", "english": "to bully", "note": "Mostly of someone stronger picking on someone weaker." },
+        { "thai": "ชอบใจ", "translit": "chɔ̂ɔp-jai", "english": "to be pleased with", "note": "Often with a laugh: หัวเราะชอบใจ." },
+        { "thai": "ห่วงใย", "translit": "hùang-yai", "english": "to care about, be concerned for" },
+        { "thai": "ติดใจ", "translit": "tìt-jai", "english": "to be taken with, hooked on", "note": "ติดใจรสชาติ = to love the taste and want more." },
+        { "thai": "เอาเปรียบ", "translit": "ao-prìap", "english": "to take advantage of" },
+        { "thai": "ได้เปรียบ", "translit": "dâai-prìap", "english": "to have the advantage" },
+        { "thai": "เสียเปรียบ", "translit": "sǐa-prìap", "english": "to be at a disadvantage" },
+        { "thai": "รับปาก", "translit": "ráp-pàak", "english": "to promise", "note": "Lit. \"receive with the mouth\"." },
+        { "thai": "ต่อว่า", "translit": "tɔ̀ɔ-wâa", "english": "to tell off, complain to" },
+        { "thai": "ตักเตือน", "translit": "tàk-tʉan", "english": "to warn, caution", "note": "Also an official warning at work." },
+        { "thai": "ทุ่มเท", "translit": "thûm-thee", "english": "to dedicate yourself, put everything in" },
+        { "thai": "ใฝ่ฝัน", "translit": "fài-fǎn", "english": "to dream of (an ambition)" },
+        { "thai": "หนักใจ", "translit": "nàk-jai", "english": "to be worried, weighed down", "note": "Lit. \"heavy heart\"." },
+        { "thai": "ทอดทิ้ง", "translit": "thɔ̂ɔt-thíng", "english": "to abandon" },
+        { "thai": "นึกออก", "translit": "nʉ́k-ɔ̀ɔk", "english": "to think of, recall", "note": "นึกไม่ออก = I can't think of it." },
+        { "thai": "ชื่นชอบ", "translit": "chʉ̂ʉn-chɔ̂ɔp", "english": "to be fond of, admire" },
+        { "thai": "เบื่อหน่าย", "translit": "bʉ̀a-nàai", "english": "to be fed up" },
+        { "thai": "เลียนแบบ", "translit": "lian-bɛ̀ɛp", "english": "to imitate, copy" },
+        { "thai": "อ้อนวอน", "translit": "ɔ̂ɔn-wɔɔn", "english": "to plead, beg" },
+        { "thai": "แบ่งปัน", "translit": "bɛ̀ng-pan", "english": "to share" },
+        { "thai": "ซุบซิบ", "translit": "súp-síp", "english": "to gossip in whispers" }
       ]
     },
     {
@@ -70040,7 +70356,8 @@
         { "thai": "สหรัฐ", "translit": "sà-hà-rát", "english": "the US (short form)" },
         { "thai": "สหรัฐอเมริกา", "translit": "sà-hà-rát-à-mee-rí-gaa", "english": "the United States of America" },
         { "thai": "อเมริกัน", "translit": "à-mee-rí-gan", "english": "American" },
-        { "thai": "เยอรมัน", "translit": "yəə-rá-man", "english": "German" }
+        { "thai": "เยอรมัน", "translit": "yəə-rá-man", "english": "German" },
+        { "thai": "แอฟริกา", "translit": "ɛ̀p-frí-gaa", "english": "Africa" }
       ]
     },
     {
@@ -70248,7 +70565,9 @@
         { "thai": "ยุ", "translit": "yú", "english": "to egg on, stir up" },
         { "thai": "ตำหนิ", "translit": "tam-nì", "english": "to criticise, reprimand" },
         { "thai": "โน้มน้าว", "translit": "nóom-náao", "english": "to persuade" },
-        { "thai": "ย้ำ", "translit": "yám", "english": "to stress, say again", "note": "ผมขอย้ำว่า… = Let me stress that…." }
+        { "thai": "ย้ำ", "translit": "yám", "english": "to stress, say again", "note": "ผมขอย้ำว่า… = Let me stress that…." },
+        { "thai": "พึมพำ", "translit": "phʉm-pham", "english": "to mumble" },
+        { "thai": "โวยวาย", "translit": "wooi-waai", "english": "to make a fuss" }
       ]
     },
     {
@@ -71820,6 +72139,39 @@
       ]
     },
     {
+      "id": "people-character-roles",
+      "category": "People & Relationships",
+      "group": "Character & Feelings",
+      "name": "People: Character, Roles & Trades",
+      "description": "Taste, humour, personality and dignity; volunteers, villains, beggars and heirs; stepfamilies, clerks and tour guides.",
+      "cards": [
+        { "thai": "รสนิยม", "translit": "rót-ní-yom", "english": "taste (in clothes, art)", "note": "รสนิยมดี = good taste." },
+        { "thai": "อารมณ์ขัน", "translit": "aa-rom-khǎn", "english": "sense of humour" },
+        { "thai": "บุคลิก", "translit": "bùk-khá-lík", "english": "personality, bearing" },
+        { "thai": "ทัศนคติ", "translit": "thát-sà-ná-khá-tì", "english": "attitude" },
+        { "thai": "ค่านิยม", "translit": "khâa-ní-yom", "english": "values (of a society)" },
+        { "thai": "ศักดิ์ศรี", "translit": "sàk-sǐi", "english": "dignity, honour" },
+        { "thai": "สำเนียง", "translit": "sǎm-niang", "english": "accent", "note": "สำเนียงอีสาน = an Isan accent." },
+        { "thai": "ผู้ดี", "translit": "phûu-dii", "english": "well-bred person, the upper class" },
+        { "thai": "ผู้ร้าย", "translit": "phûu-ráai", "english": "villain, criminal" },
+        { "thai": "ขอทาน", "translit": "khɔ̌ɔ-thaan", "english": "beggar; to beg" },
+        { "thai": "คนใช้", "translit": "khon-chái", "english": "servant, domestic help", "note": "Sounds dated: แม่บ้าน is politer." },
+        { "thai": "เจ้าภาพ", "translit": "jâo-phâap", "english": "host (of an event)" },
+        { "thai": "อาสาสมัคร", "translit": "aa-sǎa-sà-màk", "english": "volunteer" },
+        { "thai": "ลูกเสือ", "translit": "lûuk-sʉ̌a", "english": "scout", "note": "Lit. \"tiger cub\"." },
+        { "thai": "ทายาท", "translit": "thaa-yâat", "english": "heir" },
+        { "thai": "คู่หมั้น", "translit": "khûu-mân", "english": "fiancé, fiancée", "note": "หมั้น = to get engaged." },
+        { "thai": "แม่เลี้ยง", "translit": "mɛ̂ɛ-líang", "english": "stepmother" },
+        { "thai": "ลูกเลี้ยง", "translit": "lûuk-líang", "english": "stepchild" },
+        { "thai": "ภารโรง", "translit": "phaan-roong", "english": "school caretaker" },
+        { "thai": "มัคคุเทศก์", "translit": "mák-khú-thêet", "english": "tour guide (formal)", "note": "Day to day: ไกด์." },
+        { "thai": "กุ๊ก", "translit": "gúk", "english": "cook, chef" },
+        { "thai": "เถ้าแก่", "translit": "thâo-gɛ̀ɛ", "english": "shop owner, boss (Chinese-Thai)" },
+        { "thai": "เสมียน", "translit": "sà-mian", "english": "clerk" },
+        { "thai": "เลขา", "translit": "lee-khǎa", "english": "secretary", "note": "Short for เลขานุการ." }
+      ]
+    },
+    {
       "id": "people-jai",
       "category": "People & Relationships",
       "group": "Character & Feelings",
@@ -72485,6 +72837,32 @@
       ]
     },
     {
+      "id": "cul-temples-beliefs",
+      "category": "Culture & Values",
+      "group": "Beliefs & Traditions",
+      "name": "Temples, Beliefs & Spirits",
+      "description": "The Buddha, temple halls and novices; wishes, prayers and precepts; miracles, demons, mermaids and shamans.",
+      "cards": [
+        { "thai": "พระพุทธเจ้า", "translit": "phrá-phút-thá-jâo", "english": "the Buddha" },
+        { "thai": "อุโบสถ", "translit": "ù-boo-sòt", "english": "ordination hall", "note": "Also โบสถ์." },
+        { "thai": "วิหาร", "translit": "wí-hǎan", "english": "assembly hall (of a temple)" },
+        { "thai": "กุฏิ", "translit": "gù-tì", "english": "monk's lodging" },
+        { "thai": "สามเณร", "translit": "sǎam-má-neen", "english": "novice monk", "note": "Under 20. Often just เณร." },
+        { "thai": "นักบวช", "translit": "nák-bùat", "english": "member of the clergy" },
+        { "thai": "อธิษฐาน", "translit": "à-thít-thǎan", "english": "to make a wish, pray" },
+        { "thai": "ภาวนา", "translit": "phaa-wá-naa", "english": "to pray, meditate" },
+        { "thai": "ศีล", "translit": "sǐin", "english": "Buddhist precepts", "note": "ศีลห้า = the five precepts." },
+        { "thai": "ครุฑ", "translit": "khrút", "english": "Garuda", "note": "The bird-man on official Thai documents." },
+        { "thai": "มาลัย", "translit": "maa-lai", "english": "garland" },
+        { "thai": "บั้งไฟ", "translit": "bâng-fai", "english": "festival rocket", "note": "Fired into the sky in Isan to ask for rain." },
+        { "thai": "ปาฏิหาริย์", "translit": "paa-tì-hǎan", "english": "miracle" },
+        { "thai": "ปิศาจ", "translit": "pì-sàat", "english": "demon" },
+        { "thai": "เงือก", "translit": "ngʉ̂ak", "english": "mermaid", "note": "Also นางเงือก." },
+        { "thai": "หมอผี", "translit": "mɔ̌ɔ-phǐi", "english": "shaman, witch doctor" },
+        { "thai": "งิ้ว", "translit": "ngíu", "english": "Chinese opera" }
+      ]
+    },
+    {
       "id": "cul-life-events",
       "category": "Culture & Values",
       "group": "Beliefs & Traditions",
@@ -73053,7 +73431,8 @@
         { "thai": "น้ำมันพืช", "translit": "nám-man-phʉ̂ʉt", "english": "vegetable oil" },
         { "thai": "กะทิ", "translit": "gà-thí", "english": "coconut milk" },
         { "thai": "มะนาว", "translit": "má-naao", "english": "lime" },
-        { "thai": "ผงชูรส", "translit": "phǒng-chuu-rót", "english": "MSG", "note": "Common in Thai cooking. ไม่ใส่ผงชูรส = no MSG please." }
+        { "thai": "ผงชูรส", "translit": "phǒng-chuu-rót", "english": "MSG", "note": "Common in Thai cooking. ไม่ใส่ผงชูรส = no MSG please." },
+        { "thai": "ขมิ้น", "translit": "khà-mîn", "english": "turmeric" }
       ]
     },
     {
@@ -73142,7 +73521,9 @@
         { "thai": "ชมพู่", "translit": "chom-phûu", "english": "rose apple" },
         { "thai": "มะขาม", "translit": "má-khǎam", "english": "tamarind" },
         { "thai": "สุก", "translit": "sùk", "english": "ripe" },
-        { "thai": "ห้าว", "translit": "hâao", "english": "mature, hard (of a coconut)" }
+        { "thai": "ห้าว", "translit": "hâao", "english": "mature, hard (of a coconut)" },
+        { "thai": "มะเฟือง", "translit": "má-fʉang", "english": "star fruit" },
+        { "thai": "พุทรา", "translit": "phút-saa", "english": "jujube" }
       ]
     },
     {
@@ -73216,7 +73597,8 @@
         { "thai": "พริกน้ำปลา", "translit": "phrík-nám-plaa", "english": "chilli fish sauce" },
         { "thai": "เครื่องปรุง", "translit": "khrʉ̂ang-prung", "english": "table condiments", "note": "The caddy of sugar, chilli flakes, fish sauce and vinegar at noodle stalls." },
         { "thai": "เส้น", "translit": "sên", "english": "noodle / line / strand" },
-        { "thai": "พริกน้ำส้ม", "translit": "phrík-náam-sôm", "english": "chillies in vinegar (for noodles)" }
+        { "thai": "พริกน้ำส้ม", "translit": "phrík-náam-sôm", "english": "chillies in vinegar (for noodles)" },
+        { "thai": "สาหร่าย", "translit": "sǎa-ràai", "english": "seaweed" }
       ]
     },
     {
@@ -73385,6 +73767,39 @@
         { "thai": "ขยะ", "translit": "khà-yà", "english": "rubbish / garbage / trash" },
         { "thai": "กล่อง", "translit": "glɔ̀ng", "english": "box" },
         { "thai": "ตะกร้า", "translit": "tà-grâa", "english": "basket" }
+      ]
+    },
+    {
+      "id": "home-everyday-things",
+      "category": "Home",
+      "name": "Everyday Things: Scissors, Thread & Trays",
+      "description": "Scissors, thread, wire, trays and jugs; tiles and bricks; brands, manuals, photos and drinking water.",
+      "cards": [
+        { "thai": "กรรไกร", "translit": "gan-grai", "english": "scissors" },
+        { "thai": "ด้าย", "translit": "dâai", "english": "thread", "note": "เข็มกับด้าย = needle and thread." },
+        { "thai": "ลวด", "translit": "lûat", "english": "wire", "note": "ลวดหนาม = barbed wire." },
+        { "thai": "ถาด", "translit": "thàat", "english": "tray" },
+        { "thai": "เหยือก", "translit": "yʉ̀ak", "english": "jug" },
+        { "thai": "ตะแกรง", "translit": "tà-grɛɛng", "english": "sieve, grille" },
+        { "thai": "กระเบื้อง", "translit": "grà-bʉ̂ang", "english": "tile" },
+        { "thai": "อิฐ", "translit": "ìt", "english": "brick" },
+        { "thai": "ตลับ", "translit": "tà-làp", "english": "small case, compact" },
+        { "thai": "ผ้าเช็ดหน้า", "translit": "phâa-chét-nâa", "english": "handkerchief", "note": "Lit. \"cloth for wiping the face\"." },
+        { "thai": "ผ้าขาวม้า", "translit": "phâa-khǎao-máa", "english": "checked cotton cloth", "note": "The Thai all-purpose cloth: a towel, a sarong, a head wrap." },
+        { "thai": "สำลี", "translit": "sǎm-lii", "english": "cotton wool" },
+        { "thai": "ของใช้", "translit": "khɔ̌ɔng-chái", "english": "household goods, things you use" },
+        { "thai": "ของกิน", "translit": "khɔ̌ɔng-gin", "english": "food, things to eat" },
+        { "thai": "น้ำดื่ม", "translit": "náam-dʉ̀ʉm", "english": "drinking water" },
+        { "thai": "คู่มือ", "translit": "khûu-mʉʉ", "english": "manual, handbook" },
+        { "thai": "สำเร็จรูป", "translit": "sǎm-rèt-rûup", "english": "ready-made, instant", "note": "บะหมี่สำเร็จรูป = instant noodles." },
+        { "thai": "ตะเกียง", "translit": "tà-giang", "english": "oil lamp" },
+        { "thai": "ขี้เถ้า", "translit": "khîi-thâo", "english": "ash" },
+        { "thai": "เต็นท์", "translit": "tén", "english": "tent", "note": "กางเต็นท์ = to pitch a tent." },
+        { "thai": "ภาพถ่าย", "translit": "phâap-thàai", "english": "photograph" },
+        { "thai": "ยี่ห้อ", "translit": "yîi-hɔ̂ɔ", "english": "brand, make", "note": "ยี่ห้ออะไร = What brand is it?" },
+        { "thai": "ของเก่า", "translit": "khɔ̌ɔng-gào", "english": "antiques, old things" },
+        { "thai": "ชิงช้า", "translit": "ching-cháa", "english": "a swing", "note": "เสาชิงช้า = the Giant Swing in Bangkok." },
+        { "thai": "อัตโนมัติ", "translit": "àt-tà-noo-mát", "english": "automatic" }
       ]
     },
     {
@@ -74354,6 +74769,29 @@
       ]
     },
     {
+      "id": "fin-good-hard-times",
+      "category": "Shopping & Errands",
+      "group": "Money",
+      "name": "Money: Good Times & Hard Times",
+      "description": "Saving, pensions, mortgages and wills; losing your job, going bankrupt and going hungry.",
+      "cards": [
+        { "thai": "ตกงาน", "translit": "tòk-ngaan", "english": "to lose your job, be out of work", "note": "Lit. \"fall from work\"." },
+        { "thai": "ล้มละลาย", "translit": "lóm-lá-laai", "english": "to go bankrupt" },
+        { "thai": "อดอยาก", "translit": "òt-yàak", "english": "to go hungry, starve" },
+        { "thai": "ขาดแคลน", "translit": "khàat-khlɛɛn", "english": "to be short of" },
+        { "thai": "ทำมาหากิน", "translit": "tham-maa-hǎa-gin", "english": "to make a living" },
+        { "thai": "ออม", "translit": "ɔɔm", "english": "to save (money)", "note": "เงินออม = savings." },
+        { "thai": "บำนาญ", "translit": "bam-naan", "english": "a pension" },
+        { "thai": "พินัยกรรม", "translit": "phí-nai-gam", "english": "a will" },
+        { "thai": "จำนอง", "translit": "jam-nɔɔng", "english": "to mortgage" },
+        { "thai": "เจ้าหนี้", "translit": "jâo-nîi", "english": "creditor" },
+        { "thai": "ลูกหนี้", "translit": "lûuk-nîi", "english": "debtor" },
+        { "thai": "ธนบัตร", "translit": "thá-ná-bàt", "english": "banknote", "note": "Formal. Day to day: แบงก์." },
+        { "thai": "ร่ำรวย", "translit": "râm-ruai", "english": "rich, wealthy" },
+        { "thai": "ฟุ่มเฟือย", "translit": "fûm-fʉai", "english": "extravagant" }
+      ]
+    },
+    {
       "id": "visa-immigration",
       "category": "Shopping & Errands",
       "group": "Visas & Paperwork",
@@ -74818,6 +75256,32 @@
       ]
     },
     {
+      "id": "places-town",
+      "category": "Getting Around",
+      "group": "Places",
+      "name": "Town: Capital, Shophouses & Malls",
+      "description": "The capital and the city centre, shophouses and rooftops, malls and garages, flights, tunnels and cemeteries.",
+      "cards": [
+        { "thai": "เมืองหลวง", "translit": "mʉang-lǔang", "english": "capital city", "note": "Lit. \"royal town\"." },
+        { "thai": "ใจกลาง", "translit": "jai-glaang", "english": "the centre (of a place)", "note": "ใจกลางเมือง = the city centre." },
+        { "thai": "ละแวก", "translit": "lá-wɛ̂ɛk", "english": "neighbourhood, the area around", "note": "ละแวกนี้ = around here." },
+        { "thai": "ตึกแถว", "translit": "tʉ̀k-thɛ̌ɛo", "english": "shophouse", "note": "Lit. \"row building\": a shop below, a home above." },
+        { "thai": "บ้านพัก", "translit": "bâan-phák", "english": "lodging, official house", "note": "Holiday lodging, or housing for officials." },
+        { "thai": "หอคอย", "translit": "hɔ̌ɔ-khɔɔi", "english": "tower" },
+        { "thai": "ดาดฟ้า", "translit": "dàat-fáa", "english": "rooftop; ship's deck", "note": "บาร์บนดาดฟ้า = a rooftop bar." },
+        { "thai": "อู่", "translit": "ùu", "english": "garage, car repair shop", "note": "อู่ซ่อมรถ = a repair garage." },
+        { "thai": "ร้านค้า", "translit": "ráan-kháa", "english": "shop" },
+        { "thai": "ห้างสรรพสินค้า", "translit": "hâang-sàp-phá-sǐn-kháa", "english": "department store", "note": "Usually just ห้าง." },
+        { "thai": "ศูนย์การค้า", "translit": "sǔun-gaan-kháa", "english": "shopping centre" },
+        { "thai": "ท่าอากาศยาน", "translit": "thâa-aa-gàat-sà-yaan", "english": "airport (formal)", "note": "On signs. Day to day: สนามบิน." },
+        { "thai": "เที่ยวบิน", "translit": "thîao-bin", "english": "a flight", "note": "เที่ยวบินตรง = a direct flight." },
+        { "thai": "ป่าช้า", "translit": "pàa-cháa", "english": "cemetery", "note": "The old burial ground at a temple, and a spooky place." },
+        { "thai": "สุสาน", "translit": "sù-sǎan", "english": "cemetery, graveyard", "note": "More formal than ป่าช้า." },
+        { "thai": "เมรุ", "translit": "meen", "english": "crematorium", "note": "At a temple. Said เมน." },
+        { "thai": "อุโมงค์", "translit": "ù-moong", "english": "tunnel" }
+      ]
+    },
+    {
       "id": "places-countries",
       "category": "Getting Around",
       "group": "Places",
@@ -74842,7 +75306,13 @@
         { "thai": "รัสเซีย", "translit": "rát-sia", "english": "Russia" },
         { "thai": "ต่างชาติ", "translit": "tàang châat", "english": "foreign", "words": ["ต่าง::different / various", "ชาติ::nation; life (birth)"] },
         { "thai": "ประเทศไทย", "translit": "prà-thêet thai", "english": "Thailand", "words": ["ประเทศ::country", "ไทย::Thai"] },
-        { "thai": "ชาติ", "translit": "châat", "english": "nation; life (birth)" }
+        { "thai": "ชาติ", "translit": "châat", "english": "nation; life (birth)" },
+        { "thai": "สเปน", "translit": "sà-peen", "english": "Spain" },
+        { "thai": "อิตาลี", "translit": "ì-taa-lii", "english": "Italy" },
+        { "thai": "กรีก", "translit": "grìik", "english": "Greece, Greek" },
+        { "thai": "ปารีส", "translit": "paa-rîit", "english": "Paris" },
+        { "thai": "ลอนดอน", "translit": "lɔɔn-dɔɔn", "english": "London" },
+        { "thai": "นิวยอร์ก", "translit": "niu-yɔ̂ɔk", "english": "New York" }
       ]
     },
     {
@@ -74872,7 +75342,9 @@
         { "thai": "เมียนมา", "translit": "mian-maa", "english": "Myanmar (official name)", "note": "The name in official use and the news; พม่า is still everyday." },
         { "thai": "คนเมียนมา", "translit": "khon-mian-maa", "english": "person from Myanmar (official)", "words": ["คน::person / people", "เมียนมา::Myanmar (official name)"] },
         { "thai": "คนกัมพูชา", "translit": "khon-gam-phuu-chaa", "english": "Cambodian (person)", "words": ["คน::person / people", "กัมพูชา::Cambodia"] },
-        { "thai": "คนเวียดนาม", "translit": "khon-wîat-naam", "english": "Vietnamese (person)", "words": ["คน::person / people", "เวียดนาม::Vietnam"] }
+        { "thai": "คนเวียดนาม", "translit": "khon-wîat-naam", "english": "Vietnamese (person)", "words": ["คน::person / people", "เวียดนาม::Vietnam"] },
+        { "thai": "ฮ่องกง", "translit": "hɔ̂ng-gong", "english": "Hong Kong" },
+        { "thai": "อิสราเอล", "translit": "ìt-sà-raa-een", "english": "Israel" }
       ]
     },
     {
@@ -75894,6 +76366,37 @@
       ]
     },
     {
+      "id": "edu-study-papers-media",
+      "category": "Work & Education",
+      "group": "School & University",
+      "name": "Study, Papers & Media",
+      "description": "Degrees, terms and school trips; contents pages, notes and manuscripts; exhibitions, TV hosts and broadcasts.",
+      "cards": [
+        { "thai": "ปริญญา", "translit": "pà-rin-yaa", "english": "degree" },
+        { "thai": "หลักสูตร", "translit": "làk-sùut", "english": "curriculum, course" },
+        { "thai": "เทอม", "translit": "thəəm", "english": "term" },
+        { "thai": "ภาคเรียน", "translit": "phâak-rian", "english": "semester" },
+        { "thai": "ปีการศึกษา", "translit": "pii-gaan-sʉ̀k-sǎa", "english": "academic year" },
+        { "thai": "นิสิต", "translit": "ní-sìt", "english": "university student", "note": "At Chulalongkorn, Kasetsart and a few others; elsewhere นักศึกษา." },
+        { "thai": "อธิการบดี", "translit": "à-thí-gaan-bɔɔ-dii", "english": "university president" },
+        { "thai": "คณบดี", "translit": "khá-ná-bɔɔ-dii", "english": "dean" },
+        { "thai": "ประกาศนียบัตร", "translit": "prà-gàat-sà-nii-yá-bàt", "english": "certificate, diploma" },
+        { "thai": "ทัศนศึกษา", "translit": "thát-sà-ná-sʉ̀k-sǎa", "english": "school trip" },
+        { "thai": "ท่องจำ", "translit": "thɔ̂ng-jam", "english": "to memorise" },
+        { "thai": "วารสาร", "translit": "waa-rá-sǎan", "english": "journal" },
+        { "thai": "ต้นฉบับ", "translit": "tôn-chà-bàp", "english": "the original, manuscript" },
+        { "thai": "หมายเหตุ", "translit": "mǎai-hèet", "english": "a note, remark" },
+        { "thai": "สารบัญ", "translit": "sǎa-rá-ban", "english": "table of contents" },
+        { "thai": "คำขวัญ", "translit": "kham-khwǎn", "english": "slogan, motto", "note": "Every province has one." },
+        { "thai": "บทสนทนา", "translit": "bòt-sǒn-thá-naa", "english": "dialogue, conversation" },
+        { "thai": "นิทรรศการ", "translit": "ní-thát-sà-gaan", "english": "exhibition" },
+        { "thai": "ปริศนา", "translit": "prìt-sà-nǎa", "english": "riddle, mystery" },
+        { "thai": "พิธีกร", "translit": "phí-thii-gɔɔn", "english": "TV host, MC" },
+        { "thai": "ออกอากาศ", "translit": "ɔ̀ɔk-aa-gàat", "english": "to broadcast" },
+        { "thai": "ตัวเอก", "translit": "tua-èek", "english": "lead character" }
+      ]
+    },
+    {
       "id": "health",
       "category": "Health & Medicine",
       "group": "At the Doctor",
@@ -76368,7 +76871,8 @@
         { "thai": "เอชไอวี", "translit": "éet-ai-wii", "english": "HIV" },
         { "thai": "เอดส์", "translit": "èet", "english": "AIDS" },
         { "thai": "พยาธิ", "translit": "phá-yâat", "english": "worm (parasite)" },
-        { "thai": "พิษ", "translit": "phít", "english": "poison, toxin" }
+        { "thai": "พิษ", "translit": "phít", "english": "poison, toxin" },
+        { "thai": "ระบาด", "translit": "rá-bàat", "english": "to spread (of a disease)", "note": "โรคระบาด = an epidemic." }
       ]
     },
     {
@@ -76802,6 +77306,25 @@
       ]
     },
     {
+      "id": "animals-more",
+      "category": "Nature & Animals",
+      "group": "Kinds of Animal",
+      "name": "Animals: A Few More",
+      "description": "Mongooses, porcupines, langurs, mouse deer and jackals; whales and pythons; cicadas, red ants and beehives.",
+      "cards": [
+        { "thai": "พังพอน", "translit": "phang-phɔɔn", "english": "mongoose" },
+        { "thai": "เม่น", "translit": "mên", "english": "porcupine", "note": "เม่นทะเล = a sea urchin." },
+        { "thai": "ค่าง", "translit": "khâang", "english": "langur (leaf monkey)" },
+        { "thai": "กระจง", "translit": "grà-jong", "english": "mouse deer" },
+        { "thai": "หมาจิ้งจอก", "translit": "mǎa-jîng-jɔ̀ɔk", "english": "jackal, fox" },
+        { "thai": "ปลาวาฬ", "translit": "plaa-waan", "english": "whale", "note": "The everyday word; properly just วาฬ, as a whale isn't a fish." },
+        { "thai": "งูเหลือม", "translit": "nguu-lʉ̌am", "english": "python" },
+        { "thai": "จักจั่น", "translit": "jàk-gà-jàn", "english": "cicada" },
+        { "thai": "มดแดง", "translit": "mót-dɛɛng", "english": "red ant", "note": "Eaten in Isan, with its eggs: ไข่มดแดง." },
+        { "thai": "รังผึ้ง", "translit": "rang-phʉ̂ng", "english": "beehive" }
+      ]
+    },
+    {
       "id": "animals-words",
       "category": "Nature & Animals",
       "group": "Talking About Animals",
@@ -77132,6 +77655,28 @@
         { "thai": "ทะเลทราย", "translit": "thá-lee-saai", "english": "desert", "note": "Lit. sea of sand." },
         { "thai": "ชนบท", "translit": "chon-ná-bòt", "english": "countryside" },
         { "thai": "ทุ่ง", "translit": "thûng", "english": "field / open plain" }
+      ]
+    },
+    {
+      "id": "nature-land-water-fields",
+      "category": "Nature & Animals",
+      "group": "Plants & Landscapes",
+      "name": "Land, Water & Fields",
+      "description": "Borders, coasts and riverbanks, dams and mountain ranges, and the banks and huts of the rice fields.",
+      "cards": [
+        { "thai": "พรมแดน", "translit": "phrom-dɛɛn", "english": "border" },
+        { "thai": "ชายทะเล", "translit": "chaai-thá-lee", "english": "seaside" },
+        { "thai": "ชายฝั่ง", "translit": "chaai-fàng", "english": "coast" },
+        { "thai": "ต้นน้ำ", "translit": "tôn-náam", "english": "source of a river" },
+        { "thai": "ปากน้ำ", "translit": "pàak-náam", "english": "river mouth", "note": "Lit. \"water mouth\"." },
+        { "thai": "เขื่อน", "translit": "khʉ̀an", "english": "dam" },
+        { "thai": "ตลิ่ง", "translit": "tà-lìng", "english": "riverbank", "note": "น้ำล้นตลิ่ง = The river has burst its banks." },
+        { "thai": "เทือกเขา", "translit": "thʉ̂ak-khǎo", "english": "mountain range" },
+        { "thai": "ทิวทัศน์", "translit": "thiu-thát", "english": "scenery, view" },
+        { "thai": "อุดมสมบูรณ์", "translit": "ù-dom-sǒm-buun", "english": "plentiful, fertile", "note": "Of land and food: ดินอุดมสมบูรณ์." },
+        { "thai": "โรงนา", "translit": "roong-naa", "english": "field hut, barn", "note": "A shelter on the rice fields, for resting and storing rice." },
+        { "thai": "คันนา", "translit": "khan-naa", "english": "paddy bank", "note": "The little earth wall round a rice field." },
+        { "thai": "ลงแขก", "translit": "long-khɛ̀ɛk", "english": "to work neighbours' fields in turn", "note": "Neighbours take turns to plant or harvest each other's rice." }
       ]
     },
     {

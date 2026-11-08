@@ -2497,6 +2497,43 @@ had left 36 new cards in no story and four topics under 5 stories.
 - **Checked** in headless Chromium at 390 × 664 (scratch `wb_stories_probe.py`): each story listed
   under its topic's Reading and opens; no sideways scroll, no script errors.
 
+## 379 cards from comparing the app with word lists (2026-11-08)
+
+The user asked for an open dictionary to measure word coverage, noting a dictionary lacks our slang.
+So it counts one way only, how many of a list's words we have, and what we hold beyond a list can't
+lower the score (`tools/wordlist_gaps.py`, with the lists kept outside the repo). Before this card
+set, own-card coverage was 97.7% of the National Corpus's top 1,000, 90.4% of its top 2,000 and 63.7%
+of its top 5,000, the Textbook Corpus much the same, the subtitle list 64.1% of its top 1,000. After:
+97.8%, 90.8%, 67.3%; subtitles 69.8%. These are low bounds: the lists have names and fragments.
+- **What "a word" means.** The user's distinction: รถไฟ, แม่น้ำ, น้ำแข็ง are words in their own right;
+  ทุกวัน, ปีก่อน are phrases, however they're written. The Royal Institute dictionary draws the same
+  line (it has the first three and none of the others; `dictionary.orst.go.th/func_lookup.php`), so
+  every ranked missing word was looked up (3,914, 3,002 listed) and I chose everyday ones by hand. It
+  isn't a full test: เมื่อวาน isn't listed, and 17 kept words aren't (place names, ฝ่ามือ, ไม่ช้าก็เร็ว…).
+- **Plain combinations.** Kept only if frequent and heard as one unit (นั่งลง, เข้ามา, ทุกอย่าง, with
+  `words`, so they link to their parts); ดีมาก, ข่าวดี, คนอื่น, แย่จัง, โชคไม่ดี and น่าเศร้า dropped.
+- **New topics (19, 363 cards):** Conversation: Spoken Chunks: Orders & Enough Already (18), Linking
+  What You Say (15), Reactions (14), Time & Amounts (18). Grammar → Verbs: Everyday Actions: Body
+  Moves (25), Soak, Twist & Smash (22), People Verbs (25). Basics → Everyday Words: Body: More Parts
+  (20), Adjectives: Shape, Surface & Size (25), Adjectives: Style, Manners & State (25), Jewels,
+  Machines & Fuel (14). Home: Everyday Things (25). Getting Around: Town (17). Nature: Land, Water &
+  Fields (13), Animals: A Few More (10). Money: Good Times & Hard Times (14). School & University:
+  Study, Papers & Media (22). People: Character, Roles & Trades (24). Beliefs: Temples, Beliefs &
+  Spirits (17).
+- **Into existing topics (16):** six places in Countries: Nationality (full now), ฮ่องกง and อิสราเอล
+  in Asia, แอฟริกา in Core Society: Places, พึมพำ and โวยวาย in Core Verbs: Talking, ระบาด in Illnesses,
+  ขมิ้น in Seasonings, มะเฟือง and พุทรา in Fruit, สาหร่าย in Noodles, Sauces & Extras.
+- **Left out:** 46 news and government words (มาตรการ, สิทธิมนุษยชน, อธิปไตย…), waiting on the user's
+  call. Words below the lists' top 6,000 (corpora) and 1,500 (subtitles) weren't checked.
+- **Tones:** the audit's check found 5; three were my mistakes (แอฟริกา, อุโบสถ, นิวยอร์ก, now as the rules
+  give), and เต็นท์ tén, said high, is in tools/tone_exceptions.txt.
+- Data steps: audit (0 errors), stories.py check (1,423, 0 problems) and sync (nothing to change),
+  spelling.mjs --write, gen_audio.py (953 new, 0 failed). Script: scratchpad `big/build_cards.py`.
+- **Checked** in headless Chromium at 390 × 664 (scratch `gaps_probe.py`): all 19 List pages, no
+  sideways scroll, the picker's search ("forehead", "scissors", "capital city", "duu muean waa"); no
+  script errors. Thai by me, against docs/thai-writing.md; no native speaker has read it, and nobody
+  has listened to the recordings.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
