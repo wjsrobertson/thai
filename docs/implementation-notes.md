@@ -2451,6 +2451,27 @@ nothing. The ความ nouns' notes say they're mostly written. Audit (0), st
 gen_audio.py (16 new, 0 failed). "grumpy", "bad mood", "pissed off", "envy" and "ngut ngit" find
 theirs first (tools/search_check.mjs); data only, so no browser check.
 
+## Nine more Word Building topics (2026-11-08)
+
+The user asked what เสีย and the parts of the new feeling words meant, then whether more such parts
+were missing. Counting words whose two parts both have cards found 148 components in 9 or more cards
+with no Word Building topic, many of them grammar words or accidental matches. I proposed the most
+useful 22, and the user asked for them to be added.
+- **Topics** (Grammar → Word Building, after Things; literal parts in each note, 216 cards):
+  - เสีย, ผิด & ติด (25): the position rule for เสีย is in the description.
+  - หน้า & หัว (23), ตัว & มือ (24), ค่า & เงิน (25), เข้า, ออก, ลง & รับ (25), เสียง & คำ (23),
+    แม่ & เจ้า (22), สาย, ใบ & ข้อ (25), งาน & ไฟ (24).
+- **New cards (8):** รถเสีย, นมเสีย, เสียเงิน, เสียเวลา, หน้าแดง, หน้าฝน, หน้าร้อน, แม่ครัว. I had given
+  several as examples before checking they had cards. The other 208 are copies.
+- **Notes differ per topic:** a copy here has its literal parts where its other topics have something
+  else or nothing, as the older Word Building topics do. "Same card, different notes" in the audit's
+  "worth a look" went from 533 to 695.
+- Data steps: audit (0 errors), stories.py check and sync (1,414 stories, 0 problems, nothing to
+  change), spelling.mjs --write, gen_audio.py (21 new, 0 failed). No stories written for them yet. Script: scratchpad
+  `add_wb.py`.
+- **Checked** in headless Chromium at 390 × 664 (scratch `wb_probe.py`): all nine List pages, no
+  sideways scroll, the picker's search ("waste time", "sia ngern"); no script errors.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
