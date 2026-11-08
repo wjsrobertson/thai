@@ -2436,6 +2436,14 @@ Words, ชาวนา in Jobs, รถไถ in Vehicles. I proposed a topic and
 - **Checked** in headless Chromium at 390 × 664 (scratch `farming_probe.py`): the List page, no
   sideways scroll, the picker's search; no script errors.
 
+## ความโกรธ "anger" (2026-11-08)
+
+The user found "anger" missing from the Dictionary. โกรธ "angry" had a card but the noun didn't, and
+the search's only whole-word hit was the idiom ตีวัวกระทบคราด. ความโกรธ khwaam-gròot is in Emotions:
+Happy, Sad & Scared after โมโห (now 16), its words ความ and โกรธ; "anger" finds it first. Data steps:
+audit (0), stories.py check and sync (nothing to change), spelling.mjs --write, gen_audio.py (2 new,
+0 failed). Checked with tools/search_check.mjs only.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for

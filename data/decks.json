@@ -70675,6 +70675,7 @@
         { "thai": "เสียใจ", "translit": "sǐa-jai", "english": "sorry / sad", "note": "Literally \"lost-heart\"." },
         { "thai": "โกรธ", "translit": "gròot", "english": "angry" },
         { "thai": "โมโห", "translit": "moo-hǒo", "english": "furious / very angry" },
+        { "thai": "ความโกรธ", "translit": "khwaam-gròot", "english": "anger", "note": "Mostly written. In speech, say โกรธ.", "words": ["ความ::(noun-maker for states)", "โกรธ::angry"] },
         { "thai": "กลัว", "translit": "glua", "english": "to be afraid / scared" },
         { "thai": "ตกใจ", "translit": "tòk-jai", "english": "startled / shocked", "note": "Literally \"heart-falls\"." },
         { "thai": "ตื่นเต้น", "translit": "tʉ̀ʉn-tên", "english": "excited" },
