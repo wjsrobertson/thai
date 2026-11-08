@@ -2534,6 +2534,48 @@ of its top 5,000, the Textbook Corpus much the same, the subtitle list 64.1% of 
   script errors. Thai by me, against docs/thai-writing.md; no native speaker has read it, and nobody
   has listened to the recordings.
 
+## 85 stories for the 379 cards (2026-11-08)
+
+The user asked for stories for the new cards. 85 stories (672 lines; Easy and Medium, 4 to 9 lines),
+which put every one of the 379 in a story and give each of the 19 new topics at least 5, by the app's
+rule of sharing 2 of the topic's words. Cards in a story are at 98.02% (8,903 of 9,083); the topics
+under 5 are the same 7 older ones. No new cards: words a draft needed that had none were reworded.
+- **Spoken Chunks:** Get Up!, The Old House Dare, Enough Already, Grandpa's Driving Lesson, Surprise
+  in the Dark, Can I Borrow Some?, Who Ate the Cake?, Learning Som Tam, The Lottery Ticket, The First
+  Dinner, One Day in Space, A Long Time Ago, Raining Again, Market Before Dawn, The Wallet on the Train.
+- **Verbs and body:** The Temple Steps, Squeezing On, Lost in the Mall, The Playground Swing, Power
+  Cut, The Longest Meeting, The Doctor's Questions, The Old Boxer, Spots Before the Date, Grandfather's
+  Hand, Songkran on the Road, Clearing Grandma's House, Grandma's Sewing, The Short Cut, The New Boy,
+  The Bad Landlord, The Old Dog, A Singer's Dream, What's His Name?.
+- **Adjectives and things:** The New Trousers, The Big Old House, The Thick Curry, The Open-Air
+  Concert, Grandpa's Old Car, The Stray Kitten, The Unfair Teacher, The Fancy Hotel, My Uncle the Rock
+  Star, Grandma's Will, Grandpa and the Mine, Miss Village, Bubble Tea and Protein, The Prince on TV,
+  Camping in the Rain, The Crooked Wall, The New Washing Machine.
+- **Places and nature:** Moving to the Capital, The Rooftop Bar, The Missed Flight, A Night at the
+  Cemetery, Breakdown on the Way, From Source to Sea, Helping with the Harvest, The Border Stamp,
+  Holiday by the Sea, The Village Under the Water, The Mongoose and the Python, A Trip to the Zoo, The
+  Mouse Deer and the Jackal, A Whale off the Coast, The Cicada and the Ant.
+- **Money, study, people, beliefs:** The Factory Closes, Saving for Old Age, Uncle's Will, The Spending
+  Spree, Graduation Day, The School Trip, Learning by Heart, The First Novel, The Tour Guide, Meeting
+  the Family, The Beggar at the Station, The School Caretaker, The Noodle Shop Boss, The Young Novice, A
+  Wish at the Temple, The Mermaid of the Bay, The Rocket Festival, Opera at the Temple, Aunt Around
+  the World (the countries, and ระบาด).
+- **Senses pinned** after reading how each story uses them: ด้วย "too" (not "with") in 11, ที่ "that" in
+  9 and the ordinal in 2, เลย "so" or "at all" throughout, ขน "to carry", ข้าม "to cross", ต่อย "to sting" (bees), ชา
+  "numb", หลัง the classifier, คน the classifier wherever every use is one.
+- **A slip, put right:** `stories.py add` replaces a story with the same id, and two drafts had ids in
+  use (rs-down-the-river, rs-at-the-border), so the older stories were overwritten. The add's log says
+  "replaced", and the audit caught a duplicate name (Rush Hour), which led to it. They're restored from
+  git and the new ones renamed; compared with the commit before, 85 topics are added, none removed and
+  no existing topic changed. Before adding, look for "replaced" in the `--dry-run` output.
+- Data steps: audit (0 errors), stories.py check (1,508 stories, 0 problems) and sync (nothing to
+  change), coverage, spelling.mjs --write, gen_audio.py (749 new, 0 failed), word_timings.py (670
+  lines, 0 failed). Source: scratchpad `big/s*.txt`.
+- **Checked** in headless Chromium at 390 × 664 (scratch `gaps_stories_probe.py`): for each of the 19
+  topics, Reading lists 5 or more stories and one new story opens; no sideways scroll, no script
+  errors. All 85 lines are mine, read against docs/thai-writing.md; no native speaker has read them,
+  and nobody has listened to the recordings.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
