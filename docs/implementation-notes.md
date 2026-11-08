@@ -2573,7 +2573,7 @@ under 5 are the same 7 older ones. No new cards: words a draft needed that had n
   lines, 0 failed). Source: scratchpad `big/s*.txt`.
 - **Checked** in headless Chromium at 390 × 664 (scratch `gaps_stories_probe.py`): for each of the 19
   topics, Reading lists 5 or more stories and one new story opens; no sideways scroll, no script
-  errors. All 85 lines are mine, read against docs/thai-writing.md; no native speaker has read them,
+  errors. All 672 lines are mine, read against docs/thai-writing.md; no native speaker has read them,
   and nobody has listened to the recordings.
 
 ## Search by sound (2026-10-27)
