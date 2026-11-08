@@ -2472,6 +2472,31 @@ useful 22, and the user asked for them to be added.
 - **Checked** in headless Chromium at 390 × 664 (scratch `wb_probe.py`): all nine List pages, no
   sideways scroll, the picker's search ("waste time", "sia ngern"); no script errors.
 
+## Nine stories for the new cards (2026-11-08)
+
+The user asked whether more stories were needed, then asked for the nine I proposed: today's topics
+had left 36 new cards in no story and four topics under 5 stories.
+- **Farming: Rice & Crops (4):** A Year in the Rice Fields, The Harvester Comes, Cane or Rice?,
+  Rubber Before Dawn. Facts checked: harvesters are hired by the ไร่ (700 baht is within reported
+  prices), หว่าน saves on ดำนา, tapping is done at night.
+- **เสีย, ผิด & ติด (3):** A Bad Morning (all six เสีย cards it lacked; หัวเสีย, อารมณ์เสีย), One Year
+  Off (พิมพ์ผิด, หน้าแดง), The Old Diary (the ความ nouns, in a diary because they're mostly written;
+  หงุดหงิด in the daughter who walks in).
+- **เข้า, ออก, ลง & รับ (1):** Mum Quits the Bank, with แม่ครัว. **สาย, ใบ & ข้อ (1):** The Forgotten
+  Licence. หน้าฝน and หน้าร้อน are in Cane or Rice?.
+- **New cards the stories needed (3):** ลา "to take leave" in Work & Office: Schedules & Leave (21;
+  the only ลา cards were the donkey and the note A), หน้า "page (of a book)" in Word Building: หน้า &
+  หัว (24), สมุดบันทึก "diary, notebook" in School: Levels, Classroom & Supplies (20).
+- **Senses pinned:** หลัง "back" with ปวด, ขน "to carry", เลย as "so" or "at all" by story, ที่ "that"
+  and แต่ "nothing but" in The Old Diary, ลา and หน้า as above. นา takes its Thai Script card, as
+  older stories do; no other topic has one.
+- Data steps: audit (0 errors), stories.py check (1,423 stories, 0 problems) and sync (nothing to
+  change), coverage (8,521 of 8,704 cards in a story, 97.90%; the 7 older topics under 5 and no
+  others; all 36 cards covered), spelling.mjs --write, gen_audio.py (94 new, 0 failed),
+  word_timings.py (80 lines, 0 failed). Source: scratchpad `wb_stories.json`.
+- **Checked** in headless Chromium at 390 × 664 (scratch `wb_stories_probe.py`): each story listed
+  under its topic's Reading and opens; no sideways scroll, no script errors.
+
 ## Search by sound (2026-10-27)
 
 The user searched the Dictionary for a "phr" word by typing "pr" and it wasn't found, and asked for
