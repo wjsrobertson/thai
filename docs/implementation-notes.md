@@ -322,6 +322,11 @@ on a brainstormed list except History.
   monitor card is its polite name ตัวเงินตัวทอง; the note explains why เหี้ย is avoided.
 - **เขา "horn"** is transliterated khǎo, its written tone. The pronoun เขา is kháo, as spoken. The
   validation flagged this, and it's deliberate.
+- **เม่นทะเล "sea urchin"** was added to Sea & River Life (now 24) on 2026-11-09, after the user found
+  it missing; until then it was only a note on the เม่น card, which keeps it. No story uses it yet.
+  Audit (0), stories.py check and sync (nothing to change), spelling.mjs --write, gen_audio.py (1 new,
+  the English; the Thai clip already existed for that note). "sea urchin" and "urchin" find it first
+  (tools/search_check.mjs); data only, so no browser check.
 
 **Southern Thai** was added on 2026-10-03 and sits after Slang. It has 171 cards in 7 decks:
 Fruit, Food & Plants; Everyday Words; Phrases; Time, Amounts & Questions; People & Personality;
