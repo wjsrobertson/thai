@@ -2361,6 +2361,30 @@ write ɔ as aw: gaw gai, paw, maw, khawp khun.
   "taw tee" (โทษที first), "gaw gai", "khawp khun", "peng yai bang", "water"; the Dictionary's
   "taw tee" (โทษที first), "sawng", "kob kun"; no script errors.
 
+## Search: ay as long e (2026-11-09)
+
+"talay", the usual menu spelling of ทะเล, found only ฟ้าทะลายโจร, and "men talay" and "tao talay"
+nothing: popular romanisation (`popularTranslit`) read ay only as ai (sabay), and ทะเล's key is tale.
+The user asked for "talay" to find it.
+- **A further reading** of the query (`translitKeys`): `popularTranslit(q, awAsO, true)` makes ay long
+  e, with either reading of aw, so one query can have five keys. Deduplicated as before: only queries
+  it changes gain any. "talay" has three, so ทะเล scores 1.9.
+- **Only ending a word, after another syllable** (`/([aeiou][^aeiou\s]+)ay\b/`). Tried on every ay
+  first: "play" went 29 → 110 hits, "pay" 199 → 308, "gay" 121 → 245 and "payment" gained a false near
+  miss. Hits past the 40 shown are cut, and English matches inside a word score 3, behind these. Thai
+  words said this way in one syllable (เซ as "say") are left out for that reason.
+- **Measured** with tools/search_check.mjs, the old app.js against the new, on 79 searches. Now first:
+  "talay", "thalay" and "ta-lay" ทะเล; "men talay" เม่นทะเล; "tao talay" เต่าทะเล; "talay sap" ทะเลสาบ.
+  "okay" gains โอเค third. 67 are unchanged, among them day, pay, play, say, may, today, the weekdays,
+  sabay, ruay, kway, "mai pen ray", water, and the aw and 2026-11-01 lists.
+- **Cost, accepted:** "away" and "essay" list a few more below what they had ("essay" gains
+  เนิร์สเซอรี่ at 3.6); "relay" (0 → 3), "replay" (1 → 5) and "doorway" (6 → 12) gain odd near misses,
+  shown only because nothing else matches, as "outlaw" did. "talay" also lists ถ้า…แล้ว (2.1), as
+  "thale" always has.
+- **Checked** in headless Chromium at 390 × 664 (`talay_search_probe.py`): the picker's "talay", "men
+  talay", "tao talay", "sabay", "taw tee", "play", "water"; the Dictionary's "talay", "men talay",
+  "sabay", "water"; theirs first, no script errors. Layout checks not run: no layout changed.
+
 ## ไปไหน's note: วะ ๆ out (2026-11-07)
 
 ไปไหน "where are you going?" (Travel & Transport: Tickets & Taxi Talk, and a story) said to answer

@@ -1900,10 +1900,14 @@ function soundTranslit(loose) {
 // o, or u after i (laew, hiw), b d s as p t t (kob, pood, sawasdee). A second reading of the query
 // (translitKeys), not a replacement: the app's own ee and oo (เพลง phleeng, โมง moong) still match.
 // `awAsO`: aw with no vowel after as ɔ, as phrasebooks write it (gaw gai, paw, khawp khun), not ao:
-// a third reading (2026-11-07, the user's "taw tee" for โทษที found nothing).
-function popularTranslit(s, awAsO = false) {
+// a third reading (2026-11-07, the user's "taw tee" for โทษที found nothing). `ayAsE`: ay as long e,
+// as menus write ทะเล (talay), not ai (sabay): a further reading (2026-11-09, the user's call, "talay"
+// found only ฟ้าทะลายโจร). Only ending a word, after another syllable: on any ay, "play" went from 29
+// hits to 110 (only 40 are shown) and "payment" gained a false near miss.
+function popularTranslit(s, awAsO = false, ayAsE = false) {
   const end = '(?![aeiouy])'; // a syllable's end: no vowel after
   if (awAsO) s = s.toLowerCase().replace(new RegExp(`aw${end}`, 'g'), 'o');
+  if (ayAsE) s = s.toLowerCase().replace(/([aeiou][^aeiou\s]+)ay\b/g, '$1e');
   return s.toLowerCase().replace(/ee/g, 'i').replace(/oo/g, 'u').replace(/eu/g, 'u')
     .replace(new RegExp(`([aeiou])r${end}`, 'g'), '$1')
     .replace(new RegExp(`([aeiou])y${end}`, 'g'), '$1i')
@@ -1912,10 +1916,11 @@ function popularTranslit(s, awAsO = false) {
 }
 
 // A typed transliteration's sound keys: as typed, then as popular romanisation reads it (aw as ao,
-// then aw as ɔ), each only if it differs; and how many letters a near miss may be out
-// (startDistance): 1 from 5 letters, 2 from 9.
+// then aw as ɔ; ay as ai, then ay as long e, with either aw), each only if it differs; and how many
+// letters a near miss may be out (startDistance): 1 from 5 letters, 2 from 9.
 function translitKeys(q) {
-  const keys = [...new Set([q, popularTranslit(q), popularTranslit(q, true)].map((s) => soundTranslit(looseTranslit(s))))];
+  const readings = [q, popularTranslit(q), popularTranslit(q, true), popularTranslit(q, false, true), popularTranslit(q, true, true)];
+  const keys = [...new Set(readings.map((s) => soundTranslit(looseTranslit(s))))];
   return { keys, edits: keys[0].length >= 9 ? 2 : keys[0].length >= 5 ? 1 : 0 };
 }
 
@@ -1993,7 +1998,7 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
       // and from 2 letters, is level with an English word start (2026-10-27): "pr" had put 182
       // of those (problem, price…) before พร้อม and พระ, at 2.5 from 3 letters.
       // The popular romanisation's readings (popularTranslit) a step behind each, 0.05 a reading
-      // (2026-11-01; aw as ɔ the third, 2026-11-07).
+      // (2026-11-01; aw as ɔ the third, 2026-11-07; ay as long e after those, 2026-11-09).
       if (keys[0].length >= 2 && score > 0) {
         if (w.translit === qt) score = Math.min(score, 1.75);
         keys.forEach((k, i) => {
