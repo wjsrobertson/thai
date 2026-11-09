@@ -2340,6 +2340,25 @@ only the short ชน "cheers! (lit. clink)"; A Night Out has ยกแก้ว
 - Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
   spelling.mjs --write (no change), gen_audio.py (3 new: ชนแก้ว, ชนแก้วกันหน่อย, the English).
 
+## ไม่แน่เหมือนกัน in Opinions & Reactions (2026-11-09)
+
+The user asked if "mai ne man gan" was a variant of "not sure". The topic had ไม่แน่ใจ; ยังไม่แน่ is
+in Saying No Without Saying No.
+- **The card** (Opinions & Reactions, now 22), after ไม่แน่ใจ: mâi nɛ̂ɛ mʉ̌an gan, "hard to say / not
+  sure, actually". The note separates it from ไม่แน่ใจ (how things stand, not what you know), says
+  เหมือนกัน softens it rather than meaning "me too", and gives ก็ไม่แน่เหมือนกันนะ "then again, you
+  never know".
+- **The reading is an inference.** "man" for เหมือน is taken to be fast speech; no source was found
+  for that reduction, and it hasn't been checked against the Thai of whatever the user saw or heard.
+- **Sources are thin.** No dictionary entry was found (Longdo refused the request). The one real use
+  found is a Facebook video title, จะก้มถึงได้ไง แต่ก็ไม่แน่เหมือนกันนะ, which fits the meaning. The
+  gloss and the softener reading rest mainly on knowledge of the language, not on a citation.
+- **Search** (tools/search_check.mjs): "mai nae muean gan", "hard to say" and "not sure" put it first;
+  "mai ne man gan" finds it as a near miss, its only hit.
+- Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
+  spelling.mjs --write, gen_audio.py (3 new, 0 failed). Not opened in a browser, and the clips not
+  listened to.
+
 ## Search: aw as ɔ (2026-11-07)
 
 The user heard โทษที as "taw tee", and asked for the search to find it. Popular romanisation

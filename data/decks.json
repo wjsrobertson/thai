@@ -1037,6 +1037,7 @@
         { "thai": "แล้วแต่", "translit": "lɛ́ɛo-tɛ̀ɛ", "english": "it's up to you / it depends", "note": "แล้วแต่คุณ = up to you. A very common answer." },
         { "thai": "ตามใจ", "translit": "taam-jai", "english": "as you like", "note": "Lit. \"follow (your) heart\"." },
         { "thai": "ไม่แน่ใจ", "translit": "mâi nɛ̂ɛ-jai", "english": "I'm not sure", "words": ["ไม่::not / no", "แน่ใจ::sure (certain)"] },
+        { "thai": "ไม่แน่เหมือนกัน", "translit": "mâi nɛ̂ɛ mʉ̌an gan", "english": "hard to say / not sure, actually", "note": "About how things stand; ไม่แน่ใจ is about what you know. เหมือนกัน softens it here, not \"me too\". ก็ไม่แน่เหมือนกันนะ = then again, you never know.", "words": ["ไม่::not / no", "แน่::sure / certain", "เหมือนกัน::the same / alike / me too"] },
         { "thai": "จริงเหรอ", "translit": "jing rə̌ə", "english": "really?", "words": ["จริง::true / real", "เหรอ::really? / is that so?"] },
         { "thai": "ใช่เลย", "translit": "châi ləəi", "english": "exactly / that's right", "words": ["ใช่::yes / that's right", "เลย::completely / immediately / really"] },
         { "thai": "ก็ได้", "translit": "gɔ̂-dâai", "english": "that's fine too / whatever", "note": "Agreeing without much enthusiasm: OK then, I suppose." },
