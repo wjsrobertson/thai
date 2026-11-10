@@ -2359,6 +2359,42 @@ in Saying No Without Saying No.
   spelling.mjs --write, gen_audio.py (3 new, 0 failed). Not opened in a browser, and the clips not
   listened to.
 
+## The Alphabet's vowels: Before a final (2026-11-10)
+
+The user asked what the mark on วัน does (ไม้หันอากาศ), then saw that the Vowels page had ั only
+inside อัว ("I thought I had learnt all the vowels"). Offered a section on the page or a line in
+อะ's dialog, they chose the section.
+- **Vowels Before a Final holds the shapes now,** like Short & Long Vowels and Diphthongs beside it:
+  อั อื เอ็ แอ็ อ็อ เอิ เอย อว, 8 cards in the order of the vowels they come from. Its example-word
+  cards (กัน เล็ก แข็ง คน ล็อก เดิน เลย นวล มืด) went; each word is in its shape's note, with a second
+  where one helps (วัน, ปืน, เป็น, เกิด, สวย). คน (โอะ not written at all) has no shape to show, so it
+  moved to the topic's description, with นก, รถ and สระโอะลดรูป. The topic is now the Vowels set's
+  third (ALPHA_SETS), so the shapes are on the Alphabet's Cards and Write pages too.
+- **Each says its vowel** (`say`: อั says อะ, อว says อัว; เอย, a syllable the voice reads, says
+  itself): a vowel tile plays the vowel's sound, and a shape's sound is its vowel's. So no new Thai
+  audio, only the 8 English glosses. The old cards' 11 clips are left in data/audio (pruning is the
+  user's call).
+- **The page** (VOWEL_SECTIONS): a fourth section, "Before a final · how some vowels change", two
+  rows of four styled like the extra vowels (`vowel-extras`); one row on a desktop. The first note,
+  "the shapes some vowels change to", left "to" alone on a line at 390.
+- **The dialog** (showVowelPop, VOWEL_FORM_OF): a shape gives "Without a final" (its vowel's chip),
+  and the vowel gives "Before a final" (its shapes; เออ has เอิ and เอย); โอะ's says "Not written: คน
+  khon". A shape's length is its vowel's (vowelShort), and its syllable is "Live or dead by its
+  final" (เอย: "Live: ย is its final").
+- **The set menu** reads "The 30 vowels, and their shapes before a final" (two lines, as Tones' does).
+- **From memory** needed nothing new: the shapes are made of marks the model already reads in their
+  places (ั ็ ิ ื above, เ แ before, อ ย ว after). Only checked that the page loads with them; nothing
+  was drawn.
+- **The spell button:** school and whole-vowel spelling give nothing for a lone shape, so it names
+  the letters as written (อั: อ อ่าง · ไม้หันอากาศ).
+- **Checked** in headless Chromium (`vowel_forms_probe.py`, `vowel_forms_write_probe.py`) at 390×664,
+  390×763, 430×844 and 1280×800, and at text sizes 0.8, 1.15 and 1.3. All 38 tiles are one width,
+  none clipped, no sideways scroll, and the section clears the tab bar. Also checked: the line, the
+  dialogs both ways, and Write's Trace and From memory with อั; no script errors. Layout checks not
+  run (only when the user asks); nothing above the new section moved.
+- Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
+  spelling.mjs --write (นวล's part dropped), gen_audio.py (8 new, 0 failed).
+
 ## Search: aw as ɔ (2026-11-07)
 
 The user heard โทษที as "taw tee", and asked for the search to find it. Popular romanisation
@@ -3714,6 +3750,7 @@ the middle).
   grid), Diphthongs · two vowels in one (three pairs), Extra vowels (สระเกิน) · four with a final
   built in, and two from Sanskrit (อำ ใอ ไอ เอา and ฤ ฤๅ, a row). VOWEL_GROUPS (the vowel dialog's
   partner) is their groups. Headings as the word dialog's "The tone table".
+- A fourth section, Before a final, came on 2026-11-10 ("The Alphabet's vowels: Before a final").
 - **One tile width** for all 30 (sizeVowelTiles, in place of sizeTiles here): the widest's, no wider
   than lets three pairs fit; then less side padding (.tight); then, if เอือะ still doesn't fit, every
   tile's text a little smaller (.shrunk, `--tile-fs`): at 390px tiles are 52px with 25px text, at

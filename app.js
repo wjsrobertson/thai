@@ -2248,7 +2248,8 @@ function closeSettings() {
 // Each set's cards come from Thai Script topics, with their own progress (cardKey).
 const ALPHA_SETS = {
   consonants: { label: 'Consonants', topics: ['script-consonants-all'], hint: 'Tap a letter to hear its name. Hold it for its details.' },
-  vowels: { label: 'Vowels', topics: ['script-vowels', 'script-diphthongs'], hint: 'Tap a vowel to hear it. Hold it for its details.' },
+  // Vowels Before a Final too (2026-11-10, the user's call: ั was on the page only inside อัว).
+  vowels: { label: 'Vowels', topics: ['script-vowels', 'script-diphthongs', 'script-closed-vowels'], hint: 'Tap a vowel to hear it. Hold it for its details.' },
   tones: { label: 'Tones', topics: ['script-read-tone'], hint: 'Tap a tone or a mark to learn it, or a syllable in the chart to hear it.' },
 };
 // Every letter's picture (images/letters/, SVG; all 44 since 2026-10-14). A letter without one would show none.
@@ -3214,17 +3215,26 @@ function bindWritePad() {
 
 // The grid's sections (2026-10-15, the user's call: split by kind, in the order Thai schools teach,
 // which reads straight through them): the nine short and long pairs, three to a row; the diphthongs;
-// the extra vowels, the four with a final built in and ฤ ฤๅ.
+// the extra vowels, the four with a final built in and ฤ ฤๅ; then (2026-11-10, the user's call) the
+// shapes vowels take before a final, two rows of four in the order of the vowels they come from.
 const VOWEL_SECTIONS = [
   { title: 'The nine vowels', note: 'short and long',
     groups: [['อะ', 'อา'], ['อิ', 'อี'], ['อึ', 'อือ'], ['อุ', 'อู'], ['เอะ', 'เอ'], ['แอะ', 'แอ'], ['โอะ', 'โอ'], ['เอาะ', 'ออ'], ['เออะ', 'เออ']] },
   { title: 'Diphthongs', note: 'two vowels in one', groups: [['เอียะ', 'เอีย'], ['เอือะ', 'เอือ'], ['อัวะ', 'อัว']] },
   { title: 'Extra vowels (สระเกิน)', note: 'four with a final built in, and two from Sanskrit',
     groups: [['อำ', 'ใอ', 'ไอ', 'เอา'], ['ฤ', 'ฤๅ']], cls: 'vowel-extras' },
+  { title: 'Before a final', note: 'how some vowels change',
+    groups: [['อั', 'อื', 'เอ็', 'แอ็'], ['อ็อ', 'เอิ', 'เอย', 'อว']], cls: 'vowel-extras' },
 ];
 const VOWEL_GROUPS = VOWEL_SECTIONS.flatMap((s) => s.groups);
+// Each shape before a final -> the vowel it's a shape of: its length, and the dialog's links both
+// ways. โอะ has none: before a final it isn't written at all (คน), which its dialog says.
+const VOWEL_FORM_OF = { อั: 'อะ', อื: 'อือ', เอ็: 'เอะ', แอ็: 'แอะ', อ็อ: 'เอาะ', เอิ: 'เออ', เอย: 'เออ', อว: 'อัว' };
 const VOWEL_LIVE_SHORT = new Set(['อำ', 'ใอ', 'ไอ', 'เอา']); // short, but ending in -m, -i, -o: live
-const vowelShort = (v) => v.endsWith('ะ') || ['อิ', 'อึ', 'อุ', 'ฤ'].includes(v) || VOWEL_LIVE_SHORT.has(v);
+const vowelShort = (v) => {
+  v = VOWEL_FORM_OF[v] || v;
+  return v.endsWith('ะ') || ['อิ', 'อึ', 'อุ', 'ฤ'].includes(v) || VOWEL_LIVE_SHORT.has(v);
+};
 // The marks a vowel is written with (Vowel Symbol Names' names). ◌ึ: only the part that's sure.
 const VOWEL_PART_NAMES = {
   'ะ': ['วิสรรชนีย์'], 'ั': ['ไม้หันอากาศ'], '็': ['ไม้ไต่คู้'], 'า': ['ลากข้าง'], 'ำ': ['หยาดน้ำค้าง', 'ลากข้าง'],
@@ -3383,6 +3393,13 @@ function showVowelPop(anchor, c) {
   const partner = group.length === 2 ? mates : [];
   if (partner.length) facts.add(short ? 'Long partner' : 'Short partner', chipRow(partner, (o) => `${o.thai}: ${o.english}`, (o) => showVowelPop(null, o)));
   if (sameSound.length) facts.add('Same sound', chipRow(sameSound, (o) => `${o.thai}: ${o.english}`, (o) => showVowelPop(null, o)));
+  // A shape before a final and its vowel, linked both ways (VOWEL_FORM_OF).
+  const vowelCard = (v) => alphaSets.vowels.cards.find((o) => o.thai === v);
+  const base = vowelCard(VOWEL_FORM_OF[c.thai]);
+  const forms = Object.keys(VOWEL_FORM_OF).filter((f) => VOWEL_FORM_OF[f] === c.thai).map(vowelCard).filter(Boolean);
+  if (base) facts.add('Without a final', chipRow([base], (o) => `${o.thai}: ${o.english}`, (o) => showVowelPop(null, o)));
+  if (forms.length) facts.add('Before a final', chipRow(forms, (o) => `${o.thai}: ${o.english}`, (o) => showVowelPop(null, o)));
+  if (c.thai === 'โอะ') facts.add('Before a final', 'Not written: คน khon');
   const parts = vowelParts(c.thai);
   if (parts.length) {
     const box = Object.assign(document.createElement('div'), { className: 'letter-chips' });
@@ -3401,7 +3418,8 @@ function showVowelPop(anchor, c) {
     }
     facts.add('Written with', box);
   }
-  facts.add('Syllable', short && !VOWEL_LIVE_SHORT.has(c.thai) ? 'Dead when nothing follows (a short vowel)' : 'Live');
+  facts.add('Syllable', base ? (c.thai.endsWith('ย') ? 'Live: ย is its final' : 'Live or dead by its final')
+    : short && !VOWEL_LIVE_SHORT.has(c.thai) ? 'Dead when nothing follows (a short vowel)' : 'Live');
   const items = [hero, playButton(cardSay(c), `Play ${c.thai}`), facts];
   if (c.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), c.note));
   openPop(anchor, c.translit, c.english, items);
