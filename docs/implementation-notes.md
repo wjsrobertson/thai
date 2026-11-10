@@ -2395,6 +2395,27 @@ inside อัว ("I thought I had learnt all the vowels"). Offered a section on
 - Data steps: audit_decks.py --errors (0), stories.py check and sync (nothing to change),
   spelling.mjs --write (นวล's part dropped), gen_audio.py (8 new, 0 failed).
 
+## ทำดีได้ดี and ทำดีแล้วไม่ได้ดี in Religion: Merit, Karma & Faiths (2026-11-10)
+
+The user saw "tam dee lao mai dai dee" in a Sopranos subtitle for "no good deed goes unpunished".
+The deck had the proverb, ทำคุณบูชาโทษ (Idioms & Proverbs: Work, Effort & Luck, full at 25), but
+not the plain sentence or the karma saying it twists.
+- **Two cards** in Religion: Merit, Karma & Faiths (now 18), after กรรม: ทำดีได้ดี ทำชั่วได้ชั่ว "you
+  reap what you sow", whose note gives the literal sense and the bitter twist ทำดีได้ดีมีที่ไหน
+  ทำชั่วได้ดีมีถมไป; and ทำดีแล้วไม่ได้ดี "do good and get nothing for it", noted as everyday speech
+  and pointing to ทำคุณบูชาโทษ. The saying has no `words`, like the spaced proverbs in Idioms &
+  Proverbs: Wisdom (a phrase's words must spell it, space and all).
+- **ทำคุณบูชาโทษ's note** gains "Everyday: ทำดีแล้วไม่ได้ดี"; stories.py sync copied it to Piled Up.
+- **Sources:** the twist is well attested, e.g. a 2024 Dhammastudy Research Journal article on the
+  saying (so07.tci-thaijo.org/index.php/dsr/article/view/2700). ทำดีแล้วไม่ได้ดี is ordinary Thai;
+  a Line Today piece has คิดดี ทำดี แล้วไม่เห็นจะได้ดีเลย.
+- **Search** (tools/search_check.mjs): "tam dee lao mai dai dee" finds ทำดีแล้วไม่ได้ดี as a near
+  miss, its only hit; "tham dee dai dee" and "reap what you sow" find the saying, "do good" both
+  ทำดีแล้วไม่ได้ดี and ปิดทองหลังพระ.
+- Data steps: audit_decks.py --errors (0), stories.py check and sync (1 card updated),
+  spelling.mjs --write, gen_audio.py (6 new, 0 failed). Not opened in a browser, and the clips not
+  listened to.
+
 ## Search: aw as ɔ (2026-11-07)
 
 The user heard โทษที as "taw tee", and asked for the search to find it. Popular romanisation
