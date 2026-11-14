@@ -15,13 +15,14 @@
 
 importScripts('audio-store.js'); // self.ClipStore
 
-const SHELL_CACHE = 'learnthai-shell-v22';  // bump if SHELL changes, so stale entries are dropped
+const SHELL_CACHE = 'learnthai-shell-v23';  // bump if SHELL changes, so stale entries are dropped
 const OLD_AUDIO_CACHE = 'learnthai-audio'; // where clips were kept until 2026-10-07: deleted on activate
 const NETWORK_TIMEOUT_MS = 4000;
 // Paths relative to the service worker's scope ('' is the app's root URL).
 const SHELL = [
   '', 'index.html', 'app.js', 'spell.js', 'tones.js', 'typing.js', 'time.js', 'styles.css', 'mobile.css', 'app.webmanifest',
   'data/decks.json', 'data/audio/manifest.json', 'data/audio/timings.json', 'audio-store.js',
+  'data/frequency.json', // Vocabulary's Most used (tools/frequency.py)
   'data/write-model.bin', // From memory's handwriting model (app.js writeModel)
   'fonts/NotoLoopedThai-Regular.woff2', 'fonts/NotoLoopedThai-Bold.woff2',
   'fonts/NotoSansThai-Regular.woff2', 'fonts/NotoSansThai-Bold.woff2',

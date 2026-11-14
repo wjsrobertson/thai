@@ -1552,8 +1552,9 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
-- **The phone's bar:** Alphabet, Words, Dictionary, Time, More; More's list Home and Settings,
-  Settings last (10-22; More had Time and Settings from 10-21, Home on the bar).
+- **The phone's bar:** Alphabet, Words, Dictionary, Time, More; More's list Home, Vocabulary and
+  Settings, Settings last (10-22; More had Time and Settings from 10-21, Home on the bar;
+  Vocabulary from 11-14).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -2218,6 +2219,59 @@ Cards put Words' order back when left, so they didn't). The rule now names Cards
 `#prev-btn`, `#next-btn`, `#random-btn`. Checked (scratch `writenav2.py`, `writenav3.py`) at
 390 × 844 and 1280 × 800, with Words' Cards on Learn, Recognition and Type: Write's and Time's ‹ ›
 shown each time; Cards' ‹ › 🔀 shown in Learn and hidden in the other two; no script errors.
+
+## Vocabulary: how many words you know (2026-11-14)
+
+The user's request: a count of the words you know, filled in by going through a list a word at a
+time, most used first, its sound playing, answering "do you know this word?" with No or Yes; slang
+too; a topic or topic group instead if you like. The English shows with the word (the user's call: "we
+can trust our users"), so Undo is for a slip of the thumb rather than a check.
+
+- **Where:** a page, `vocab` (`renderVocab`, `#vocab-section`): in More's list on a phone (Home,
+  Vocabulary, Settings), a tab after Time on a wider screen (`.tab-vocab`, hidden on a phone), and a
+  Home card across both columns at the end ("You know 1,240 words…", `renderHomeVocab`). The bar fits
+  from 640 wide (Vocabulary's tab ends at 567, ⚙ at 587).
+- **The answers:** `store.known`, Thai → 1 (known) or 0 (not), per Thai word, not per card: ไป
+  counts once however many topics have it, a list skips words answered in another, and a word with
+  two meanings (ผม "I" and "hair") is one answer. A No is kept too, so a run picks up where it left
+  off. In the backup (the whole store), its summary ("…, 13 words known"); Settings → Reset →
+  **Clear vocabulary** forgets them (`resetVocab`). Reset all progress leaves them.
+- **The count:** words known; phrases (`isPhrase`) are counted apart ("and 1 phrase"), so a topic of
+  sayings doesn't swell it. Under it, how many answered.
+- **The lists** (`vocabSource`), each a panel with Start, Continue or See and a bar (known green, not
+  known red, the rest to go) with known/total:
+  - **Most used words:** `data/frequency.json` (`tools/frequency.py`, fetched on the first visit, and
+    in sw.js's SHELL, cache v23): the 5,126 words with a card (not a story's, a letter or a phrase),
+    in the subtitle list's order (`research/freq/subs_words.tsv`), with bars for the top 100, 500,
+    1,000, 2,000 and all. A word shows Top 500 Spoken Words' card first (its gloss gives the main
+    senses), then the word's other meanings, three at most, leaving out one that adds nothing (ที่'s
+    "at") and Thai Script's spelling-rule glosses (`vocabWordCard`).
+  - **Slang & Swearing** (the category, 332 words): its own list, as subtitles soften swearing and
+    frequency ranks real slang far down (เหี้ย #2890, ควย #9080).
+  - **Go through a topic or list:** the topic picker (`openDeckPicker({ vocab: true })`,
+    `pickerFor` 'vocab'): a topic, a group's or category's All, or a list of yours starts a run
+    rather than choosing the topic. Nothing is lit as current, the word hits and ＋ New list are left
+    out. A topic's words show that topic's card (ฉัน in Monks is "to eat (of a monk)"). The last six
+    gone through are listed after Slang (`prefs.vocabRecent`).
+- **A run** (`state.vocabRun`, `renderVocabRun`): ‹ Done, the list's name and the place (6 / 5,126);
+  a card with "Do you know this word?" (or phrase), the Thai on one line (shrunk to fit,
+  `fitPopWord`; a tap opens the word dialog), its ▶, the transliteration and the meanings; the last
+  answer ("คุณ ✗ No") with **Undo**; **No** and **Yes** (Recall's grade buttons, red and green
+  outlined). The word is the list's first not answered anywhere, so leaving and coming back, or an
+  Undo, lands in the right place. Each new word is said (`speak`, so Mute holds), the next eight
+  clips fetched ahead. Keys: → or Y Yes, ← or N No, Backspace or U Undo, P play, Esc Done. At the
+  end, "All 18 answered · You know 11 of them" and **Go through again** (clears that list's answers,
+  after a confirm). On a phone it fills the screen as Time's Quiz does: the card takes the height,
+  the answers 56 tall, 18 over the tab bar; the row pinned as Time's is (`.vocab-top`).
+- **Checked** headless (scratch `vocab_probe.py`, `vocab_bar_probe.py`) at 390 × 664, 763 and 844
+  (text 1.3 at 844) and 1280 × 800: no scroll on a run (664: card 68–470, Undo's row 480–524, the
+  answers 534–590, the bar at 608), no sideways scroll; Yes, No, Undo and the keys; the word dialog;
+  a topic run through to its end, its long phrases shrunk to fit (ทำดีได้ดี ทำชั่วได้ชั่ว at 36 px);
+  the page's counts and Home's line after; the bar at 640, 768 and 1024; no script errors.
+  check_layout.py's bar check now expects Vocabulary in More's list (not run).
+- **Next, offered:** a quick estimate past what's answered (about 20 words from each frequency band,
+  scaled up); a Known switch in the word dialog and ticks on List's rows; words held in Recall
+  counting; the No words handed to a list for Cards.
 
 ## 34 everyday phrases, and Catching Up & Good Wishes (2026-11-01)
 
@@ -6113,6 +6167,9 @@ list (hermitdave/FrequencyWords).
     a TNC count of at least 100.
 - **Deck coverage:** our decks give their own card to 54% of the spoken top 100, 42% of the top
   500 and 25% of the top 2000.
+  - **2026-11-14:** 100% of the top 100, 96% of the top 500, 90% of the top 1000 and 84% of the
+    top 2000 have a card with exactly that Thai. `tools/frequency.py` writes those words, in this
+    list's order, to `data/frequency.json` for Vocabulary's Most used.
 
 ---
 

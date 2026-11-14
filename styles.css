@@ -2155,6 +2155,81 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   pointer-events: none;
   transition: none;
 }
+/* ---------- Vocabulary (renderVocab, 2026-11-14) ---------- */
+.stage[data-view="vocab"] .card-wrap,
+.stage[data-view="vocab"] .flashcards-only,
+.stage[data-view="vocab"] .wordlist-only,
+.stage[data-view="vocab"] .deck-picker-bar,
+.stage:not([data-view="vocab"]) .vocab-only {
+  display: none !important;
+}
+.vocab { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.vocab-home, .vocab-run { display: flex; flex-direction: column; gap: 14px; }
+.vocab-home[hidden], .vocab-run[hidden] { display: none; }
+/* The page: the count, big, then a panel a list. */
+.vocab-total { padding: 4px 0; text-align: center; }
+.vocab-total-n { margin: 0; color: var(--accent); font-size: calc(48px * var(--fs, 1)); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.vocab-total-text { margin: 4px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); white-space: pre-line; }
+.vocab-sources { display: flex; flex-direction: column; gap: 12px; }
+.vocab-source {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.vocab-source-head { display: flex; align-items: center; gap: 12px; }
+.vocab-source-text { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
+.vocab-source-name { color: var(--ink); font-size: calc(17px * var(--fs, 1)); font-weight: 600; }
+.vocab-source-sub { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+:is(.vocab-go, .vocab-choose, .vocab-done, .vocab-undo, .vocab-again) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
+.vocab-go { flex: none; min-width: 96px; }
+/* A band: its name, the bar (known, then not known, then the rest to go) and known/total. */
+.vocab-band { display: grid; grid-template-columns: 5.6em 1fr 5.6em; align-items: center; gap: 10px; font-size: calc(14px * var(--fs, 1)); }
+.vocab-band-name { color: var(--muted); white-space: nowrap; }
+.vocab-bar { display: flex; height: 8px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; }
+.vocab-bar-yes { background: var(--good); }
+.vocab-bar-no { background: color-mix(in srgb, var(--again) 55%, var(--panel-2)); }
+.vocab-band-count { color: var(--ink); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.vocab-help { margin: 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); line-height: 1.45; }
+/* A run: the list's name and place, the word in a card, the last answer with Undo, No and Yes. */
+.vocab-top { display: flex; align-items: center; gap: 12px; }
+.vocab-done { flex: none; }
+.vocab-run-name { flex: 1 1 auto; min-width: 0; overflow: hidden; color: var(--ink); font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.vocab-run-count { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+.vocab-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 320px;
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-align: center;
+}
+.vocab-q { margin: 0 0 4px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
+.vocab-say { display: flex; align-items: center; justify-content: center; gap: 4px; max-width: 100%; }
+/* One line, shrunk to fit (fitPopWord); a tap opens the word dialog. */
+.vocab-th { min-width: 0; margin: 0; overflow: hidden; color: var(--ink); font-size: calc(52px * var(--fs, 1)); line-height: 1.4; white-space: nowrap; cursor: pointer; }
+.vocab-play[hidden] { display: none; }
+.vocab-tr { margin: 0; color: var(--accent); font-style: italic; font-size: calc(19px * var(--fs, 1)); }
+.vocab-en { display: flex; flex-direction: column; gap: 2px; color: var(--ink); font-size: calc(18px * var(--fs, 1)); line-height: 1.35; }
+.vocab-en p { margin: 0; }
+.vocab-again { margin-top: 12px; }
+.vocab-card.done .vocab-tr { color: var(--ink); font-style: normal; } /* the end's "You know 11 of them." */
+.vocab-last { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
+.vocab-last-text { min-width: 0; overflow: hidden; color: var(--muted); font-size: calc(16px * var(--fs, 1)); text-overflow: ellipsis; white-space: nowrap; }
+.vocab-undo { flex: none; }
+/* Kept in place when there's nothing to take back, or no word: nothing moves. */
+:is(.vocab-undo, .vocab-answers).off { visibility: hidden; }
+.vocab-answers { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.vocab-answers .grade { min-height: 64px; }
+
 /* ---------- Time (renderTime; a spike, 2026-10-21: branch 2026-10-21-spike-time) ---------- */
 .stage[data-view="time"] .card-wrap,
 .stage[data-view="time"] .flashcards-only,

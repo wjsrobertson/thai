@@ -179,14 +179,15 @@ def checks(ws, size):
       m and near(m['t'], bar['b'], 1.5) and near(m['b'], tabs['t'], 1.5), f"dialog {m and m['t']:.0f}–{m and m['b']:.0f}, row ends {bar['b']:.0f}, tabs from {tabs['t']:.0f}")
     tap(ws, '#word-modal-close')
 
-    # The bar: Alphabet, Words, Dictionary, Time, More; Home and Settings in More's list, Settings last
-    # (the user's call, 2026-10-22; More had Time and Settings from 10-21, Home on the bar).
+    # The bar: Alphabet, Words, Dictionary, Time, More; Home, Vocabulary and Settings in More's list,
+    # Settings last (the user's call, 2026-10-22; More had Time and Settings from 10-21, Home on the
+    # bar; Vocabulary from 2026-11-14).
     shown = "JSON.stringify([...document.querySelectorAll('.tabs .tab')].filter(t => t.getClientRects().length).map(t => t.id || t.dataset.view))"
     tabs_shown = json.loads(js(ws, shown))
     tap(ws, '#tab-more', wait=0.6)
     more = json.loads(js(ws, "JSON.stringify([...document.querySelectorAll('.more-item')].filter(b => b.getClientRects().length).map(b => b.dataset.view || b.dataset.action))"))
-    C('The tab bar is Alphabet, Words, Dictionary, Time, More; More has Home and Settings (10-22)',
-      tabs_shown == ['alphabet', 'study', 'dictionary', 'time', 'tab-more'] and more == ['home', 'settings'], f"bar {tabs_shown}, More {more}")
+    C('The tab bar is Alphabet, Words, Dictionary, Time, More; More has Home, Vocabulary and Settings (10-22, 11-14)',
+      tabs_shown == ['alphabet', 'study', 'dictionary', 'time', 'tab-more'] and more == ['home', 'vocab', 'settings'], f"bar {tabs_shown}, More {more}")
     tap(ws, '.more-item[data-action=settings]', wait=1.0)
     ss = R(ws, '#settings-search')
     C("Settings: the search where the Dictionary's is, as tall (top, left, height)", same(ss, se, 'tlh'), f"{fmt(ss)} / {fmt(se)}")

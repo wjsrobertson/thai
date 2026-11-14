@@ -85,6 +85,30 @@ const els = {
   moreMenu: document.getElementById('more-menu'), // its list
   moreItems: document.querySelectorAll('.more-item'),
   timeSection: document.getElementById('time-section'),
+  vocabSection: document.getElementById('vocab-section'),
+  vocabHome: document.getElementById('vocab-home'),
+  vocabTotalN: document.getElementById('vocab-total-n'),
+  vocabTotalText: document.getElementById('vocab-total-text'),
+  vocabSources: document.getElementById('vocab-sources'),
+  vocabChoose: document.getElementById('vocab-choose'),
+  vocabRun: document.getElementById('vocab-run'),
+  vocabDone: document.getElementById('vocab-done'),
+  vocabRunName: document.getElementById('vocab-run-name'),
+  vocabRunCount: document.getElementById('vocab-run-count'),
+  vocabCard: document.getElementById('vocab-card'),
+  vocabQ: document.getElementById('vocab-q'),
+  vocabTh: document.getElementById('vocab-th'),
+  vocabPlay: document.getElementById('vocab-play'),
+  vocabTr: document.getElementById('vocab-tr'),
+  vocabEn: document.getElementById('vocab-en'),
+  vocabAgain: document.getElementById('vocab-again'),
+  vocabLastText: document.getElementById('vocab-last-text'),
+  vocabUndo: document.getElementById('vocab-undo'),
+  vocabAnswers: document.getElementById('vocab-answers'),
+  vocabNo: document.getElementById('vocab-no'),
+  vocabYes: document.getElementById('vocab-yes'),
+  homeVocabText: document.getElementById('home-vocab-text'),
+  resetVocab: document.getElementById('reset-vocab'),
   timeClock: document.getElementById('time-clock'),
   timePrev: document.getElementById('time-prev'),
   timeNext: document.getElementById('time-next'),
@@ -300,6 +324,7 @@ const state = {
   pickerTab: 'topics',      // the picker's tab: 'topics' | 'lists' | 'all' (renderPickerTabs)
   addTo: null,              // the list the picker is choosing words for (Add words), or null
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
+  vocabRun: null,           // Vocabulary's run while one is open: { src, history, thai, card } (startVocabRun)
 };
 
 // ---------- storage ----------
@@ -1663,10 +1688,15 @@ function pickerModel(q) {
 
 // The picker picks the topic or list that List, Cards and Reading share.
 function pickerSelectedId() {
-  return state.currentDeckId;
+  return state.pickerFor === 'vocab' ? null : state.currentDeckId; // Vocabulary's: nothing is "current"
 }
 
 function pickScope(id) {
+  if (state.pickerFor === 'vocab') { // Vocabulary's "Go through a topic or list": a run, not the topic
+    closeDeckPicker();
+    startVocabRun(id);
+    return;
+  }
   // Add words (pickerFor 'add'): the List page shows where they come from, its 🔁 adding to the
   // list (state.addingTo). Picked plainly, a list becomes where 🔁 adds.
   state.addingTo = state.pickerFor === 'add' ? state.addTo : null;
@@ -1731,7 +1761,7 @@ function renderListsPane() {
     empty.textContent = q ? `No list matches "${q}".` : state.pickerFor === 'add' ? 'No other lists yet.' : 'No lists yet. Make one, then add words to it from any topic.';
     rows.push(empty);
   }
-  if (state.pickerFor !== 'add') {
+  if (state.pickerFor === 'study') {
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'ghost new-list';
@@ -1859,7 +1889,7 @@ function renderDeckPicker() {
     els.deckPickerTree.appendChild(group);
   }
 
-  const words = q ? wordSearch(q) : null;
+  const words = q && state.pickerFor !== 'vocab' ? wordSearch(q) : null; // a word's row opens its topic: not for Vocabulary
   if (words?.total) els.deckPickerTree.appendChild(wordHitsSection(words));
   if (cats.length === 0 && !words?.total) {
     const empty = document.createElement('div');
@@ -2161,7 +2191,7 @@ function setModalOpen(open) {
 }
 
 // `addTo`: a list's id, for its Add words (openAddWords).
-function openDeckPicker({ addTo = null } = {}) {
+function openDeckPicker({ addTo = null, vocab = false } = {}) {
   state.pickerOpen = true;
   state.lastFocus = document.activeElement;
   els.deckPicker.hidden = false;
@@ -2170,9 +2200,9 @@ function openDeckPicker({ addTo = null } = {}) {
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
-  state.pickerFor = addTo ? 'add' : 'study';
-  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : 'Choose a topic or list';
-  state.pickerTab = !addTo && state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
+  state.pickerFor = addTo ? 'add' : vocab ? 'vocab' : 'study';
+  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
+  state.pickerTab = state.pickerFor === 'study' && state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
   renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -3846,6 +3876,9 @@ function setView(view, { section = 'words' } = {}) {
   if (view === 'dictionary') renderDictionary();
   els.timeSection.hidden = view !== 'time';
   if (view === 'time') renderTimeSection();
+  els.vocabSection.hidden = view !== 'vocab';
+  if (view === 'vocab') renderVocab();
+  if (view === 'home') renderHomeVocab();
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
@@ -6578,7 +6611,7 @@ function showWordPop(anchor, card) {
 // On a phone the word (and letter) dialog sits between the pinned top row and the tab bar (mobile.css),
 // leaving both in sight and in reach (the user's call, 2026-10-14): it starts where the row ends.
 function showWordModal() {
-  const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .dict-top, .time-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
+  const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .dict-top, .time-top, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.wordModal.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
   els.wordModal.hidden = false;
   setModalOpen(true);
@@ -8055,9 +8088,385 @@ function answerTime(i) {
   }, (right ? s.learnPauseMs : s.wrongPauseMs) + (quiz.dir === 'listen' || timeSaysOnChange() ? 600 : 0));
 }
 
+// ---------- Vocabulary (2026-11-14) ----------
+// The user's request: a count of the words you know. You go through a list a word at a time, most used
+// first (or a topic, a group or a list of yours), its sound playing, and answer "do you know this
+// word?" with No or Yes. The English shows too (the user's call: "we can trust our users").
+// - An answer is kept per Thai word, not per card (store.known: Thai -> 1 known, 0 not), so ไป counts
+//   once however many topics have it, and a list skips the words answered in another. A word with two
+//   meanings (ผม "I" and "hair") is one answer.
+// - "Most used" is data/frequency.json (tools/frequency.py): the words with a card, in the subtitle
+//   list's order. Slang & Swearing is a list of its own, as subtitles soften swearing and frequency
+//   ranks real slang far down (เหี้ย #2890).
+// - The count is of words; phrases (isPhrase) are counted apart.
+const VOCAB_MOST_USED = 'most-used';
+const VOCAB_SLANG = 'cat:Slang & Swearing';
+const VOCAB_BANDS = [100, 500, 1000, 2000];
+const VOCAB_PRELOAD = 8; // the next words' clips fetched ahead
+const VOCAB_RECENT = 6;  // the topics and lists gone through lately, on the page after the two above
+
+let vocabFreq = null;    // { words, ranks } once fetched (loadVocabFreq), on the first visit
+let vocabFreqLoad = null;
+let vocabByThai = null;  // Thai -> { cards: [{ card, deck }], phrase }, built once (vocabIndex)
+
+const knownMap = () => loadStore().known || {};
+const fmtCount = (n) => n.toLocaleString('en');
+const plural = (n, word) => `${fmtCount(n)} ${word}${n === 1 ? '' : 's'}`;
+
+function loadVocabFreq() {
+  vocabFreqLoad ||= fetch('data/frequency.json')
+    .then((res) => (res.ok ? res.json() : Promise.reject(new Error(`frequency.json: ${res.status}`))))
+    .then((data) => { vocabFreq = data; })
+    .catch(() => { vocabFreqLoad = null; }); // tried again on the next visit
+  return vocabFreqLoad;
+}
+
+function vocabIndex() {
+  if (vocabByThai) return vocabByThai;
+  vocabByThai = new Map();
+  const seen = new Set();
+  for (const d of state.decks) {
+    if (d.passage) continue;
+    for (const c of d.cards) {
+      const key = cardKey(c);
+      if (c.alpha || seen.has(key)) continue;
+      seen.add(key);
+      let e = vocabByThai.get(c.thai);
+      if (!e) vocabByThai.set(c.thai, (e = { cards: [], phrase: isPhrase(c) }));
+      e.cards.push({ card: c, deck: d });
+    }
+  }
+  return vocabByThai;
+}
+
+// A word as Most used shows it: Top 500 Spoken Words' card first (its gloss gives the word's main
+// senses), then its other meanings, three at most, one that adds nothing left out (ที่'s "at"). Thai
+// Script's cards gloss a spelling rule ("said high, though spelt rising"), so only as a last resort.
+function vocabWordCard(thai) {
+  const e = vocabIndex().get(thai);
+  if (!e) return null;
+  const order = ({ deck }) => (deck.group === 'Top 500 Spoken Words' ? 0 : deck.category === 'Thai Script' ? 2 : 1);
+  const sorted = [...e.cards].sort((a, b) => order(a) - order(b));
+  const meanings = [];
+  const parts = new Set();
+  for (const { card, deck } of sorted) {
+    if (meanings.length === 3 || (deck.category === 'Thai Script' && meanings.length)) break;
+    const its = card.english.split(/\s+\/\s+/);
+    if (its.every((m) => parts.has(m))) continue;
+    its.forEach((m) => parts.add(m));
+    meanings.push(card.english);
+  }
+  return { card: sorted[0].card, meanings };
+}
+
+// What a run goes through: its name, its words in order, and how each is shown. A topic's words show
+// that topic's card (ฉัน in Monks is "to eat (of a monk)"); Most used's every meaning (vocabWordCard).
+function vocabSource(id) {
+  if (id === VOCAB_MOST_USED) {
+    if (!vocabFreq) return null;
+    const index = vocabIndex();
+    return { id, name: 'Most used words', words: vocabFreq.words.filter((w) => index.has(w)), shown: vocabWordCard };
+  }
+  const scope = resolveScope(id);
+  if (!scope || scope.kind === 'all') return null;
+  const byThai = new Map();
+  for (const c of scope.cards) if (!c.alpha && !byThai.has(c.thai)) byThai.set(c.thai, c);
+  return { id, name: scope.name, words: [...byThai.keys()], shown: (thai) => ({ card: byThai.get(thai), meanings: [byThai.get(thai).english] }) };
+}
+
+function vocabProgress(words, known = knownMap()) {
+  let yes = 0;
+  let answered = 0;
+  for (const w of words) {
+    const k = known[w];
+    if (k === undefined) continue;
+    answered += 1;
+    if (k === 1) yes += 1;
+  }
+  return { yes, answered, total: words.length };
+}
+
+// Every answer, wherever it was given: the words and phrases known.
+function vocabTotals() {
+  const index = vocabIndex();
+  let words = 0;
+  let phrases = 0;
+  let answered = 0;
+  for (const [thai, k] of Object.entries(knownMap())) {
+    answered += 1;
+    if (k !== 1) continue;
+    if (index.get(thai)?.phrase) phrases += 1;
+    else words += 1;
+  }
+  return { words, phrases, answered };
+}
+
+function renderHomeVocab() {
+  if (!state.decks.length) return;
+  const { words } = vocabTotals();
+  els.homeVocabText.textContent = words
+    ? `You know ${plural(words, 'word')}. Go through more, most used first.`
+    : 'Go through the most used words and mark the ones you know.';
+}
+
+function renderVocab() {
+  const run = state.vocabRun;
+  els.vocabHome.hidden = !!run;
+  els.vocabRun.hidden = !run;
+  if (run) {
+    renderVocabRun({ say: false }); // coming back to a run: the word, not its sound again
+    return;
+  }
+  renderVocabHome();
+  if (!vocabFreq) loadVocabFreq().then(() => { if (state.view === 'vocab' && !state.vocabRun) renderVocabHome(); });
+}
+
+// The page: the count, then Most used (by bands: the top 100, 500…), Slang & Swearing, and the topics
+// and lists gone through lately, each with Start or Continue.
+function renderVocabHome() {
+  const known = knownMap();
+  const t = vocabTotals();
+  els.vocabTotalN.textContent = fmtCount(t.words);
+  els.vocabTotalText.textContent = `word${t.words === 1 ? '' : 's'} you know`
+    + (t.phrases ? `, and ${plural(t.phrases, 'phrase')}` : '')
+    + (t.answered ? `\n${fmtCount(t.answered)} answered` : ''); // its own line (pre-line)
+  const recent = (getPreferences().vocabRecent || []).filter((id) => id !== VOCAB_MOST_USED && id !== VOCAB_SLANG);
+  const blocks = [VOCAB_MOST_USED, VOCAB_SLANG, ...recent].map((id) => vocabSourceBlock(id, known)).filter(Boolean);
+  els.vocabSources.replaceChildren(...blocks);
+}
+
+function vocabSourceBlock(id, known) {
+  const src = vocabSource(id);
+  if (!src || !src.words.length) return null; // Most used before its list has come, or a list since deleted or emptied
+  const p = vocabProgress(src.words, known);
+  const box = document.createElement('div');
+  box.className = 'vocab-source';
+  const head = document.createElement('div');
+  head.className = 'vocab-source-head';
+  const text = document.createElement('span');
+  text.className = 'vocab-source-text';
+  const name = document.createElement('span');
+  name.className = 'vocab-source-name';
+  name.textContent = src.name;
+  const sub = document.createElement('span');
+  sub.className = 'vocab-source-sub';
+  sub.textContent = p.answered === p.total ? `All ${fmtCount(p.total)} answered` : p.answered ? `${fmtCount(p.answered)} of ${fmtCount(p.total)} answered` : plural(p.total, 'word');
+  text.append(name, sub);
+  const go = document.createElement('button');
+  go.type = 'button';
+  go.className = 'ghost vocab-go';
+  go.textContent = p.answered === p.total ? 'See' : p.answered ? 'Continue' : 'Start';
+  go.setAttribute('aria-label', `${go.textContent}: ${src.name}`);
+  go.addEventListener('click', () => startVocabRun(id));
+  head.append(text, go);
+  box.append(head);
+  const bands = id === VOCAB_MOST_USED ? [...VOCAB_BANDS.filter((n) => n < src.words.length), src.words.length] : [src.words.length];
+  for (const n of bands) {
+    const band = vocabProgress(src.words.slice(0, n), known);
+    box.append(vocabBand(n === src.words.length ? `All ${fmtCount(n)}` : `Top ${fmtCount(n)}`, band));
+  }
+  return box;
+}
+
+// A row: its name, a bar (known green, not known red, the rest unanswered) and "known/total".
+function vocabBand(label, { yes, answered, total }) {
+  const row = document.createElement('div');
+  row.className = 'vocab-band';
+  row.setAttribute('role', 'img');
+  row.setAttribute('aria-label', `${label}: ${fmtCount(yes)} known, ${fmtCount(answered - yes)} not, ${fmtCount(total - answered)} to go`);
+  const name = document.createElement('span');
+  name.className = 'vocab-band-name';
+  name.textContent = label;
+  const bar = document.createElement('span');
+  bar.className = 'vocab-bar';
+  const fill = (cls, n) => {
+    const f = document.createElement('span');
+    f.className = cls;
+    f.style.width = `${(100 * n) / total}%`;
+    return f;
+  };
+  bar.append(fill('vocab-bar-yes', yes), fill('vocab-bar-no', answered - yes));
+  const count = document.createElement('span');
+  count.className = 'vocab-band-count';
+  count.textContent = `${fmtCount(yes)}/${fmtCount(total)}`;
+  row.append(name, bar, count);
+  return row;
+}
+
+async function startVocabRun(id) {
+  if (id === VOCAB_MOST_USED && !vocabFreq) await loadVocabFreq();
+  const src = vocabSource(id);
+  if (!src) {
+    toast("Couldn't load that list");
+    return;
+  }
+  state.vocabRun = { src, history: [], thai: null, card: null };
+  if (id !== VOCAB_MOST_USED && id !== VOCAB_SLANG) {
+    const recent = (getPreferences().vocabRecent || []).filter((x) => x !== id);
+    setPreferences({ vocabRecent: [id, ...recent].slice(0, VOCAB_RECENT) });
+  }
+  if (state.view !== 'vocab') setView('vocab'); // renders the run without its sound: say it here
+  els.vocabHome.hidden = true;
+  els.vocabRun.hidden = false;
+  window.scrollTo(0, 0);
+  renderVocabRun();
+}
+
+function leaveVocabRun() {
+  if (!state.vocabRun) return;
+  state.vocabRun = null;
+  stopAudio();
+  renderVocab();
+  window.scrollTo(0, 0);
+}
+
+// The run's word: the first in its list not answered yet (anywhere), so leaving and coming back, or an
+// Undo, picks up in the right place.
+function renderVocabRun({ say = true } = {}) {
+  const run = state.vocabRun;
+  const known = knownMap();
+  const { words } = run.src;
+  const at = words.findIndex((w) => known[w] === undefined);
+  const p = vocabProgress(words, known);
+  run.thai = at < 0 ? null : words[at];
+  const shown = run.thai ? run.src.shown(run.thai) : null;
+  run.card = shown?.card || null;
+  els.vocabRunName.textContent = run.src.name;
+  els.vocabRunCount.textContent = `${fmtCount(Math.min(p.answered + 1, p.total))} / ${fmtCount(p.total)}`;
+  // The last answer, with Undo: the meaning was on screen, so this is for a slip of the thumb.
+  const last = run.history[run.history.length - 1];
+  els.vocabLastText.replaceChildren();
+  if (last) {
+    const th = document.createElement('span');
+    th.lang = 'th';
+    th.textContent = last;
+    els.vocabLastText.append(th, known[last] === 1 ? ' ✓ Yes' : ' ✗ No');
+  }
+  els.vocabUndo.classList.toggle('off', !last);
+  els.vocabUndo.disabled = !last;
+  els.vocabAnswers.classList.toggle('off', !run.card);
+  els.vocabNo.disabled = els.vocabYes.disabled = !run.card;
+  els.vocabAgain.hidden = !!run.card;
+  els.vocabCard.classList.toggle('done', !run.card);
+  els.vocabPlay.hidden = !run.card;
+  if (!run.card) { // the end of the list
+    els.vocabQ.textContent = `All ${fmtCount(p.total)} answered`;
+    els.vocabTh.textContent = '';
+    els.vocabTh.style.fontSize = '';
+    els.vocabTr.textContent = `You know ${fmtCount(p.yes)} of them.`;
+    els.vocabEn.replaceChildren();
+    return;
+  }
+  els.vocabQ.textContent = vocabIndex().get(run.thai)?.phrase ? 'Do you know this phrase?' : 'Do you know this word?';
+  els.vocabTh.textContent = run.card.thai;
+  els.vocabTr.textContent = run.card.translit || '';
+  els.vocabEn.replaceChildren(...shown.meanings.map((m) => {
+    const line = document.createElement('p');
+    line.textContent = m;
+    return line;
+  }));
+  els.vocabPlay.dataset.say = cardSay(run.card);
+  els.vocabPlay.title = `Play ${run.card.thai} (P)`;
+  els.vocabPlay.setAttribute('aria-label', `Play ${run.card.thai}`);
+  fitPopWord(els.vocabTh);
+  if (say) speak(cardSay(run.card));
+  els.vocabPlay.classList.toggle('playing', sayingNow(cardSay(run.card)));
+  preloadVocabAudio(run, words, at + 1, known);
+}
+
+function preloadVocabAudio(run, words, from, known) {
+  if (getSettings().audioSource !== 'samples') return;
+  const entries = [];
+  for (let i = from; i < words.length && entries.length < VOCAB_PRELOAD; i++) {
+    if (known[words[i]] !== undefined) continue;
+    const url = sampleUrl(cardSay(run.src.shown(words[i]).card), 'th');
+    if (url) entries.push({ url, keep: true });
+  }
+  queuePageAudio(entries);
+}
+
+function answerVocab(yes) {
+  const run = state.vocabRun;
+  if (!run?.thai) return;
+  const store = loadStore();
+  (store.known ||= {})[run.thai] = yes ? 1 : 0;
+  saveStore(store);
+  run.history.push(run.thai);
+  renderVocabRun();
+}
+
+// The last answer taken back: that word is the first unanswered again, so it shows next.
+function undoVocab() {
+  const run = state.vocabRun;
+  const thai = run?.history.pop();
+  if (!thai) return;
+  const store = loadStore();
+  if (store.known) delete store.known[thai];
+  saveStore(store);
+  renderVocabRun();
+}
+
+// The end of a list: its answers cleared, to go through it again.
+async function againVocab() {
+  const run = state.vocabRun;
+  if (!run) return;
+  const ok = await confirmDialog({
+    title: `Go through ${run.src.name} again?`,
+    message: `Your answers to its ${plural(run.src.words.length, 'word')} are cleared first. They count in other lists too, so those lose them as well.`,
+    confirmLabel: 'Go through again',
+  });
+  if (!ok) return;
+  const store = loadStore();
+  for (const w of run.src.words) delete store.known?.[w];
+  saveStore(store);
+  run.history = [];
+  renderVocabRun();
+}
+
+function handleVocabKey(e) {
+  if (!state.vocabRun || e.metaKey || e.ctrlKey || e.altKey) return;
+  const key = e.key.toLowerCase();
+  const act = { arrowright: () => answerVocab(true), y: () => answerVocab(true), arrowleft: () => answerVocab(false), n: () => answerVocab(false),
+    backspace: undoVocab, u: undoVocab, p: () => state.vocabRun.card && speak(cardSay(state.vocabRun.card)), escape: leaveVocabRun }[key];
+  if (!act) return;
+  e.preventDefault();
+  act();
+}
+
+async function resetVocab() {
+  const n = Object.keys(knownMap()).length;
+  const ok = await confirmDialog({
+    title: 'Clear vocabulary?',
+    message: `This forgets your ${plural(n, 'answer')} on the Vocabulary page.\nThis can't be undone.`,
+    confirmLabel: 'Clear vocabulary',
+    danger: true,
+  });
+  if (!ok) return;
+  const store = loadStore();
+  delete store.known;
+  saveStore(store);
+  if (state.vocabRun) state.vocabRun.history = [];
+  if (state.view === 'vocab') renderVocab();
+  renderHomeVocab();
+  toast('Vocabulary cleared');
+}
+
+function bindVocab() {
+  els.vocabChoose.addEventListener('click', () => openDeckPicker({ vocab: true }));
+  els.vocabDone.addEventListener('click', leaveVocabRun);
+  els.vocabNo.addEventListener('click', () => answerVocab(false));
+  els.vocabYes.addEventListener('click', () => answerVocab(true));
+  els.vocabUndo.addEventListener('click', undoVocab);
+  els.vocabAgain.addEventListener('click', againVocab);
+  els.vocabPlay.append(speakerIcon());
+  els.vocabPlay.addEventListener('click', () => speakerPress(els.vocabPlay, els.vocabPlay.dataset.say));
+  els.vocabTh.addEventListener('click', () => { if (state.vocabRun?.card) showWordPop(null, state.vocabRun.card); }); // its tones, stories…
+}
+
 // ---------- wiring ----------
 
 function bindEvents() {
+  bindVocab();
   els.tabs.forEach((t) => {
     t.addEventListener('click', () => {
       closeMore();
@@ -8182,7 +8591,7 @@ function bindEvents() {
   // A tap on the tab bar or the pinned row, left uncovered by the word dialog on a phone, closes it and
   // then does what it does (on pointerdown, before a tapped search box takes the focus). Time's row
   // too (2026-10-25, the user's report: Quiz tapped with Explore's time in the dialog left it open).
-  for (const bar of document.querySelectorAll('.tabs, .section-bar, .dict-top, .time-top')) {
+  for (const bar of document.querySelectorAll('.tabs, .section-bar, .dict-top, .time-top, .vocab-top')) {
     bar.addEventListener('pointerdown', () => { if (wordPop) hideWordPop(); }, { capture: true });
   }
 
@@ -8218,6 +8627,7 @@ function bindEvents() {
   });
 
   els.resetAll.addEventListener('click', resetAllProgress);
+  els.resetVocab.addEventListener('click', resetVocab);
   els.resetSettings.addEventListener('click', resetSettings);
 
   [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
@@ -8511,6 +8921,10 @@ function bindEvents() {
       }
       return;
     }
+    if (state.view === 'vocab') {
+      handleVocabKey(e);
+      return;
+    }
     if (state.view === 'home' || state.view === 'reading' || state.view === 'dictionary' || state.view === 'alphabet') return; // Flashcards' and Topics' keys
     if (state.view === 'flashcards' && state.orderMode === 'review') {
       handleReviewKey(e);
@@ -8795,7 +9209,8 @@ function backupSummary(store) {
     return `${words} word${words === 1 ? '' : 's'} in Cards, ${progress}`;
   }
   const n = store.lists.length;
-  return `${n} list${n === 1 ? '' : 's'}, ${progress}`;
+  const known = Object.values(store.known || {}).filter((k) => k === 1).length; // Vocabulary's (2026-11-14)
+  return `${n} list${n === 1 ? '' : 's'}, ${progress}` + (known ? `, ${known} words known` : '');
 }
 
 async function exportBackup() {

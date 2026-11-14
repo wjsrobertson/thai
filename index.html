@@ -53,6 +53,7 @@
       <button type="button" class="tab" role="tab" data-view="study" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg><span class="tab-label">Words</span></button>
       <button type="button" class="tab" role="tab" data-view="dictionary" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></svg><span class="tab-label">Dictionary</span></button>
       <button type="button" class="tab tab-time" role="tab" data-view="time" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg><span class="tab-label">Time</span></button>
+      <button type="button" class="tab tab-vocab" role="tab" data-view="vocab" aria-selected="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" /><path d="m8 12.2 2.8 2.8L16.2 9" /></svg><span class="tab-label">Vocabulary</span></button>
       <button type="button" class="tab tab-settings" id="tab-settings" aria-haspopup="dialog" aria-expanded="false"><svg class="tab-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="tab-label">Settings</span></button>
       <!-- More (2026-10-14; hidden from that day, the user's call; back with the Time spike, 2026-10-21):
            the phone bar's last tab, its list Home and Settings, Settings always last (the user's calls;
@@ -72,6 +73,7 @@
     <div class="more-backdrop" data-close></div>
     <div class="more-panel" role="menu" aria-labelledby="tab-more">
       <button type="button" class="more-item" role="menuitem" data-view="home"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z" /></svg><span class="more-label">Home</span><span class="more-chevron" aria-hidden="true">›</span></button>
+      <button type="button" class="more-item" role="menuitem" data-view="vocab"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" /><path d="m8 12.2 2.8 2.8L16.2 9" /></svg><span class="more-label">Vocabulary</span><span class="more-chevron" aria-hidden="true">›</span></button>
       <button type="button" class="more-item" role="menuitem" data-action="settings"><svg class="more-svg page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg><span class="more-label">Settings</span><span class="more-chevron" aria-hidden="true">›</span></button>
     </div>
   </div>
@@ -181,6 +183,13 @@
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>Time</span>
         <span class="home-card-text">
           <span>Telling the time in Thai, the everyday way, with a quiz.</span>
+        </span>
+      </button>
+      <!-- Vocabulary (2026-11-14): how many words you know (renderHomeVocab fills its line). -->
+      <button type="button" class="home-card home-card-wide" data-go="vocab">
+        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" /><path d="m8 12.2 2.8 2.8L16.2 9" /></svg>Vocabulary</span>
+        <span class="home-card-text">
+          <span id="home-vocab-text">Go through the most used words and mark the ones you know.</span>
         </span>
       </button>
     </section>
@@ -763,6 +772,12 @@
               <span class="setting-help">Wipes your study history on every topic. Settings and your lists stay.</span>
             </button>
           </div>
+          <div class="setting-group" data-search="reset vocabulary known words clear yes no answers">
+            <button type="button" id="reset-vocab" class="setting-row setting-button danger">
+              <span class="setting-label">Clear vocabulary</span>
+              <span class="setting-help">Forgets which words you said you know on the Vocabulary page.</span>
+            </button>
+          </div>
           <div class="setting-group" data-search="reset settings defaults default restore options">
             <button type="button" id="reset-settings" class="setting-row setting-button danger">
               <span class="setting-label">Reset settings</span>
@@ -850,6 +865,47 @@
           <p class="time-q-reveal" id="time-q-reveal"></p>
         </div>
         <div class="learn-pills time-answers" id="time-answers"></div>
+      </div>
+    </section>
+
+    <!-- Vocabulary (renderVocab; 2026-11-14, the user's request): how many words you know. Its page
+         (#vocab-home) has the count and the lists to go through; a run (#vocab-run) shows one word at a
+         time, its sound playing, with No and Yes. An answer is kept per Thai word (store.known). -->
+    <section class="vocab vocab-only" id="vocab-section" hidden>
+      <div class="vocab-home" id="vocab-home">
+        <div class="vocab-total">
+          <p class="vocab-total-n" id="vocab-total-n"></p>
+          <p class="vocab-total-text" id="vocab-total-text"></p>
+        </div>
+        <div class="vocab-sources" id="vocab-sources"></div>
+        <button type="button" class="ghost vocab-choose" id="vocab-choose">Go through a topic or list</button>
+        <p class="vocab-help">Say Yes if you'd know what it means when you hear it. A word counts once,
+          wherever you answer it; phrases are counted apart from words.</p>
+      </div>
+      <div class="vocab-run" id="vocab-run" hidden>
+        <div class="vocab-top">
+          <button type="button" class="ghost vocab-done" id="vocab-done">‹ Done</button>
+          <span class="vocab-run-name" id="vocab-run-name"></span>
+          <span class="vocab-run-count" id="vocab-run-count"></span>
+        </div>
+        <div class="vocab-card" id="vocab-card">
+          <p class="vocab-q" id="vocab-q">Do you know this word?</p>
+          <div class="vocab-say">
+            <p class="vocab-th" id="vocab-th" lang="th" title="Tones and more"></p>
+            <button type="button" class="row-speak reader-play vocab-play" id="vocab-play" aria-label="Play" title="Play (P)"></button>
+          </div>
+          <p class="vocab-tr" id="vocab-tr"></p>
+          <div class="vocab-en" id="vocab-en"></div>
+          <button type="button" class="ghost vocab-again" id="vocab-again" hidden>Go through again</button>
+        </div>
+        <div class="vocab-last" id="vocab-last">
+          <span class="vocab-last-text" id="vocab-last-text" role="status"></span>
+          <button type="button" class="ghost vocab-undo" id="vocab-undo" title="Undo (Backspace)">Undo</button>
+        </div>
+        <div class="vocab-answers" id="vocab-answers">
+          <button type="button" class="grade grade-again vocab-no" id="vocab-no" title="No (←)">No</button>
+          <button type="button" class="grade grade-easy vocab-yes" id="vocab-yes" title="Yes (→)">Yes</button>
+        </div>
       </div>
     </section>
 

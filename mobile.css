@@ -129,7 +129,7 @@ html.kb .tabs { display: none; }
    it out from under them (scroll-padding), and from under the tab bar. */
 .stage:not([data-view="home"]) { padding-top: 0; }
 .deck-picker-bar { display: contents; }
-.section-bar, .dict-top, .time-top {
+.section-bar, .dict-top, .time-top, .vocab-top {
   position: sticky;
   top: 0;
   z-index: 9;
@@ -143,7 +143,9 @@ html.kb .tabs { display: none; }
    very top, without the 12px the other sections have above their row). Its padding stands in for
    .time's gap under it: 12, as under Topics' row. */
 .time-top { margin-bottom: -10px; }
-html.scrolled :is(.section-bar, .dict-top, .time-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
+/* Vocabulary's run row the same (2026-11-14). */
+.vocab-top { margin-bottom: -10px; }
+html.scrolled :is(.section-bar, .dict-top, .time-top, .vocab-top) { background: var(--bg); box-shadow: 0 1px 0 var(--border); }
 /* The consonants' and vowels' line (the hint, or the one last tapped: pickAlpha) pinned under the
    section's row too (2026-10-15, the user's requests), the two one band: the hairline under the
    line, not between them. It takes the gutters, and the 12px under it is split around its padding. */
@@ -308,7 +310,7 @@ html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit wh
 /* Home and Settings are in More, the bar's last tab, lit while either shows (the user's call,
    2026-10-22: Alphabet, Words, Dictionary, Time, More; Time and Settings were in it from 2026-10-21,
    Home on the bar). Not lit on Home when the app opens, only on coming back to it (markMore). */
-.tab-home, .tab-settings { display: none; }
+.tab-home, .tab-settings, .tab-vocab { display: none; } /* Vocabulary is in More (2026-11-14) */
 
 /* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
    (.deck-button above; not styles.css's 220px, with three icons beside it). */
@@ -508,3 +510,14 @@ html.modal-open body { overflow: clip; }
 .time-q-play.big .speaker-icon { width: 46px; height: 46px; }
 .time-answers .learn-pill { height: 60px; font-size: calc(18px * var(--fs, 1)); }
 .time-answers .learn-pill.thai-pill { font-size: calc(21px * var(--fs, 1)); }
+
+/* ---------- Vocabulary (2026-11-14) ---------- */
+/* As Time's Quiz: a run fills the screen, the card taking the height between the row and the answers,
+   which sit at the foot, 18 over the tab bar as Cards' are. The page (#vocab-home) scrolls. */
+.stage[data-view="vocab"] { display: flex; flex-direction: column; padding-bottom: 18px; }
+.stage[data-view="vocab"] .vocab { flex: 1 0 auto; width: 100%; gap: 10px; }
+.vocab-home { padding-top: 12px; gap: 12px; }
+.vocab-run { flex: 1 0 auto; gap: 10px; }
+.vocab-card { flex: 1 0 auto; min-height: 0; }
+.vocab-answers { gap: 8px; }
+.vocab-answers .grade { min-height: 56px; }
