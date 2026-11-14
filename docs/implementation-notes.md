@@ -2268,9 +2268,31 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   outlined). The word is the list's first not answered anywhere, so leaving and coming back, or an
   Undo, lands in the right place. Each new word is said (`speak`, so Mute holds), the next eight
   clips fetched ahead. Keys: → or Y Yes, ← or N No, Backspace or U Undo, P play, Esc Done. At the
-  end, "All 18 answered · You know 11 of them" and **Go through again** (clears that list's answers,
-  after a confirm). On a phone it fills the screen as Time's Quiz does: the card takes the height,
+  end, "All 18 answered · You know 11 of them" and Again's buttons (below). On a phone it fills the screen as Time's Quiz does: the card takes the height,
   the answers 56 tall, 18 over the tab bar; the row pinned as Time's is (`.vocab-top`).
+- **Going through again** (the user's request, the same day: the words you didn't know, without the
+  whole list again; or every word, in case you've forgotten some). Nothing is cleared: each answer
+  has a time (`store.knownAt`, ms), and a pass (`prefs.vocabPasses[id]`: `{ mode, since, total }`)
+  is due the words answered before it began, `unknown` those you said No to, `all` every one
+  (`vocabPassDue`). A Yes on a No word makes it known; a No on a known one (all) takes it back.
+  - **Where:** under a list's bars, "Again: Didn't know · 7 · All · 18" (`vocabAgainRow`, each 44
+    tall), and the same at the end of a list or a pass, with "New words · 5,121" there when the list
+    has words not answered yet (`startVocabRun(id, 'new')`).
+  - **A pass** asks "Do you know it now?" (or "Do you still know it?"), counts its own place (1 / 7),
+    and pauses as a run does: the panel says "Again, the ones you didn't know: 3 of 7 left", its
+    Continue carries on with it, and **Stop going through again** ends it. Its end: "Done: the 7 you
+    didn't know · You know 4 of them now". A pass with nothing left is dropped when the page next
+    shows. An answer in another list counts, as everywhere.
+  - **Undo** puts back the answer before (and its time), not "unanswered", so in a pass the word is
+    due again. It replaced the end's **Go through again**, which cleared the list's answers after a
+    confirm (`againVocab`, gone).
+  - Clear vocabulary forgets the times and passes too. Answers from before have no time and count as
+    old: every pass covers them.
+  - Checked (scratch `vocab_again_probe.py`) at 390 × 664 and 1280 × 800: five answered (Y N Y N Y);
+    Didn't know · 2 asked ฉัน then จะ; Yes and Undo (back to No); Done mid-pass and the panel's "1 of 2
+    left" and Stop row; Continue to its end ("You know 1 of them now", New words · 5,121, Didn't
+    know · 1, All · 5); All · 5 through to "You know 4 of the 5"; New words back to word 6; Stop; no
+    script errors, no scroll.
 - **Checked** headless (scratch `vocab_probe.py`, `vocab_bar_probe.py`) at 390 × 664, 763 and 844
   (text 1.3 at 844) and 1280 × 800: no scroll on a run (664: card 68–470, Undo's row 480–524, the
   answers 534–590, the bar at 608), no sideways scroll; Yes, No, Undo and the keys; the word dialog;

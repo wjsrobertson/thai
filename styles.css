@@ -2184,7 +2184,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-source-text { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
 .vocab-source-name { color: var(--ink); font-size: calc(17px * var(--fs, 1)); font-weight: 600; }
 .vocab-source-sub { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-:is(.vocab-go, .vocab-choose, .vocab-done, .vocab-undo, .vocab-again) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
+:is(.vocab-go, .vocab-choose, .vocab-done, .vocab-undo) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
 .vocab-go { flex: none; min-width: 96px; }
 /* A band: its name, the bar (known, then not known, then the rest to go) and known/total. */
 .vocab-band { display: grid; grid-template-columns: 5.6em 1fr 5.6em; align-items: center; gap: 10px; font-size: calc(14px * var(--fs, 1)); }
@@ -2221,7 +2221,13 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-en { display: flex; flex-direction: column; gap: 2px; color: var(--ink); font-size: calc(18px * var(--fs, 1)); line-height: 1.35; }
 .vocab-en p { margin: 0; }
 .vocab-en p.also { color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
-.vocab-again { margin-top: 12px; }
+/* Again: Didn't know · 7, All · 18 (a panel's foot, the end of a list); Stop going through again. */
+.vocab-again-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.vocab-again-label { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.vocab-again { min-height: 44px; padding: 8px 14px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.vocab-end { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; }
+.vocab-end[hidden] { display: none; }
+.vocab-end .vocab-again-row { justify-content: center; }
 .vocab-card.done .vocab-tr { color: var(--ink); font-style: normal; } /* the end's "You know 11 of them." */
 .vocab-last { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
 .vocab-last-text { min-width: 0; overflow: hidden; color: var(--muted); font-size: calc(16px * var(--fs, 1)); text-overflow: ellipsis; white-space: nowrap; }
