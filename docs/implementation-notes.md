@@ -2244,8 +2244,16 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     in sw.js's SHELL, cache v23): the 5,126 words with a card (not a story's, a letter or a phrase),
     in the subtitle list's order (`research/freq/subs_words.tsv`), with bars for the top 100, 500,
     1,000, 2,000 and all. A word shows Top 500 Spoken Words' card first (its gloss gives the main
-    senses), then the word's other meanings, three at most, leaving out one that adds nothing (ที่'s
-    "at") and Thai Script's spelling-rule glosses (`vocabWordCard`).
+    senses), else the card in the most topics; then the word's other meanings, quieter (muted,
+    15 px), three lines at most, leaving out one that adds nothing (ที่'s "at", นาย's "Mr", ของ's
+    "of / belonging to": compared sense by sense, `glossParts`) and cards only in Thai Script (a
+    spelling rule) or a dialect's topics (Southern ยัง "to have") unless there's nothing else
+    (`vocabWordCard`).
+    - **Fixed the same day** (the user's report: มี showed only "mi (E)"): a card was ranked by the
+      first topic it's in. มี's "to have" is first in a Thai Script topic, so Music's "mi (E)" came
+      first and "to have" was dropped as a spelling rule. A card is now ranked by every topic it's
+      in. Checked: Most used's first 300 words (scratch `vocab_glosses_probe.py`), each with its main
+      meaning first.
   - **Slang & Swearing** (the category, 332 words): its own list, as subtitles soften swearing and
     frequency ranks real slang far down (เหี้ย #2890, ควย #9080).
   - **Go through a topic or list:** the topic picker (`openDeckPicker({ vocab: true })`,

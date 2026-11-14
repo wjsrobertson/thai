@@ -2220,6 +2220,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-tr { margin: 0; color: var(--accent); font-style: italic; font-size: calc(19px * var(--fs, 1)); }
 .vocab-en { display: flex; flex-direction: column; gap: 2px; color: var(--ink); font-size: calc(18px * var(--fs, 1)); line-height: 1.35; }
 .vocab-en p { margin: 0; }
+.vocab-en p.also { color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
 .vocab-again { margin-top: 12px; }
 .vocab-card.done .vocab-tr { color: var(--ink); font-style: normal; } /* the end's "You know 11 of them." */
 .vocab-last { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }

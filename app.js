@@ -8107,7 +8107,7 @@ const VOCAB_RECENT = 6;  // the topics and lists gone through lately, on the pag
 
 let vocabFreq = null;    // { words, ranks } once fetched (loadVocabFreq), on the first visit
 let vocabFreqLoad = null;
-let vocabByThai = null;  // Thai -> { cards: [{ card, deck }], phrase }, built once (vocabIndex)
+let vocabByThai = null;  // Thai -> { cards: [{ card, decks }], phrase }, built once (vocabIndex)
 
 const knownMap = () => loadStore().known || {};
 const fmtCount = (n) => n.toLocaleString('en');
@@ -8124,34 +8124,48 @@ function loadVocabFreq() {
 function vocabIndex() {
   if (vocabByThai) return vocabByThai;
   vocabByThai = new Map();
-  const seen = new Set();
+  const seen = new Map(); // cardKey -> its entry: one a card, with every topic it's in
   for (const d of state.decks) {
     if (d.passage) continue;
     for (const c of d.cards) {
+      if (c.alpha) continue;
       const key = cardKey(c);
-      if (c.alpha || seen.has(key)) continue;
-      seen.add(key);
+      if (seen.has(key)) {
+        seen.get(key).decks.push(d);
+        continue;
+      }
       let e = vocabByThai.get(c.thai);
       if (!e) vocabByThai.set(c.thai, (e = { cards: [], phrase: isPhrase(c) }));
-      e.cards.push({ card: c, deck: d });
+      const entry = { card: c, decks: [d] };
+      seen.set(key, entry);
+      e.cards.push(entry);
     }
   }
   return vocabByThai;
 }
 
 // A word as Most used shows it: Top 500 Spoken Words' card first (its gloss gives the word's main
-// senses), then its other meanings, three at most, one that adds nothing left out (ที่'s "at"). Thai
-// Script's cards gloss a spelling rule ("said high, though spelt rising"), so only as a last resort.
+// senses), else the card in the most topics; then its other meanings, three at most, one that adds
+// nothing left out (ที่'s "at"). A card is ranked by every topic it's in: by its first alone, มี showed
+// Music's "mi (E)", as its "to have" was first in a Thai Script topic (the user's report, 2026-11-14).
+// A card only in Thai Script glosses a spelling rule ("said high, though spelt rising"), and one only in
+// a dialect's topics isn't the standard word the list counts (Southern ยัง "to have"): a last resort.
+const VOCAB_ASIDE = new Set(['Thai Script', 'Southern Thai', 'Isan Thai', 'Northern Thai']);
+const scriptOnly = ({ decks }) => decks.every((d) => VOCAB_ASIDE.has(d.category));
+// A gloss's senses, to tell one that adds nothing: นาย's "Mr" is in "you… / boss / Mr.", and ของ's
+// "of / belonging to" in "of, belonging to / thing".
+const glossParts = (english) => english.toLowerCase().split(/\s*[\/,;]\s*/).map((m) => m.replace(/[.:]+$/, '').trim()).filter(Boolean);
 function vocabWordCard(thai) {
   const e = vocabIndex().get(thai);
   if (!e) return null;
-  const order = ({ deck }) => (deck.group === 'Top 500 Spoken Words' ? 0 : deck.category === 'Thai Script' ? 2 : 1);
-  const sorted = [...e.cards].sort((a, b) => order(a) - order(b));
+  const top = ({ decks }) => decks.some((d) => d.group === 'Top 500 Spoken Words');
+  const sorted = [...e.cards].sort((a, b) => top(b) - top(a) || scriptOnly(a) - scriptOnly(b) || b.decks.length - a.decks.length);
   const meanings = [];
   const parts = new Set();
-  for (const { card, deck } of sorted) {
-    if (meanings.length === 3 || (deck.category === 'Thai Script' && meanings.length)) break;
-    const its = card.english.split(/\s+\/\s+/);
+  for (const entry of sorted) {
+    const { card } = entry;
+    if (meanings.length === 3 || (scriptOnly(entry) && meanings.length)) break;
+    const its = glossParts(card.english);
     if (its.every((m) => parts.has(m))) continue;
     its.forEach((m) => parts.add(m));
     meanings.push(card.english);
@@ -8360,9 +8374,10 @@ function renderVocabRun({ say = true } = {}) {
   els.vocabQ.textContent = vocabIndex().get(run.thai)?.phrase ? 'Do you know this phrase?' : 'Do you know this word?';
   els.vocabTh.textContent = run.card.thai;
   els.vocabTr.textContent = run.card.translit || '';
-  els.vocabEn.replaceChildren(...shown.meanings.map((m) => {
+  els.vocabEn.replaceChildren(...shown.meanings.map((m, i) => {
     const line = document.createElement('p');
     line.textContent = m;
+    if (i) line.className = 'also'; // a second meaning (ผม's "hair"), under the main one and quieter
     return line;
   }));
   els.vocabPlay.dataset.say = cardSay(run.card);
