@@ -65,6 +65,9 @@ def audit(decks):
         for k in ('id', 'category', 'name', 'description'):
             if not dk.get(k):
                 errors['topic missing a field'].append(f"{dk.get('name')}: {k}")
+        # A topic of phrases (Small Talk, Sentence Patterns…), left out of Vocabulary (2026-11-14): true or absent.
+        if 'phrases' in dk and dk['phrases'] is not True:
+            errors['topic "phrases" not true (leave it out for words)'].append(dk['name'])
     for label, key in (('duplicate topic id', 'id'), ('duplicate topic name', 'name')):
         errors[label] += [v for v, n in Counter(dk[key] for dk in decks).items() if n > 1]
     seen_cats, last = [], None

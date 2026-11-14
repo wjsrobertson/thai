@@ -70,6 +70,9 @@ Audio / TTS → Generator).
 - **Topic size: about 20 cards, never over 25** (the user's rule since 2026-10-06; bigger topics
   are a pain to study). Split a growing topic along real sub-themes and name the parts
   "Topic: Sub-theme" when the sub-theme alone wouldn't say which topic it is.
+- **`phrases: true` (optional, on a topic):** a topic of phrases, sayings or sentences rather than
+  words (Small Talk, Sentence Patterns, Idioms & Proverbs). Left out of Vocabulary (see there); the
+  rest of the app shows it as before. Absent means words; audit_decks.py allows only `true`.
 - **`formerIds` (optional, on a topic):** old topic ids it replaces. The app resolves a saved current
   topic through them, so splitting or regrouping topics doesn't strand anyone. When splitting,
   give the first part the original id instead.
@@ -2293,6 +2296,30 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     left" and Stop row; Continue to its end ("You know 1 of them now", New words · 5,121, Didn't
     know · 1, All · 5); All · 5 through to "You know 4 of the 5"; New words back to word 6; Stop; no
     script errors, no scroll.
+- **Topics of phrases left out** (the user's call, the same day: "Small Talk: Questions are phrases
+  and should not be in this vocab section… exclude based on a new flag"): a topic can be
+  `phrases: true` (decks.json), and Vocabulary's picker leaves those out (`pickerModel`), a group's or
+  category's All skips their cards and counts without them (`vocabSource`, `pickerHead`), and a run
+  of one started before drops off the page. Cards are still per topic: a word in a phrase topic
+  and a word topic is still there through the word topic, and through Most used.
+  - **The 40 flagged**, chosen by hand from two measures (the share of cards that are phrases by
+    `isPhrase`, and of English glosses that read as something said: a question, a request, "I…"),
+    as either alone misleads (Colors is 75% "phrases" by `isPhrase`, สีแดง being two words; Question
+    Words read as questions): Conversation's Small Talk (both), Plans & Invitations, Saying No,
+    Staying Vague, Opinions & Reactions, Everyday Responses, Phone Calls & Messages, Spoken Chunks:
+    Orders and Linking; Survival Phrases, Catching Up & Good Wishes, Pronouns in Practice, Asking
+    About Words, Doctor Talk (both), Reporting a Crime (both), Negotiation & Bargaining, Ordering &
+    Paying, Business: Meeting Phrases and Customer Service; the four Sentence Patterns and
+    Classifiers: This One, How Many & Each; Telling the Time (three), Saying the Date, How Long &
+    How Long Ago; the four Idioms & Proverbs, Southern: Idioms, Tone Chants, Isan: Phrases and
+    Southern: Phrases.
+  - **Left as words, mixed:** Northern: Phrases & People (half greetings, half family words), Spoken
+    Chunks: Reactions and Time & Amounts (ทุกอย่าง, อีกครั้ง), Greetings & Politeness, Hotels: Rooms
+    & Problems, Signs & Notices, Medicine: Reading the Label.
+  - Checked (scratch `vocab_phrases_probe.py`, 1280 × 800): Small Talk, Sentence Patterns, Idioms and
+    Telling the Time not found in Vocabulary's picker; Conversation 2 topics, All 32 (230 in the
+    normal picker, which still lists all 12); Classifiers 4 topics; a recent Small Talk run gone from
+    the page; Conversation's All run (1 / 32); no script errors.
 - **Checked** headless (scratch `vocab_probe.py`, `vocab_bar_probe.py`) at 390 × 664, 763 and 844
   (text 1.3 at 844) and 1280 × 800: no scroll on a run (664: card 68–470, Undo's row 480–524, the
   answers 534–590, the bar at 608), no sideways scroll; Yes, No, Undo and the keys; the word dialog;

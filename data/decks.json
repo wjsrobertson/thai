@@ -40,6 +40,7 @@
       "group": "First Words",
       "name": "Catching Up & Good Wishes",
       "description": "Long time no see, what are you up to, see you later, and what to say for a birthday, New Year, illness or news.",
+      "phrases": true,
       "cards": [
         { "thai": "ไม่ได้เจอกันนาน", "translit": "mâi dâai jəə gan naan", "english": "long time no see", "note": "Often with เลย: ไม่ได้เจอกันนานเลย.", "words": ["ไม่::not / no", "ได้::can / get / did", "เจอ::to meet / find / run into", "กัน::together / each other", "นาน::for a long time"] },
         { "thai": "ทำอะไรอยู่", "translit": "tham à-rai yùu", "english": "what are you up to?", "note": "อยู่ after a verb: going on now. A usual first message to a friend.", "words": ["ทำ::to do / to make", "อะไร::what", "อยู่::ongoing (after verb)"] },
@@ -63,6 +64,7 @@
       "group": "First Words",
       "name": "Survival Phrases",
       "description": "Get unstuck in real conversations.",
+      "phrases": true,
       "cards": [
         { "thai": "พูดอีกครั้งได้ไหม", "translit": "phûut ìik khráng dâai mǎi", "english": "could you say that again?", "words": ["พูด::to speak / say", "อีก::again / more / another", "ครั้ง::(classifier) times / occurrences", "ได้::can / get / did", "ไหม::yes/no question particle"] },
         { "thai": "พูดช้า ๆ ได้ไหม", "translit": "phûut cháa cháa dâai mǎi", "english": "could you speak more slowly?" },
@@ -139,6 +141,7 @@
       "name": "Pronouns in Practice",
       "description": "How Thais really say I and you: leaving them out, family words, nicknames, and the pairs that go together.",
       "about": "Thai has many words for I and you, and choosing one says who you are to each other: older or younger, close or not, man or woman, at home or at work. Often the best choice is none. Thai drops pronouns whenever it's clear who is meant: ไปไหนมา, กินข้าวหรือยัง.\n\nFamily and role words do the work instead. Someone older is พี่ and calls themself พี่; someone younger is น้อง. Parents are แม่ and พ่อ to their children of any age; teachers are ครู, doctors หมอ. Strangers get the same words by age: ป้า, ลุง, พี่, น้อง.\n\nMany people, women especially, call themselves by their nickname: แพรไม่รู้ค่ะ. It sounds warm and modest. ฉัน, the textbook I, can sound bookish or blunt in real conversation; it lives in songs, books and subtitles. Girls and young women say หนู to elders. เรา is we, a casual I, or you from an adult to a child.\n\nคุณ is the polite you for strangers, customers and colleagues. Its root is virtue, merit (บุญคุณ, คุณภาพ), and it began as a title (คุณแม่, คุณหมอ), so between close people it sounds distant, and between partners like the start of a row.\n\nThe words come in pairs, and mixing them jars: ผม or ดิฉัน with คุณ (polite), ฉัน with เธอ (songs, films, close friends), เค้า with ตัวเอง (couples), กู with มึง (close mates, or a fight), อั๊ว with ลื้อ (old Chinatown).",
+      "phrases": true,
       "cards": [
         { "thai": "ไปไหนมา", "translit": "pai nǎi maa", "english": "where have you been?", "note": "Often just a greeting; ไปธุระมา (been out on errands) is a fine answer.", "words": ["ไป::to go", "ไหน::where / which", "มา::to come"] },
         { "thai": "กินข้าวหรือยัง", "translit": "gin khâao rʉ̌ʉ-yang", "english": "have you eaten yet?", "note": "Really a greeting, like \"how are you?\". …หรือยัง = …yet? Answer กินแล้ว, or ยัง (not yet).", "words": ["กิน::to eat", "ข้าว::rice", "หรือยัง::… yet? (question tag)"] },
@@ -778,6 +781,7 @@
       "group": "Time & Date",
       "name": "Telling the Time: Day",
       "description": "Thai splits the day into blocks, each with its own word. 6–11 am: …โมงเช้า. 1–3 pm: บ่าย…โมง. 4–6 pm: …โมงเย็น. In speech เช้า is often dropped: แปดโมง = 8 am.",
+      "phrases": true,
       "cards": [
         { "thai": "หกโมงเช้า", "translit": "hòk moong cháao", "english": "6 am", "note": "Lit. \"six o'clock, morning\".", "words": ["หก::6 — six", "โมง::o'clock (daytime hours)", "เช้า::morning"] },
         { "thai": "เจ็ดโมงเช้า", "translit": "jèt moong cháao", "english": "7 am", "words": ["เจ็ด::7 — seven", "โมง::o'clock (daytime hours)", "เช้า::morning"] },
@@ -802,6 +806,7 @@
       "group": "Time & Date",
       "name": "Telling the Time: Night",
       "description": "From 7 pm the hours are counted again with ทุ่ม: หนึ่งทุ่ม = 7 pm. After midnight they use ตี: ตีหนึ่ง = 1 am. Both come from the drum and gong once used to mark the hours.",
+      "phrases": true,
       "cards": [
         { "thai": "หนึ่งทุ่ม", "translit": "nʉ̀ng thûm", "english": "7 pm", "note": "Often just ทุ่ม.", "words": ["หนึ่ง::1 — one", "ทุ่ม::o'clock (7–11 pm)"] },
         { "thai": "สองทุ่ม", "translit": "sɔ̌ɔng thûm", "english": "8 pm", "words": ["สอง::2 — two", "ทุ่ม::o'clock (7–11 pm)"] },
@@ -826,6 +831,7 @@
       "group": "Time & Date",
       "name": "Telling the Time: Minutes & 24-Hour",
       "description": "Minutes go after the hour, and ครึ่ง is half past. Tickets, timetables and the news use the 24-hour clock with นาฬิกา, written 14.00 น.",
+      "phrases": true,
       "cards": [
         { "thai": "แปดโมงครึ่ง", "translit": "pɛ̀ɛt moong khrʉ̂ng", "english": "8:30 am", "note": "ครึ่ง (half) goes after the hour.", "words": ["แปด::8 — eight", "โมง::o'clock (daytime hours)", "ครึ่ง::half"] },
         { "thai": "บ่ายสามโมงครึ่ง", "translit": "bàai sǎam moong khrʉ̂ng", "english": "3:30 pm", "words": ["บ่าย::afternoon (1–4 pm)", "สาม::3 — three", "โมง::o'clock (daytime hours)", "ครึ่ง::half"] },
@@ -851,6 +857,7 @@
       "group": "Time & Date",
       "name": "Saying the Date",
       "description": "The day, then the month, then the year: วันอังคารที่ 21 ตุลาคม 2569. The year is the Buddhist Era's, the Western year plus 543.",
+      "phrases": true,
       "cards": [
         { "thai": "วันนี้วันที่เท่าไหร่", "translit": "wan-níi wan-thîi thâo-rài", "english": "what's the date today?", "note": "Answer with the date: วันที่ยี่สิบเอ็ด. เท่าไร in writing.", "words": ["วันนี้::today", "วันที่::date / on the (Xth)", "เท่าไหร่::how much / how many"] },
         { "thai": "วันนี้วันอะไร", "translit": "wan-níi wan à-rai", "english": "what day is it today?", "note": "Answer with the day: วันอังคาร.", "words": ["วันนี้::today", "วัน::day", "อะไร::what"] },
@@ -880,6 +887,7 @@
       "group": "Time & Date",
       "name": "How Long & How Long Ago",
       "description": "ชั่วโมง is how long, โมง what time: สองชั่วโมง = two hours, บ่ายสองโมง = 2 pm. ก่อน or ที่แล้ว after a time makes it ago; อีก before it, from now.",
+      "phrases": true,
       "cards": [
         { "thai": "นานเท่าไหร่", "translit": "naan thâo-rài", "english": "how long?", "note": "Also นานแค่ไหน.", "words": ["นาน::for a long time", "เท่าไหร่::how much / how many"] },
         { "thai": "ใช้เวลาประมาณสองชั่วโมง", "translit": "chái wee-laa prà-maan sɔ̌ɔng chûa-moong", "english": "it takes about two hours", "note": "ใช้เวลา = to take (time). ประมาณ = about.", "words": ["ใช้::to use", "เวลา::time / when", "ประมาณ::about / approximately", "สอง::2 — two", "ชั่วโมง::hour"] },
@@ -977,6 +985,7 @@
       "category": "Conversation",
       "name": "Small Talk: Questions",
       "description": "What people ask when they meet you. Thais ask age, marital status and salary freely; it's friendly, not nosy.",
+      "phrases": true,
       "cards": [
         { "thai": "คุณชื่ออะไร", "translit": "khun chʉ̂ʉ à-rai", "english": "what's your name?", "words": ["คุณ::you (polite)", "ชื่อ::name / to be called", "อะไร::what"] },
         { "thai": "ชื่อเล่นอะไร", "translit": "chʉ̂ʉ-lên à-rai", "english": "what's your nickname?", "note": "Most Thais go by a short nickname, even at work.", "words": ["ชื่อเล่น::nickname", "อะไร::what"] },
@@ -1005,6 +1014,7 @@
       "category": "Conversation",
       "name": "Small Talk: About You",
       "description": "Answers about yourself. Thais often drop ผม / ฉัน when it's clear who's talking, as most of these do.",
+      "phrases": true,
       "cards": [
         { "thai": "มาจากอังกฤษ", "translit": "maa jàak ang-grìt", "english": "I'm from England", "note": "มาจาก + country: มาจากอเมริกา = from America.", "words": ["มา::to come", "จาก::from", "อังกฤษ::England, the UK"] },
         { "thai": "ทำงานเป็นครู", "translit": "tham-ngaan pen khruu", "english": "I work as a teacher", "note": "ทำงานเป็น + job.", "words": ["ทำงาน::to work", "เป็น::to be (identity / role)", "ครู::teacher / coach"] },
@@ -1030,6 +1040,7 @@
       "category": "Conversation",
       "name": "Opinions & Reactions",
       "description": "Saying what you think, agreeing and disagreeing, and reacting to news. Thais tend to soften disagreement.",
+      "phrases": true,
       "cards": [
         { "thai": "คิดว่า", "translit": "khít wâa", "english": "I think (that) …", "note": "ผมคิดว่าดี = I think it's good.", "words": ["คิด::to think", "ว่า::that (reporting) / to say"] },
         { "thai": "เห็นด้วย", "translit": "hěn dûai", "english": "I agree", "words": ["เห็น::to see / think (opinion)", "ด้วย::with (by means of)"] },
@@ -1060,6 +1071,7 @@
       "category": "Conversation",
       "name": "Everyday Responses",
       "description": "Short replies you use all day: sure, hang on, got it, never mind, after you, good luck.",
+      "phrases": true,
       "cards": [
         { "thai": "ได้เลย", "translit": "dâai ləəi", "english": "sure / go ahead", "words": ["ได้::can / get / did", "เลย::completely / immediately / really"] },
         { "thai": "โอเค", "translit": "oo-khee", "english": "OK" },
@@ -1093,6 +1105,7 @@
       "category": "Conversation",
       "name": "Plans & Invitations",
       "description": "Asking if someone is free, suggesting going out, fixing a time and place, and calling it off.",
+      "phrases": true,
       "cards": [
         { "thai": "ว่างไหม", "translit": "wâang mǎi", "english": "are you free?", "words": ["ว่าง::empty / free / available", "ไหม::yes/no question particle"] },
         { "thai": "พรุ่งนี้ว่างไหม", "translit": "phrûng-níi wâang mǎi", "english": "are you free tomorrow?", "words": ["พรุ่งนี้::tomorrow", "ว่าง::empty / free / available", "ไหม::yes/no question particle"] },
@@ -1123,6 +1136,7 @@
       "name": "Saying No Without Saying No",
       "description": "How Thais refuse: putting it off, a reason nobody checks, the offer that goes round twice, and the yes that means no.",
       "about": "Between adults who aren't close, a flat ไม่ is rare, and to someone older or senior it's hardly ever said: it costs them face and makes you look rude. Thais say no by putting things off, giving a reason, or staying vague, and the listener hears the no.\n\nPutting it off: ไว้คราวหน้า, ไว้ก่อน, เดี๋ยวดูก่อน, ขอคิดดูก่อน, เดี๋ยวค่อยว่ากัน. \"Next time\" is a no unless a day comes with it.\n\nA reason nobody checks: ไม่สะดวก, ไม่ค่อยว่าง, ติดธุระ. \"Not very free\" answers the invitation; it isn't a report on your diary, and asking what the ธุระ is, is pushing.\n\nOffers go round twice. Offered food, a lift or help, many people decline once out of เกรงใจ (เกรงใจจัง, ไม่เป็นไร, ไม่ต้องหรอก). A good host insists (ไม่ต้องเกรงใจ), and the second offer is taken. A real no comes again, with a reason or a full stomach: อิ่มแล้ว.\n\nHearing a yes: ก็ได้ and แล้วแต่ are yeses with a shrug, ได้มั้ง hardly a yes at all, and คงไม่ได้ is a no. ไม่เอา is fine with family and close friends, and blunt anywhere else; ไม่ได้จริง ๆ is the no that comes after the soft ones.",
+      "phrases": true,
       "cards": [
         { "thai": "ไม่สะดวก", "translit": "mâi sà-dùak", "english": "it's not convenient", "note": "A polite way to say no.", "words": ["ไม่::not / no", "สะดวก::convenient"] },
         { "thai": "ไม่ค่อยว่าง", "translit": "mâi khɔ̂i wâang", "english": "I'm a bit busy (lit. not very free)", "note": "Means: I'm not coming. An answer to the invitation, not a report on the diary.", "words": ["ไม่ค่อย::not really / not often / hardly", "ว่าง::empty / free / available"] },
@@ -1151,6 +1165,7 @@
       "name": "Staying Vague: Nosy Questions",
       "description": "Pay, prices, age, love life and where you're off to: the questions Thais ask freely, and the vague answers that are just as normal.",
       "about": "Thais ask what you earn, what you paid and why you aren't married without meaning to pry, and a vague answer is just as normal: nobody presses for the number. Each question here comes before its answers.\n\nMoney: พอกินพอใช้ is the usual answer about pay, and พอมีพอกิน about how well off you are. หรอก softens a no: ไม่มากหรอก, ไม่แพงหรอก. ไม่บอกหรอก and ทายดูสิ are for friends, with a smile.\n\nAny question: ประมาณนั้น, เรื่องมันยาว and ไว้ค่อยเล่าให้ฟัง close it politely, and the asker hears that you'd rather not say.",
+      "phrases": true,
       "cards": [
         { "thai": "เงินเดือนเท่าไหร่", "translit": "ngən-dʉan thâo-rài", "english": "how much do you earn? (lit. salary how much)", "note": "Thais ask it freely; a vague answer is normal. Also ได้เงินเดือนเท่าไหร่.", "words": ["เงินเดือน::salary", "เท่าไหร่::how much / how many"] },
         { "thai": "พอกินพอใช้", "translit": "phɔɔ gin phɔɔ chái", "english": "enough to get by (lit. enough to eat, enough to spend)", "note": "The usual answer about pay: not rich, not poor.", "words": ["พอ::enough / as soon as", "กิน::to eat", "พอ::enough / as soon as", "ใช้::to use"] },
@@ -1184,6 +1199,7 @@
       "category": "Conversation",
       "name": "Phone Calls & Messages",
       "description": "Answering the phone, a bad line, calling back, and LINE, the chat app nearly everyone in Thailand uses.",
+      "phrases": true,
       "cards": [
         { "thai": "ฮัลโหล", "translit": "han-lǒo", "english": "hello? (on the phone)" },
         { "thai": "ใครพูดครับ", "translit": "khrai phûut khráp", "english": "who's speaking?", "words": ["ใคร::who", "พูด::to speak / say", "ครับ::polite particle (male)"] },
@@ -1214,6 +1230,7 @@
       "category": "Conversation",
       "name": "Spoken Chunks: Orders & Enough Already",
       "description": "What people say as one unit: get up, come in, wait a moment, that's enough, never mind.",
+      "phrases": true,
       "cards": [
         { "thai": "ลุกขึ้น", "translit": "lúk-khʉ̂n", "english": "get up!", "note": "Stand up, or get out of bed.", "words": ["ลุก::to get up / rise", "ขึ้น::to go up / get on"] },
         { "thai": "นั่งลง", "translit": "nâng-long", "english": "sit down", "note": "ลง makes it \"down\". นั่งก่อนสิ is the friendlier way to offer a seat.", "words": ["นั่ง::to sit", "ลง::to go down / get off"] },
@@ -1240,6 +1257,7 @@
       "category": "Conversation",
       "name": "Spoken Chunks: Linking What You Say",
       "description": "In that case, otherwise, by the way, let's just say: the words that hold spoken Thai together.",
+      "phrases": true,
       "cards": [
         { "thai": "ถ้าอย่างนั้น", "translit": "thâa yàang-nán", "english": "in that case", "note": "Casual: งั้น.", "words": ["ถ้า::if", "อย่างนั้น::like that"] },
         { "thai": "ไม่งั้น", "translit": "mâi ngán", "english": "otherwise, or else", "note": "Short for ไม่อย่างนั้น. รีบไป ไม่งั้นตกรถ = Hurry, or you'll miss the bus." },
@@ -1311,6 +1329,7 @@
       "category": "Talking About Language",
       "name": "Asking About Words",
       "description": "The questions you need with a tutor, or anyone patient. \"Say it again\" and \"speak slowly\" are in Survival Phrases.",
+      "phrases": true,
       "cards": [
         { "thai": "ภาษาไทยเรียกว่าอะไร", "translit": "phaa-sǎa-thai rîak wâa à-rai", "english": "what is this called in Thai?", "words": ["ภาษาไทย::Thai (subject)", "เรียก::to call (a name / summon)", "ว่า::that (reporting) / to say", "อะไร::what"] },
         { "thai": "ภาษาไทยพูดว่าอะไร", "translit": "phaa-sǎa-thai phûut wâa à-rai", "english": "how do you say it in Thai?", "words": ["ภาษาไทย::Thai (subject)", "พูด::to speak / say", "ว่า::that (reporting) / to say", "อะไร::what"] },
@@ -1959,6 +1978,7 @@
       "description": "ผันวรรณยุกต์: one syllable run through every tone mark, class by class, as Thai children chant it, and the definitions and base tones schools teach with it. Say each until it's automatic.",
       "about": "Thai schools teach the tone rules as ผันวรรณยุกต์: take one syllable and run it through every tone mark, class by class, out loud. Chant the three live ones (กา…, ขา…, คา…) until they're automatic, and you have the whole table for live syllables.\n\nSchools then teach three things by heart: the line อักษรกลางผันได้ห้าเสียง…, the definitions of คำเป็น and คำตาย (by the final-consonant families, see Final Sound Families), and each class's base tone (พื้นเสียง), live and dead, which the marks run on from.\n\nIn short, four rules. Mid class is the reference: the mark's name is the tone's name (ไม้เอก gives เสียงเอก, low). High class takes the marks as mid does, but unmarked it rises. Low class is one step higher: ◌่ gives falling, ◌้ gives high, and unmarked it's mid. A dead syllable with no mark is low, except on low class: high if the vowel is short, falling if it's long.\n\nRead the other way, down the table's columns, one sound with a mid, a high and a low letter: กา ขา คา (live), กัด ขัด คัด (dead, short), ตาก ถาก ทาก (dead, long).\n\nA high and a low letter fill each other's gaps: คา ข่า ค่า ค้า ขา (The Five Tones) gets all five tones from ข and ค.",
       "board": {"hint": "Tap through each chant, one syllable at a time, as Thai children recite it.", "groups": [["กา", "ก่า", "ก้า", "ก๊า", "ก๋า"], ["ปา", "ป่า", "ป้า", "ป๊า", "ป๋า"], ["ขา", "ข่า", "ข้า"], ["คา", "ค่า", "ค้า"], ["จะ", "จ้ะ", "จ๊ะ"], ["กา", "ขา", "คา"], ["กัด", "ขัด", "คัด"], ["ตาก", "ถาก", "ทาก"]]},
+      "phrases": true,
       "cards": [
         { "thai": "กา ก่า ก้า ก๊า ก๋า", "translit": "gaa gàa gâa gáa gǎa", "english": "mid class: all five tones (mid, low, falling, high, rising)", "note": "The only class that takes all four marks, and the mark names the tone: ไม้เอก low, ไม้โท falling, ไม้ตรี high, ไม้จัตวา rising." },
         { "thai": "ปา ป่า ป้า ป๊า ป๋า", "translit": "paa pàa pâa páa pǎa", "english": "mid class again: five real words", "note": "ปา = to throw, ป่า = forest, ป้า = aunt, ป๊า = dad (Chinese-Thai families), ป๋า = \"daddy\" (a rich patron)." },
@@ -2661,6 +2681,7 @@
       "name": "Classifiers: This One, How Many & Each",
       "description": "Where the classifier goes: this one and which one, a cat or one cat, how many, every, each, some, the third, twenty baht each. Each card is a short phrase; the note gives the pattern.",
       "about": "To count: noun + number + classifier (แมวสามตัว). To point: noun + classifier + นี้, นั้น or ไหน (แมวตัวนี้). Both: noun + number + classifier + นี้ (แมวสองตัวนี้). กี่, ทุก, แต่ละ, หลาย, บาง and อีก come before the classifier; นึง, เดียว and ละ after it. Once it's clear what's meant, the classifier alone stands for the noun: ตัวนี้, อันไหน, ตัวสีแดง.",
+      "phrases": true,
       "cards": [
         { "thai": "หนังสือเล่มนี้", "translit": "nǎng-sʉ̌ʉ lêm níi", "english": "this book", "note": "Noun + classifier + นี้ = this …: รถคันนี้, แมวตัวนี้.", "words": ["หนังสือ::book", "เล่ม::(classifier) books, knives", "นี้::this (after a noun)"] },
         { "thai": "รถคันนั้น", "translit": "rót khan nán", "english": "that car", "note": "Noun + classifier + นั้น = that …; โน้น = that … over there.", "words": ["รถ::car / vehicle", "คัน::(classifier) cars, vehicles, umbrellas, spoons", "นั้น::that (after a noun)"] },
@@ -3364,6 +3385,7 @@
       "group": "Sentence Patterns",
       "name": "Sentence Patterns: Past, Present & Future",
       "description": "Thai verbs never change: small words around them show when. Each card is a short sentence; the note gives the pattern.",
+      "phrases": true,
       "cards": [
         { "thai": "กินข้าวแล้ว", "translit": "gin khâao lɛ́ɛo", "english": "I've eaten (already)", "note": "Verb + แล้ว = already, done.", "words": ["กิน::to eat", "ข้าว::rice", "แล้ว::already / and then"] },
         { "thai": "เสร็จแล้ว", "translit": "sèt lɛ́ɛo", "english": "done / finished", "note": "แล้ว: it has happened. Not yet: ยังไม่เสร็จ.", "words": ["เสร็จ::finished / done", "แล้ว::already / and then"] },
@@ -3391,6 +3413,7 @@
       "group": "Sentence Patterns",
       "name": "Sentence Patterns: Can, Must & Don't",
       "description": "ได้, เป็น and ไม่ออก go after the verb; ต้อง, ควร, อย่า and ห้าม go before it. Each card is a short sentence; the note gives the pattern.",
+      "phrases": true,
       "cards": [
         { "thai": "พูดภาษาไทยได้", "translit": "phûut phaa-sǎa-thai dâai", "english": "I can speak Thai", "note": "Verb + ได้ = can.", "words": ["พูด::to speak / say", "ภาษาไทย::Thai (subject)", "ได้::can / get / did"] },
         { "thai": "พูดภาษาไทยไม่ได้", "translit": "phûut phaa-sǎa-thai mâi dâai", "english": "I can't speak Thai", "note": "Verb + ไม่ได้ = can't. Before the verb, ไม่ได้พูด = didn't speak.", "words": ["พูด::to speak / say", "ภาษาไทย::Thai (subject)", "ไม่::not / no", "ได้::can / get / did"] },
@@ -3417,6 +3440,7 @@
       "group": "Sentence Patterns",
       "name": "Sentence Patterns: Make, Let & Get",
       "description": "ให้ makes, lets or gives; โดน and ถูก are the passive; ได้ before a verb is \"got to\". Each card is a short sentence; the note gives the pattern.",
+      "phrases": true,
       "cards": [
         { "thai": "แม่ให้ไปซื้อของ", "translit": "mɛ̂ɛ hâi pai sʉ́ʉ khɔ̌ɔng", "english": "mum had me go shopping", "note": "ให้ + verb = make or have someone do it.", "words": ["แม่::mother / mum", "ให้::to give / let / for", "ไป::to go", "ซื้อ::to buy", "ของ::of / belonging to"] },
         { "thai": "ให้ฉันช่วยนะ", "translit": "hâi chǎn chûai ná", "english": "let me help", "note": "ให้ + person + verb = let them do it.", "words": ["ให้::to give / let / for", "ฉัน::I / me (female, informal)", "ช่วย::to help / please (do)", "นะ::softener / \"you know?\""] },
@@ -3441,6 +3465,7 @@
       "group": "Sentence Patterns",
       "name": "Sentence Patterns: Linking Ideas",
       "description": "Because, so, if, although, before and after, and the pairs that frame a sentence: ถ้า … ก็, ทั้ง … ทั้ง, ยิ่ง … ยิ่ง. Each card is a short sentence; the note gives the pattern.",
+      "phrases": true,
       "cards": [
         { "thai": "ไม่เผ็ดเลย", "translit": "mâi phèt ləəi", "english": "not spicy at all", "note": "ไม่ + a word + เลย = not at all.", "words": ["ไม่::not / no", "เผ็ด::spicy", "เลย::completely / immediately / really"] },
         { "thai": "ไม่ค่อยเผ็ด", "translit": "mâi-khɔ̂i phèt", "english": "not very spicy", "note": "ไม่ค่อย = not very, not often.", "words": ["ไม่ค่อย::not really / not often / hardly", "เผ็ด::spicy"] },
@@ -76264,6 +76289,7 @@
       "name": "Southern: Phrases",
       "description": "Greetings and stock phrases. Southern speech is fast and clipped — expect syllables to disappear. Audio uses the Central Thai voice, so tones are Central, not Southern. Transliterations follow the Thai spelling.",
       "dialect": "southern",
+      "phrases": true,
       "cards": [
         { "thai": "แหลงใต้", "translit": "lɛ̌ɛng-tâi", "english": "to speak Southern Thai", "note": "Central: พูดภาษาใต้." },
         { "thai": "แหลงใต้ได้", "translit": "lɛ̌ɛng-tâi dâai", "english": "I can speak Southern Thai", "words": ["แหลงใต้::to speak Southern Thai", "ได้::can / get / did"] },
@@ -76427,6 +76453,7 @@
       "name": "Southern: Idioms",
       "description": "Short, punchy Southern sayings. English gives the meaning; the note gives the literal image where it's clear. Audio uses the Central Thai voice, so tones are Central, not Southern. Transliterations follow the Thai spelling.",
       "dialect": "southern",
+      "phrases": true,
       "cards": [
         { "thai": "นอนหวันแยงโมง", "translit": "nɔɔn-wǎn-yɛɛng-moong", "english": "to laze about all day", "note": "Lit. sleep till the sun shines on your bottom." },
         { "thai": "กินเหมือนผีอยู่ใน", "translit": "gin mʉ̌an phǐi yùu nai", "english": "to eat a lot and never get fat", "note": "Lit. eat as if a ghost lives inside you.", "words": ["กิน::to eat", "เหมือน::like / as / similar", "ผี::ghost", "อยู่::to be at / stay / live", "ใน::in / inside"] },
@@ -76455,6 +76482,7 @@
       "category": "Isan Thai",
       "name": "Isan: Phrases",
       "description": "Isan, the North-East, speaks a dialect close to Lao. Greetings and everyday questions. Audio uses the Central Thai voice, so tones are Central, not Isan. Transliterations follow the Thai spelling.",
+      "phrases": true,
       "cards": [
         { "thai": "สบายดีบ่", "translit": "sà-baai-dii bɔ̀", "english": "how are you?", "note": "Central: สบายดีไหม.", "words": ["สบายดี::I'm fine", "บ่::not / no"] },
         { "thai": "กินข้าวแล้วบ่", "translit": "gin khâao lɛ́ɛo bɔ̀", "english": "have you eaten?", "note": "Central: กินข้าวหรือยัง.", "words": ["กิน::to eat", "ข้าว::rice", "แล้ว::already / and then", "บ่::not / no"] },
@@ -77714,6 +77742,7 @@
       "group": "Language & Literature",
       "name": "Idioms & Proverbs: Wisdom",
       "description": "สำนวน full of buffaloes, elephants, fish and chilli: advice proverbs. English gives the meaning; the note gives the literal one.",
+      "phrases": true,
       "cards": [
         { "thai": "น้ำขึ้นให้รีบตัก", "translit": "náam khʉ̂n hâi rîip tàk", "english": "make hay while the sun shines", "note": "Lit. when the water rises, hurry to scoop it.", "words": ["น้ำ::water", "ขึ้น::to go up / get on", "ให้::to give / let / for", "รีบ::to hurry", "ตัก::to scoop / ladle out"] },
         { "thai": "ช้าๆ ได้พร้าเล่มงาม", "translit": "cháa-cháa dâai phráa lêm ngaam", "english": "slow and steady wins the race", "note": "Lit. take it slow and you get a fine machete." },
@@ -77747,6 +77776,7 @@
       "group": "Language & Literature",
       "name": "Idioms & Proverbs: People & Behaviour",
       "description": "Idioms for hypocrites, show-offs, worriers, traitors and people who can't speak up.",
+      "phrases": true,
       "cards": [
         { "thai": "ไก่เห็นตีนงู งูเห็นนมไก่", "translit": "gài hěn tiin nguu nguu hěn nom gài", "english": "it takes one to know one", "note": "Lit. the chicken sees the snake's feet, the snake sees the chicken's breasts." },
         { "thai": "น้ำผึ้งหยดเดียว", "translit": "nám-phʉ̂ng yòt diao", "english": "a trifle that starts a big fight", "note": "Lit. a single drop of honey.", "words": ["น้ำผึ้ง::honey", "หยด::drop / to drip", "เดียว::single / alone / one"] },
@@ -77779,6 +77809,7 @@
       "group": "Language & Literature",
       "name": "Idioms & Proverbs: Work, Effort & Luck",
       "description": "Doing things properly, wasted effort, and fortune. English gives the meaning; the note gives the literal image.",
+      "phrases": true,
       "cards": [
         { "thai": "ดินพอกหางหมู", "translit": "din phɔ̂ɔk hǎang mǔu", "english": "to let work pile up", "note": "Lit. \"mud caking a pig's tail\", a little more every day.", "words": ["ดิน::soil / earth", "พอก::to coat, build up in layers", "หาง::tail", "หมู::pig"] },
         { "thai": "จับแพะชนแกะ", "translit": "jàp phɛ́ chon gɛ̀", "english": "to make do / cobble something together", "note": "Lit. \"make a goat butt a sheep\".", "words": ["จับ::to catch / hold / arrest", "แพะ::goat", "ชน::to crash / collide", "แกะ::sheep"] },
@@ -77813,6 +77844,7 @@
       "group": "Language & Literature",
       "name": "Idioms & Proverbs: Talk & Relationships",
       "description": "Loose talk, hypocrites and turncoats, and love and family. English gives the meaning; the note gives the literal image.",
+      "phrases": true,
       "cards": [
         { "thai": "หมาเห่าใบตองแห้ง", "translit": "mǎa hào bai-tɔɔng hɛ̂ɛng", "english": "all bark and no bite", "note": "Lit. \"a dog barking at a dry banana leaf\".", "words": ["หมา::dog (casual)", "เห่า::to bark", "ใบตอง::banana leaf", "แห้ง::dry"] },
         { "thai": "ปลาหมอตายเพราะปาก", "translit": "plaa-mɔ̌ɔ taai phrɔ́ pàak", "english": "to talk yourself into trouble", "note": "Lit. \"the climbing perch dies because of its mouth\": it gives itself away by surfacing.", "words": ["ปลาหมอ::climbing perch (fish)", "ตาย::to die / dead", "เพราะ::because", "ปาก::mouth"] },
@@ -78337,6 +78369,7 @@
       "category": "Food & Drink",
       "name": "Ordering & Paying",
       "description": "The menu, recommendations, eat in or take away, allergies and diets, and who pays.",
+      "phrases": true,
       "cards": [
         { "thai": "ขอเมนูหน่อย", "translit": "khɔ̌ɔ mee-nuu nɔ̀i", "english": "can I see the menu?", "words": ["ขอ::to ask for / may I", "เมนู::menu", "หน่อย::a little / please (softener for requests)"] },
         { "thai": "มีอะไรแนะนำไหม", "translit": "mii à-rai nɛ́-nam mǎi", "english": "what do you recommend?", "words": ["มี::to have / there is", "อะไร::what", "แนะนำ::to recommend / introduce", "ไหม::yes/no question particle"] },
@@ -78994,6 +79027,7 @@
       "group": "Shopping",
       "name": "Negotiation & Bargaining",
       "description": "Markets and tuk-tuks expect bargaining. Smile, don't get aggressive — Thais bargain through politeness, not pressure.",
+      "phrases": true,
       "cards": [
         { "thai": "แพงไป", "translit": "phɛɛng pai", "english": "too expensive", "note": "Most useful opening line.", "words": ["แพง::expensive", "ไป::to go"] },
         { "thai": "ลดได้ไหม", "translit": "lót dâai mǎi", "english": "can you give a discount?", "words": ["ลด::to reduce / give a discount", "ได้::can / get / did", "ไหม::yes/no question particle"] },
@@ -80574,6 +80608,7 @@
       "group": "Business",
       "name": "Business: Meeting Phrases",
       "description": "What you say in a meeting: getting started, adding a point, who does what by when, and wrapping up.",
+      "phrases": true,
       "cards": [
         { "thai": "เริ่มประชุมกันเลย", "translit": "rə̂əm prà-chum gan ləəi", "english": "let's start the meeting", "words": ["เริ่ม::to start / begin", "ประชุม::to have a meeting; meeting", "กัน::together / each other", "เลย::completely / immediately / really"] },
         { "thai": "วาระแรก", "translit": "waa-rá rɛ̂ɛk", "english": "the first item (on the agenda)", "note": "วาระ = agenda item.", "words": ["วาระ::agenda item; term (of office)", "แรก::first"] },
@@ -80746,6 +80781,7 @@
       "group": "Business",
       "name": "Business: Customer Service",
       "description": "Helping customers, keeping them waiting politely, complaints, refunds and warranties.",
+      "phrases": true,
       "cards": [
         { "thai": "มีอะไรให้ช่วยไหม", "translit": "mii à-rai hâi chûai mǎi", "english": "how can I help you?", "words": ["มี::to have / there is", "อะไร::what", "ให้::to give / let / for", "ช่วย::to help / please (do)", "ไหม::yes/no question particle"] },
         { "thai": "ยินดีให้บริการ", "translit": "yin-dii hâi bɔɔ-rí-gaan", "english": "happy to help / at your service", "words": ["ยินดี::glad / pleased", "ให้::to give / let / for", "บริการ::service; to serve"] },
@@ -81217,6 +81253,7 @@
       "group": "At the Doctor",
       "name": "Doctor Talk: Explaining Your Problem",
       "description": "Asking for a doctor, where it hurts and for how long, allergies, regular medicines and conditions.",
+      "phrases": true,
       "cards": [
         { "thai": "ฉันรู้สึกไม่สบาย", "translit": "chǎn rúu-sʉ̀k mâi sà-baai", "english": "I don't feel well", "words": ["ฉัน::I / me (female, informal)", "รู้สึก::to feel", "ไม่::not / no", "สบาย::comfortable / well"] },
         { "thai": "ฉันอยากพบหมอ", "translit": "chǎn yàak phóp mɔ̌ɔ", "english": "I'd like to see a doctor", "words": ["ฉัน::I / me (female, informal)", "อยาก::to want (to do)", "พบ::to meet / find (formal)", "หมอ::doctor"] },
@@ -81241,6 +81278,7 @@
       "group": "At the Doctor",
       "name": "Doctor Talk: Questions & Instructions",
       "description": "Is it serious?, dosage and side effects, certificates and costs, and what the doctor tells you.",
+      "phrases": true,
       "cards": [
         { "thai": "ร้ายแรงไหม", "translit": "ráai-rɛɛng mǎi", "english": "is it serious?", "words": ["ร้ายแรง::serious, severe", "ไหม::yes/no question particle"] },
         { "thai": "ต้องนอนโรงพยาบาลไหม", "translit": "tɔ̂ng nɔɔn roong-phá-yaa-baan mǎi", "english": "do I need to be admitted?", "words": ["ต้อง::must / have to", "นอน::to sleep / lie down", "โรงพยาบาล::hospital", "ไหม::yes/no question particle"] },
@@ -83875,6 +83913,7 @@
       "category": "Crime & Law",
       "name": "Reporting a Crime: Calling for Help",
       "description": "Help!, stop thief!, call the police, and saying you've been robbed, lost something or been attacked.",
+      "phrases": true,
       "cards": [
         { "thai": "ช่วยด้วย", "translit": "chûai dûai", "english": "help!", "words": ["ช่วย::to help / please (do)", "ด้วย::with (by means of)"] },
         { "thai": "ขโมย", "translit": "khà-mooi", "english": "thief!", "note": "Shout it. Also the verb \"to steal\"." },
@@ -83896,6 +83935,7 @@
       "category": "Crime & Law",
       "name": "Reporting a Crime: At the Police Station",
       "description": "Filing a report, interpreters and embassies, when and where, describing the culprit, and protecting yourself.",
+      "phrases": true,
       "cards": [
         { "thai": "ฉันอยากแจ้งความ", "translit": "chǎn yàak jɛ̂ɛng-khwaam", "english": "I want to file a report", "words": ["ฉัน::I / me (female, informal)", "อยาก::to want (to do)", "แจ้งความ::to file a police report"] },
         { "thai": "สถานีตำรวจอยู่ที่ไหน", "translit": "sà-thǎa-nii tam-rùat yùu thîi-nǎi", "english": "where is the police station?", "words": ["สถานี::station", "ตำรวจ::police / police officer", "อยู่::to be at / stay / live", "ที่ไหน::where"] },

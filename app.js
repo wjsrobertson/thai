@@ -1651,6 +1651,7 @@ function pickerModel(q) {
   const cats = new Map();
   for (const d of state.decks) {
     if (d.passage) continue; // Reading's passages have their own page
+    if (d.phrases && state.pickerFor === 'vocab') continue; // a topic of phrases (Small Talk) isn't vocabulary (vocabSource)
     const cat = d.category || 'Uncategorized';
     // Names only: descriptions matched too until word search (2026-10-08), whose results they
     // pushed off a phone screen ("like" found nine topics).
@@ -1786,7 +1787,7 @@ function pickerHead(prefix, name, countText, container, q, openSet, key, scopeId
   const all = document.createElement('button');
   all.type = 'button';
   all.className = 'scope-all' + (scopeId === pickerSelectedId() ? ' current' : '');
-  const words = resolveScope(scopeId)?.cards.length || 0;
+  const words = (state.pickerFor === 'vocab' ? vocabSource(scopeId)?.words : resolveScope(scopeId)?.cards)?.length || 0; // Vocabulary's: no phrase topics
   all.textContent = `All ${words}`;
   all.title = `All of ${name}: ${words} words`;
   all.setAttribute('aria-label', all.title);
@@ -8176,6 +8177,8 @@ function vocabWordCard(thai) {
 
 // What a run goes through: its name, its words in order, and how each is shown. A topic's words show
 // that topic's card (ฉัน in Monks is "to eat (of a monk)"); Most used's every meaning (vocabWordCard).
+// Topics of phrases (`phrases: true` in decks.json: Small Talk, Sentence Patterns, Idioms…) are left
+// out, a group's or category's too (the user's call, 2026-11-14): they're sayings, not vocabulary.
 function vocabSource(id) {
   if (id === VOCAB_MOST_USED) {
     if (!vocabFreq) return null;
@@ -8184,8 +8187,9 @@ function vocabSource(id) {
   }
   const scope = resolveScope(id);
   if (!scope || scope.kind === 'all') return null;
+  const cards = scope.kind === 'list' ? scope.cards : scope.decks.filter((d) => !d.phrases).flatMap((d) => d.cards); // a list has no topics
   const byThai = new Map();
-  for (const c of scope.cards) if (!c.alpha && !byThai.has(c.thai)) byThai.set(c.thai, c);
+  for (const c of cards) if (!c.alpha && !byThai.has(c.thai)) byThai.set(c.thai, c);
   return { id, name: scope.name, words: [...byThai.keys()], shown: (thai) => ({ card: byThai.get(thai), meanings: [byThai.get(thai).english] }) };
 }
 
