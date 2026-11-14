@@ -73,6 +73,8 @@ Audio / TTS → Generator).
 - **`phrases: true` (optional, on a topic):** a topic of phrases, sayings or sentences rather than
   words (Small Talk, Sentence Patterns, Idioms & Proverbs). Left out of Vocabulary (see there); the
   rest of the app shows it as before. Absent means words; audit_decks.py allows only `true`.
+  **A topic is all one or the other** (see "Word lists and phrases"): a new card goes in a topic of
+  its kind, and `python3 -u tools/topic_kinds.py report` lists any that don't.
 - **`formerIds` (optional, on a topic):** old topic ids it replaces. The app resolves a saved current
   topic through them, so splitting or regrouping topics doesn't strand anyone. When splitting,
   give the first part the original id instead.
@@ -2315,7 +2317,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     Southern: Phrases.
   - **Left as words, mixed:** Northern: Phrases & People (half greetings, half family words), Spoken
     Chunks: Reactions and Time & Amounts (ทุกอย่าง, อีกครั้ง), Greetings & Politeness, Hotels: Rooms
-    & Problems, Signs & Notices, Medicine: Reading the Label.
+    & Problems, Signs & Notices, Medicine: Reading the Label. **Then split for real** the same day
+    (next section): no topic is mixed now.
   - Checked (scratch `vocab_phrases_probe.py`, 1280 × 800): Small Talk, Sentence Patterns, Idioms and
     Telling the Time not found in Vocabulary's picker; Conversation 2 topics, All 32 (230 in the
     normal picker, which still lists all 12); Classifiers 4 topics; a recent Small Talk run gone from
@@ -2329,6 +2332,52 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
 - **Next, offered:** a quick estimate past what's answered (about 20 words from each frequency band,
   scaled up); a Known switch in the word dialog and ticks on List's rows; words held in Recall
   counting; the No words handed to a list for Cards.
+
+## Word lists and phrases: a real split (2026-11-14)
+
+The user's call, after the phrases flag: "we should have a real split. topics should either be word
+lists or phrases. please rejig them to be so". Every topic (not Thai Script's, which are about the
+script, nor the stories) is now all words or all phrases: 493 word lists and 47 of phrases, 19 of
+them new. No card was changed or lost: 264 moved, 34 left a topic where the very same card stays
+in another of its kind, and where the copy left lacked a note, it took the leaving card's (เที่ยง's
+"Never สิบสองโมง", เชิญ's, ยินดี's, เที่ยงคืน's; เรียกรถพยาบาล's into Calling for Help's).
+
+- **Which is which** (`tools/topic_kinds.py`, its docstring): a **word** is what you'd look up as a
+  word: one word, a compound (สีแดง, ห้องเตียงเดี่ยว), a doubled word (เรื่อย ๆ), a "to …" verb or
+  collocation (สั่งอาหาร), a set chunk working as one word (อาจจะ, ยังไม่, ใช่ไหม, ไม่เป็นไร, ก็ได้),
+  or a one-word reply (ใช่, โอเค, ฮัลโหล). A **phrase** is said as a whole and built from words: a
+  sentence, question, request, greeting or reply (ขอบคุณมาก, สบายดีไหม, ใช่เลย), a sign (ห้ามเข้า), a
+  time, date, duration or counted noun (หกโมงเช้า, สองชั่วโมง, หนังสือเล่มนี้), an idiom or saying.
+  A guess from each card (its `words` or a space, and an English gloss that reads as said) was
+  checked by hand where it misfiled one (364 cards in 110 topics); the decisions are the tool's
+  WORDS and PHRASES, so `report` stays quiet about them. ขโมย "thief!" is a phrase (the shout; a story
+  uses it), ไม่เป็นไร "no thanks" too; ก็ได้ a word, so Spoken 161–180 keeps it.
+- **Where the odd ones went:** into a topic of their kind on the same theme with room (Greetings &
+  Politeness' ขอบคุณมาก, ยินดีที่ได้รู้จัก, สบายดีไหม, เป็นไงบ้าง to Survival Phrases, and its new words
+  from Catching Up; Small Talk: Questions took the questions from Weather, Hobbies, Work, Dating and
+  Music; the karma sayings went to Idioms & Proverbs: Wisdom), or a new topic beside the one they
+  left. Four topics kept their kind by what they're for though their count said otherwise: Phone
+  Calls & Messages, Southern: Idioms, Business: Meeting Phrases and Customer Service (phrases). Two
+  changed kind: Spoken Chunks: Linking What You Say and Ordering & Paying are words now.
+- **The new topics** (by where they sit):
+  - Words: Time Words: Dates, Hours & How Long (24); Conversation: Everyday Words (13); Phone Calls
+    & Messages: Words (9); Southern: Greetings, Questions & Particles (11); Southern: Words in the
+    Idioms (11); Idioms & Proverbs: Words in Wisdom & People (14) and in Work & Talk (15); Business:
+    Meeting & Service Words (22); Doctor Talk: Words (6).
+  - Phrases: Northern: Phrases (5); Feelings & Compliments: Phrases (10); Etiquette: Phrases (6);
+    Ordering Food: Phrases (12); Home: Phrases (4); At 7-Eleven: Phrases (8); Shops & Services:
+    Phrases (13); Getting Around: Phrases (9); Hotels & Sightseeing: Phrases (13); Business: Polite
+    Phrases (4).
+  - Renamed: Northern: Phrases & People is Northern: Polite Words & People; Email & Formal Phrases is
+    Email & Formal Writing.
+- **Done by** a one-off script (the moves as a plan: each source topic's destination, the new
+  topics, the kinds), checked with a dry run first; a first write was undone when a check showed
+  21 card versions (mostly notes) would be lost, and the script changed to keep them. Then:
+  audit_decks.py (0 errors), stories.py sync (72 story cards took the notes) and check (0 problems),
+  topic_kinds.py report ("Every topic is all words or all phrases"), frequency.py and spelling.mjs
+  (unchanged), gen_audio.py (every clip already there). In the app (scratch `split_probe.py`): Time
+  Words opens with its 24 cards, the picker lists the new topics, Vocabulary's lists none of phrases;
+  no script errors.
 
 ## 34 everyday phrases, and Catching Up & Good Wishes (2026-11-01)
 
