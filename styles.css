@@ -2035,6 +2035,69 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* The line Read or Read all is reading (readStories), lit like a Topics row; the title while it's said. */
 .reading-entry.open .reading-item.now-playing { background: var(--accent-soft); }
 .reader-line.now-playing { margin: 0 -10px; padding-right: 10px; padding-left: 7px; border-left: 3px solid var(--accent); border-radius: 8px; background: var(--accent-soft); }
+/* A story's bookmark (storySaveButton, 2026-11-22), left of the ›; on the open story, Read moves left of
+   it. Filled in ✓'s green when it's in the list it saves to; a dot when it's in another, as 🔁's. */
+.reading-item-main { margin-right: 48px; }
+.reading-entry.open .reading-item-main { margin-right: 172px; }
+.reading-entry.open .reading-head #reading-read { right: 94px; }
+.story-save {
+  position: absolute;
+  top: 50%;
+  right: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  transform: translateY(-50%);
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+}
+.story-save:hover { color: var(--accent); background: var(--panel-2); }
+.story-save.saved { color: var(--good); }
+.story-save.saved .bookmark-icon { fill: currentColor; }
+.story-save.elsewhere::after { content: ""; position: absolute; top: 7px; right: 8px; width: 8px; height: 8px; border-radius: 50%; background: var(--good); }
+.bookmark-icon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linejoin: round; }
+.bookmark-icon.inline { width: 1.1em; height: 1.1em; vertical-align: -0.2em; }
+/* Taken out of the list shown: faded until it's next drawn, its bookmark as it is (storyListsChanged). */
+.reading-entry.unsaved .reading-item-main { opacity: .4; }
+/* Read's Topic | My Stories, over the list. */
+.reading-mode { display: flex; width: min(360px, 100%); margin: 0 auto 14px; }
+.reading-mode .seg-btn { flex: 1; min-height: 44px; font-size: 16px; }
+/* A search's two parts (listedStories): the topic's or your lists' matches, then the others. */
+.reading-part { margin: 14px 4px 8px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; }
+.reading-part:first-child { margin-top: 0; }
+/* My Stories (renderMyStories): a heading per list, the open one's stories under it. */
+.story-list-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  margin: 0 0 8px;
+  padding: 12px 4px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  color: var(--ink);
+  font-size: calc(17px * var(--fs, 1));
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.story-list-head:hover .story-list-name { color: var(--accent); }
+.story-list-count { color: var(--muted); font-size: calc(15px * var(--fs, 1)); font-weight: 400; }
+.story-list-chevron { margin-left: auto; color: var(--muted); font-size: 1.3em; line-height: 1; transition: transform .15s; }
+.story-list-head.open .story-list-chevron { transform: rotate(90deg); color: var(--accent); }
+.story-list-body { margin-bottom: 16px; }
+.story-list-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.story-list-actions .ghost, .story-list-new { min-height: 44px; padding: 8px 14px; font-size: 16px; }
+.story-list-new { display: block; margin-top: 4px; }
+.story-how { margin: 0 0 12px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.5; }
 /* Read all sits at the bar's right end, as Topics' Read all does. */
 .reading-bar-right { margin-left: auto; }
 .reading-bar-right > .read-aloud { margin-left: 0; }

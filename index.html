@@ -132,7 +132,7 @@
       </div>
       <label class="checkbox-inline move-default">
         <input type="checkbox" id="move-default" />
-        <span>Add new words there too</span>
+        <span id="move-default-label">Add new words there too</span>
       </label>
       <div class="move-lists" id="move-lists"></div>
     </div>
@@ -268,6 +268,12 @@
     <!-- The Reading page (renderReading): the current topic's stories, or one open in the reader. Under the
          controls bar, so the topic button sits on top, as on Topics and Flashcards. -->
     <section class="reading reading-only" id="reading-section" hidden>
+      <!-- The topic's stories, or your story lists (renderMyStories; 2026-11-22, the user's call: on Read
+           only, not the topic picker, whose navigation is "getting cumbersome"). -->
+      <div class="segmented reading-mode" role="radiogroup" aria-label="Which stories">
+        <button type="button" role="radio" class="seg-btn" data-reading-mode="topic" aria-checked="true">Topic</button>
+        <button type="button" role="radio" class="seg-btn" data-reading-mode="mine" aria-checked="false">My Stories</button>
+      </div>
       <div class="reading-library" id="reading-library">
         <div id="reading-list"></div>
         <!-- Read: moved into the open story's title row (placeReader). -->

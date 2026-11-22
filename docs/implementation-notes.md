@@ -2466,6 +2466,49 @@ syllable's rule and the whole table (30 syllables for the longest).
   card's back; the letter ก → ก็ → ‹ ก; no sideways scroll, no script errors. No layout check (inside
   the dialog's scrolling body; nothing outside it moved).
 
+## My Stories: story lists on Read, and a search over every story (2026-11-22)
+
+The user's request: save the app's stories to lists of your own, "several, like word lists"; not
+stories of your own ("no saving outside stories for now"). On Read only, not the topic picker ("the
+navigation for this app is getting cumbersome - we can revisit later"). Of the improvements offered
+with it (read marks, how much of a story you know, its level on the row, a search over every story,
+saving a sentence), only the search for now.
+
+- **The lists:** `store.storyLists`, `[{ id, name, stories: [story id…] }]`, as `store.lists` is for
+  words; shown newest first; a story gone from the data is left out quietly. In the backup with the
+  rest; its summary counts them ("2 lists, 1 story list, …").
+- **Saving:** a bookmark on every story's row (`storySaveButton`), left of the ›; on the open story,
+  Read moves left of it (on a phone, Read and the bookmark go under the title and description, which
+  beside them had 140 px). Three states as a word's 🔁: filled in ✓'s green when it's in the list it
+  saves to, an outline with a dot when it's in another, an outline. It saves to the **target**
+  (`prefs.storyTargetId`): the list last opened on My Stories, made, or chosen with "Save new stories
+  there too"; with no list yet, it makes **My stories**. The toast, as a word's: "✓ Saved "Grandma's
+  Maybe" to 'My stories'" with **Change**, "Removed … from '…'" with **Move**; both open the words'
+  "Put … in" dialog, now for either (`openMoveWords(…, STORY_LISTS)`: the lists, the counts in
+  stories, its own tick-box line). Nothing is redrawn on a change (`storyListsChanged` repaints the
+  bookmarks and counts), so a story being read carries on; one taken out of the list on show stays,
+  faded, to save again ("✓ Re-added", without Change), as a word taken out of its list's page does.
+- **Read's switch, Topic | My Stories** (`.reading-mode`, `setReadingMine`, `prefs.readingMine`),
+  over the list: Topic is Read as it was. **My Stories** (`renderMyStories`) is your lists, each a
+  heading (its name, how many stories, a ›) that opens it, one at a time (`prefs.storyListOpen`; the
+  target when none chosen), its stories under it, 10 a page, then **Rename list** and **Delete list**
+  (its stories stay on Read); **＋ New list** at the end. Opening a list makes it the target, so its
+  stories' bookmarks are filled. With no lists, how to save one, and ＋ New list. Read all reads the
+  open list.
+- **Search over every story** (`listedStories`): it found only the topic's (or list's) stories. Now
+  the topic's (on My Stories, your lists') matches come first, under "In Saying No Without Saying No ·
+  1" (or "In your lists"), then every other story's under "Other stories · 46" ("All stories" when
+  the first part is empty), 10 a page as before; Read all reads them all.
+- **Checked** headless (scratch `my_stories_probe.py`, `my_stories_big_probe.py`) at 390 × 664 (text
+  Larger and 1.3) and 1280 × 800: My Stories empty; two saved from Saying No (My stories made, the
+  toast); Change → ＋ New list "Isan" (moved, the row's bookmark then an outline with a dot); a third
+  saved to My stories still; My Stories with both lists, My stories open; Isan opened (the target),
+  its story taken out (faded, 0 stories, Move) and put back (Re-added); a story opened in a list (the
+  phone's Read and bookmark under the text, the text 312 wide); Rename to Favourites; "boss" on My
+  Stories (In your lists · 1, Other stories · 46) and on Topic (In Saying No… · 1); no match; the
+  mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
+  script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
+
 ## 34 everyday phrases, and Catching Up & Good Wishes (2026-11-01)
 
 After เป็นไงบ้าง (below) the user asked what else was missing. I checked about 280 everyday phrases
