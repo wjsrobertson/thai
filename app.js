@@ -130,7 +130,7 @@ const els = {
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
   setRetention: document.getElementById('setting-retention'),
-  pickerTabs: document.querySelectorAll('[data-picker-tab]'), // the picker's Topics | My lists | Everything
+  pickerTabs: document.querySelectorAll('[data-picker-tab]'), // the picker's Topics | My Words | My Stories
   reviewByHelp: document.getElementById('review-by-help'),
   reviewOnlyAdd: document.getElementById('review-only-add'), // an empty list's Add words, on Cards
   addingBar: document.getElementById('adding-bar'), // the List page while adding words to a list
@@ -211,7 +211,6 @@ const els = {
   readingRead: document.getElementById('reading-read'),
   readingReadAll: document.getElementById('reading-read-all'),
   readingSearch: document.getElementById('reading-search'),
-  readingModes: [...document.querySelectorAll('[data-reading-mode]')],
   moveDefaultLabel: document.getElementById('move-default-label'),
   wordlistSearch: document.getElementById('wordlist-search'),
   wordlistMore: document.getElementById('wordlist-more'),
@@ -301,8 +300,6 @@ const state = {
   readingQuery: '',   // Reading's search box (storyMatches)
   readingShown: 10,   // how many of the list's stories show (READING_PAGE more with each Show more)
   readingFor: null,   // the scope (and level) those were for: a new one starts them afresh
-  readingMine: false, // Read shows your story lists, not the topic's stories (prefs.readingMine; renderMyStories)
-  storyListOpen: undefined, // the story list open there (prefs.storyListOpen; null: none, undefined: the target)
   orderMode: 'practice', // Flashcards' mode: 'practice' (Learn) | 'test' | 'review' | 'type' (Recognition, typed: 2026-10-19)
   direction: 'th-en', // 'th-en' (Thai on front, English on back) | 'en-th' (English on front, Thai on back) | 'listen' (the Thai's sound on front, as th-en behind)
   pickerOpen: false,
@@ -1001,7 +998,7 @@ function buildQueue(cards) {
 // Which words those are, as a string, to tell when they've changed: only a list's can.
 function reviewOnlySignature() {
   const scope = flashScope();
-  return scope?.kind === 'list' ? `${scope.id}\n${scope.cards.map(cardKey).join('\n')}` : scope?.id || '';
+  return scope?.kind === 'list' || scope?.kind === 'stories' ? `${scope.id}\n${scope.cards.map(cardKey).join('\n')}` : scope?.id || '';
 }
 
 // The Cards queue: indices into state.cards, the scope's words (Recognition's answer choices come
@@ -1017,7 +1014,13 @@ function renderReviewOnly() {
   const empty = !!state.flashScopeId && state.queue.length === 0;
   els.reviewOnlyEmpty.hidden = !empty;
   els.stage.classList.toggle('review-only-none', empty);
-  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no words yet`;
+  // A story list's (2026-11-22): no stories, so no words; its button goes to Read, where they're saved.
+  const stories = flashScope()?.kind === 'stories';
+  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no ${stories ? 'stories' : 'words'} yet`;
+  if (empty) {
+    els.reviewOnlyAdd.textContent = stories ? 'Find stories' : 'Add words';
+    els.reviewOnlyAdd.nextElementSibling.textContent = stories ? 'Save stories on Read with their bookmark' : 'Choose words from a topic or another of your lists';
+  }
 }
 
 // After a list changes. Away from Cards there's nothing to do: coming back rebuilds the queue if the
@@ -1458,7 +1461,8 @@ function goRandom() {
 
 // ---------- scopes: a topic, a group of topics, a whole category, or a list ----------
 // List, Cards and Reading show a scope (state.currentDeckId, prefs.currentDeckId). A scope id is a
-// topic's id, `group:<category>::<group>`, `cat:<category>`, `list:<id>` (your lists), or 'all'
+// topic's id, `group:<category>::<group>`, `cat:<category>`, `list:<id>` (your lists), `stories:<id>`
+// (your story lists, resolveStoriesScope), or 'all'
 // (every topic: Recognition's wrong answers for a short list). resolveScope() gives { id, kind, name, label,
 // description, decks, cards, deckOf }: cards are the decks' cards with repeats dropped (a word in
 // two topics counts once), and deckOf maps a card key to the first of the scope's decks with it.
@@ -1467,8 +1471,8 @@ const scopeCache = new Map();
 function resolveScope(id) {
   if (!id) return null;
   if (scopeCache.has(id)) return scopeCache.get(id);
-  if (id.startsWith('list:')) {
-    const scope = resolveListScope(id);
+  if (id.startsWith('list:') || id.startsWith('stories:')) {
+    const scope = id.startsWith('list:') ? resolveListScope(id) : resolveStoriesScope(id);
     if (scope) scopeCache.set(id, scope);
     return scope;
   }
@@ -1532,6 +1536,36 @@ function resolveListScope(id) {
   }
   const n = cards.length;
   return { id, kind: 'list', name: list.name, decks: [], cards, deckOf, description: `${n} word${n === 1 ? '' : 's'}`, label: list.name };
+}
+
+// One of your story lists (2026-11-22, the user's call: in the picker, Topics | My Words | My Stories,
+// rather than a switch on Read): Read shows its stories, newest saved first; List and Cards their
+// words, each once, the very common ones left out ("leave out the very common words": READING_COMMON,
+// which Read leaves out when it matches stories to a topic). decks are the stories, for the List
+// page's headings (groupOf: a word's first story in the list); deckOf is each word's first topic, as a
+// word list's is, which grades and Tone Pairs' partners go by. A word's card is its topic's (with its
+// note), not the story's copy.
+const storiesScopeId = (id) => `stories:${id}`;
+function resolveStoriesScope(id) {
+  const list = storyListById(id.slice(8));
+  if (!list) return null;
+  const decks = savedStories(list);
+  const cards = [];
+  const deckOf = new Map();
+  const groupOf = new Map();
+  for (const d of decks) {
+    for (const c of d.cards) {
+      const key = cardKey(c);
+      if (groupOf.has(key) || READING_COMMON.has(c.thai)) continue;
+      const entry = state.cardIndex.get(key);
+      const topic = deckOfId(entry?.deckIds.find((x) => !deckOfId(x)?.passage));
+      groupOf.set(key, d);
+      deckOf.set(key, topic || d);
+      cards.push(topic?.cards.find((t) => cardKey(t) === key) || c);
+    }
+  }
+  const n = decks.length;
+  return { id, kind: 'stories', name: list.name, decks, cards, deckOf, groupOf, description: `${n} ${n === 1 ? 'story' : 'stories'}`, label: list.name };
 }
 
 // What Cards and Reading show: the topic or list the List page shows, the picker's one choice. Cards
@@ -1614,7 +1648,7 @@ function renderDeckButton() {
   }
   const scope = state.view === 'flashcards' || state.view === 'reading' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
-  const icon = !scope || scope.kind === 'topic' ? 'topics' : scope.kind === 'list' ? 'mylist' : 'group';
+  const icon = !scope || scope.kind === 'topic' ? 'topics' : scope.kind === 'list' ? 'mylist' : scope.kind === 'stories' ? 'reading' : 'group';
   els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[icon]));
 }
 
@@ -1707,6 +1741,7 @@ function pickScope(id) {
   // list (state.addingTo). Picked plainly, a list becomes where 🔁 adds.
   state.addingTo = state.pickerFor === 'add' ? state.addTo : null;
   if (state.pickerFor !== 'add' && id.startsWith('list:')) setTarget(id.slice(5));
+  if (state.pickerFor !== 'add' && id.startsWith('stories:')) setStoryTarget(id.slice(8)); // where a story's bookmark saves
   if (id === state.currentDeckId) { // the same choice again: carry on
     closeDeckPicker();
     freshListCards();
@@ -1732,9 +1767,11 @@ function renderPickerTabs() {
   // A line under the tabs only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
   els.reviewByHelp.hidden = !adding;
-  els.reviewByHelp.textContent = !adding ? '' : tab === 'lists' ? `Pick a list, then add its words to ${into}` : `Pick a topic, then add its words to ${into}`;
-  // Both tabs search (My lists since 2026-10-20, the user's request): topics and words, or your lists.
-  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : 'Search topics';
+  els.reviewByHelp.textContent = !adding ? '' : tab === 'lists' ? `Pick a list, then add its words to ${into}` : tab === 'stories' ? `Pick a story list, then add its words to ${into}` : `Pick a topic, then add its words to ${into}`;
+  // Every tab searches (My lists since 2026-10-20, the user's request): topics and words, your lists,
+  // or your story lists. Vocabulary's picker has no My Stories (2026-11-22).
+  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : tab === 'stories' ? 'Search your stories' : 'Search topics';
+  els.pickerTabs.forEach((b) => { if (b.dataset.pickerTab === 'stories') b.hidden = state.pickerFor === 'vocab'; });
 }
 
 function pickPickerTab(tab) {
@@ -1779,6 +1816,41 @@ function renderListsPane() {
       pickScope(listScopeId(list.id));
       // On its List page, to add words to it, from Cards, Read or Home too (the user's call, 2026-10-22).
       if (state.view !== 'wordlist') setView('wordlist');
+    });
+    rows.push(add);
+  }
+  els.deckPickerTree.replaceChildren(...rows);
+}
+
+// My Stories (2026-11-22): a row for each of your story lists (how many stories and words), then
+// New list. A search finds one by its name or a story's title in it.
+function renderStoryListsPane() {
+  const q = state.pickerFilter.trim().toLowerCase();
+  const lists = getStoryLists().filter((l) => !q || l.name.toLowerCase().includes(q) || savedStories(l).some((d) => d.name.toLowerCase().includes(q)));
+  const rows = lists.map((l) => {
+    const id = storiesScopeId(l.id);
+    const scope = resolveScope(id);
+    const n = scope.cards.length;
+    const row = pickerDeckRow({ id, name: l.name, description: `${scope.description} · ${n} word${n === 1 ? '' : 's'}`, cards: scope.cards }, { progress: false });
+    row.classList.add('list-row');
+    return row;
+  });
+  if (!lists.length) {
+    const empty = document.createElement('div');
+    empty.className = 'modal-empty';
+    empty.textContent = q ? `No story list matches "${state.pickerFilter.trim()}".` : 'No story lists yet. Save a story on Read with its bookmark, or make a list here.';
+    rows.push(empty);
+  }
+  if (state.pickerFor === 'study') {
+    const add = document.createElement('button');
+    add.type = 'button';
+    add.className = 'ghost new-list';
+    add.textContent = '＋ New list';
+    add.addEventListener('click', async () => {
+      const name = await askListName('New list', '', 'Make list');
+      if (!name) return;
+      pickScope(storiesScopeId(createStoryList(name).id));
+      if (state.view !== 'reading') setView('reading'); // where its stories are saved
     });
     rows.push(add);
   }
@@ -1875,6 +1947,10 @@ function pickerGroup(g, q, cat) {
 function renderDeckPicker() {
   if (state.pickerTab === 'lists') {
     renderListsPane();
+    return;
+  }
+  if (state.pickerTab === 'stories') {
+    renderStoryListsPane();
     return;
   }
   const q = state.pickerFilter.trim().toLowerCase();
@@ -2208,13 +2284,14 @@ function openDeckPicker({ addTo = null, vocab = false } = {}) {
   state.addTo = addTo;
   state.pickerFor = addTo ? 'add' : vocab ? 'vocab' : 'study';
   els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
-  state.pickerTab = state.pickerFor === 'study' && state.currentDeckId?.startsWith('list:') ? 'lists' : 'topics';
+  const now = state.pickerFor === 'study' ? state.currentDeckId || '' : '';
+  state.pickerTab = now.startsWith('list:') ? 'lists' : now.startsWith('stories:') ? 'stories' : 'topics';
   renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
   state.expandedCategories.clear();
   state.expandedGroups.clear();
-  if (current?.decks[0]) {
+  if (current?.decks[0] && current.kind !== 'stories') {
     const d = current.decks[0];
     state.expandedCategories.add(d.category || 'Uncategorized');
     if (d.group && current.kind !== 'category') state.expandedGroups.add(`${d.category || 'Uncategorized'}::${d.group}`);
@@ -4370,8 +4447,10 @@ function renderWordlist() {
   // A phrase's words get gaps if Settings → Topics → "Word gaps in phrases" is on (off by default,
   // since Thai is written without them; the user's call, 2026-10-10). The reader has its own button.
   els.wordtable.classList.toggle('show-spaces', !!getSettings().topicWordGaps);
-  // Several topics, in list order: a heading row before each topic's words.
+  // Several topics, in list order: a heading row before each topic's words (a story list's: before each
+  // story's, groupOf).
   const topicHeadings = deck.decks.length > 1;
+  const headingOf = deck.groupOf || deck.deckOf;
   let lastTopic = null;
 
   // The name in bold, the description under it in normal weight (until 2026-10-08 both were one
@@ -4410,7 +4489,8 @@ function renderWordlist() {
   const adding = state.addingTo && deck.id !== listScopeId(state.addingTo) ? listById(state.addingTo) : null;
   els.addingBar.hidden = !adding;
   if (adding) els.addingName.textContent = adding.name;
-  els.listActions.hidden = !isList;
+  const isStories = deck.kind === 'stories';
+  els.listActions.hidden = !isList && !isStories; // Rename and Delete, a story list's too (2026-11-22)
 
   // In list order (the headings sorted the table until 2026-10-12), a search's matches, a page at a time.
   wordsFor(deck.id);
@@ -4440,7 +4520,8 @@ function renderWordlist() {
   if (rows.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another list.' : 'No matches.';
+    tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another list.'
+      : isStories ? 'No stories yet. Save them on Read with their bookmark, and their words are here.' : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
     // A list's words taken out of it since the page opened: faded, but still usable, 🔁 putting one
@@ -4449,7 +4530,7 @@ function renderWordlist() {
     const inList = isList ? new Set(listById(deck.id.slice(5))?.words || []) : null;
     const frag = document.createDocumentFragment();
     for (const c of rows) {
-      const topic = topicHeadings && deck.deckOf.get(c.key);
+      const topic = topicHeadings && headingOf.get(c.key);
       if (topic && topic !== lastTopic) {
         lastTopic = topic;
         const th = document.createElement('tr');
@@ -4470,6 +4551,7 @@ function renderWordlist() {
   const name = (text) => Object.assign(document.createElement('span'), { className: 'add-all-name', textContent: text });
   const allIn = !own && state.listCards.length > 0 && state.listCards.every((c) => words.has(c.key));
   els.wordlistAddAll.classList.toggle('all-in', allIn);
+  els.wordlistAddAll.hidden = !own && state.listCards.length === 0; // an empty story list: nothing to add
   if (own) {
     els.wordlistAddAll.replaceChildren('＋ Add words');
   } else if (allIn) {
@@ -4531,7 +4613,8 @@ function wordMatches(c, q, near = false) {
 
 // The List page's rows for a list, afresh (they're kept while it's open: listsChanged).
 function freshListCards() {
-  if (currentScope()?.kind === 'list') state.listCards = mergeProgressIntoCards(currentScope().cards);
+  const scope = currentScope();
+  if (scope?.kind === 'list' || scope?.kind === 'stories') state.listCards = mergeProgressIntoCards(scope.cards);
 }
 
 // A word's row, as on the Topics page and in the Dictionary: its Thai (opening the word dialog; a
@@ -5598,12 +5681,14 @@ function doneAdding() {
 }
 
 // ---------- your story lists (2026-11-22) ----------
-// The user's request: stories saved to lists of your own ("several, like word lists"), on Read only
-// (not the topic picker: "the navigation for this app is getting cumbersome"). As word lists are:
-// store.storyLists, [{ id, name, stories: [story id…] }] in the order saved (shown newest first); a
-// story's bookmark (storySaveButton) saves to one, the target (prefs.storyTargetId: the list last
-// opened on Read, made, or chosen with Change's "Save new stories there too"), its toast offering
-// Change or Move (openMoveWords with STORY_LISTS). A story gone from the data is left out quietly.
+// The user's request: stories saved to lists of your own ("several, like word lists"). At first on
+// Read only, with a Topic | My Stories switch; the same day, the user's call, in the topic picker
+// instead (Topics | My Words | My Stories), a choice for List, Cards and Read as a word list is
+// (resolveStoriesScope). As word lists are: store.storyLists, [{ id, name, stories: [story id…] }] in
+// the order saved (shown newest first); a story's bookmark (storySaveButton) saves to one, the target
+// (prefs.storyTargetId: the list last picked, made, or chosen with Change's "Save new stories there
+// too"), its toast offering Change or Move (openMoveWords with STORY_LISTS). A story gone from the
+// data is left out quietly.
 
 const getStoryLists = () => loadStore().storyLists || [];
 const storyListById = (id) => getStoryLists().find((l) => l.id === id) || null;
@@ -5638,26 +5723,27 @@ const STORY_LISTS = {
   key: 'stories', one: 'story', many: 'stories', also: 'Save new stories there too',
 };
 
-// After a change: the bookmarks repainted, and the lists' counts. Nothing is redrawn, so a story read
-// aloud carries on, and one taken out of the list shown stays there, faded, to save again with a tap
-// (as a word taken out of its list's page does); it's gone the next time the list is drawn.
+// After a change: the lists' scopes rebuilt, the bookmarks repainted, the topic button, and List or
+// Cards when they show one. Read isn't redrawn, so a story read aloud carries on, and one taken out
+// of the list shown stays there, faded, to save again with a tap (as a word taken out of its list's
+// page does); it's gone the next time the list is drawn.
 function storyListsChanged() {
+  for (const id of scopeCache.keys()) if (id.startsWith('stories:')) scopeCache.delete(id);
   document.querySelectorAll('.story-save').forEach((b) => b.paint?.());
-  const lists = new Map(getStoryLists().map((l) => [l.id, l]));
-  document.querySelectorAll('.story-list-count').forEach((el) => {
-    const l = lists.get(el.dataset.id);
-    if (l) el.textContent = storyCount(l);
-  });
-  const open = state.readingMine && lists.get(openStoryListId());
-  document.querySelectorAll('.story-list-body .reading-entry').forEach((e) => e.classList.toggle('unsaved', !!open && !open.stories.includes(e.dataset.id)));
+  const scope = currentScope();
+  renderDeckButton();
+  if (scope?.kind !== 'stories') return;
+  const list = storyListById(scope.id.slice(8));
+  els.readingList.querySelectorAll('.reading-entry').forEach((e) => e.classList.toggle('unsaved', !!list && !list.stories.includes(e.dataset.id)));
+  if (state.view === 'wordlist') {
+    freshListCards();
+    renderWordlist();
+  }
+  syncReviewOnly();
 }
 
 // A list's stories, newest saved first, those still in the data.
 const savedStories = (l) => [...l.stories].reverse().map(storyById).filter(Boolean);
-const storyCount = (l) => {
-  const n = savedStories(l).length;
-  return `${n} ${n === 1 ? 'story' : 'stories'}`;
-};
 
 // The story lists a story is in.
 const storyListsOf = (id) => getStoryLists().filter((l) => l.stories.includes(id));
@@ -5693,30 +5779,9 @@ function toggleStorySaved(d, on) {
     if (!on) l.stories = l.stories.filter((x) => x !== d.id);
   });
   const what = `"${d.name}"`;
-  if (on && state.readingMine && openStoryListId() === list.id && !state.readingQuery.trim()) toast(`✓ Re-added ${what} to '${list.name}'`, { tone: 'good' });
+  if (on && state.view === 'reading' && state.currentDeckId === storiesScopeId(list.id) && !state.readingQuery.trim()) toast(`✓ Re-added ${what} to '${list.name}'`, { tone: 'good' });
   else if (on) toast(`✓ Saved ${what} to '${list.name}'`, { tone: 'good', action: { label: 'Change', fn: () => openMoveWords([d.id], what, list.id, STORY_LISTS) } });
   else toast(`Removed ${what} from '${list.name}'`, { action: { label: 'Move', fn: () => openMoveWords([d.id], what, null, STORY_LISTS) } });
-}
-
-// The list open on My Stories: the one chosen there (none if closed), else the target.
-function openStoryListId() {
-  const lists = getStoryLists();
-  if (state.storyListOpen === null) return null;
-  return lists.find((l) => l.id === state.storyListOpen)?.id || storyTarget()?.id || null;
-}
-
-function openStoryList(id) {
-  state.storyListOpen = id;
-  setPreferences({ storyListOpen: id });
-  if (id) setStoryTarget(id); // what's open is where the bookmarks save, as a word list picked is
-  if (storyRunOn()) stopReadStories();
-  renderReadingList();
-}
-
-async function newStoryList() {
-  const name = await askListName('New list', '', 'Make list');
-  if (!name) return;
-  openStoryList(createStoryList(name).id);
 }
 
 async function renameStoryList(id) {
@@ -5725,7 +5790,7 @@ async function renameStoryList(id) {
   const name = await askListName('Rename list', list.name);
   if (!name || name === list.name) return;
   changeStoryList(id, (l) => { l.name = name; });
-  document.querySelectorAll(`.story-list-name[data-id="${CSS.escape(id)}"]`).forEach((el) => { el.textContent = name; });
+  if (state.view === 'reading') renderReadingList(); // its name on Read's actions and empty line
 }
 
 async function deleteStoryList(id) {
@@ -5734,7 +5799,7 @@ async function deleteStoryList(id) {
   const n = savedStories(list).length;
   const ok = await confirmDialog({
     title: `Delete '${list.name}'?`,
-    message: n ? `Its ${n} ${n === 1 ? 'story stays' : 'stories stay'} on Read, under their topics.` : 'It has no stories.',
+    message: n ? `Its ${n} ${n === 1 ? 'story stays' : 'stories stay'} on Read, under their topics, and your progress on the words is kept.` : 'It has no stories.',
     confirmLabel: 'Delete',
     danger: true,
   });
@@ -5743,9 +5808,14 @@ async function deleteStoryList(id) {
   store.storyLists = (store.storyLists || []).filter((l) => l.id !== id);
   saveStore(store);
   if (getPreferences().storyTargetId === id) setStoryTarget(store.storyLists[0]?.id || null);
-  if (state.storyListOpen === id) state.storyListOpen = undefined;
-  if (storyRunOn()) stopReadStories();
-  renderReadingList();
+  for (const k of [...scopeCache.keys()]) if (k.startsWith('stories:')) scopeCache.delete(k);
+  // Showing it: the next story list, or the first topic, as a word list's Delete does.
+  if (state.currentDeckId === storiesScopeId(id)) {
+    if (storyRunOn()) stopReadStories();
+    selectDeck(store.storyLists[0] ? storiesScopeId(store.storyLists[0].id) : state.decks.find((d) => !d.passage).id);
+    window.scrollTo(0, 0);
+  }
+  document.querySelectorAll('.story-save').forEach((b) => b.paint?.());
   toast(`Deleted '${list.name}'`);
 }
 
@@ -6295,22 +6365,23 @@ function renderReading() {
 }
 
 // The list: the stories that use the words of the topic or list (the topic picker's choice, shared
-// with the List page), best matches first; or, on My Stories, your story lists (renderMyStories).
-// There's no list of every story, as there'd be too many (the user's call, 2026-10-08; Everything
-// had one, a level at a time, for a day in the lists spike), but a search covers them all.
+// with the List page), best matches first; a story list's own stories, newest saved first. There's no
+// list of every story, as there'd be too many (the user's call, 2026-10-08; Everything had one, a level
+// at a time, for a day in the lists spike), but a search covers them all.
 function renderReadingList() {
   const scope = currentScope();
-  els.readingModes.forEach((b) => b.setAttribute('aria-checked', String((b.dataset.readingMode === 'mine') === state.readingMine)));
-  readingFor(state.readingMine ? `mine:${openStoryListId()}` : scope?.id);
+  readingFor(scope?.id);
   const q = state.readingQuery.trim();
-  if (!q && state.readingMine) return renderMyStories();
   const { stories, heads } = listedStories(scope, q);
+  const mine = scope?.kind === 'stories';
   if (!stories.length) {
     const empty = document.createElement('div');
     empty.className = 'reading-empty';
-    empty.append(q ? `No stories match "${q}".` : !scope ? '' : scope.kind === 'list' ? `No stories use two or more of the words in '${scope.name}' yet.` : `No stories for ${scope.name} yet.`);
+    empty.append(q ? `No stories match "${q}".` : !scope ? ''
+      : mine ? `Nothing in '${scope.name}' yet. Pick a topic and save its stories with their bookmark, or search every story above.`
+      : scope.kind === 'list' ? `No stories use two or more of the words in '${scope.name}' yet.` : `No stories for ${scope.name} yet.`);
     // A narrower choice can try its whole category, whose words are pooled.
-    const cat = !q && scope && scope.kind !== 'category' ? scope.decks[0]?.category : null;
+    const cat = !q && scope && scope.kind !== 'category' && !mine ? scope.decks[0]?.category : null;
     if (cat) {
       const wider = document.createElement('button');
       wider.type = 'button';
@@ -6322,26 +6393,38 @@ function renderReadingList() {
       });
       empty.append(wider);
     }
-    els.readingList.replaceChildren(empty);
+    els.readingList.replaceChildren(empty, ...(mine && !q ? [storyListActions(scope)] : []));
     return;
   }
-  els.readingList.replaceChildren(...pagedStories(stories, heads));
+  els.readingList.replaceChildren(...pagedStories(stories, heads), ...(mine && !q ? [storyListActions(scope)] : []));
 }
 
-// The list's stories in order, past the page shown: a topic's or list's, the story list open on My
-// Stories, or a search's. `heads`: a heading before the story at that place (a search's two parts).
-// A search covers every story (2026-11-22, the user's pick from a list of ideas: it found only the
-// topic's): the topic's (or, on My Stories, your lists') matches first, then the others.
+// A story list's Rename and Delete, under its stories on Read (as a word list's are under its words
+// on List, where a story list's are too).
+function storyListActions(scope) {
+  const box = popEl('div', 'story-list-actions');
+  const id = scope.id.slice(8);
+  for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete list', deleteStoryList, 'ghost danger']]) {
+    const b = popEl('button', cls, label);
+    b.type = 'button';
+    b.addEventListener('click', () => fn(id));
+    box.append(b);
+  }
+  return box;
+}
+
+// The list's stories in order, past the page shown: a topic's or list's, a story list's, or a search's.
+// `heads`: a heading before the story at that place (a search's two parts). A search covers every
+// story (2026-11-22, the user's pick from a list of ideas: it found only the topic's): the topic's (or
+// the list's) matches first, then the others.
 function listedStories(scope, q) {
   const heads = new Map();
-  const mine = state.readingMine;
-  let found = mine ? (q ? [...new Set(getStoryLists().flatMap(savedStories))] : savedStories(storyListById(openStoryListId()) || { stories: [] }))
-    : scope ? storiesFor(scope).map(({ d }) => d) : [];
+  const found = !scope ? [] : scope.kind === 'stories' ? scope.decks : storiesFor(scope).map(({ d }) => d);
   if (q) {
     const near = found.filter((d) => storyMatches(d, q));
     const have = new Set(found.map((d) => d.id));
     const rest = state.decks.filter((d) => d.passage && !have.has(d.id) && storyMatches(d, q));
-    if (near.length && rest.length) heads.set(0, `${mine ? 'In your lists' : `In ${scope?.name || 'this topic'}`} · ${near.length}`);
+    if (near.length && rest.length) heads.set(0, `In ${scope?.name || 'this topic'} · ${near.length}`);
     if (rest.length) heads.set(near.length, `${near.length ? 'Other stories' : 'All stories'} · ${rest.length}`);
     return { stories: [...near, ...rest], heads };
   }
@@ -6376,72 +6459,6 @@ function pagedStories(stories, heads = new Map()) {
     shown.push(more);
   }
   return shown;
-}
-
-// My Stories: your story lists, each a heading (its name and how many stories) that opens it, one at a
-// time, its stories newest first under it with Rename and Delete; ＋ New list at the end. With none,
-// how to save one.
-function renderMyStories() {
-  const lists = getStoryLists();
-  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
-  const newList = el('button', 'ghost story-list-new', '＋ New list');
-  newList.type = 'button';
-  newList.addEventListener('click', newStoryList);
-  if (!lists.length) {
-    const empty = el('div', 'reading-empty');
-    const how = el('p', 'story-how');
-    how.append('Save a story with its ', lineIcon('bookmark-icon inline', '0 0 24 24', PAGE_ICONS.mylist), ' and it will be here. You can keep several lists.');
-    empty.append(how, newList);
-    els.readingList.replaceChildren(empty);
-    return;
-  }
-  const openId = openStoryListId();
-  const parts = [];
-  for (const l of lists) {
-    const open = l.id === openId;
-    const head = el('button', 'story-list-head' + (open ? ' open' : ''));
-    head.type = 'button';
-    head.setAttribute('aria-expanded', String(open));
-    const name = el('span', 'story-list-name', l.name);
-    name.dataset.id = l.id;
-    const count = el('span', 'story-list-count', storyCount(l));
-    count.dataset.id = l.id;
-    head.append(name, count, el('span', 'story-list-chevron', '›'));
-    head.addEventListener('click', () => openStoryList(open ? null : l.id));
-    parts.push(head);
-    if (!open) continue;
-    const body = el('div', 'story-list-body');
-    const stories = savedStories(l);
-    if (stories.length) body.append(...pagedStories(stories));
-    else {
-      const how = el('p', 'story-how');
-      how.append(`Nothing in '${l.name}' yet. Save a story with its `, lineIcon('bookmark-icon inline', '0 0 24 24', PAGE_ICONS.mylist), ' while this list is open, and it goes here.');
-      body.append(how);
-    }
-    const actions = el('div', 'story-list-actions');
-    const rename = el('button', 'ghost', 'Rename list');
-    rename.type = 'button';
-    rename.addEventListener('click', () => renameStoryList(l.id));
-    const del = el('button', 'ghost', 'Delete list');
-    del.type = 'button';
-    del.addEventListener('click', () => deleteStoryList(l.id));
-    actions.append(rename, del);
-    body.append(actions);
-    parts.push(body);
-  }
-  parts.push(newList);
-  els.readingList.replaceChildren(...parts);
-}
-
-// Read's Topic | My Stories.
-function setReadingMine(mine) {
-  if (mine === state.readingMine) return;
-  if (storyRunOn()) stopReadStories();
-  hideWordPop();
-  state.readingMine = mine;
-  setPreferences({ readingMine: mine });
-  state.readingId = null;
-  renderReading();
 }
 
 // A new topic or list starts at the top: the first page, and no search.
@@ -9092,7 +9109,6 @@ function bindEvents() {
     state.wordShown += WORD_PAGE;
     renderWordlist();
   });
-  els.readingModes.forEach((b) => b.addEventListener('click', () => setReadingMine(b.dataset.readingMode === 'mine')));
   let readingTyping = null;
   els.readingSearch.addEventListener('input', () => {
     clearTimeout(readingTyping);
@@ -9155,8 +9171,14 @@ function bindEvents() {
   });
   els.pickerTabs.forEach((b) => b.addEventListener('click', () => pickPickerTab(b.dataset.pickerTab)));
   els.addingDone.addEventListener('click', doneAdding);
-  els.listRename.addEventListener('click', () => renameList(currentScope()?.id.slice(5)));
-  els.listDelete.addEventListener('click', () => deleteList(currentScope()?.id.slice(5)));
+  // A word list's, or a story list's (its id after "stories:").
+  const listAction = (words, stories) => () => {
+    const scope = currentScope();
+    if (scope?.kind === 'stories') stories(scope.id.slice(8));
+    else words(scope?.id.slice(5));
+  };
+  els.listRename.addEventListener('click', listAction(renameList, renameStoryList));
+  els.listDelete.addEventListener('click', listAction(deleteList, deleteStoryList));
   els.deckPicker.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeDeckPicker();
   });
@@ -9394,6 +9416,7 @@ function bindEvents() {
   });
   // Cards on an empty list: its Add words, on the List page.
   els.reviewOnlyAdd.addEventListener('click', () => {
+    if (currentScope()?.kind === 'stories') return setView('reading'); // an empty story list's: Find stories
     const id = currentScope()?.kind === 'list' ? currentScope().id.slice(5) : null;
     if (id) openAddWords(id);
   });
@@ -9907,8 +9930,6 @@ async function init() {
     state.direction = prefs.direction;
   }
   if (prefs.dictLang === 'en') state.dictLang = 'en';
-  state.readingMine = !!prefs.readingMine;
-  if ('storyListOpen' in prefs) state.storyListOpen = prefs.storyListOpen;
   els.directionButtons.forEach((b) => {
     b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false');
   });

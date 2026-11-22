@@ -2509,6 +2509,46 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## My Stories in the topic picker (2026-11-22)
+
+The user's call, the same day as My Stories: no "Topic | My Stories" switch on Read; the topic picker
+instead, **Topics | My Words | My Stories**, asking whether that would cause problems elsewhere. It
+can't be Read's alone, since the picker's one choice is List's, Cards' and Read's, so a story list
+became a scope as a word list is: "these stories and their words". Offered with its costs (picking
+one to read changes what List and Cards show; a tap more to reach your stories; one list at a time;
+the very common words), the user said go ahead and leave the very common words out.
+
+- **The scope** (`stories:<id>`, `resolveStoriesScope`): its decks are the stories, newest saved
+  first; its cards their words, each once, the topic's card (with its note), leaving out Read's
+  very common words (`READING_COMMON`: ไป, มา, ครับ, ฉัน…, 43). `deckOf` is each word's first topic, as
+  a word list's is (grades and Tone Pairs' partners go by it); `groupOf` its first story, for List's
+  headings. Every story word has a topic card with the same key (none of the 54,349 lacks one), so
+  progress is shared. Two stories: 62 words.
+- **The picker:** a third tab, **My Stories** (`renderStoryListsPane`): a row for each story list ("2
+  stories · 62 words"), then ＋ New list (made, picked, and Read shown); "Search your stories" by a
+  list's name or a story's title. It opens on My Stories when a story list is the choice. Picking one
+  makes it where a story's bookmark saves (`setStoryTarget`). Vocabulary's picker hasn't the tab; Add
+  words' has ("Pick a story list, then add its words to …"). The topic button shows Read's book icon
+  for one.
+- **Read:** the list's stories, newest saved first, then **Rename** and **Delete list**
+  (`storyListActions`); empty, "Nothing in 'Isan' yet. Pick a topic and save its stories with their
+  bookmark, or search every story above." A story taken out fades, as before; the search's first part
+  is "In My stories". The Topic | My Stories switch, the lists one under another (`renderMyStories`),
+  `prefs.readingMine` and `storyListOpen` are gone.
+- **List:** the words under each story's title, paged as a list's are, Add all (hidden when there are
+  none), and Rename / Delete list under them (the word lists' buttons, for either).
+- **Cards:** those words; empty, "'Isan' has no stories yet" with **Find stories** (to Read) in place of
+  Add words.
+- **A change to a story list** (`storyListsChanged`) rebuilds its scope, the topic button, and List or
+  Cards when they show it; Read isn't redrawn (a story being read carries on). Deleting the list shown
+  picks the next story list, or the first topic.
+- Checked headless (scratch `story_scope_probe.py`, `picker_tabs_shot.py`) at 390 × 664 (text Larger
+  and 1.3 for the tabs) and 1280 × 800: no switch on Read; two saved from Saying No; the picker's My
+  Stories (2 stories · 62 words); Read on it (both, Rename and Delete; one taken out and put back);
+  List (its words, none of the 43, Rename and Delete); Cards 1 / 62; ＋ New list Isan (Read, empty);
+  Cards on Isan (Find stories → Read); Isan deleted → My stories; "boss" (In My stories · 1, Other
+  stories · 46); kept over a reload; Vocabulary's picker without the tab; no script errors.
+
 ## Stories in their own dialog (2026-11-22)
 
 The user's call: "stories should have a popup modal / page, like words, phrases - rather than
