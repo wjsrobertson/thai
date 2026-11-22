@@ -2602,6 +2602,23 @@ now". The topic picker's three tabs (the section above) became three sections, e
   Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
   picker; a story's word to its topic in Words; no script errors, no sideways scroll.
 
+## Words and Phrases without Read (2026-11-22)
+
+The user's call: "Phrases and Words don't need the Read section now - please remove". Their switch is
+**List | Cards**; the stories are Stories' alone.
+- The Read button is gone from the switch (index.html), and Home's Words card's Read row. A saved
+  Read page (prefs.pages) opens List (`kindPage`), and `setView` turns Read into List in Words or
+  Phrases.
+- **Gone with it:** stories for one of your word lists (a quarter of a story's words in the list,
+  `READING_LIST_SHARE`) and for a phrase list (any of its phrases), since Stories' picker offers
+  topics and story lists only; `storiesFor` is the topics' rule now, and Read's "No stories use two
+  or more of the words in…" went.
+- check_layout.py's Words switch check is List | Cards.
+- Checked headless (scratch `no_read_probe.py`) at 390 × 664 (text Larger and 1.3) and 1280 × 800:
+  Words and Phrases from a saved Read page open on List; the switch List | Cards, the topic button
+  wider beside it (248 of the phone's row), the row 76 tall as before; Cards on each; Stories' Read;
+  Home's Words card List and Cards; no script errors.
+
 ## Stories without List | Cards (2026-11-22)
 
 The user's call: "Stories section doesn't need the Read|List|Cards buttons - please remove that

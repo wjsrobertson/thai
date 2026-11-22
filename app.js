@@ -3962,16 +3962,17 @@ function pickMore(b) {
 const STUDY_VIEWS = new Set(['wordlist', 'flashcards', 'reading']);
 // Words, Phrases and Stories, sections of their own (2026-11-22, the user's call: "the Words section is
 // getting too cumbersome"; till then the topic picker's Words | Phrases | Stories, in one section),
-// Words and Phrases each with List | Cards | Read; Stories Read only (the user's call, the same day: it
-// "doesn't need the Read|List|Cards buttons"; it had all three for a few hours, a story list's List
-// and Cards its stories' words). Each keeps its choice (kindScopes, prefs.scopes), its page
-// (prefs.pages) and its Cards (useSection).
+// Words and Phrases each with List | Cards; Stories Read only (the user's calls, the same day: Stories
+// "doesn't need the Read|List|Cards buttons", then "Phrases and Words don't need the Read section
+// now"; for a few hours all three had all three, Words' and Phrases' Read the stories that use a
+// topic's words or a list's phrases, a story list's List and Cards its stories' words). Each keeps its
+// choice (kindScopes, prefs.scopes), its page (prefs.pages) and its Cards (useSection).
 const STUDY_KINDS = ['words', 'phrases', 'stories'];
 const kindPage = (kind) => {
   if (kind === 'stories') return 'reading';
   const p = getPreferences();
   const page = p.pages?.[kind] ?? (kind === 'words' ? p.studyPage : null); // studyPage: the one section's, before
-  return STUDY_VIEWS.has(page) ? page : kind === 'stories' ? 'reading' : 'wordlist';
+  return page === 'flashcards' ? page : 'wordlist';
 };
 
 // The page a tab, a home card or More's row names: Words, Phrases, Stories and the Alphabet open on
@@ -4034,7 +4035,9 @@ function setView(view, { section = state.kind } = {}) {
   const leavingKind = state.kind;
   if (view !== 'flashcards' && section === 'alphabet') section = state.kind;
   if (section !== 'alphabet') switchKind(section); // before useSection, whose first visit loads the kind's choice
-  if (section === 'stories' && STUDY_VIEWS.has(view)) view = 'reading'; // Stories is Read only
+  // Stories is Read only; Words and Phrases have no Read.
+  if (section === 'stories' && STUDY_VIEWS.has(view)) view = 'reading';
+  else if (section !== 'alphabet' && view === 'reading') view = 'wordlist';
   const kindChanged = state.kind !== leavingKind;
   const wasCards = leaving === 'flashcards';
   // Leaving a Cards page (Flashcards, or the Alphabet's): Recall's audio stops, and a Recognition
@@ -6524,8 +6527,8 @@ function renderReading() {
   renderReadingList();
 }
 
-// The list: the stories that use the words of the topic or list (the topic picker's choice, shared
-// with the List page), best matches first; a story list's own stories, newest saved first. There's no
+// The list: the stories that use the words of the topic (Stories' choice: a topic, a group or a
+// category), best matches first; a story list's own stories, newest saved first. There's no
 // list of every story, as there'd be too many (the user's call, 2026-10-08; Everything had one, a level
 // at a time, for a day in the lists spike), but a search covers them all.
 function renderReadingList() {
@@ -6539,7 +6542,7 @@ function renderReadingList() {
     empty.className = 'reading-empty';
     empty.append(q ? `No stories match "${q}".` : !scope ? ''
       : mine ? `Nothing in '${scope.name}' yet. Pick a topic and save its stories with their bookmark, or search every story above.`
-      : scope.kind === 'list' ? `No stories use two or more of the words in '${scope.name}' yet.` : `No stories for ${scope.name} yet.`);
+      : `No stories for ${scope.name} yet.`);
     // A narrower choice can try its whole category, whose words are pooled.
     const cat = !q && scope && scope.kind !== 'category' && !mine ? scope.decks[0]?.category : null;
     if (cat) {
@@ -6548,7 +6551,7 @@ function renderReadingList() {
       wider.className = 'ghost';
       wider.textContent = `Try all of ${cat}`;
       wider.addEventListener('click', () => {
-        selectDeck(catScopeId(cat, scope.phrases));
+        selectDeck(catScopeId(cat));
         window.scrollTo(0, 0); // the category's stories from the top (2026-10-26)
       });
       empty.append(wider);
@@ -6675,37 +6678,20 @@ const READING_MIN_MATCH = 2;
 const READING_COMMON = new Set(('ไป มา มี เป็น อยู่ ได้ ให้ ทำ ของ ที่ ไม่ ใน กับ และ แต่ แล้ว จะ ก็ นะ ครับ ค่ะ คะ จ้ะ '
   + 'ฉัน ผม เรา เขา คุณ นี่ นี้ คือ ว่า มาก ดี ไหม เลย ยัง ด้วย กัน ตอน').split(' '));
 
-// One of your lists is stricter (the user's call, 2026-10-20: all of Food & Drink in a list found 216
-// stories): a story at least READING_LIST_SHARE of whose words are in the list (Food & Drink: 45),
-// the most of it first. When that leaves less than a page, as a short list's does (Greetings: 2),
-// every story with two of its words, ordered the same way.
-const READING_LIST_SHARE = 0.25;
-
+// Only Stories' choices come here (2026-11-22): a word topic, group or category, or a story list (whose
+// stories are its own). One of your word lists had a stricter rule (READING_LIST_SHARE, 2026-10-20: a
+// quarter of a story's words in the list) and a phrase list its own (a story with any of its phrases),
+// while Words' and Phrases' Read showed them; they went with it.
 function storiesFor(scope) {
-  // A phrase list's: the stories with any of its phrases, the most first (2026-11-22; the word lists'
-  // share of a story's words would find almost none).
-  if (scope.kind === 'list' && scope.phrases) {
-    const keys = new Set(scope.cards.map(cardKey));
-    const found = [];
-    for (const d of state.decks) {
-      if (!d.passage) continue;
-      const hits = d.cards.filter((c) => keys.has(cardKey(c)));
-      if (hits.length) found.push({ d, hits, share: 0 });
-    }
-    return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
-  }
   const words = new Set(scope.cards.map((c) => c.thai).filter((w) => !READING_COMMON.has(w)));
   const found = [];
   for (const d of state.decks) {
     if (!d.passage) continue;
     const own = [...new Set(d.cards.map((c) => c.thai))].filter((w) => !READING_COMMON.has(w));
     const hits = own.filter((w) => words.has(w));
-    if (hits.length >= READING_MIN_MATCH) found.push({ d, hits, share: hits.length / own.length });
+    if (hits.length >= READING_MIN_MATCH) found.push({ d, hits });
   }
-  if (scope.kind !== 'list') return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
-  found.sort((a, b) => b.share - a.share || b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
-  const close = found.filter((f) => f.share >= READING_LIST_SHARE);
-  return close.length >= READING_PAGE ? close : found;
+  return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
 }
 
 // A story opened from elsewhere: a word's In stories (its name), or a word search's hit only in a
