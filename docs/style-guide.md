@@ -99,8 +99,8 @@ The phone page, top to bottom, at 390 × 664:
   [MDN: overscroll-behavior](https://developer.mozilla.org/en-US/docs/Web/CSS/overscroll-behavior)).
 - **Dialogs on a phone** are pages between the pinned row and the tab bar (both still in reach), in
   the page's colour, no border; Settings is a page too. On desktop they're centred dialogs.
-- **Consistent navigation:** the tab bar is always Home · Topics · Alphabet · Dictionary · Settings;
-  each section remembers its last page. ([WCAG 3.2.3](https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html))
+- **Consistent navigation:** the tab bar is always Alphabet · Words · Phrases · Stories · More (a
+  wider screen adds Vocabulary); each section remembers its last page. ([WCAG 3.2.3](https://www.w3.org/WAI/WCAG22/Understanding/consistent-navigation.html))
 
 ## 4. Type
 

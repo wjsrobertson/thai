@@ -130,7 +130,7 @@ const els = {
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
   setRetention: document.getElementById('setting-retention'),
-  pickerTabs: document.querySelectorAll('[data-picker-tab]'), // the picker's Topics | My Words | My Stories
+  reviewBy: document.getElementById('review-by'), // the picker's Add words line
   reviewByHelp: document.getElementById('review-by-help'),
   reviewOnlyAdd: document.getElementById('review-only-add'), // an empty list's Add words, on Cards
   addingBar: document.getElementById('adding-bar'), // the List page while adding words to a list
@@ -283,7 +283,10 @@ const DEFAULT_SETTINGS = {
 
 const state = {
   decks: [],
-  currentDeckId: null,       // the topic the Topics page shows (and Flashcards and Review By topic): a scope id (resolveScope)
+  currentDeckId: null,       // the topic or list the section shows (List, Cards and Read): a scope id (resolveScope); the kind's own (kindScopes)
+  kind: 'words',             // the section of List | Cards | Read showing, or last shown: 'words' | 'phrases' | 'stories' (STUDY_KINDS)
+  kindScopes: {},            // each kind's choice, the current one's in currentDeckId too (prefs.scopes)
+  kindAdding: {},            // each kind's addingTo, while another kind shows
   pickerFor: 'study',        // the topic picker was opened from 'study' (the Topics page), 'flashcards' or 'review'
   listCards: [],      // the topic's cards (with progress merged): the Topics page
   cards: [],          // Flashcards' cards: the same list By topic, every card on Everything (loadCards)
@@ -295,7 +298,7 @@ const state = {
   timeQuiz: null,     // Time's Quiz: { q, options, picked, dir, comebacks, seq, ahead: the next new time } (nextTimeQuestion)
   time: (() => { const d = new Date(); const at = Math.round((d.getHours() * 60 + d.getMinutes()) / 5) * 5 % 1440; return { h: Math.floor(at / 60), m: at % 60 }; })(), // Time's clock (renderTime): now, to the 5 minutes
   showingBack: false,
-  section: 'words',  // whose cards the Cards engine holds: 'words', or 'alphabet' on the Alphabet's Cards page (useSection)
+  section: 'words',  // whose cards the Cards engine holds: a kind ('words', 'phrases', 'stories'), or 'alphabet' on the Alphabet's Cards page (useSection)
   leftHome: false,    // been anywhere but Home since the app opened (markMore)
   view: 'home',       // 'home' | 'flashcards' (the Flashcards tab) | 'wordlist' (the Topics tab, once Wordlists). The Review tab ('today') became Flashcards' Review mode on 2026-10-08.
   dictLetter: null,   // the Dictionary's letter (ก…ฮ, or A…Z in English), or null for the grid (renderDictionary)
@@ -333,7 +336,7 @@ const state = {
   review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
   moving: null,             // the open Change dialog (openMoveWords): { lastFocus }
-  pickerTab: 'words',       // the picker's tab: 'words' | 'phrases' | 'stories' (renderPickerTabs; Topics | My lists until 2026-11-22)
+  pickerTab: 'words',       // what the picker shows: 'words' | 'phrases' | 'stories' (openDeckPicker; its tabs until 2026-11-22)
   addTo: null,              // the list the picker is choosing words for (Add words), or null
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
@@ -1672,7 +1675,7 @@ function renderDeckButton() {
   }
   const scope = state.view === 'flashcards' || state.view === 'reading' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
-  const icon = !scope || scope.kind === 'topic' ? 'topics' : scope.kind === 'list' ? 'mylist' : scope.kind === 'stories' ? 'reading' : 'group';
+  const icon = !scope ? 'topics' : scope.kind === 'topic' ? (scope.phrases ? 'phrases' : 'topics') : scope.kind === 'list' ? 'mylist' : scope.kind === 'stories' ? 'reading' : 'group';
   els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[icon]));
 }
 
@@ -1682,7 +1685,8 @@ function selectDeck(deckId) {
   if (state.reading.active) stopReadAloud();
   if (storyRunOn()) stopReadStories();
   state.currentDeckId = deckId;
-  setPreferences({ currentDeckId: deckId });
+  state.kindScopes[state.kind] = deckId;
+  setPreferences({ scopes: { ...state.kindScopes } });
   if (deckId !== state.flashScopeId) reloadFlashcards(); // a new topic starts Cards afresh
   else state.listCards = mergeProgressIntoCards(deck.cards);
   renderDeckButton();
@@ -1714,7 +1718,7 @@ function pickerModel(q) {
   const cats = new Map();
   for (const d of state.decks) {
     if (d.passage) continue; // Reading's passages have their own page
-    if (!!d.phrases !== (pickerKind() === 'phrases')) continue; // the tab's kind: Words or Phrases (Vocabulary's: words)
+    if (!!d.phrases !== (pickerKind() === 'phrases')) continue; // the picker's kind: words or phrases (Stories' and Vocabulary's: words)
     const cat = d.category || 'Uncategorized';
     // Names only: descriptions matched too until word search (2026-10-08), whose results they
     // pushed off a phone screen ("like" found nine topics).
@@ -1781,42 +1785,26 @@ function pickScope(id) {
   window.scrollTo(0, 0);
 }
 
-// The picker's tabs (the lists spike, 2026-10-20; until then Cards' dialog had Everything | By
-// topic): Topics (the tree and search) and My lists, on every page. Everything, a third from Cards
-// and Reading, went the same day (flashScope).
-function renderPickerTabs() {
+// What the picker shows (state.pickerTab): the section's kind, Words, Phrases or Stories (2026-11-22,
+// the user's call: they were its tabs, Words | Phrases | Stories, till they became sections the same
+// day; Topics | My lists from the lists spike, 2026-10-20). Vocabulary's picker is words; Add words
+// (or phrases) the kind of the list being added to. Words and Phrases each show your lists of that
+// kind, then the topics of that kind (pickerModel), then, searching, the cards of that kind it finds;
+// Stories your story lists, then the topics, for the stories that use their words.
+function renderPickerHead() {
   const tab = state.pickerTab;
   const adding = state.pickerFor === 'add';
-  els.pickerTabs.forEach((b) => b.setAttribute('aria-checked', String(b.dataset.pickerTab === tab)));
-  // A line under the tabs only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
+  // A line under the title only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
-  els.reviewByHelp.hidden = !adding;
+  els.reviewBy.hidden = !adding;
   els.reviewByHelp.textContent = !adding ? '' : `Pick a topic or list, then add its ${kindNoun(pickerKind())} to ${into}`;
-  // Every tab searches: your lists and the topics and cards of its kind, or your story lists.
-  els.deckPickerSearch.placeholder = tab === 'phrases' ? 'Search phrases and your phrase lists' : tab === 'stories' ? 'Search your stories' : 'Search words and your word lists';
-  // Vocabulary's picker is words only; Add words (or phrases) the kind of the list being added to.
-  const only = state.pickerFor === 'vocab' ? 'words' : adding ? listKind(listById(state.addTo)) : null;
-  els.pickerTabs.forEach((b) => { b.hidden = !!only && b.dataset.pickerTab !== only; });
+  els.deckPickerSearch.placeholder = tab === 'phrases' ? 'Search phrases and your phrase lists' : tab === 'stories' ? 'Search topics and your story lists' : 'Search words and your word lists';
 }
 
-function pickPickerTab(tab) {
-  if (tab !== state.pickerTab) { // a new tab, a new search
-    state.pickerFilter = '';
-    els.deckPickerSearch.value = '';
-  }
-  state.pickerTab = tab;
-  renderPickerTabs();
-  renderDeckPicker();
-  els.deckPickerTree.scrollTop = 0;
-}
-
-// The picker by kind (2026-11-22, the user's call): Words | Phrases | Stories. Words and Phrases each
-// show your lists of that kind, then the topics of that kind (pickerModel), then, searching, the
-// cards of that kind it finds. The tab's kind: Vocabulary's picker is words only; Add words (or
-// phrases) the kind of the list being added to.
+// The kind of topics the picker lists: Stories' are the word topics.
 const pickerKind = () => (state.pickerTab === 'phrases' ? 'phrases' : 'words');
 
-// Your lists of the tab's kind: a row each (its count, not its progress), then New list. Add words
+// Your lists of the picker's kind: a row each (its count, not its progress), then New list. Add words
 // leaves out the list being added to. A search finds a list by its name or by a word in it
 // (wordMatches).
 function pickerListsSection(kind, q) {
@@ -1856,26 +1844,28 @@ function pickerListsSection(kind, q) {
   return out;
 }
 
-// My Stories (2026-11-22): a row for each of your story lists (how many stories and words), then
-// New list. A search finds one by its name or a story's title in it.
-function renderStoryListsPane() {
-  const q = state.pickerFilter.trim().toLowerCase();
+// The Stories picker's first part (2026-11-22): a row for each of your story lists (how many stories
+// and words), then New list, then the topics' heading, as a word list's part is (pickerListsSection).
+// A search finds a list by its name or a story's title in it.
+function storyListsSection(q) {
   const lists = getStoryLists().filter((l) => !q || l.name.toLowerCase().includes(q) || savedStories(l).some((d) => d.name.toLowerCase().includes(q)));
-  const rows = lists.map((l) => {
+  if (!lists.length && (q || state.pickerFor !== 'study')) return [];
+  const out = [Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: 'Your story lists' })];
+  for (const l of lists) {
     const id = storiesScopeId(l.id);
     const scope = resolveScope(id);
     const n = scope.cards.length;
     const row = pickerDeckRow({ id, name: l.name, description: `${scope.description} · ${n} ${kindNoun('words', n)}`, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
-    return row;
-  });
+    out.push(row);
+  }
   if (!lists.length) {
     const empty = document.createElement('div');
-    empty.className = 'modal-empty';
-    empty.textContent = q ? `No story list matches "${state.pickerFilter.trim()}".` : 'No story lists yet. Save a story on Read with its bookmark, or make a list here.';
-    rows.push(empty);
+    empty.className = 'modal-empty picker-lists-empty';
+    empty.textContent = "None yet: make one, or save a story with its bookmark. A topic below lists the stories that use its words.";
+    out.push(empty);
   }
-  if (state.pickerFor === 'study') {
+  if (state.pickerFor === 'study' && !q) {
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'ghost new-list';
@@ -1886,9 +1876,10 @@ function renderStoryListsPane() {
       pickScope(storiesScopeId(createStoryList(name).id));
       if (state.view !== 'reading') setView('reading'); // where its stories are saved
     });
-    rows.push(add);
+    out.push(add);
   }
-  els.deckPickerTree.replaceChildren(...rows);
+  out.push(Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: 'Stories by topic' }));
+  return out;
 }
 
 // A category or group heading: the collapsible header and, on its right, "All N" to pick all of it.
@@ -1899,8 +1890,10 @@ function pickerHead(prefix, name, countText, container, q, openSet, key, scopeId
   all.type = 'button';
   all.className = 'scope-all' + (scopeId === pickerSelectedId() ? ' current' : '');
   const words = (state.pickerFor === 'vocab' ? vocabSource(scopeId)?.words : resolveScope(scopeId)?.cards)?.length || 0; // Vocabulary's: no phrase topics
-  all.textContent = `All ${words}`;
-  all.title = `All of ${name}: ${words} words`;
+  // Stories' (2026-11-22): the stories that use all of its words, not a count of words.
+  const stories = state.pickerTab === 'stories';
+  all.textContent = stories ? 'All' : `All ${words}`;
+  all.title = stories ? `The stories for all of ${name}` : `All of ${name}: ${words} words`;
   all.setAttribute('aria-label', all.title);
   all.addEventListener('click', () => pickScope(scopeId));
   row.append(pickerHeader(prefix, name, countText, container, q, openSet, key), all);
@@ -1969,24 +1962,23 @@ function pickerGroup(g, q, cat) {
     known += p.known;
     cards += p.total;
   }
-  const count = `${g.decks.length} topic${g.decks.length === 1 ? '' : 's'} · ${known}/${cards}`;
+  // Stories' rows leave out how many words you know (2026-11-22): the choice is of stories there.
+  const stories = state.pickerTab === 'stories';
+  const count = `${g.decks.length} topic${g.decks.length === 1 ? '' : 's'}${stories ? '' : ` · ${known}/${cards}`}`;
   wrap.appendChild(pickerHead('sub', g.name, count, wrap, q, state.expandedGroups, g.key, groupScopeId(cat, g.name, pickerKind() === 'phrases')));
   const list = document.createElement('div');
   list.className = 'sub-decks';
-  for (const d of g.decks) list.appendChild(pickerDeckRow(d));
+  for (const d of g.decks) list.appendChild(pickerDeckRow(d, { progress: !stories }));
   wrap.appendChild(list);
   return wrap;
 }
 
 function renderDeckPicker() {
-  if (state.pickerTab === 'stories') {
-    renderStoryListsPane();
-    return;
-  }
   const kind = pickerKind();
+  const stories = state.pickerTab === 'stories';
   const q = state.pickerFilter.trim().toLowerCase();
   const cats = pickerModel(q);
-  els.deckPickerTree.replaceChildren(...pickerListsSection(kind, state.pickerFilter.trim()));
+  els.deckPickerTree.replaceChildren(...(stories ? storyListsSection(q) : pickerListsSection(kind, state.pickerFilter.trim())));
 
   for (const c of cats) {
     const group = document.createElement('div');
@@ -1996,14 +1988,14 @@ function renderDeckPicker() {
     const list = document.createElement('div');
     list.className = 'cat-decks';
     for (const item of c.items) {
-      list.appendChild(item.deck ? pickerDeckRow(item.deck) : pickerGroup(item.group, q, c.name));
+      list.appendChild(item.deck ? pickerDeckRow(item.deck, { progress: !stories }) : pickerGroup(item.group, q, c.name));
     }
     group.appendChild(list);
     els.deckPickerTree.appendChild(group);
   }
 
-  // A word's row opens its topic: not for Vocabulary. The tab's kind only.
-  const words = q && state.pickerFor !== 'vocab' ? wordSearch(q, { keep: (w) => (isPhraseCard(w.card) ? 'phrases' : 'words') === kind }) : null;
+  // A word's row opens its topic: not for Vocabulary, nor Stories. The picker's kind only.
+  const words = q && state.pickerFor !== 'vocab' && !stories ? wordSearch(q, { keep: (w) => (isPhraseCard(w.card) ? 'phrases' : 'words') === kind }) : null;
   if (words?.total) els.deckPickerTree.appendChild(wordHitsSection(words, kind));
   if (cats.length === 0 && !words?.total && !els.deckPickerTree.querySelector('.list-row')) {
     const empty = document.createElement('div');
@@ -2229,11 +2221,13 @@ function wordHitRow(h, inList) {
   return row;
 }
 
-// Opens the word's topic on the Topics page, scrolled to the word and briefly highlighted.
+// Opens the word's topic on the List page, scrolled to the word and briefly highlighted: in Words, or
+// Phrases for a topic of phrases (2026-11-22).
 function showWordInTopic(key, deckId) {
   if (state.pickerOpen) state.addingTo = state.pickerFor === 'add' ? state.addTo : null; // as pickScope
   closeDeckPicker();
-  if (state.view !== 'wordlist') setView('wordlist');
+  const kind = deckOfId(deckId)?.phrases ? 'phrases' : 'words';
+  if (state.view !== 'wordlist' || state.kind !== kind) setView('wordlist', { section: kind });
   if (deckId !== state.currentDeckId) selectDeck(deckId);
   else renderWordlist();
   const row = els.wordtableBody.querySelector(`tr[data-key="${CSS.escape(key)}"]`);
@@ -2315,11 +2309,10 @@ function openDeckPicker({ addTo = null, vocab = false } = {}) {
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
   state.pickerFor = addTo ? 'add' : vocab ? 'vocab' : 'study';
-  els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
-  // The tab of the current choice's kind; Add words', the list's; Vocabulary's, Words.
-  const nowScope = state.pickerFor === 'study' ? resolveScope(state.currentDeckId) : null;
-  state.pickerTab = addTo ? listKind(listById(addTo)) : nowScope?.kind === 'stories' ? 'stories' : nowScope?.phrases ? 'phrases' : 'words';
-  renderPickerTabs();
+  // The section's kind; Add words', the list's; Vocabulary's, words.
+  state.pickerTab = addTo ? listKind(listById(addTo)) : vocab ? 'words' : state.kind;
+  els.deckPickerTitle.textContent = addTo ? `Add ${kindNoun(state.pickerTab)} to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
+  renderPickerHead();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
   state.expandedCategories.clear();
@@ -3848,10 +3841,12 @@ function showLetterPop(anchor, c) {
   els.wordModalClose.focus({ preventScroll: true });
 }
 
-// Whose cards the Cards engine holds. The words' and the Alphabet's each keep theirs (place, mode,
-// direction, Recall stream) while the other's are in; the Alphabet's start afresh on its first
-// visit, in its own saved mode and direction (prefs.alphaOrderMode, alphaDirection).
-const ENGINE_STATE = ['cards', 'flashScopeId', 'queue', 'pos', 'showingBack', 'orderMode', 'direction', 'relearn', 'carry', 'modeSnap', 'learnAnswers', 'review', 'reviewOnlySig'];
+// Whose cards the Cards engine holds. Words', Phrases', Stories' (2026-11-22) and the Alphabet's
+// each keep theirs (place, mode, direction, Recall stream, the List page's cards) while another's are
+// in; one starts afresh on its first visit, in its saved mode and direction (the Alphabet's own,
+// prefs.alphaOrderMode, alphaDirection; the three sections share prefs.orderMode, direction), on the
+// section's choice (state.currentDeckId: setView swaps it in first).
+const ENGINE_STATE = ['cards', 'listCards', 'flashScopeId', 'queue', 'pos', 'showingBack', 'orderMode', 'direction', 'relearn', 'carry', 'modeSnap', 'learnAnswers', 'review', 'reviewOnlySig'];
 const sectionEngines = {};
 function useSection(section) {
   if (state.section === section) return;
@@ -3863,9 +3858,10 @@ function useSection(section) {
     Object.assign(state, saved);
   } else {
     const p = getPreferences();
+    const [mode, dir] = section === 'alphabet' ? [p.alphaOrderMode, p.alphaDirection] : [p.orderMode, p.direction];
     Object.assign(state, {
-      orderMode: ORDER_MODES.includes(p.alphaOrderMode) ? p.alphaOrderMode : 'practice',
-      direction: ['th-en', 'en-th', 'listen'].includes(p.alphaDirection) ? p.alphaDirection : 'th-en',
+      orderMode: ORDER_MODES.includes(mode) ? mode : 'practice',
+      direction: ['th-en', 'en-th', 'listen'].includes(dir) ? dir : 'th-en',
       cards: [], queue: [], pos: 0, showingBack: false, flashScopeId: null, relearn: new Map(), carry: [],
       modeSnap: { practice: null, test: null, type: null }, learnAnswers: new Map(), review: null, reviewOnlySig: '',
     });
@@ -3888,18 +3884,26 @@ function useSection(section) {
 // ---------- the phone's More list ----------
 
 // More, the phone's last tab, lists the pages without a tab of their own (Home and Settings since
-// 2026-10-22; the user's call, 2026-10-14, so new pages fit). Its tab is lit while one of them shows
-// (markMore), but not on Home as the app opens: only once you've been somewhere else and come back
-// (the user's call, 2026-10-22; `state.leftHome`).
-const MORE_VIEWS = new Set([...document.querySelectorAll('.more-item[data-view]')].map((b) => b.dataset.view));
+// 2026-10-22; the user's call, 2026-10-14, so new pages fit; Dictionary and Time since 2026-11-22, the
+// user's call, for Phrases and Stories). Its tab is lit while one of them shows (markMore), but not on
+// Home as the app opens: only once you've been somewhere else and come back (the user's call,
+// 2026-10-22; `state.leftHome`). On a wider screen (2026-11-22) it's a list under its tab of what has
+// no tab there, Dictionary and Time: not the .more-phone rows (Home's the corner's, Vocabulary a tab,
+// Settings ⚙).
+const moreRows = () => [...els.moreItems].filter((b) => PHONE_LAYOUT.matches || !b.classList.contains('more-phone'));
+const moreViews = () => new Set(moreRows().map((b) => b.dataset.view).filter(Boolean));
 
 function openMore() {
   state.moreOpen = true;
+  // Under its tab on a wider screen, its left edge kept on screen (styles.css); a phone's sits on the bar.
+  const r = els.tabMore.getBoundingClientRect();
+  els.moreMenu.style.setProperty('--more-top', `${Math.round(r.bottom + 6)}px`);
+  els.moreMenu.style.setProperty('--more-left', `${Math.round(Math.max(8, Math.min(r.left, innerWidth - 248)))}px`);
   els.moreMenu.hidden = false;
   document.documentElement.classList.add('more-open');
   els.tabMore.setAttribute('aria-expanded', 'true');
   markMore();
-  if (!TOUCH_SCREEN) els.moreItems[0].focus();
+  if (!TOUCH_SCREEN) moreRows()[0].focus();
 }
 
 function closeMore(refocus = false) {
@@ -3913,7 +3917,7 @@ function closeMore(refocus = false) {
 
 function markMore() {
   const here = state.settingsOpen ? 'settings' : pageNow();
-  els.tabMore.classList.toggle('current', MORE_VIEWS.has(pageNow()) && (pageNow() !== 'home' || state.leftHome));
+  els.tabMore.classList.toggle('current', moreViews().has(pageNow()) && (pageNow() !== 'home' || state.leftHome));
   for (const b of els.moreItems) {
     if ((b.dataset.view || b.dataset.action) === here) b.setAttribute('aria-current', 'page');
     else b.removeAttribute('aria-current');
@@ -3935,27 +3939,78 @@ function pickMore(b) {
 // The Topics section (2026-10-14, the user's calls; "Study" for a day, still its internal name): the
 // topic's List, Cards and Reading as one section, its pages picked by the .study-switch.
 const STUDY_VIEWS = new Set(['wordlist', 'flashcards', 'reading']);
+// Words, Phrases and Stories, sections of their own (2026-11-22, the user's call: "the Words section is
+// getting too cumbersome"; till then the topic picker's Words | Phrases | Stories, in one section),
+// each with List | Cards | Read. Each keeps its choice (kindScopes, prefs.scopes), its page
+// (prefs.pages) and its Cards (useSection). Stories opens on Read.
+const STUDY_KINDS = ['words', 'phrases', 'stories'];
+const kindPage = (kind) => {
+  const p = getPreferences();
+  const page = p.pages?.[kind] ?? (kind === 'words' ? p.studyPage : null); // studyPage: the one section's, before
+  return STUDY_VIEWS.has(page) ? page : kind === 'stories' ? 'reading' : 'wordlist';
+};
 
-// The page a tab, a home card or More's row names: Topics (study) and the Alphabet open on whichever of their
-// pages you were last on.
+// The page a tab, a home card or More's row names: Words, Phrases, Stories and the Alphabet open on
+// whichever of their pages you were last on.
 function goTo(view) {
   const p = getPreferences();
-  if (view === 'study') setView(STUDY_VIEWS.has(p.studyPage) ? p.studyPage : 'wordlist');
+  if (STUDY_KINDS.includes(view)) setView(kindPage(view), { section: view });
   else if (view === 'alphabet' && p.alphaPage === 'cards') setView('flashcards', { section: 'alphabet' });
   else setView(view);
 }
 
-// Which tab's page is showing: Study's three are Study's; the Alphabet's Cards page is the Alphabet's.
-const pageNow = () => (state.section === 'alphabet' ? 'alphabet' : STUDY_VIEWS.has(state.view) ? 'study' : state.view);
+// Which tab's page is showing: List, Cards and Read are their section's; the Alphabet's Cards page is the Alphabet's.
+const pageNow = () => (state.section === 'alphabet' ? 'alphabet' : STUDY_VIEWS.has(state.view) ? state.kind : state.view);
+
+// Each section's choice as the app opens: its saved one (prefs.scopes), or before 2026-11-22 the one
+// choice the sections shared (prefs.currentDeckId) if it's of that kind, or the first topic of its
+// kind (Stories': your first story list, or Words' topic). A topic that was split or regrouped lists
+// its old ids in `formerIds` (decks.json), so a saved one still resolves. Stories can show a word
+// topic (its stories), not a phrase one.
+function startScopes(prefs) {
+  const ofKind = (id, kind) => {
+    if (!id || isPassage(id)) return null;
+    const scope = resolveScope(id) || resolveScope(state.decks.find((d) => d.formerIds?.includes(id))?.id);
+    if (!scope || scope.kind === 'all') return null;
+    const k = scope.kind === 'stories' ? 'stories' : scopeKind(scope);
+    return k === kind || (kind === 'stories' && k === 'words') ? scope.id : null;
+  };
+  const saved = prefs.scopes || {};
+  const old = prefs.currentDeckId;
+  const first = (phrases) => state.decks.find((d) => !d.passage && !!d.phrases === phrases)?.id || null;
+  const words = ofKind(saved.words, 'words') || ofKind(old, 'words') || first(false);
+  const storyList = getStoryLists()[0];
+  return {
+    words,
+    phrases: ofKind(saved.phrases, 'phrases') || ofKind(old, 'phrases') || first(true),
+    stories: ofKind(saved.stories, 'stories') || (old?.startsWith('stories:') && ofKind(old, 'stories'))
+      || (storyList ? storiesScopeId(storyList.id) : words),
+  };
+}
+
+// Another section's choice in: the one showing keeps its own (and its Add words) for its return.
+function switchKind(kind) {
+  if (kind === state.kind) return;
+  if (state.reading.active) stopReadAloud();
+  if (storyRunOn()) stopReadStories();
+  state.kindAdding[state.kind] = state.addingTo;
+  state.kind = kind;
+  state.currentDeckId = state.kindScopes[kind] || null;
+  state.addingTo = state.kindAdding[kind] || null;
+}
 
 // ---------- view switching ----------
 
-// `section`: on Cards, whose cards: the words', or the Alphabet's (its Cards page). Anywhere else the
-// engine holds the words' (useSection).
-function setView(view, { section = 'words' } = {}) {
+// `section`: a kind, Words, Phrases or Stories, for its List, Cards or Read (the one showing, or last
+// shown, if not given); or on Cards, the Alphabet's (its Cards page). Anywhere else the engine holds
+// the last kind's (useSection).
+function setView(view, { section = state.kind } = {}) {
   const leaving = state.view;
   const leavingSection = state.section;
-  if (view !== 'flashcards') section = 'words';
+  const leavingKind = state.kind;
+  if (view !== 'flashcards' && section === 'alphabet') section = state.kind;
+  if (section !== 'alphabet') switchKind(section); // before useSection, whose first visit loads the kind's choice
+  const kindChanged = state.kind !== leavingKind;
   const wasCards = leaving === 'flashcards';
   // Leaving a Cards page (Flashcards, or the Alphabet's): Recall's audio stops, and a Recognition
   // card's pending move waits for the return (below).
@@ -3970,6 +4025,7 @@ function setView(view, { section = 'words' } = {}) {
   state.view = view;
   if (view !== 'home') state.leftHome = true; // Home lights More from now on (markMore)
   els.stage.dataset.view = view;
+  els.stage.dataset.kind = state.kind;
   const page = pageNow();
   els.tabs.forEach((t) => {
     t.setAttribute('aria-selected', t.dataset.view === page ? 'true' : 'false');
@@ -3981,7 +4037,7 @@ function setView(view, { section = 'words' } = {}) {
   const alphaPage = view === 'alphabet' ? (getPreferences().alphaPage === 'write' ? 'write' : 'letters') : 'cards';
   els.alphaPageButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.alphaPage === alphaPage ? 'true' : 'false'));
   els.wordlistSection.hidden = view !== 'wordlist';
-  if (view === 'wordlist' && leaving !== 'wordlist') { // a list's words may have changed meanwhile
+  if (view === 'wordlist' && (leaving !== 'wordlist' || kindChanged)) { // a list's words may have changed meanwhile
     freshListCards();
     state.takenOut.clear();
     state.addedHere.clear();
@@ -4018,7 +4074,7 @@ function setView(view, { section = 'words' } = {}) {
     }
     if (state.orderMode === 'type' && !TOUCH_SCREEN) els.typeBox.focus({ preventScroll: true }); // a phone's keyboard waits for a tap
   }
-  setPreferences({ view, section, ...(STUDY_VIEWS.has(view) && section === 'words' ? { studyPage: view } : {}) });
+  setPreferences({ view, section, kind: state.kind, ...(STUDY_VIEWS.has(view) && section !== 'alphabet' ? { pages: { ...getPreferences().pages, [state.kind]: view } } : {}) });
 }
 
 // ---------- settings UI ----------
@@ -5898,7 +5954,7 @@ async function deleteStoryList(id) {
   // Showing it: the next story list, or the first topic, as a word list's Delete does.
   if (state.currentDeckId === storiesScopeId(id)) {
     if (storyRunOn()) stopReadStories();
-    selectDeck(store.storyLists[0] ? storiesScopeId(store.storyLists[0].id) : state.decks.find((d) => !d.passage).id);
+    selectDeck(store.storyLists[0] ? storiesScopeId(store.storyLists[0].id) : state.kindScopes.words || state.decks.find((d) => !d.passage && !d.phrases).id);
     window.scrollTo(0, 0);
   }
   document.querySelectorAll('.story-save').forEach((b) => b.paint?.());
@@ -6024,6 +6080,7 @@ const PAGE_ICONS = {
   group: 'M3 6.5A1.5 1.5 0 0 1 4.5 5H9l2 2.5h8.5A1.5 1.5 0 0 1 21 9v9.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z',
   alphabet: 'M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6',
   mylist: 'M6 3h12v18l-6-4.5L6 21z', // a bookmark: one of your lists (2026-10-20)
+  phrases: 'M20.5 11.5a8.5 8.5 0 0 1-12.75 7.36L3.5 20.5l.5-6.1A8.5 8.5 0 1 1 20.5 11.5zM8.5 10h7M8.5 13.5h4.5', // a speech bubble: Phrases (2026-11-22)
 };
 // Adding to a list: a bookmark (2026-11-22, the user's call: the story bookmark "for letter/words/
 // phrases too, everything instead of the (=) icon which looks more like reload"; it was Home's 🔁 as
@@ -9411,7 +9468,7 @@ function bindEvents() {
     const page = b.dataset.studyPage;
     closeMore();
     if (state.settingsOpen) closeSettings();
-    if (page !== state.view || state.section !== 'words') setView(page);
+    if (page !== state.view || state.section === 'alphabet') setView(page);
   }));
 
   document.getElementById('read-aloud').addEventListener('click', toggleReadAloud);
@@ -9498,7 +9555,6 @@ function bindEvents() {
   document.addEventListener('click', (e) => {
     if (!els.alphaSetMenu.hidden && !e.target.closest('#alpha-set-menu, #deck-button')) toggleAlphaSets(false);
   });
-  els.pickerTabs.forEach((b) => b.addEventListener('click', () => pickPickerTab(b.dataset.pickerTab)));
   els.addingDone.addEventListener('click', doneAdding);
   // A word list's, or a story list's (its id after "stories:").
   const listAction = (words, stories) => () => {
@@ -9524,7 +9580,7 @@ function bindEvents() {
   els.moreMenu.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeMore();
   });
-  PHONE_LAYOUT.addEventListener('change', () => closeMore());
+  PHONE_LAYOUT.addEventListener('change', () => { closeMore(); markMore(); }); // More's rows differ (moreRows)
   // On a phone the pinned top rows take the page's colour once it scrolls under them (mobile.css);
   // Settings scrolls in its own box, under its search.
   const markScrolled = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 0);
@@ -9829,7 +9885,7 @@ function bindEvents() {
       return;
     }
     if (state.moreOpen) { // before Settings: the list can be open over it
-      const items = [...els.moreItems];
+      const items = moreRows();
       const i = items.indexOf(document.activeElement);
       if (e.key === 'Escape') {
         e.preventDefault();
@@ -10268,15 +10324,14 @@ async function init() {
     b.setAttribute('aria-checked', b.dataset.direction === state.direction ? 'true' : 'false');
   });
 
+  // Words, Phrases and Stories each start on their saved choice, in the one last shown.
+  state.kindScopes = startScopes(prefs);
+  state.kind = STUDY_KINDS.includes(prefs.kind) ? prefs.kind : 'words';
+  state.section = state.kind;
+  els.stage.dataset.section = state.kind;
   // The app opens on the home page. View first, so selectDeck's renderCard() knows the card isn't on screen.
   setView('home');
-
-  // A topic that was split or regrouped lists its old ids in `formerIds` (decks.json), so a saved
-  // current topic still resolves.
-  const start =
-    (!isPassage(prefs.currentDeckId) && resolveScope(prefs.currentDeckId)?.id) ||
-    state.decks.find((d) => d.formerIds?.includes(prefs.currentDeckId))?.id ||
-    state.decks[0]?.id;
+  const start = state.kindScopes[state.kind];
   if (start) {
     selectDeck(start);
   }

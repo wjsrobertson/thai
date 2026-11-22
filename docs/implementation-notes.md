@@ -1557,9 +1557,9 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
-- **The phone's bar:** Alphabet, Words, Dictionary, Time, More; More's list Home, Vocabulary and
-  Settings, Settings last (10-22; More had Time and Settings from 10-21, Home on the bar;
-  Vocabulary from 11-14).
+- **The phone's bar:** Alphabet, Words, Phrases, Stories, More; More's list Home, Dictionary, Time,
+  Vocabulary and Settings, Settings last (10-22; More had Time and Settings from 10-21, Home on the
+  bar; Vocabulary from 11-14; Phrases and Stories tabs, Dictionary and Time in More, 11-22).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
@@ -2552,6 +2552,54 @@ Stories. I agree with your suggestions", and phrases already in word lists "add 
   phrases, its picker Phrases only), Cards and Read (Next Time); a story list's rows no phrases; "busy"
   finding ยุ่ง on Words and ไม่ค่อยว่าง on Phrases; Tone Chants in the word dialog; Vocabulary's picker
   Words only; no script errors.
+
+## Words, Phrases and Stories as sections; Dictionary and Time in More (2026-11-22)
+
+The user's call: "The Words section is getting too cumbersome. Let's split Words, Phrases, Stories
+into main sections, at the level of Alphabet | Words ... move Dictionary and Time into More... for
+now". The topic picker's three tabs (the section above) became three sections, each with List | Cards
+| Read; the picker shows the section's kind and has no tabs.
+- **The tabs:** a phone's bar is **Alphabet, Words, Phrases, Stories, More**; More's list **Home,
+  Dictionary, Time, Vocabulary, Settings**. A wider screen has **Alphabet, Words, Phrases, Stories,
+  Vocabulary, More**, and More is a tab there too now: a list under it of Dictionary and Time (the
+  `.more-phone` rows are left out: Home is the corner's, Settings ⚙; `moreRows`, `openMore` places
+  it). Its tab is lit on either page. Home's cards: Alphabet, Words, then **Phrases** and **Stories**
+  side by side, Dictionary and Time, Vocabulary. Phrases' icon is a speech bubble, Stories' Read's
+  open book. With six tabs the icons go under 900 px wide (700 before) and under 760 the tabs and the
+  bar are tighter, so ⚙ stays on screen down to 601 (measured: it was off by up to 107 px at 620–850).
+- **Each section keeps its own** choice (`state.kindScopes`, `prefs.scopes`), page (`prefs.pages`;
+  Words and Phrases open on List, Stories on Read), Cards (place, mode, Recall stream: the engines
+  `useSection` already kept for the Alphabet, one per kind now, the List page's cards with them) and
+  Add words in progress (`state.kindAdding`). `state.kind` is the section showing (or last shown;
+  `prefs.kind`), and `state.currentDeckId` its choice: `setView(view, { section: kind })` swaps them
+  in (`switchKind`) before the engine. Cards' mode and direction are shared prefs, as before, so a
+  section's first visit starts in the last one used. Going to another section stops List's Read all
+  and Read's.
+- **The picker** (`renderPickerHead`; its tabs and `pickPickerTab` gone): Words your word lists, then
+  the word topics; Phrases your phrase lists, then the topics of phrases; **Stories your story lists,
+  then "Stories by topic"**: the word topics, each picking the stories that use its words (Read's
+  rule, as Words' Read has), so Stories has stories without a list of your own. Its rows leave out
+  the words-known bars and counts, its All has no number (the choice is of stories), and a search
+  finds lists and topics but no words. Vocabulary's picker is words; Add words (or phrases) the
+  list's kind, as before.
+- **Read first on Stories' switch** (Read | List | Cards; CSS `order` on `data-kind="stories"`).
+  Words and Phrases keep Read (the stories using a topic's words, or a phrase list's phrases); a
+  word topic in Stories shows the same stories.
+- **Going to a topic** from a word's Topics (or a search hit) opens it in Words, or in Phrases for a
+  topic of phrases (`showWordInTopic`).
+- **The first start after this** (`startScopes`): each section takes the old shared choice
+  (`prefs.currentDeckId`) if it's of its kind, else its first topic; Stories your first story list,
+  else Words' topic. `prefs.studyPage` becomes Words' page.
+- **check_layout.py** knows the new tabs (`go`: a page by its tab, or through More) and the bar's
+  check is the new one. Not run (the user's call: only when asked).
+- Checked headless (scratch `sections_probe.py`, `sections_probe2.py`, `sections_fit.py`) at 390 ×
+  664 (text Larger and 1.3) and 1280 × 800, and the wide bar at 601–1000: the bar and More's rows;
+  Words' Cards two cards on, kept through Phrases and Stories (3 / 24); Phrases' and Stories' pickers;
+  a topic in Stories (Food & Eating, 100 stories) and its List; a phrase's word's topic opening Words;
+  Dictionary from More (More lit); each section's choice and page over a reload; Home's Stories card;
+  Stories with no lists (Greetings' stories, the picker's "None yet"), a new story list and its
+  Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
+  picker; a story's word to its topic in Words; no script errors, no sideways scroll.
 
 ## Cards for the last splittable phrases, and their word lists (2026-11-22)
 

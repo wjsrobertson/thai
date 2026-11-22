@@ -66,9 +66,16 @@ def open_page(ws, tab, **prefs):
              'settingsMigrations': ['text-size-larger']}
     js(ws, f"localStorage.setItem('learnthai:v1', {json.dumps(json.dumps(store))}); location.reload()")
     time.sleep(1.6)
-    tap(ws, f'.tab[data-view={tab}]', wait=1.2)
+    go(ws, tab)
     js(ws, 'window.scrollTo(0, 0)')
     time.sleep(0.3)
+
+
+def go(ws, page, wait=1.2):
+    """A page by its tab, or through More if it has none (Dictionary and Time since 2026-11-22)."""
+    if not tap(ws, f'.tab[data-view={page}]', wait=wait):
+        tap(ws, '#tab-more', wait=0.6)
+        tap(ws, f'.more-item[data-view={page}]', wait=wait)
 
 
 def scrolled_by(ws, box=None, by=300):
@@ -96,7 +103,7 @@ def web_checks(ws, size):
         shot(ws, os.path.join(SHOTS, f'{W}x{H}-{tab}.png'))
         return out
 
-    topics = pages('study', '.study-switch', 'data-study-page', ('wordlist', 'flashcards', 'reading'), studyPage='wordlist')
+    topics = pages('words', '.study-switch', 'data-study-page', ('wordlist', 'flashcards', 'reading'), studyPage='wordlist')
     alpha = pages('alphabet', '.alpha-switch', 'data-alpha-page', ('letters', 'cards', 'write'), alphaPage='letters')
     for label, seen in (("Topics' List | Cards | Read", topics), ("The Alphabet's Letters | Cards | Write", alpha)):
         sw0 = seen[0][1]
@@ -113,7 +120,7 @@ def web_checks(ws, size):
     C('Web: the switches 16 px under the top bar (10-18)', bar and near(d['t'] - bar['b'], 16, 1.5), bar and f"top bar ends {bar['b']:.0f}, switch at {d['t']:.0f}")
     lab = json.loads(js(ws, "JSON.stringify((() => { const b = document.querySelector('.dict-switch .seg-btn'), i = b.querySelector('.seg-icon').getBoundingClientRect(), l = b.querySelector('.seg-label').getBoundingClientRect();"
                             " return { px: parseFloat(getComputedStyle(b.querySelector('.seg-label')).fontSize), beside: i.right <= l.left && i.bottom > l.top && i.top < l.bottom }; })())"))
-    open_page(ws, 'study', studyPage='wordlist')
+    open_page(ws, 'words', studyPage='wordlist')
     lab2 = json.loads(js(ws, "JSON.stringify((() => { const b = document.querySelector('.study-switch .seg-btn'), i = b.querySelector('.seg-icon').getBoundingClientRect(), l = b.querySelector('.seg-label').getBoundingClientRect();"
                              " return { px: parseFloat(getComputedStyle(b.querySelector('.seg-label')).fontSize), beside: i.right <= l.left && i.bottom > l.top && i.top < l.bottom }; })())"))
     C("Web: each page's name beside its icon, at 16 px", all(x['beside'] and near(x['px'], 16, 0.1) for x in (lab, lab2)), f'{lab} / {lab2}')
@@ -137,7 +144,7 @@ def checks(ws, size):
     snap = lambda name: shot(ws, os.path.join(SHOTS, f'{tag}-{name}.png'))
 
     # ---- The top row (2026-10-14) ----
-    open_page(ws, 'study', studyPage='wordlist')
+    open_page(ws, 'words', studyPage='wordlist')
     pk, sw = R(ws, '#deck-button'), R(ws, '.study-switch')
     C('Topics: the topic picker as tall as the List | Cards | Read switch, tops level',
       near(pk and pk['h'], sw and sw['h']) and near(pk and pk['t'], sw and sw['t']), f"{fmt(pk)} / {fmt(sw)}")
@@ -179,15 +186,16 @@ def checks(ws, size):
       m and near(m['t'], bar['b'], 1.5) and near(m['b'], tabs['t'], 1.5), f"dialog {m and m['t']:.0f}–{m and m['b']:.0f}, row ends {bar['b']:.0f}, tabs from {tabs['t']:.0f}")
     tap(ws, '#word-modal-close')
 
-    # The bar: Alphabet, Words, Dictionary, Time, More; Home, Vocabulary and Settings in More's list,
-    # Settings last (the user's call, 2026-10-22; More had Time and Settings from 10-21, Home on the
-    # bar; Vocabulary from 2026-11-14).
+    # The bar: Alphabet, Words, Phrases, Stories, More; Home, Dictionary, Time, Vocabulary and Settings
+    # in More's list, Settings last (the user's calls: 2026-10-22, Alphabet, Words, Dictionary, Time,
+    # More; Vocabulary in More from 2026-11-14; Phrases and Stories tabs, Dictionary and Time in More,
+    # 2026-11-22).
     shown = "JSON.stringify([...document.querySelectorAll('.tabs .tab')].filter(t => t.getClientRects().length).map(t => t.id || t.dataset.view))"
     tabs_shown = json.loads(js(ws, shown))
     tap(ws, '#tab-more', wait=0.6)
     more = json.loads(js(ws, "JSON.stringify([...document.querySelectorAll('.more-item')].filter(b => b.getClientRects().length).map(b => b.dataset.view || b.dataset.action))"))
-    C('The tab bar is Alphabet, Words, Dictionary, Time, More; More has Home, Vocabulary and Settings (10-22, 11-14)',
-      tabs_shown == ['alphabet', 'study', 'dictionary', 'time', 'tab-more'] and more == ['home', 'vocab', 'settings'], f"bar {tabs_shown}, More {more}")
+    C('The tab bar is Alphabet, Words, Phrases, Stories, More; More has Home, Dictionary, Time, Vocabulary and Settings (10-22, 11-22)',
+      tabs_shown == ['alphabet', 'words', 'phrases', 'stories', 'tab-more'] and more == ['home', 'dictionary', 'time', 'vocab', 'settings'], f"bar {tabs_shown}, More {more}")
     tap(ws, '.more-item[data-action=settings]', wait=1.0)
     ss = R(ws, '#settings-search')
     C("Settings: the search where the Dictionary's is, as tall (top, left, height)", same(ss, se, 'tlh'), f"{fmt(ss)} / {fmt(se)}")
@@ -267,7 +275,7 @@ def checks(ws, size):
             C(f'{page} ({SET}): ‹ › in the middle of the room under the {"card" if page == "Cards" else "pad"}, clear of the tab bar',
               up is not None and down is not None and down >= 0 and abs(up - down) <= 2, f"{up and round(up)} above, {down and round(down)} below")
 
-    open_page(ws, 'study', studyPage='wordlist', currentDeckId='greetings')
+    open_page(ws, 'words', studyPage='wordlist', currentDeckId='greetings')
     # (Add all was tapped here until the lists spike, 2026-10-20: Cards held only the words added.)
     tap(ws, '[data-study-page=flashcards]', wait=1.5)
     card, nx, tabs = R(ws, '#card'), R(ws, '#next-btn'), R(ws, '.tabs')
@@ -305,18 +313,18 @@ def checks(ws, size):
           max(hs) - min(hs) <= 1 and min(fonts) >= 11.95, f"heights {sorted({round(h) for h in hs})}, text {min(fonts):.1f}–{max(fonts):.1f} px")
         # Coming to Cards in Recall with no stream running (after a reload): sized as through the switch (2026-10-16).
         js(ws, 'location.reload()'); time.sleep(1.8)
-        tap(ws, f'.tab[data-view={tab}]', wait=1.5)
+        go(ws, tab, wait=1.5)
         rc2 = R(ws, '#review-card')
         C(f'{label}: Recall\'s card the same arriving from elsewhere (a reload, then the tab)', same(rc2, b), f"{fmt(rc2)} / {fmt(b)}")
         tap(ws, '[data-order=practice]', wait=1.0)
-    modes("Topics' Cards", 'study')
+    modes("Topics' Cards", 'words')
 
     # ---- Type with a phone's keyboard up (2026-10-19) ----
     # A touch screen (TOUCH_SCREEN is read as the page loads), then the visible height the keyboard
     # leaves: 307 px less, as the iPhone in Safari at 664 (the keyboard probe).
     ws.call('Emulation.setTouchEmulationEnabled', enabled=True, maxTouchPoints=5)
     js(ws, 'location.reload()'); time.sleep(1.8)
-    tap(ws, '.tab[data-view=study]', wait=1.5)
+    go(ws, 'words', wait=1.5)
     tap(ws, '[data-order=type]', wait=1.0)
     ws.call('Emulation.setDeviceMetricsOverride', width=W, height=H - 307, deviceScaleFactor=2, mobile=True)
     time.sleep(0.8)
@@ -339,7 +347,7 @@ def checks(ws, size):
     # Any field's keyboard: the tab bar hidden while it's up, and back when it goes (the user's
     # screenshot, 2026-10-19: the Dictionary's results scrolled, iOS showed it halfway up the screen).
     js(ws, 'document.activeElement.blur()'); time.sleep(0.3)  # Type's box, whose keyboard hides the bar too
-    tap(ws, '.tab[data-view=dictionary]', wait=1.0)
+    go(ws, 'dictionary', wait=1.0)
     tap(ws, '#dict-search', wait=0.5)
     bar_up = js(ws, "getComputedStyle(document.querySelector('.tabs')).display")
     js(ws, 'document.activeElement.blur()'); time.sleep(0.3)
@@ -348,7 +356,7 @@ def checks(ws, size):
       bar_up == 'none' and bar_down not in (None, 'none'), f'up: {bar_up}, gone: {bar_down}')
     ws.call('Emulation.setTouchEmulationEnabled', enabled=False)
     js(ws, 'location.reload()'); time.sleep(1.8)
-    tap(ws, '.tab[data-view=study]', wait=1.5)
+    go(ws, 'words', wait=1.5)
     tap(ws, '[data-order=practice]', wait=1.0)  # as modes() leaves it, for the checks below
 
     # ---- Card text in proportion (2026-10-16) ----
@@ -387,7 +395,7 @@ def checks(ws, size):
 
     # ---- Tile boards: rows centred, tiles one width (2026-10-13) ----
     for deck in ('script-vowels', 'script-final-families', 'script-tone-pairs-common'):
-        open_page(ws, 'study', studyPage='wordlist', currentDeckId=deck)
+        open_page(ws, 'words', studyPage='wordlist', currentDeckId=deck)
         t = json.loads(js(ws, """JSON.stringify((() => { const box = document.querySelector('#wordlist-section .letter-groups'); if (!box) return null; const cs = getComputedStyle(box), br = box.getBoundingClientRect();
           const l = br.left + parseFloat(cs.paddingLeft), r = br.right - parseFloat(cs.paddingRight);
           const widths = [...box.querySelectorAll('.letter-tile')].map((e) => Math.round(e.getBoundingClientRect().width));
