@@ -2386,33 +2386,54 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .word-modal .pop-word.pop-phrase { font-size: calc(44px * var(--fs, 1)); line-height: 1.6; white-space: normal; overflow-wrap: anywhere; }
 /* The word under the mouse, lit as a Topics row's word is (Custom Highlight API). */
 ::highlight(pop-word-hover) { color: var(--accent); }
-/* Its words, read down: the Thai, then the transliteration over the meaning, the columns lined up
-   across the rows (subgrid); each opens the word. */
+/* Its words, read down: the Thai and its transliteration, the meaning under them (a tap opens the
+   word); then Add to Cards, Play and ›, the size of a Topics row's (the user's call, 2026-11-22: they
+   had only a small ›, and the Thai and meaning in lined-up columns, too narrow beside three buttons). */
 .pop-words { margin: 12px 0 0; border-top: 1px solid var(--border); }
-.pw-list { display: grid; grid-template-columns: auto 1fr auto; column-gap: 14px; }
-.pw-row {
-  display: grid;
-  grid-column: 1 / -1;
-  grid-template-columns: subgrid;
-  align-items: center;
-  min-height: 46px;
+.pw-row { display: flex; align-items: center; gap: 6px; border-top: 1px solid var(--border); }
+.pw-row:first-child { border-top: 0; }
+.pw-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 56px;
+  justify-content: center;
   padding: 6px 2px;
   background: none;
   border: 0;
-  border-top: 1px solid var(--border);
   border-radius: 0;
   color: var(--ink);
   font: inherit;
+  font-size: calc(15px * var(--fs, 1));
+  line-height: 1.35;
   text-align: left;
   cursor: pointer;
 }
-.pw-list .pw-row:first-child { border-top: 0; }
+.pw-head { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 10px; }
 .pw-th { font-size: calc(22px * var(--fs, 1)); line-height: 1.4; }
-.pw-text { display: flex; flex-direction: column; min-width: 0; font-size: calc(15px * var(--fs, 1)); line-height: 1.35; }
 .pw-tr { color: var(--accent); font-style: italic; }
 .pw-en { color: var(--muted); }
-.pw-go { color: var(--muted); font-size: 22px; }
-.pw-row:hover .pw-th, .pw-row:hover .pw-go { color: var(--accent); }
+.pw-open:hover .pw-th { color: var(--accent); }
+.pw-actions { flex: none; display: flex; align-items: center; }
+.pw-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+  color: var(--muted);
+}
+.pw-actions button:hover { color: var(--accent); background: var(--panel-2); }
+.pw-actions .row-review.added { color: var(--good); }
+.pw-actions .review-icon { width: 27px; height: 27px; margin: 0; }
+.pw-actions .speaker-icon { width: 30px; height: 30px; }
+.pw-actions .go-icon { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .pop-words + .pop-tones { margin-top: 8px; }
 /* Its topics (a phrase's or a word's), one a line, as In stories' story names. */
 .pop-topics { margin: 12px 0 0; border-top: 1px solid var(--border); }

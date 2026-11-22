@@ -6790,23 +6790,40 @@ function fitPopPhrase(el) {
 }
 
 // Its words in order, a repeated one again (read down, they're the saying's literal sense), each
-// with its transliteration and meaning; a tap opens the word's dialog, and ‹ comes back.
+// with its transliteration and meaning, which open the word's dialog (‹ comes back); then Add to Cards,
+// Play and › (the same), as a Topics row has them (2026-11-22, the user's request).
 function phraseWordList(words) {
   const box = popEl('div', 'pop-words');
   const list = popEl('div', 'pw-list');
   for (const w of words) {
-    const b = popEl('button', 'pw-row');
-    b.type = 'button';
-    b.title = `Open ${w.thai}`;
+    const row = popEl('div', 'pw-row');
+    const open = popEl('button', 'pw-open');
+    open.type = 'button';
+    open.title = `Open ${w.thai}`;
+    const head = popEl('span', 'pw-head');
     const th = popEl('span', 'pw-th', w.thai);
     th.lang = 'th';
-    const text = popEl('span', 'pw-text');
-    text.append(popEl('span', 'pw-tr', w.translit), popEl('span', 'pw-en', w.english));
-    const go = popEl('span', 'pw-go', '›');
-    go.setAttribute('aria-hidden', 'true');
-    b.append(th, text, go);
-    b.addEventListener('click', () => showWordPop(null, w));
-    list.append(b);
+    head.append(th, popEl('span', 'pw-tr', w.translit));
+    open.append(head, popEl('span', 'pw-en', w.english));
+    open.addEventListener('click', () => showWordPop(null, w));
+    const say = cardSay(w);
+    const play = popEl('button', 'row-speak' + (sayingNow(say) ? ' playing' : '')); // lit while it plays (markSpeakers)
+    play.type = 'button';
+    play.dataset.say = say;
+    play.title = `Play ${w.thai}`;
+    play.setAttribute('aria-label', play.title);
+    play.append(speakerIcon());
+    play.addEventListener('click', () => speakerPress(play, say));
+    const go = popEl('button', 'pw-go');
+    go.type = 'button';
+    go.title = `Open ${w.thai}`;
+    go.setAttribute('aria-label', go.title);
+    go.append(lineIcon('go-icon', '0 0 24 24', 'M9 5l7 7-7 7'));
+    go.addEventListener('click', () => showWordPop(null, w));
+    const actions = popEl('span', 'pw-actions');
+    actions.append(reviewButton(cardKey(w), w.thai), play, go);
+    row.append(open, actions);
+    list.append(row);
   }
   box.append(popEl('div', 'tones-head', 'Word by word'), list);
   return box;

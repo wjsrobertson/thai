@@ -2444,6 +2444,15 @@ syllable's rule and the whole table (30 syllables for the longest).
   raised round button, 44 × 44, `--panel-2` with a `--control-border` ring and a bold chevron (SVG,
   stroke 2.6) in `--ink`, the accent on hover. Checked (scratch `back_button_probe.py`) in Dark and
   Light at 390 × 664 and 1280 × 800: in the head's padding (no taller head), no script errors.
+- **Word by word's rows get Add to Cards, Play and a bigger ›** (the same day, the user's request:
+  "add play and 'save word' icons to each word row… make the navigate to word > more prominent too,
+  to match the size"): the Topics rows' 🔁 and speaker and a chevron, each 50 × 50 (`.pw-actions`).
+  With 150 px of buttons, the lined-up columns (Thai | transliteration over meaning, subgrid) left the
+  meaning 100 px on a phone, so the Thai and its transliteration share a line and the meaning goes
+  under (`.pw-open`, still opening the word). Checked (scratch `word_rows_probe.py`) at 390 × 664
+  (text Larger and 1.3) and 1280 × 800: rows 71–79 tall, the text 194 wide on a phone, no sideways
+  scroll; 🔁 on เมือง adds it (✓, the toast) and again takes it out; › on หลิ่ว opens it and ‹ comes
+  back; no script errors.
 - **Next, offered and put off** (the user: "we can defer any work… until we get the basic dialog
   working nicely"): an **In phrases** section in the word dialog (the phrases that use it, from
   `words`), as the letter dialog lists words that start with it; a Phrases page beside the
