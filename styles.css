@@ -1688,8 +1688,8 @@ body { display: flex; flex-direction: column; }
 .alpha-switch { display: none; }
 .stage[data-view="alphabet"] .alpha-switch,
 .stage[data-section="alphabet"] .alpha-switch { display: inline-flex; }
-/* Stories' switch is Read | List | Cards (2026-11-22): its stories first, the page it opens on. */
-.stage[data-kind="stories"] .study-switch [data-study-page="reading"] { order: -1; }
+/* Stories has no switch: Read only (2026-11-22, the user's call; for a few hours Read | List | Cards). */
+.stage[data-kind="stories"]:not([data-section="alphabet"]) .study-switch { display: none; }
 /* On a wider screen (the user's call, 2026-10-18: "they look terrible and make the app jump around"):
    each section's switch has a row of its own, centred at the top of the page, so it sits in the
    same place on every page instead of moving with the controls beside it; each page is its icon with
@@ -1702,6 +1702,7 @@ body { display: flex; flex-direction: column; }
      space", the user, 2026-10-18). Every page but Home has a switch. */
   .stage:not([data-view="home"]) { padding-top: 16px; }
   .deck-picker-bar, .dict-top { position: relative; padding-top: 60px; }
+  .stage[data-kind="stories"][data-view="reading"] .deck-picker-bar { padding-top: 0; } /* Stories has no switch (2026-11-22) */
   :is(.study-switch, .alpha-switch, .dict-switch) { position: absolute; top: 0; left: 0; right: 0; width: fit-content; margin: 0 auto; }
   :is(.study-switch, .alpha-switch, .dict-switch) .seg-btn { flex-direction: row; gap: 7px; height: 36px; padding: 0 14px; }
   :is(.study-switch, .alpha-switch, .dict-switch) .seg-btn[aria-checked="true"] { font-weight: inherit; }

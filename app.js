@@ -1030,13 +1030,11 @@ function renderReviewOnly() {
   const empty = !!state.flashScopeId && state.queue.length === 0;
   els.reviewOnlyEmpty.hidden = !empty;
   els.stage.classList.toggle('review-only-none', empty);
-  // A story list's (2026-11-22): no stories, so no words; its button goes to Read, where they're saved.
-  const stories = flashScope()?.kind === 'stories';
   const noun = kindNoun(scopeKind(flashScope())); // a phrase list's: phrases (2026-11-22)
-  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no ${stories ? 'stories' : noun} yet`;
+  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no ${noun} yet`;
   if (empty) {
-    els.reviewOnlyAdd.textContent = stories ? 'Find stories' : `Add ${noun}`;
-    els.reviewOnlyAdd.nextElementSibling.textContent = stories ? 'Save stories on Read with their bookmark' : `Choose ${noun} from a topic or another of your lists`;
+    els.reviewOnlyAdd.textContent = `Add ${noun}`;
+    els.reviewOnlyAdd.nextElementSibling.textContent = `Choose ${noun} from a topic or another of your lists`;
   }
 }
 
@@ -1566,8 +1564,8 @@ function resolveListScope(id) {
 }
 
 // One of your story lists (2026-11-22, the user's call: in the picker, Topics | My Words | My Stories,
-// rather than a switch on Read): Read shows its stories, newest saved first; List and Cards their
-// words (not their phrases), each once, the very common ones left out ("leave out the very common words": READING_COMMON,
+// rather than a switch on Read): Read shows its stories, newest saved first. Its cards are their
+// words, which List and Cards showed till Stories became Read only, the same day (not their phrases), each once, the very common ones left out ("leave out the very common words": READING_COMMON,
 // which Read leaves out when it matches stories to a topic). decks are the stories, for the List
 // page's headings (groupOf: a word's first story in the list); deckOf is each word's first topic, as a
 // word list's is, which grades and Tone Pairs' partners go by. A word's card is its topic's (with its
@@ -1871,8 +1869,7 @@ function renderStoryListsPane() {
   const rows = lists.map((l) => {
     const id = storiesScopeId(l.id);
     const scope = resolveScope(id);
-    const n = scope.cards.length;
-    const row = pickerDeckRow({ id, name: l.name, description: `${scope.description} · ${n} ${kindNoun('words', n)}`, cards: scope.cards }, { progress: false });
+    const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
     return row;
   });
@@ -3965,10 +3962,13 @@ function pickMore(b) {
 const STUDY_VIEWS = new Set(['wordlist', 'flashcards', 'reading']);
 // Words, Phrases and Stories, sections of their own (2026-11-22, the user's call: "the Words section is
 // getting too cumbersome"; till then the topic picker's Words | Phrases | Stories, in one section),
-// each with List | Cards | Read. Each keeps its choice (kindScopes, prefs.scopes), its page
-// (prefs.pages) and its Cards (useSection). Stories opens on Read.
+// Words and Phrases each with List | Cards | Read; Stories Read only (the user's call, the same day: it
+// "doesn't need the Read|List|Cards buttons"; it had all three for a few hours, a story list's List
+// and Cards its stories' words). Each keeps its choice (kindScopes, prefs.scopes), its page
+// (prefs.pages) and its Cards (useSection).
 const STUDY_KINDS = ['words', 'phrases', 'stories'];
 const kindPage = (kind) => {
+  if (kind === 'stories') return 'reading';
   const p = getPreferences();
   const page = p.pages?.[kind] ?? (kind === 'words' ? p.studyPage : null); // studyPage: the one section's, before
   return STUDY_VIEWS.has(page) ? page : kind === 'stories' ? 'reading' : 'wordlist';
@@ -4034,6 +4034,7 @@ function setView(view, { section = state.kind } = {}) {
   const leavingKind = state.kind;
   if (view !== 'flashcards' && section === 'alphabet') section = state.kind;
   if (section !== 'alphabet') switchKind(section); // before useSection, whose first visit loads the kind's choice
+  if (section === 'stories' && STUDY_VIEWS.has(view)) view = 'reading'; // Stories is Read only
   const kindChanged = state.kind !== leavingKind;
   const wasCards = leaving === 'flashcards';
   // Leaving a Cards page (Flashcards, or the Alphabet's): Recall's audio stops, and a Recognition
@@ -4611,8 +4612,7 @@ function renderWordlist() {
     els.addingName.textContent = adding.name;
     document.getElementById('adding-noun').textContent = kindNoun(listKind(adding)); // "Adding phrases to" (2026-11-22)
   }
-  const isStories = deck.kind === 'stories';
-  els.listActions.hidden = !isList && !isStories; // Rename and Delete, a story list's too (2026-11-22)
+  els.listActions.hidden = !isList; // Rename and Delete
 
   // In list order (the headings sorted the table until 2026-10-12), a search's matches, a page at a time.
   wordsFor(deck.id);
@@ -4642,8 +4642,7 @@ function renderWordlist() {
   if (rows.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = q ? `No ${kindNoun(kind)} match "${q}".` : isList ? `No ${kindNoun(kind)} yet. Add ${kindNoun(kind)} chooses some from a topic or another list.`
-      : isStories ? 'No stories yet. Save them on Read with their bookmark, and their words are here.' : 'No matches.';
+    tr.firstChild.textContent = q ? `No ${kindNoun(kind)} match "${q}".` : isList ? `No ${kindNoun(kind)} yet. Add ${kindNoun(kind)} chooses some from a topic or another list.` : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
     // A list's words taken out of it since the page opened: faded, but still usable, 🔁 putting one
@@ -5889,8 +5888,7 @@ const STORY_LISTS = {
   key: 'stories', one: 'story', many: 'stories', also: 'Save new stories there too',
 };
 
-// After a change: the lists' scopes rebuilt, the bookmarks repainted, the topic button, and List or
-// Cards when they show one. Read isn't redrawn, so a story read aloud carries on, and one taken out
+// After a change: the lists' scopes rebuilt, the bookmarks repainted, the topic button. Read isn't redrawn, so a story read aloud carries on, and one taken out
 // of the list shown stays there, faded, to save again with a tap (as a word taken out of its list's
 // page does); it's gone the next time the list is drawn.
 function storyListsChanged() {
@@ -5901,11 +5899,6 @@ function storyListsChanged() {
   if (scope?.kind !== 'stories') return;
   const list = storyListById(scope.id.slice(8));
   els.readingList.querySelectorAll('.reading-entry').forEach((e) => e.classList.toggle('unsaved', !!list && !list.stories.includes(e.dataset.id)));
-  if (state.view === 'wordlist') {
-    freshListCards();
-    renderWordlist();
-  }
-  syncReviewOnly();
 }
 
 // A list's stories, newest saved first, those still in the data.
@@ -9580,14 +9573,9 @@ function bindEvents() {
     if (!els.alphaSetMenu.hidden && !e.target.closest('#alpha-set-menu, #deck-button')) toggleAlphaSets(false);
   });
   els.addingDone.addEventListener('click', doneAdding);
-  // A word list's, or a story list's (its id after "stories:").
-  const listAction = (words, stories) => () => {
-    const scope = currentScope();
-    if (scope?.kind === 'stories') stories(scope.id.slice(8));
-    else words(scope?.id.slice(5));
-  };
-  els.listRename.addEventListener('click', listAction(renameList, renameStoryList));
-  els.listDelete.addEventListener('click', listAction(deleteList, deleteStoryList));
+  // A word or phrase list's (its id after "list:"); a story list's are on Read (storyListActions).
+  els.listRename.addEventListener('click', () => renameList(currentScope()?.id.slice(5)));
+  els.listDelete.addEventListener('click', () => deleteList(currentScope()?.id.slice(5)));
   els.deckPicker.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeDeckPicker();
   });
@@ -9828,7 +9816,6 @@ function bindEvents() {
   });
   // Cards on an empty list: its Add words, on the List page.
   els.reviewOnlyAdd.addEventListener('click', () => {
-    if (currentScope()?.kind === 'stories') return setView('reading'); // an empty story list's: Find stories
     const id = currentScope()?.kind === 'list' ? currentScope().id.slice(5) : null;
     if (id) openAddWords(id);
   });

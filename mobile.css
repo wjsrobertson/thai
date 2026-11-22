@@ -317,6 +317,9 @@ html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit wh
 .deck-picker-bar :is(.study-switch, .alpha-switch) { flex: none; } /* over .deck-picker-bar .segmented's flex: 1 */
 .dict-switch .seg-btn { min-width: 50px; min-height: 44px; padding: 2px 6px; }
 .deck-picker-bar :is(.study-switch, .alpha-switch) .seg-btn { flex: none; min-width: 50px; min-height: 44px; padding: 2px 6px; }
+/* Stories has no switch (2026-11-22): its topic button the switch's height all the same, so the
+   pinned row is as tall as elsewhere (--pinned-h, which the word dialog sits under). */
+.stage[data-kind="stories"][data-view="reading"] .deck-button { min-height: calc(var(--pinned-h) - 24px); }
 .letter-big { font-size: 92px; }
 .letter-big.wide { font-size: 68px; }
 .tone-tile b, .mark-tile b { font-size: 13px; }

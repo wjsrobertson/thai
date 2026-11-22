@@ -2602,6 +2602,23 @@ now". The topic picker's three tabs (the section above) became three sections, e
   Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
   picker; a story's word to its topic in Words; no script errors, no sideways scroll.
 
+## Stories without List | Cards (2026-11-22)
+
+The user's call: "Stories section doesn't need the Read|List|Cards buttons - please remove that
+group". Stories is Read only: its topic or story list's stories.
+- **No switch on Stories** (CSS on `data-kind="stories"`); `kindPage('stories')` is always Read, and
+  `setView` turns List or Cards in Stories into Read, so a saved page (prefs.pages) can't open one.
+  On a phone the topic button takes the row, as tall as the switch was (`--pinned-h`), so the pinned
+  row and the dialogs under it don't move; on a wider screen the switch's empty row goes, the topic
+  button 16 px under the top bar.
+- **Gone with it:** a story list's List and Cards (its stories' words, without phrases or very common
+  words) and their bits: the List page's Rename and Delete for one (Read has them), Cards' "has no
+  stories yet / Find stories", the words count on its picker row ("1 story"). `resolveStoriesScope`
+  still collects the words, unused.
+- Checked headless (scratch `stories_read_only_probe.py`) at 390 × 664 and 1280 × 800: Stories on
+  Read from a saved List page; no switch; the phone's row 0–76 as on Words, a story's dialog under
+  it; Words' Cards kept; Alphabet's Cards from Stories with its own switch; no script errors.
+
 ## The picker's Topics | My Words again (2026-11-22)
 
 The user's call, after the sections above: "change the topic picker back to the way it used to be,
