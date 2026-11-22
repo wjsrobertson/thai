@@ -2509,6 +2509,42 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## Word lists for 13 more phrases (2026-11-22)
+
+The user's call, after asking why some idioms had none: "fill in the ones that can be split". Of the
+59 phrases with no word list, 13 split into words that have cards in the right sense:
+- the five Sentence Patterns: Linking Ideas (ฝนตก ก็เลยไม่ไป, ถ้าว่าง ก็มานะ, ถึงจะแพง ก็อยากซื้อ,
+  ไม่ใช่ของฉัน แต่เป็นของเขา, พอถึงบ้าน ก็นอนเลย);
+- five idioms (รักวัวให้ผูก รักลูกให้ตี, สงครามยังไม่จบ อย่าเพิ่งนับศพทหาร, ทำดีได้ดี ทำชั่วได้ชั่ว,
+  มือถือสาก ปากถือศีล, กินบนเรือน ขี้บนหลังคา);
+- พูดช้า ๆ ได้ไหม, อ้าปาก and Southern แลดี.
+
+Each word's card is the sense the other lists use most (ได้ "can / get / did"), save เลย in ก็เลย
+("so / therefore") and มือ ถือ apart in มือถือสาก (not มือถือ "phone"). Like the other lists, chunks go
+into plain words (ยัง ไม่, ได้ ไหม, ไม่ ใช่: no list uses ยังไม่'s or ได้ไหม's own card), so Vocabulary
+can tell them from the words you know; the notes give the patterns (ถึง(จะ) … ก็ … = even though).
+`stories.py sync` gave the 15 story copies theirs. 615 phrases have a list now: knowing the most-used
+500, 210 all known and 250 one word short (from 208 and 244).
+
+- **Spaces don't count** in a list now: most of these have one between their halves, which a word
+  list can't hold, and ช้า ๆ's card is written as the phrase writes it. The audit compares them without
+  spaces (`tools/audit_decks.py`), and the app finds each word in the Thai the same way
+  (`phraseSpans`: the phrase dialog's words, Vocabulary's lists, a List row). A row shows the phrase's
+  own spaces between its halves, the Word gaps only where it has none (`appendPhraseParts`). All 3,964
+  cards with a list (stories' and word topics' too) match.
+- **Not split, and why:** the 15 Tone Chants (syllables, not words); the templates with a gap (ขอ…บาท,
+  ขอ … หน่อย, ที่อื่นขาย…บาท, ฉันกินยา…ประจำ); the one-chunk phrases (แล้วแต่, ตามใจ, พอที, พอกันที,
+  ไว้คราวหน้า, ขโมย; the Southern ม่ารู่ม้าย, ม่ายพรือ, แข๊บหม้าย, มาต่ะ, พันพรือหล้าว, นอนหวันแยงโมง,
+  หรอยแรง, สวยหนัด, whose dialect words have no cards); a doubled word with no card (ไว ๆ, ว่าง ๆ, งั้น ๆ,
+  ชัด ๆ, หลาย ๆ, บ่าย ๆ, เป็นๆ หายๆ); and idioms whose word's card has the wrong sense: แต่ง only "to
+  compose (a song)" (ไก่งามเพราะขน คนงามเพราะแต่ง: to dress up), เป็น no "alive" (น้ำร้อนปลาเป็น
+  น้ำเย็นปลาตาย), ตีน and นม only their vulgar cards (ไก่เห็นตีนงู งูเห็นนมไก่), and พร้า, ปราศรัย,
+  เชือด with none (ช้าๆ ได้พร้าเล่มงาม, ปากปราศรัย น้ำใจเชือดคอ). New sense cards would let them in.
+- Pipeline: audit 0 errors; stories.py sync (15) and check (0 problems); spelling.mjs (unchanged);
+  gen_audio.py (every clip there); no story lines changed. Checked headless at 390 × 664 (scratch
+  `fill_words_probe.py`): รักวัวให้ผูก รักลูกให้ตี's row with its space, its dialog's Word by word and ลูก
+  tapped; พูดช้า ๆ ได้ไหม's, ช้า ๆ tapped; สีแดง's row as it was; no script errors.
+
 ## Phrases from your words, and "I know this word" (2026-11-22)
 
 The user's request: on Vocabulary, "a way to find phrases composed solely of words we know… see them

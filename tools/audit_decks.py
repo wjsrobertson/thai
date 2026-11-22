@@ -96,9 +96,11 @@ def audit(decks):
         fields = {'thai', 'translit', 'english', 'note', 'say', 'partners', 'words'}
         if set(c) - fields:
             errors['unknown card field'].append(f'{where} {set(c) - fields}')
-        # A phrase's words (2026-10-10): card keys that exist somewhere and spell the phrase.
+        # A phrase's words (2026-10-10): card keys that exist somewhere and spell the phrase. Spaces don't
+        # count (2026-11-22): a list leaves out the space between a saying's halves, and ช้าๆ's card can
+        # stand for ช้า ๆ (the app's phraseSpans matches them the same way).
         if 'words' in c:
-            if ''.join(k.split('::')[0] for k in c['words']) != c['thai']:
+            if ''.join(k.split('::')[0] for k in c['words']).replace(' ', '') != c['thai'].replace(' ', ''):
                 errors["phrase words that don't spell it"].append(where)
             missing = [k for k in c['words'] if k not in all_keys]
             if missing: errors['phrase word with no card'].append(f'{where}: {missing}')

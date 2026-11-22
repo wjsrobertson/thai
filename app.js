@@ -4657,18 +4657,14 @@ function wordRow(c, cols, words) {
     const phrase = key === 'thai' && isPhraseCard(c);
     if (parts && phrase) {
       td.textContent = '';
-      parts.forEach((w, i) => {
-        if (i) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
-        td.append(w.thai);
-      });
+      appendPhraseParts(td, c.thai, parts, (w, text) => text);
     }
     if (parts && !phrase) {
       td.textContent = '';
       td.classList.add('col-phrase');
-      parts.forEach((w, i) => {
-        // Between words (Thai writes none): a space that Settings → Topics → Word gaps shows.
-        if (i) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
-        const span = Object.assign(document.createElement('span'), { className: 'tw', textContent: w.thai });
+      // Between words (Thai writes none): a space that Settings → Topics → Word gaps shows.
+      appendPhraseParts(td, c.thai, parts, (w, text) => {
+        const span = Object.assign(document.createElement('span'), { className: 'tw', textContent: text });
         span.tabIndex = 0;
         span.setAttribute('role', 'button');
         span.title = `Show ${w.thai}`;
@@ -4678,7 +4674,7 @@ function wordRow(c, cols, words) {
         };
         span.addEventListener('click', open);
         span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
-        td.append(span);
+        return span;
       });
     } else if (key === 'thai') {
       td.tabIndex = 0;
@@ -6980,21 +6976,11 @@ function showPhrasePop(anchor, card) {
   els.wordModalTr.textContent = card.translit;
   els.wordModalEn.textContent = card.english;
   const key = cardKey(card);
-  // Where each word is in the Thai, so a tapped letter (partAt) finds its word. They're in order with
-  // nothing but spaces between (checked over every phrase, 2026-11-22). The Thai stays one piece of
-  // text, as the word dialog's, for the Tones to light a syllable's letters (lightParts).
+  // Where each word is in the Thai (phraseSpans), so a tapped letter (partAt) finds its word. The Thai
+  // stays one piece of text, as the word dialog's, for the Tones to light a syllable's letters
+  // (lightParts).
   const words = phraseWords(card) || [];
-  const spans = [];
-  let pos = 0;
-  for (const w of words) {
-    const i = card.thai.indexOf(w.thai, pos);
-    if (i < 0) {
-      spans.length = 0;
-      break;
-    }
-    spans.push([i, i + w.thai.length]);
-    pos = i + w.thai.length;
-  }
+  const spans = (words.length && phraseSpans(card.thai, words)) || [];
   const wordBox = popEl('div', 'word-box');
   const big = popEl('div', 'pop-word pop-phrase', card.thai);
   big.lang = 'th';
@@ -7681,6 +7667,42 @@ function phraseWords(card) {
   if (!(card.words?.length > 1)) return null;
   const words = card.words.map((k) => state.cardIndex.get(k)?.card);
   return words.every(Boolean) ? words : null;
+}
+
+// Where each word is in the phrase's Thai, [start, end), spaces not counting: a word list leaves out the
+// space between a saying's halves (รักวัวให้ผูก รักลูกให้ตี), and ช้าๆ's card stands for ช้า ๆ (2026-11-22,
+// when the idioms got theirs). Null if they don't spell it.
+function phraseSpans(thai, words) {
+  const spans = [];
+  let i = 0;
+  for (const w of words) {
+    const want = w.thai.replace(/ /g, '');
+    while (thai[i] === ' ') i++;
+    const start = i;
+    for (let k = 0; k < want.length; i++) {
+      if (i >= thai.length) return null;
+      if (thai[i] === ' ' && k > 0) continue;
+      if (thai[i] !== want[k]) return null;
+      k++;
+    }
+    spans.push([start, i]);
+  }
+  return thai.slice(i).trim() ? null : spans;
+}
+
+// A phrase's Thai in a row, word by word: each word as the phrase writes it (`part` makes it), and
+// between two a real space where the phrase has one, else the Word gaps space (shown only with
+// Settings → List → Word gaps).
+function appendPhraseParts(td, thai, words, part) {
+  const spans = phraseSpans(thai, words);
+  if (!spans) {
+    td.append(thai);
+    return;
+  }
+  spans.forEach(([a, b], i) => {
+    if (i) td.append(/ /.test(thai.slice(spans[i - 1][1], a)) ? ' ' : Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
+    td.append(part(words[i], thai.slice(a, b)));
+  });
 }
 
 // ---------- wordlist read-aloud ----------
@@ -8890,13 +8912,9 @@ function renderVocabPhrases() {
       // Its Thai word by word, the one not known yet lit; that word opens its own dialog.
       const td = tr.querySelector('td.col-thai');
       td.textContent = '';
-      p.words.forEach((w, n) => {
-        if (n) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
-        if (w.thai !== p.missing) {
-          td.append(w.thai);
-          return;
-        }
-        const span = Object.assign(document.createElement('span'), { className: 'vp-missing', textContent: w.thai, tabIndex: 0 });
+      appendPhraseParts(td, p.card.thai, p.words, (w, text) => {
+        if (w.thai !== p.missing) return text;
+        const span = Object.assign(document.createElement('span'), { className: 'vp-missing', textContent: text, tabIndex: 0 });
         span.setAttribute('role', 'button');
         span.title = `${w.thai}: ${w.english}`;
         const open = (e) => {
@@ -8906,7 +8924,7 @@ function renderVocabPhrases() {
         };
         span.addEventListener('click', open);
         span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
-        td.append(span);
+        return span;
       });
     }
     rows.push(tr);
