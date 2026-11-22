@@ -2440,6 +2440,10 @@ syllable's rule and the whole table (30 syllables for the longest).
   has them); none for a letter or a time. Checked (scratch `word_topics_probe.py`, 390 × 664 and
   1280 × 800): มา's six, Spoken 1–20 opening on the List with มา lit; ว่าง from ไม่ค่อยว่าง's Word by
   word with its one topic, and ‹ back to the phrase; no script errors.
+- **‹ more prominent** (the same day, the user's call): it was the muted ‹ glyph, like ✕; it's now a
+  raised round button, 44 × 44, `--panel-2` with a `--control-border` ring and a bold chevron (SVG,
+  stroke 2.6) in `--ink`, the accent on hover. Checked (scratch `back_button_probe.py`) in Dark and
+  Light at 390 × 664 and 1280 × 800: in the head's padding (no taller head), no script errors.
 - **Next, offered and put off** (the user: "we can defer any work… until we get the basic dialog
   working nicely"): an **In phrases** section in the word dialog (the phrases that use it, from
   `words`), as the letter dialog lists words that start with it; a Phrases page beside the

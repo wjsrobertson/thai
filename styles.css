@@ -378,21 +378,25 @@ body { padding-left: env(safe-area-inset-left, 0px); padding-right: env(safe-are
   border-radius: 6px;
 }
 .modal-close:hover { color: var(--ink); background: var(--panel-2); }
-/* The word dialog's ‹, at the head's left when there's a dialog to go back to (popEnter, 2026-11-22). */
+/* The word dialog's ‹, at the head's left when there's a dialog to go back to (popEnter, 2026-11-22).
+   A raised round button with a bold chevron in the text's colour (the same day, the user's call: "a bit
+   more prominent" than the muted ‹ glyph it was, as ✕ is). */
 .modal-back {
   flex: none;
-  min-width: 44px;
-  min-height: 44px;
-  margin: -8px -6px -8px -12px; /* the head's padding, not a taller head */
-  padding: 0 0 4px;
-  background: transparent;
-  border: 0;
-  border-radius: 6px;
-  color: var(--muted);
-  font-size: 30px;
-  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: -6px 0 -6px -6px; /* in the head's padding, not a taller head */
+  padding: 0;
+  background: var(--panel-2);
+  border: 1px solid var(--control-border);
+  border-radius: 50%;
+  color: var(--ink);
 }
-.modal-back:hover { color: var(--ink); background: var(--panel-2); }
+.modal-back .back-icon { width: 24px; height: 24px; margin-left: -1px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+.modal-back:hover { color: var(--accent); border-color: var(--accent); }
 .modal-back[hidden] { display: none; }
 .modal-search {
   padding: 12px 20px;
