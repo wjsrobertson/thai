@@ -278,14 +278,8 @@
         <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z" /></svg>Add all</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg>Read all</button>
       </div>
-      <!-- Reading's Read all (readStories): where Topics has its Read all, in the same style. Read, for
-           the open story, sits in that story's title row (placeReader). -->
-      <div class="reading-only wordlist-bar-right reading-bar-right">
-        <!-- The stories' search (2026-10-20, the user's call: a list's or Everything's stories ran to
-             hundreds), in the room left of Read all. -->
-        <input type="search" class="dict-search reading-search" id="reading-search" placeholder="Search stories" autocomplete="off" spellcheck="false" aria-label="Search the stories in Thai or English" />
-        <button type="button" id="reading-read-all" class="ghost read-aloud" title="Play every story in the list, line by line"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg>Read all</button>
-      </div>
+      <!-- Stories' Read all and search went on 2026-11-22 (the user's call: "remove the search and read
+           all from the Stories section"); a story's Read is in its dialog (showStoryPop). -->
       </div>
     </div>
     <!-- The Reading page (renderReading): the current topic's stories, or one open in the reader. Under the
@@ -714,18 +708,18 @@
       <details class="settings-cat" data-cat="reading">
         <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>Reading</summary>
         <div class="setting-list">
-          <div class="setting-group" data-search="reading stories read all title name english say announce">
+          <div class="setting-group" data-search="reading stories read title name english say announce">
             <label class="setting-row">
               <span class="setting-label">Say the title</span>
               <input type="checkbox" id="setting-read-story-titles" />
               <span class="setting-help">The story's English title, before its first line.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="reading stories read all loop repeat again start over continuous">
+          <div class="setting-group" data-search="reading stories read loop repeat again start over continuous">
             <label class="setting-row">
               <span class="setting-label">Loop</span>
               <input type="checkbox" id="setting-read-stories-loop" />
-              <span class="setting-help">Read plays the story again; Read all goes back to the first.</span>
+              <span class="setting-help">Read plays the story again when it ends.</span>
             </label>
           </div>
         </div>

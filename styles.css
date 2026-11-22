@@ -2111,18 +2111,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .bookmark-icon { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linejoin: round; }
 /* Taken out of the list shown: faded until it's next drawn, its bookmark as it is (storyListsChanged). */
 .reading-entry.unsaved .reading-item-main { opacity: .4; }
-/* A search's two parts (listedStories): the topic's or your lists' matches, then the others. */
-.reading-part { margin: 14px 4px 8px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; }
-.reading-part:first-child { margin-top: 0; }
 /* A story list's Rename and Delete, under its stories on Read (storyListActions). */
 .story-list-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
 .story-list-actions .ghost { min-height: 44px; padding: 8px 14px; font-size: 16px; }
-/* Read all sits at the bar's right end, as Topics' Read all does. */
-.reading-bar-right { margin-left: auto; }
-.reading-bar-right > .read-aloud { margin-left: 0; }
-/* The stories' search, as tall as Read all beside it; Show more under the stories (pagedStories). */
-.reading-bar-right { align-items: stretch; }
-.reading-bar-right .reading-search { flex: 0 1 260px; min-width: 0; margin: 0; padding: 8px 14px; }
+/* Show more under the stories (pagedStories). */
 .reading-more { display: block; width: 100%; min-height: 44px; margin: 4px 0 12px; font-size: 16px; }
 .wordlist-more { margin-top: 12px; } /* the List page's (renderWordlist), under the table */
 .wordlist-more[hidden] { display: none; }

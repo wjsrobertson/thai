@@ -2602,6 +2602,21 @@ now". The topic picker's three tabs (the section above) became three sections, e
   Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
   picker; a story's word to its topic in Words; no script errors, no sideways scroll.
 
+## Stories without its search and Read all (2026-11-22)
+
+The user's call: "remove the search and read all from the Stories section". Stories is the topic
+button, then the stories (10 a page, Show more), each opening in its dialog, where Read is.
+- **Gone:** the bar's search box (`#reading-search`; from earlier the same day it covered every
+  story, the choice's matches first under "In …", then "Other stories") and Read all
+  (`#reading-read-all`: each story in the list in turn, in the dialog). `listedStories` is the
+  choice's stories; `readStories` reads the one story (its `ids` kept, one long); `markStoryButtons`
+  paints Read alone. The List page's Read all (a list's words) and its settings stay.
+- Settings → Reading: Loop's line is "Read plays the story again when it ends."; Say the title is
+  Read's. Read's empty line for a story list no longer says to search.
+- Checked headless (scratch `stories_bare_probe.py`) at 390 × 664 and 1280 × 800: Stories with My
+  stories and with Food & Eating (Show more: 20, 80 left), the first story 12 under the topic button
+  on a phone; a story's Read, Pause, carry on, and closing the dialog; no script errors.
+
 ## Words and Phrases without Read (2026-11-22)
 
 The user's call: "Phrases and Words don't need the Read section now - please remove". Their switch is
