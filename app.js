@@ -151,6 +151,7 @@ const els = {
   wordModalEn: document.getElementById('word-modal-en'),
   wordModalBody: document.getElementById('word-modal-body'),
   wordModalClose: document.getElementById('word-modal-close'),
+  wordModalBack: document.getElementById('word-modal-back'),
   confirmTitle: document.getElementById('confirm-title'),
   confirmMessage: document.getElementById('confirm-message'),
   confirmDontAskRow: document.getElementById('confirm-dont-ask-row'),
@@ -2459,16 +2460,17 @@ function chipRow(items, label, onPick, cls = () => '') {
   return box;
 }
 
-// Opens the word dialog's frame on these contents (the letter, vowel, tone and mark dialogs).
-function openPop(anchor, tr, en, parts) {
+// Opens the word dialog's frame on these contents (the vowel, tone and mark dialogs); `open` shows
+// them again, for ‹ (popEnter).
+function openPop(anchor, tr, en, parts, open) {
   if (state.storyReading.active) pauseReadStories();
   popAnchor?.classList.remove('on');
   popAnchor = anchor;
   anchor?.classList.add('on');
   els.wordModalTr.textContent = tr;
   els.wordModalEn.textContent = en;
+  popEnter(open);
   els.wordModalBody.replaceChildren(...parts);
-  if (!wordPop) wordPop = { lastFocus: document.activeElement };
   showWordModal();
   els.wordModalBody.scrollTop = 0;
   els.wordModalClose.focus({ preventScroll: true });
@@ -3405,7 +3407,7 @@ function sizeVowelTiles() {
 // A vowel's dialog: the vowel large (tap: its sound), its sound and length, its partner, the marks
 // it's written with (each says its name), live or dead, and its note.
 function showVowelPop(anchor, c) {
-  speak(cardSay(c));
+  popSay(cardSay(c));
   const short = vowelShort(c.thai);
   const big = document.createElement('button');
   big.type = 'button';
@@ -3453,7 +3455,7 @@ function showVowelPop(anchor, c) {
     : short && !VOWEL_LIVE_SHORT.has(c.thai) ? 'Dead when nothing follows (a short vowel)' : 'Live');
   const items = [hero, playButton(cardSay(c), `Play ${c.thai}`), facts];
   if (c.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), c.note));
-  openPop(anchor, c.translit, c.english, items);
+  openPop(anchor, c.translit, c.english, items, () => showVowelPop(anchor, c));
 }
 
 // ---------- the Alphabet's tones ----------
@@ -3546,7 +3548,7 @@ function renderTonesPage() {
 // chart, and the Read the Tone syllables with it.
 function showTonePop(anchor, tone) {
   const card = toneCard(tone);
-  if (card) speak(cardSay(card));
+  if (card) popSay(cardSay(card));
   const curve = toneCurve(tone);
   curve.classList.add('tone-big');
   const items = [curve];
@@ -3575,12 +3577,12 @@ function showTonePop(anchor, tone) {
   if (words.length) facts.add('Words', chipRow(words, (w) => `${w.thai}: ${w.english}`, (w) => speak(cardSay(w))));
   items.push(facts);
   if (card?.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), card.note));
-  openPop(anchor, TONE_THAI[tone], card ? card.english : `${tone} tone`, items);
+  openPop(anchor, TONE_THAI[tone], card ? card.english : `${tone} tone`, items, () => showTonePop(anchor, tone));
 }
 
 // A tone mark's dialog: the mark large (tap: its name), and the tone it gives each class.
 function showMarkPop(anchor, c) {
-  speak(cardSay(c));
+  popSay(cardSay(c));
   const mark = c.thai.replace('◌', '');
   const big = document.createElement('button');
   big.type = 'button';
@@ -3615,7 +3617,7 @@ function showMarkPop(anchor, c) {
   });
   const items = [hero, playButton(cardSay(c), `Play ${c.say || c.thai}`), facts];
   if (c.note) items.push(noteText(Object.assign(document.createElement('p'), { className: 'letter-note' }), c.note));
-  openPop(anchor, c.translit, c.english, items);
+  openPop(anchor, c.translit, c.english, items, () => showMarkPop(anchor, c));
 }
 
 // The letter's dialog, in the word dialog's frame (so closing, Escape and the backdrop are its):
@@ -3623,7 +3625,7 @@ function showMarkPop(anchor, c) {
 // and letters it looks like (each opens that letter's), its note, and a few words that start with it.
 function showLetterPop(anchor, c) {
   if (state.storyReading.active) pauseReadStories();
-  speak(cardSay(c));
+  popSay(cardSay(c));
   popAnchor?.classList.remove('on');
   popAnchor = anchor;
   anchor?.classList.add('on');
@@ -3725,8 +3727,8 @@ function showLetterPop(anchor, c) {
     });
     parts.push(all);
   }
+  popEnter(() => showLetterPop(anchor, c));
   els.wordModalBody.replaceChildren(...parts);
-  if (!wordPop) wordPop = { lastFocus: document.activeElement };
   showWordModal();
   els.wordModalBody.scrollTop = 0;
   els.wordModalClose.focus({ preventScroll: true });
@@ -6543,11 +6545,43 @@ function applyReaderToggles() {
 // tones. Until 2026-10-11 it was a pop-up under the word; the user wanted more room, for the tones
 // above all. Tapping outside it, ✕ or Escape closes it.
 let popAnchor = null; // the word or cell it's for (lit: .on)
-let wordPop = null;   // while it's open: { lastFocus }
+let wordPop = null;   // while it's open: { lastFocus, here, back } (popEnter)
+
+// The dialog's ‹ (2026-11-22, the user's call: a phrase opens its words, a word its letters, and each
+// took the last one's place with no way back; "the back button will come in handy in other places").
+// Each view that fills the frame says how to show itself again (`open`). Going on to another keeps
+// the one left, with how far down it was, and ‹ (or Backspace) goes back to it; closing forgets them.
+let popReturning = false; // while ‹ shows the one before again: it isn't said again (popSay)
+
+function popEnter(open) {
+  if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, back: [] };
+  else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop });
+  wordPop.here = open;
+  els.wordModalBack.hidden = !wordPop.back.length;
+}
+
+function popBack() {
+  const prev = wordPop?.back.pop();
+  if (!prev) return;
+  popReturning = true;
+  try {
+    prev.open();
+  } finally {
+    popReturning = false;
+  }
+  els.wordModalBody.scrollTop = prev.scroll;
+  (els.wordModalBack.hidden ? els.wordModalClose : els.wordModalBack).focus({ preventScroll: true });
+}
+
+// A dialog says what it opens on, but not when ‹ comes back to it.
+function popSay(say) {
+  if (!popReturning) speak(say);
+}
 
 function showWordPop(anchor, card) {
+  if (isPhraseCard(card)) return showPhrasePop(anchor, card); // a phrase has its own (2026-11-22)
   if (state.storyReading.active) pauseReadStories(); // its word takes over the sound, until Read carries on
-  speak(cardSay(card));
+  popSay(cardSay(card));
   popAnchor?.classList.remove('on');
   popAnchor = anchor;
   anchor?.classList.add('on');
@@ -6600,8 +6634,8 @@ function showWordPop(anchor, card) {
   // stories (contextSection).
   const tones = toneSection(card, big);
   const context = contextSection(card);
+  popEnter(() => showWordPop(anchor, card));
   els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []), ...(context ? [context] : []));
-  if (!wordPop) wordPop = { lastFocus: document.activeElement };
   showWordModal();
   els.wordModalBody.scrollTop = 0;
   fitPopWord(big);
@@ -6627,6 +6661,134 @@ function hideWordPop() {
   els.wordModal.hidden = true;
   setModalOpen(!!document.querySelector('.modal:not([hidden])'));
   if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true });
+}
+
+// ---------- the phrase dialog (showPhrasePop) ----------
+// A phrase's own dialog (2026-11-22, the user's call: phrases a part of the app as words and letters
+// are, starting with this). Phrases had the word dialog, which left out what a phrase needs: its note
+// (an idiom's literal meaning, a pattern's rule) wasn't shown, its words weren't told apart, and the
+// Tones gave every syllable's rule and the whole table. Top to bottom: the phrase large, a tap on a
+// word opening that word, which says it ("open sounds cool, let's try it and see how it feels");
+// Add to Cards and Play (no Spell: a sentence spelt aloud isn't something you'd use); the note; its
+// words one by one, each opening its own; the Tones as just the strip of syllables ("strip only. user
+// can get the details from the word pages"); the stories' lines with it; and its topics.
+// A phrase is a card in a topic of phrases (`phrases: true`; since 2026-11-14 a topic is all words or
+// all phrases), not isPhrase's guess, which takes สีแดง for one.
+function isPhraseCard(card) {
+  if (card.alpha || card.time) return false;
+  return !!state.cardIndex.get(cardKey(card))?.deckIds.some((id) => deckOfId(id)?.phrases);
+}
+
+const popEl = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+
+function showPhrasePop(anchor, card) {
+  if (state.storyReading.active) pauseReadStories();
+  popSay(cardSay(card));
+  popAnchor?.classList.remove('on');
+  popAnchor = anchor;
+  anchor?.classList.add('on');
+  els.wordModalTr.textContent = card.translit;
+  els.wordModalEn.textContent = card.english;
+  const key = cardKey(card);
+  // Where each word is in the Thai, so a tapped letter (partAt) finds its word. They're in order with
+  // nothing but spaces between (checked over every phrase, 2026-11-22). The Thai stays one piece of
+  // text, as the word dialog's, for the Tones to light a syllable's letters (lightParts).
+  const words = phraseWords(card) || [];
+  const spans = [];
+  let pos = 0;
+  for (const w of words) {
+    const i = card.thai.indexOf(w.thai, pos);
+    if (i < 0) {
+      spans.length = 0;
+      break;
+    }
+    spans.push([i, i + w.thai.length]);
+    pos = i + w.thai.length;
+  }
+  const wordBox = popEl('div', 'word-box');
+  const big = popEl('div', 'pop-word pop-phrase', card.thai);
+  big.lang = 'th';
+  big.title = spans.length ? 'Tap a word to open it' : `Play ${card.thai}`;
+  big.addEventListener('click', (e) => {
+    if (!spans.length) return speak(cardSay(card)); // a saying with no words listed (ช้าๆ ได้พร้าเล่มงาม)
+    const hit = partAt(big, e.clientX, e.clientY);
+    const n = hit ? spans.findIndex(([a, b]) => hit.i >= a && hit.i < b) : -1;
+    if (n >= 0) showWordPop(null, words[n]);
+  });
+  wordBox.append(big);
+  const actions = playButton(cardSay(card), `Play ${card.thai}`);
+  actions.prepend(reviewButton(key, card.thai));
+  const parts = [wordBox, actions];
+  if (card.note) parts.push(noteText(popEl('p', 'letter-note'), card.note));
+  if (spans.length) parts.push(phraseWordList(words));
+  const tones = toneSection(card, big, { stripOnly: true });
+  if (tones) parts.push(tones.el);
+  const context = contextSection(card);
+  if (context) parts.push(context);
+  const topics = phraseTopics(card, key);
+  if (topics) parts.push(topics);
+  popEnter(() => showPhrasePop(anchor, card));
+  els.wordModalBody.replaceChildren(...parts);
+  showWordModal();
+  els.wordModalBody.scrollTop = 0;
+  fitPopPhrase(big);
+  els.wordModalClose.focus({ preventScroll: true });
+}
+
+// The phrase large: it wraps, and shrinks only past two lines (to 28 px at the least, when a long
+// saying takes more).
+function fitPopPhrase(el) {
+  el.style.fontSize = '';
+  let size = parseFloat(getComputedStyle(el).fontSize);
+  const lines = () => Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight));
+  while (lines() > 2 && size > 28) {
+    size = Math.max(28, size - 2);
+    el.style.fontSize = `${size}px`;
+  }
+}
+
+// Its words in order, a repeated one again (read down, they're the saying's literal sense), each
+// with its transliteration and meaning; a tap opens the word's dialog, and ‹ comes back.
+function phraseWordList(words) {
+  const box = popEl('div', 'pop-words');
+  const list = popEl('div', 'pw-list');
+  for (const w of words) {
+    const b = popEl('button', 'pw-row');
+    b.type = 'button';
+    b.title = `Open ${w.thai}`;
+    const th = popEl('span', 'pw-th', w.thai);
+    th.lang = 'th';
+    const text = popEl('span', 'pw-text');
+    text.append(popEl('span', 'pw-tr', w.translit), popEl('span', 'pw-en', w.english));
+    const go = popEl('span', 'pw-go', '›');
+    go.setAttribute('aria-hidden', 'true');
+    b.append(th, text, go);
+    b.addEventListener('click', () => showWordPop(null, w));
+    list.append(b);
+  }
+  box.append(popEl('div', 'tones-head', 'Word by word'), list);
+  return box;
+}
+
+// The topics it's in, each opening on the Words page's List with the phrase lit (showWordInTopic).
+function phraseTopics(card, key) {
+  const ids = (state.cardIndex.get(key)?.deckIds || []).filter((id) => deckOfId(id) && !isPassage(id));
+  if (!ids.length) return null;
+  const box = popEl('div', 'pop-topics');
+  box.append(popEl('div', 'tones-head', ids.length > 1 ? 'Topics' : 'Topic'));
+  for (const id of ids) {
+    const name = deckOfId(id).name;
+    const b = popEl('button', 'ctx-from');
+    b.type = 'button';
+    b.title = `Open "${name}" at ${card.thai}`;
+    b.append(name, lineIcon('arrow-icon', '0 0 16 16', 'M2.5 8h10.5M9 4l4 4-4 4'));
+    b.addEventListener('click', () => {
+      hideWordPop();
+      showWordInTopic(key, id);
+    });
+    box.append(b);
+  }
+  return box;
 }
 
 // ---------- the word in the stories (contextSection) ----------
@@ -6783,7 +6945,10 @@ function contextLine(x, card) {
 // row of small curves that opened, open or closed remembered in prefs.popTones.
 // { el, shown } (call shown() once the dialog is showing, to light the picked syllable), or null for
 // a word whose Thai can't be matched to its transliteration.
-function toneSection(card, big) {
+// `stripOnly` (a phrase's, 2026-11-22, the user's call): just the strip, the syllables smaller and kept
+// together by word, so a line breaks between words; a tap says the syllable and lights it, and
+// nothing's picked to start. The rules are in each word's dialog.
+function toneSection(card, big, { stripOnly = false } = {}) {
   const syls = toneBreakdown(card.thai, card.translit);
   if (!syls?.length) return null;
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
@@ -6791,7 +6956,7 @@ function toneSection(card, big) {
   const box = el('div', 'pop-tones');
 
   const panel = el('div', 'tones-panel');
-  const strip = el('div', 'tones-strip');
+  const strip = el('div', 'tones-strip' + (stripOnly ? ' phrase' : ''));
   const detail = el('div', 'tones-detail');
   const table = el('div', 'tones-table-box');
   let picked = 0;
@@ -6799,23 +6964,28 @@ function toneSection(card, big) {
     picked = n;
     const syl = syls[n];
     strip.querySelectorAll('.tone-syl').forEach((b, k) => b.setAttribute('aria-pressed', String(k === n)));
-    detail.replaceChildren(...toneRule(syl));
-    table.replaceChildren(...toneTable(syl));
+    if (!stripOnly) {
+      detail.replaceChildren(...toneRule(syl));
+      table.replaceChildren(...toneTable(syl));
+    }
     if (say) speak(syl.said, sampleUrl(syl.said, 'sp') ? 'sp' : 'th');
     lightParts(big, syl.at);
   };
+  let group = strip;
   syls.forEach((syl, n) => {
-    const b = el('button', `tone-syl tone-${syl.tone}` + (syl.exception ? ' exception' : '') + (newWord(n) ? ' word-start' : ''));
+    if (stripOnly && (n === 0 || newWord(n))) strip.append(group = el('span', 'tone-word'));
+    const b = el('button', `tone-syl tone-${syl.tone}` + (syl.exception ? ' exception' : '') + (newWord(n) && !stripOnly ? ' word-start' : ''));
     b.type = 'button';
     b.append(toneCurve(syl.tone), el('span', 'tone-tl', syl.tl), el('span', 'tone-name', syl.tone));
     b.title = `${syl.said} ${syl.tl}: ${syl.tone} tone`;
     b.addEventListener('click', () => pick(n, { say: true }));
-    strip.append(b);
+    group.append(b);
   });
-  panel.append(strip, ...(syls.length > 1 ? [el('p', 'tones-hint', 'Tap a syllable to see its rule.')] : []), detail, table);
+  if (stripOnly) panel.append(strip, el('p', 'tones-hint', 'Tap a syllable to hear it.'));
+  else panel.append(strip, ...(syls.length > 1 ? [el('p', 'tones-hint', 'Tap a syllable to see its rule.')] : []), detail, table);
 
   box.append(el('div', 'tones-head', 'Tones'), panel);
-  return { el: box, shown: () => pick(picked) };
+  return { el: box, shown: () => { if (!stripOnly) pick(picked); } };
 }
 
 // Why a vowel isn't written (tones.js hiddenVowel), under the Vowel row (2026-10-12, the user's
@@ -8930,6 +9100,7 @@ function bindEvents() {
   els.toast.addEventListener('focusin', () => holdToast(true));
   els.toast.addEventListener('focusout', () => holdToast(false));
   els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
+  els.wordModalBack.addEventListener('click', popBack);
 
   // ⟳ turns the card: to the answer first, then either way (as a tap on the card does).
   els.reviewCard.querySelectorAll('.review-flip').forEach((btn) => btn.addEventListener('click', () => {
@@ -9015,6 +9186,9 @@ function bindEvents() {
       if (e.key === 'Escape') {
         e.preventDefault();
         hideWordPop();
+      } else if (e.key === 'Backspace' && wordPop.back.length) {
+        e.preventDefault();
+        popBack();
       }
       return;
     }

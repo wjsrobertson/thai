@@ -48,7 +48,7 @@ The standards it leans on:
 In the app (mobile.css "Tap targets at least 44px tall", 2026-10-13):
 
 - Segmented switches, ghost buttons, the topic button, settings rows and toggles: `min-height: 44px`
-  (a switch row is 52 with its border and padding). The dialogs' ✕: 44 × 44.
+  (a switch row is 52 with its border and padding). The dialogs' ✕, and the word dialog's ‹: 44 × 44.
 - **‹ ›:** 56 round. **The tab bar:** 56 tall (`--tabbar-h`) plus the home indicator, five tabs of 78.
 - Letter tiles: the consonants' 64 wide or more (`minmax(64px, 1fr)`); the vowels' 52 at 390 wide
   (shrunk to fit three pairs to a row, `sizeVowelTiles`).

@@ -2379,6 +2379,59 @@ in another of its kind, and where the copy left lacked a note, it took the leavi
   Words opens with its 24 cards, the picker lists the new topics, Vocabulary's lists none of phrases;
   no script errors.
 
+## The phrase dialog, and the dialog's ‹ (2026-11-22)
+
+The user's next feature: phrases a part of the app as words and letters are, starting with a dialog
+of their own. A phrase had the word dialog, which left out what a phrase needs: its note (398 of the
+660 have one: an idiom's "Lit. …", a pattern's "Verb + ได้ = can", Saying No's "Means: I'm not
+coming") wasn't shown, its words weren't told apart (602 list them in `words`), and Tones gave every
+syllable's rule and the whole table (30 syllables for the longest).
+
+- **Which cards** (`isPhraseCard`): a card in a topic of phrases (`phrases: true`; every topic is
+  one kind since the split), not `isPhrase`'s guess, which takes สีแดง for one. Not a Time card or a
+  letter. `showWordPop` hands a phrase to `showPhrasePop`, so every way in opens it: a Topics row's
+  transliteration or English (its Thai still opens its words one by one), a card's back, a story's
+  word, Vocabulary.
+- **Top to bottom** (`showPhrasePop`), in the word dialog's frame:
+  - **The phrase, large** (44 px × the text size, against the word's 64), wrapping; past two lines it
+    shrinks, to 28 px at the least (`fitPopPhrase`; the longest, a Tone Chants definition, takes four
+    lines at 28). **A tap on a word opens that word**, which says it (the user: "open or say it… both
+    are sensible… open sounds cool, let's try it and see how it feels"). It stays one piece of text,
+    as the word dialog's, so the Tones can light a syllable's letters; the tapped letter (`partAt`)
+    finds its word from where each word is in the Thai (in order, nothing but spaces between: checked
+    over all 624 with words). A phrase with no words (ช้าๆ ได้พร้าเล่มงาม, the chants) plays on a tap.
+  - **Add to Cards and Play.** No Spell: a sentence spelt aloud isn't something you'd use.
+  - **The note.**
+  - **Word by word** (`phraseWordList`): each word in order, a repeated one again (read down, they
+    give a saying's literal sense: enter, town, eye, squint, must, squint, eye, follow), with its
+    transliteration over its meaning; the columns line up across rows (CSS subgrid). A tap opens it.
+  - **Tones, the strip only** (`toneSection(…, { stripOnly: true })`; the user: "strip only. user can
+    get the details from the word pages"): smaller syllables (52 wide, not 76), each word's kept
+    together so a line breaks between words; a tap says the syllable and lights its letters; nothing
+    picked to start.
+  - **In stories**, as the word dialog's (it already matched a phrase as a run of words; 609 of the
+    660 are in a story).
+  - **Topic** (or Topics, for the 20 in two): each opens the topic on the List with the phrase lit
+    (`showWordInTopic`).
+- **The dialog's ‹** (`popEnter`, `popBack`), at the head's left: phrase → word, letter → word and
+  the rest each took the last one's place with no way back. Each view that fills the frame (word,
+  phrase, letter, vowel, tone, mark) says how to show itself again; going on to another keeps the
+  one left with how far down it was scrolled, and ‹ or Backspace goes back to it, without saying it
+  again (`popSay`) and scrolled where it was. Closing forgets them. The user: "the back button will
+  come in handy in other places in the app".
+- **Next, offered and put off** (the user: "we can defer any work… until we get the basic dialog
+  working nicely"): an **In phrases** section in the word dialog (the phrases that use it, from
+  `words`), as the letter dialog lists words that start with it; a Phrases page beside the
+  Dictionary; each word lit as the phrase plays (`tools/word_timings.py` covers story lines only).
+- **Checked** headless (scratch `phrase_dialog_probe.py`, `phrase_dialog_big_probe.py`) at 390 × 664
+  (text Larger and 1.3) and 1280 × 800: ไม่ค่อยว่าง from its row (note, two words, three syllables,
+  one story line, its topic); a tap on ว่าง in the big phrase opens ว่าง with ‹, and ‹ comes back
+  (no ‹ then); a Word by word row and Backspace back, scrolled where it was (213); the topic link
+  (the List on Saying No, the row lit); เข้าเมืองตาหลิ่วต้องหลิ่วตาตาม on two lines, eight rows, หลิ่ว
+  tapped; ช้าๆ ได้พร้าเล่มงาม with no words; the longest chant; a verb still on the word dialog; a
+  card's back; the letter ก → ก็ → ‹ ก; no sideways scroll, no script errors. No layout check (inside
+  the dialog's scrolling body; nothing outside it moved).
+
 ## 34 everyday phrases, and Catching Up & Good Wishes (2026-11-01)
 
 After เป็นไงบ้าง (below) the user asked what else was missing. I checked about 280 everyday phrases

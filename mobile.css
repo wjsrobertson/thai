@@ -267,6 +267,7 @@ html.type-kb #card .type-hint { bottom: 8px; max-width: calc(100% - 136px); }
 }
 .modal-head { padding: 12px 16px; }
 .modal-close { font-size: 22px; padding: 6px 10px; }
+.modal-back { font-size: 34px; }
 
 /* Tap targets at least 44px tall, Apple's guideline (and WCAG 2.5.5's), on a phone (2026-10-13, the
    user's call after a check of every control: the segmented rows were 29px, the reader's toggles
