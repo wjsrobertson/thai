@@ -2509,6 +2509,42 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## Cards for the last splittable phrases, and their word lists (2026-11-22)
+
+The user's call: "go ahead and add the missing sense cards. tone chants not required for this". 22
+cards, each in a word topic with room (25 at most), and word lists for 18 more phrases; 633 phrases
+have one now (knowing the most-used 500: 210 all known, 259 one word short).
+
+- **Doubled words** (Conversation: Everyday Words; Word Building: Doubled is full): ไว ๆ "quickly /
+  soon", ว่าง ๆ "when (you're) free", งั้น ๆ "so-so / nothing special", ชัด ๆ "clearly / plainly"; and
+  in Idioms & Proverbs: Words in Work & Talk, บ่าย ๆ "in the afternoon (some time)".
+- **Words with no card:** คราวหน้า "next time" (Time Words); พร้า "machete" (Words in Wisdom &
+  People); ชาติหน้า "next life", ปราศรัย "to give a speech / speak warmly", เชือด "to slit /
+  slaughter" (Words in Work & Talk).
+- **New senses** (Words in Wisdom & People): เป็น "alive / living" (ปลาเป็น), แต่ง "to dress up /
+  adorn" (it had only "to compose (a song)"), ตีน "foot (of an animal)" (its cards were the vulgar
+  one and the Southern one; the note says เท้า for a person), นม "breast / teat" (milk and the vulgar
+  card; the note gives หน้าอก), ขน "feathers (of a bird)" (beside "fur, animal hair").
+- **Southern** (Verbs & Describing; Greetings, Questions & Particles; Words in the Idioms), each with
+  its Central word in the note: แรง "very" (หรอยแรง), หนัด "very / really" (สวยหนัด), แข๊บ "to hurry",
+  ต่ะ "come on" (มาต่ะ), หล้าว "then / already" (พันพรือหล้าว, with the existing พันพรือ "how?"), แยง
+  "to poke into / shine in on" (นอนหวันแยงโมง). **Isan** (People & Feelings; Everyday Words is full):
+  หลาย ๆ "very much" (ขอบใจหลาย ๆ).
+- **The 18 phrases:** หายไว ๆ นะ, ว่าง ๆ ชอบทำอะไร, ไว้คราวหน้า, ก็งั้น ๆ, เขียนให้ชัด ๆ; the six
+  Southern ones above; ขอบใจหลาย ๆ; and the idioms ช้าๆ ได้พร้าเล่มงาม, น้ำร้อนปลาเป็น น้ำเย็นปลาตาย,
+  ไก่งามเพราะขน คนงามเพราะแต่ง, ไก่เห็นตีนงู งูเห็นนมไก่, ชาติหน้าตอนบ่าย ๆ, ปากปราศรัย น้ำใจเชือดคอ.
+- **Still without a list** (12, not the Tone Chants): the templates with a gap (ขอ … หน่อย, ขอ…บาท,
+  ที่อื่นขาย…บาท, ฉันกินยา…ประจำ); the one-chunk phrases (แล้วแต่, ตามใจ, พอที, พอกันที, ขโมย); เป็นๆ
+  หายๆ (a fixed doubled pair, neither half used alone); and two Southern ones whose make-up isn't
+  certain: ม่ารู่ม้าย, and ม่ายพรือ, which would need ม่าย as "not" where the app's card has it as the
+  question particle (Central ไหม).
+- Pipeline: audit 0 errors (none of its notes on the new cards); stories.py sync (24 story copies)
+  and check (0 problems); spelling.mjs; frequency.py (Most used 5,126 → 5,131: เชือด, แยง, ปราศรัย,
+  พร้า, หนัด); gen_audio.py (43 clips, all in the manifest); no story lines changed. All 4,006 word
+  lists match their Thai (phraseSpans). Checked headless at 390 × 664 (scratch
+  `sense_cards_probe.py`): ไก่เห็นตีนงู งูเห็นนมไก่, ชาติหน้าตอนบ่าย ๆ, หรอยแรง, นอนหวันแยงโมง and
+  น้ำร้อนปลาเป็น น้ำเย็นปลาตาย, their rows and Word by word; no script errors.
+
 ## Word lists for 13 more phrases (2026-11-22)
 
 The user's call, after asking why some idioms had none: "fill in the ones that can be split". Of the
