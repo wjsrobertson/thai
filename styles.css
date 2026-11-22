@@ -2023,39 +2023,38 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 }
 .reading-item:hover { border-color: var(--accent); }
 .reading-item-chevron { flex: none; color: var(--muted); font-size: 1.5em; line-height: 1; transition: transform .15s; }
-.reading-entry.open .reading-item-chevron { transform: rotate(90deg); color: var(--accent); }
-.reading-entry.open .reading-item { margin-bottom: 0; border-color: var(--accent); border-radius: 12px 12px 0 0; }
-/* The open story's Read, in its title row left of the ›; the title and description leave room for it
-   (wide enough for "❚❚ Paused"). */
-.reading-entry.open .reading-item-main { margin-right: 124px; }
-.reading-head { position: relative; }
-.reading-head #reading-read { position: absolute; top: 50%; right: 46px; min-width: 0; margin: 0; padding: 6px 12px; transform: translateY(-50%); background: var(--panel); }
-.reading-head #reading-read[hidden] { display: none; }
-.reading-entry.open .reader { margin: 0 0 8px; border-color: var(--accent); border-top: 0; border-radius: 0 0 12px 12px; }
+/* The row of the story the dialog shows (showStoryPop's anchor). */
+.reading-item.on { border-color: var(--accent); }
 /* The line Read or Read all is reading (readStories), lit like a Topics row; the title while it's said. */
-.reading-entry.open .reading-item.now-playing { background: var(--accent-soft); }
 .reader-line.now-playing { margin: 0 -10px; padding-right: 10px; padding-left: 7px; border-left: 3px solid var(--accent); border-radius: 8px; background: var(--accent-soft); }
-/* A story's bookmark (storySaveButton, 2026-11-22), left of the ›; on the open story, Read moves left of
-   it. Filled in ✓'s green when it's in the list it saves to; a dot when it's in another, as 🔁's. */
+.pop-en.now-playing { border-radius: 6px; background: var(--accent-soft); box-shadow: 0 0 0 4px var(--accent-soft); }
+/* A story's bookmark (storySaveButton, 2026-11-22): on its row left of the ›, and in its dialog beside
+   Read. Filled in ✓'s green when it's in the list it saves to; a dot when it's in another, as a word's. */
 .reading-item-main { margin-right: 48px; }
-.reading-entry.open .reading-item-main { margin-right: 172px; }
-.reading-entry.open .reading-head #reading-read { right: 94px; }
 .story-save {
-  position: absolute;
-  top: 50%;
-  right: 42px;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 44px;
   height: 44px;
   padding: 0;
-  transform: translateY(-50%);
   background: transparent;
   border: 0;
   border-radius: 50%;
   color: var(--muted);
 }
+.reading-head { position: relative; }
+.reading-head .story-save { position: absolute; top: 50%; right: 42px; transform: translateY(-50%); }
+/* The story dialog (showStoryPop): its description, Read and the bookmark, then the reader, which is
+   no longer a card of its own. */
+.story-desc { margin: 2px 0 10px; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.45; }
+.story-actions { display: flex; align-items: center; gap: 10px; margin: 0 0 12px; }
+.story-actions #reading-read { margin: 0; }
+.story-actions #reading-read[hidden] { display: none; }
+.pop-tr:empty { display: none; } /* a story's head has its title only */
+.word-modal .reader { margin: 0; padding: 0; background: none; border: 0; border-radius: 0; }
+.word-modal .reader-tools { padding-bottom: 6px; border-bottom: 1px solid var(--border); }
 .story-save:hover { color: var(--accent); background: var(--panel-2); }
 .story-save.saved { color: var(--good); }
 .story-save.saved .bookmark-icon { fill: currentColor; }

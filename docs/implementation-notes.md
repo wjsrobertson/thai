@@ -2509,6 +2509,44 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## Stories in their own dialog (2026-11-22)
+
+The user's call: "stories should have a popup modal / page, like words, phrases - rather than
+expanding in-place. it should have a back icon. clicking on words within a story should also have a
+back icon" (and "let me know anything you decided in case I'd like to change it": the bullets below).
+A story opened in place under its title (an accordion, from 2026-10-12; `placeReader`, `closeReading`,
+`scrollToReading` gone).
+
+- **The dialog** (`showStoryPop`): the word dialog's frame, so ‹ works as for words and phrases: on a
+  phone the page between the pinned row and the tab bar, elsewhere the card near the top, 520 wide
+  (narrower than Read's old 760 column; one width for every view, so going story → word → ‹ doesn't
+  change it). Its title in the head (no transliteration: `.pop-tr:empty` hides it); then its
+  description, **Read** and its **bookmark**, the Show toggles (Transliteration, English, Word gaps)
+  over a hairline, and the lines (`renderReader`, as before; the reader no longer a card of its own).
+  The story's row on Read stays lit (accent border) while it's open.
+- **A word in it** opens the word (or phrase) dialog over it, ‹ back to the story scrolled where it
+  was. A word tapped during Read pauses it, as before; back on the story, Read says ▶ Paused and the
+  line (or the title) it stopped on is lit; Read carries on from there.
+- **Read all** (the bar's) opens each story in the dialog in turn, in place of the one before (no ‹
+  between stories); while it's on a story, that story's **Read** pauses and carries it on (the bar's
+  button is under the dialog). The title being said is lit in the head. The Show toggles no longer
+  close anything (they closed the old word pop-up, as the lines move).
+- **Closing it** (✕, Escape, the backdrop, a tap on the bars) ends a Read or Read all, as closing a
+  story in the list did; opening another story by hand ends one too.
+- **From elsewhere** (a word's In stories, its story name; a word search's hit only in a story,
+  `openReading`): the story opens over the page you're on, no longer switching to Read, with ‹ back
+  to the word, the word lit in it (`.rw.found`) and scrolled to.
+- **Gone with the accordion:** the open story first in Read's list and the pages running on to it;
+  the Read tab closing an open story; Read in the title row, and the phone's Read and bookmark under
+  the text there.
+- Checked headless (scratch `story_dialog_probe.py`) at 390 × 664 and 1280 × 800: Grandma's Maybe
+  from its row (title, description, Read, bookmark, 7 lines, the row lit); the toggles (it stays
+  open); a word at scroll 220 (66 on the wide one) → its dialog with ‹ → back at 220; Read playing
+  (line 0 lit), a word paused it, ‹ → ▶ Paused with line 0 lit, Read → ❚❚ Pause; Escape → closed,
+  Read all back to itself; Read all from the bar → the dialog on Grandma's Maybe (its title lit), then
+  The Second Helping in its place, no ‹; In stories from เป็น on List → Old Friends over List, เป็น lit,
+  ‹ back to เป็น; no sideways scroll, no script errors.
+
 ## The bookmark for adding words, everywhere (2026-11-22)
 
 The user's call, liking the stories' bookmark: "use it for letter/words/phrases too, everything

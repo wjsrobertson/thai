@@ -5710,9 +5710,7 @@ function openStoryList(id) {
   setPreferences({ storyListOpen: id });
   if (id) setStoryTarget(id); // what's open is where the bookmarks save, as a word list picked is
   if (storyRunOn()) stopReadStories();
-  state.readingId = null;
   renderReadingList();
-  placeReader();
 }
 
 async function newStoryList() {
@@ -5747,9 +5745,7 @@ async function deleteStoryList(id) {
   if (getPreferences().storyTargetId === id) setStoryTarget(store.storyLists[0]?.id || null);
   if (state.storyListOpen === id) state.storyListOpen = undefined;
   if (storyRunOn()) stopReadStories();
-  state.readingId = null;
   renderReadingList();
-  placeReader();
   toast(`Deleted '${list.name}'`);
 }
 
@@ -6284,20 +6280,18 @@ function sentenceText(th) {
   return th.replace(/^[^ ]+: /, '').replace(/\|/g, '').replace(/_/g, ' ');
 }
 
-// The Reading page: the current topic's stories (renderReadingList), an accordion. A story opens in
-// place under its title (placeReader), closing the one open before; its title again closes it.
-// Until 2026-10-12 a story opened on a page of its own, with a Back to Stories button (the user
-// wanted to try it in place). Adding its words to Flashcards is left to the Topics page (the user's
-// call, 2026-10-08). A row is the story's title and description: its level and a ✓ once read went on
-// 2026-10-12 (the user's call). The page remembers the open story while the app's open
-// (state.readingId).
+// The Reading page: the current topic's stories (renderReadingList). A story opens in its own dialog
+// (showStoryPop, 2026-11-22, the user's call), as a word does. From 2026-10-12 it opened in place
+// under its title, an accordion; before that on a page of its own, with a Back to Stories button.
+// Adding its words to Flashcards is left to the Topics page (the user's call, 2026-10-08). A row is
+// the story's title and description: its level and a ✓ once read went on 2026-10-12 (the user's
+// call). state.readingId is the story the dialog shows, or null.
 const isPassage = (id) => !!state.decks.find((d) => d.id === id)?.passage;
 
 function renderReading() {
   hideWordPop();
   loadWordTimings();
   renderReadingList();
-  placeReader();
 }
 
 // The list: the stories that use the words of the topic or list (the topic picker's choice, shared
@@ -6351,9 +6345,6 @@ function listedStories(scope, q) {
     if (rest.length) heads.set(near.length, `${near.length ? 'Other stories' : 'All stories'} · ${rest.length}`);
     return { stories: [...near, ...rest], heads };
   }
-  // A story opened from elsewhere (a search result) that isn't one of this topic's goes first.
-  const open = !mine && found.length && state.readingId && storyById(state.readingId);
-  if (open && !found.includes(open)) found = [open, ...found];
   return { stories: found, heads };
 }
 
@@ -6364,12 +6355,9 @@ function readAllStories() {
 
 // A long list in pages (the user's call, 2026-10-20: a list's or Everything's stories ran to hundreds):
 // the first READING_PAGE, then Show more for the next, a search's matches too (showing them all
-// looked worse: the user, the same day). The open story is always among them, the pages shown
-// running on to it, as Read all's does on reaching the end of a page (the user's request, same day).
+// looked worse: the user, the same day).
 const READING_PAGE = 10;
 function pagedStories(stories, heads = new Map()) {
-  const at = stories.findIndex((d) => d.id === state.readingId);
-  if (at >= state.readingShown) state.readingShown = (Math.floor(at / READING_PAGE) + 1) * READING_PAGE;
   const shown = [];
   stories.slice(0, state.readingShown).forEach((d, i) => {
     if (heads.has(i)) shown.push(Object.assign(document.createElement('h3'), { className: 'reading-part', textContent: heads.get(i) }));
@@ -6384,7 +6372,6 @@ function pagedStories(stories, heads = new Map()) {
     more.addEventListener('click', () => {
       state.readingShown += READING_PAGE;
       renderReadingList();
-      placeReader();
     });
     shown.push(more);
   }
@@ -6481,8 +6468,8 @@ function storyMatches(d, q) {
   return /[\u0E00-\u0E7F]/.test(q) ? t.th.includes(q.replace(/\s/g, '')) : t.en.includes(q.toLowerCase());
 }
 
-// A story's row: its title button opens and closes it; the open one's row also holds Read, and every
-// row its bookmark (storySaveButton).
+// A story's row: its title button opens the story's dialog (showStoryPop); beside it, its bookmark
+// (storySaveButton).
 function storyEntry(d) {
   const entry = document.createElement('div');
   entry.className = 'reading-entry';
@@ -6492,61 +6479,14 @@ function storyEntry(d) {
   const item = document.createElement('button');
   item.type = 'button';
   item.className = 'reading-item';
-  item.setAttribute('aria-expanded', 'false');
-  item.setAttribute('aria-controls', 'reader');
+  item.setAttribute('aria-haspopup', 'dialog');
   item.innerHTML = '<span class="reading-item-main"><span class="reading-item-name"><span class="reading-item-title"></span></span><span class="reading-item-desc"></span></span><span class="reading-item-chevron" aria-hidden="true">›</span>';
   item.querySelector('.reading-item-title').textContent = d.name;
   item.querySelector('.reading-item-desc').textContent = d.description;
-  item.addEventListener('click', () => {
-    if (storyRunOn()) stopReadStories(); // a story picked by hand ends Read all
-    if (state.readingId === d.id) closeReading();
-    else openReading(d.id);
-  });
+  item.addEventListener('click', () => showStoryPop(item, d));
   head.append(item, storySaveButton(d)); // its bookmark (2026-11-22), left of the › as Read is
   entry.append(head);
   return entry;
-}
-
-// Puts the reader under the open story's title (or hides it, with none open), and opens that one.
-// Read goes in the open story's title row (the user's call, 2026-10-12; it was in the top bar,
-// greyed out with no story open).
-function placeReader() {
-  const id = state.readingId;
-  const entries = [...els.readingList.querySelectorAll('.reading-entry')];
-  entries.forEach((e) => {
-    const open = e.dataset.id === id;
-    e.classList.toggle('open', open);
-    e.querySelector('.reading-item').setAttribute('aria-expanded', String(open));
-  });
-  const entry = id && entries.find((e) => e.dataset.id === id);
-  const topic = entry && state.decks.find((d) => d.id === id);
-  if (!topic) {
-    els.reader.hidden = true;
-    els.readingRead.hidden = true;
-    els.readingLibrary.append(els.reader, els.readingRead); // parked, out of the list
-    return;
-  }
-  entry.querySelector('.reading-head').append(els.readingRead);
-  els.readingRead.hidden = false;
-  entry.append(els.reader);
-  els.reader.hidden = false;
-  renderReader(topic);
-}
-
-function closeReading() {
-  if (storyRunOn()) stopReadStories();
-  hideWordPop();
-  state.readingId = null;
-  placeReader();
-}
-
-// The open story's title at the top of the window, under the sticky top bar (on a phone, the
-// pinned section row; .section-bar has no box elsewhere, as the phone's .topbar has no height).
-function scrollToReading() {
-  const item = els.readingList.querySelector('.reading-entry.open .reading-item');
-  if (!item) return;
-  const bar = (document.querySelector('.topbar')?.offsetHeight || 0) + (document.querySelector('.section-bar')?.offsetHeight || 0);
-  window.scrollTo({ top: item.getBoundingClientRect().top + window.scrollY - bar - 8 });
 }
 
 // Which stories go with a topic (or a group or category, their words pooled): those using at least
@@ -6579,31 +6519,63 @@ function storiesFor(scope) {
   return close.length >= READING_PAGE ? close : found;
 }
 
-// Opens a passage under its title (from the list, or a search result, which also lights the word
-// it found).
+// A story opened from elsewhere: a word's In stories (its name), or a word search's hit only in a
+// story; `word` is lit in it. Over the page you're on, in the dialog (‹ back to the word).
 function openReading(id, word = null) {
-  hideWordPop();
-  state.readingId = id;
-  // Tapped in the list, the page doesn't move: the story opens under its title, which stays where it
-  // is on screen even when an open story above it closes (the user's call, 2026-10-12; it scrolled
-  // the title to the top). From elsewhere (a search result), it's brought into view.
-  const item = state.view === 'reading' && els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"] .reading-item`);
-  const before = item ? item.getBoundingClientRect().top : null;
-  if (state.view !== 'reading') setView('reading');
-  else if (!item) renderReading();
-  else placeReader();
-  if (before !== null && !word) window.scrollBy(0, item.getBoundingClientRect().top - before);
-  else scrollToReading();
+  const d = storyById(id);
+  if (d) showStoryPop(null, d, { word });
+}
+
+// A story's own dialog (2026-11-22, the user's call: "stories should have a popup modal / page, like
+// words, phrases - rather than expanding in-place. it should have a back icon"): in the word dialog's
+// frame, so a word tapped in it opens over it, with ‹ back to the story (scrolled where it was; a
+// Read paused by the word lit where it stopped). Its title in the head; then its description, Read
+// and its bookmark, the Show toggles, and its lines (renderReader). Read all opens each story in
+// turn in it, in place of the last (no ‹ to the one before). Closing it ends a Read or Read all, as
+// closing a story in the list did; opening another by hand ends one too.
+function showStoryPop(anchor, d, { word = null } = {}) {
+  if (!popReturning && storyRunOn() && runStoryId() !== d.id) stopReadStories();
+  popAnchor?.classList.remove('on');
+  popAnchor = anchor;
+  anchor?.classList.add('on');
+  els.wordModalTr.textContent = '';
+  els.wordModalEn.textContent = d.name;
+  popEnter(() => showStoryPop(anchor, d));
+  state.readingId = d.id;
+  loadWordTimings();
+  renderReader(d);
+  const actions = popEl('div', 'story-actions');
+  els.readingRead.hidden = false;
+  actions.append(els.readingRead, storySaveButton(d));
+  els.reader.hidden = false;
+  els.wordModalBody.replaceChildren(...(d.description ? [popEl('p', 'story-desc', d.description)] : []), actions, els.reader);
+  els.wordModal.classList.add('story');
+  showWordModal();
+  els.wordModalBody.scrollTop = 0;
+  markStoryButtons();
+  const run = state.storyReading;
+  if (run.paused && runStoryId() === d.id) {
+    if (run.paused.line >= 0) els.readerLines.querySelectorAll('.reader-line')[run.paused.line]?.classList.add('now-playing');
+    else els.wordModalEn.classList.add('now-playing');
+  }
   if (word) {
     const spans = [...els.readerLines.querySelectorAll('.rw')].filter((w) => w.textContent === word);
     spans[0]?.scrollIntoView({ block: 'center' });
     spans.forEach((w) => w.classList.add('found'));
     setTimeout(() => spans.forEach((w) => w.classList.remove('found')), 2500);
   }
+  els.wordModalClose.focus({ preventScroll: true });
+}
+
+// Whether the dialog shows a story (its reader), and the story a Read or Read all is on.
+const storyShown = () => !!wordPop && els.wordModalBody.contains(els.reader);
+function runStoryId() {
+  const run = state.storyReading;
+  const at = run.active ? run.at : run.paused;
+  return at ? at.ids[at.idx] : null;
 }
 
 function renderReader(topic) {
-  hideWordPop();
   const own = new Map(topic.cards.map((c) => [c.thai, c]));
   els.readerLines.replaceChildren(...topic.passage.map((line) => {
     const row = document.createElement('div');
@@ -6676,9 +6648,10 @@ function renderReader(topic) {
 }
 
 // Reading's Read all (2026-10-12, the user's request; like Topics' Read all, in the same place):
-// each story in the list in turn, from the open one (or the first), opened in place, its English
-// title said, then read line by line, the line being read lit and kept in view. Read, beside it
-// (the same day), reads just the open story, in its title row. The button pressed shows ❚❚ Pause;
+// each story in the list in turn, from the first, opened in the story dialog (2026-11-22; until then
+// in place, in the list), its English title said, then read line by line, the line being read lit
+// and kept in view. Read (the same day), in the story's dialog, reads just that story, or pauses and
+// carries on a Read all on it. The button pressed shows ❚❚ Pause;
 // pressed again, or when a word's dialog opens, it pauses (the user's requests, same day): it shows
 // ▶ Paused, the line stays lit, and pressing it carries on from that line (or the title). Leaving the
 // page, changing topic, opening or closing a story by hand, or pressing a line's speaker stops it;
@@ -6698,6 +6671,7 @@ async function readStories(btn, from = null) {
   run.paused = null;
   run.active = true;
   run.btn = btn;
+  run.at = { ids, idx: from ? from.idx : Math.max(0, ids.indexOf(state.readingId)), line: from ? from.line : -1 };
   const token = ++run.token;
   markStoryButtons();
   try {
@@ -6707,31 +6681,31 @@ async function readStories(btn, from = null) {
       for (; idx < ids.length; idx++, line = -1) {
         if (token !== run.token) return;
         const id = ids[idx];
-        if (state.readingId !== id) {
-          hideWordPop();
-          state.readingId = id;
-          // Not drawn: past the page shown (the next page shows).
-          if (!els.readingList.querySelector(`.reading-entry[data-id="${CSS.escape(id)}"]`)) renderReadingList();
-          placeReader();
+        run.at = { ids, idx, line };
+        // The story in the dialog, in place of the one before (no ‹ to it), or the dialog opened on it.
+        if (state.readingId !== id || !storyShown()) {
+          popReturning = true;
+          try {
+            showStoryPop(null, storyById(id));
+          } finally {
+            popReturning = false;
+          }
         }
-        // Its title into view only if it's off screen: no jump to the top (the user's call, 2026-10-12).
-        if (line < 0) els.readingList.querySelector('.reading-entry.open .reading-item')?.scrollIntoView({ block: 'nearest', behavior: SCROLL_BEHAVIOR() });
-        // Its title first, in English (the user's request, 2026-10-12), the title row lit meanwhile.
+        // Its title first, in English (the user's request, 2026-10-12), the title lit meanwhile.
         // Settings → Reading → Say the title turns it off.
         if (line < 0 && getSettings().readStoryTitles !== false) {
           run.at = { ids, idx, line: -1 };
-          const title = els.readingList.querySelector('.reading-entry.open .reading-item');
-          title?.classList.add('now-playing');
-          await speakAndWait(state.decks.find((d) => d.id === id).name, 'en');
+          els.wordModalEn.classList.add('now-playing');
+          await speakAndWait(storyById(id).name, 'en');
           if (token !== run.token) return; // paused, it stays lit
-          title?.classList.remove('now-playing');
+          els.wordModalEn.classList.remove('now-playing');
           await wait(STORY_LINE_PAUSE);
         }
         const rows = [...els.readerLines.querySelectorAll('.reader-line')];
         for (let i = Math.max(0, line); i < rows.length; i++) {
           if (token !== run.token) return;
           run.at = { ids, idx, line: i };
-          els.readingList.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
+          els.readerLines.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
           rows[i].classList.add('now-playing');
           rows[i].scrollIntoView({ block: 'nearest', behavior: SCROLL_BEHAVIOR() });
           await speakAndWait(rows[i].querySelector('.reader-play').dataset.say, 'th');
@@ -6771,23 +6745,28 @@ function stopReadStories() {
   run.paused = null;
   run.token++; // a run still waiting bails out
   stopAudio();
-  els.readingList.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
+  els.readerLines.querySelectorAll('.now-playing').forEach((r) => r.classList.remove('now-playing'));
+  els.wordModalEn.classList.remove('now-playing');
   run.btn = null;
+  run.at = null;
   markStoryButtons();
 }
 
-// Read and Read all: ❚❚ Pause on the one running, ▶ Paused on the one paused, else as they are.
+// Read and Read all: ❚❚ Pause on the one running, ▶ Paused on the one paused, else as they are. The
+// story dialog's Read shows the run on its story, a Read all's too (the bar's Read all is under it).
 function markStoryButtons() {
   const run = state.storyReading;
-  for (const [b, label] of [[els.readingRead, 'Read'], [els.readingReadAll, 'Read all']]) {
-    const playing = run.active && run.btn === b;
-    const paused = run.paused?.btn === b;
+  const here = !!state.readingId && runStoryId() === state.readingId;
+  for (const [b, label, playing, paused] of [
+    [els.readingRead, 'Read', run.active && here, !!run.paused && here],
+    [els.readingReadAll, 'Read all', run.active && run.btn === els.readingReadAll, run.paused?.btn === els.readingReadAll],
+  ]) {
     b.classList.toggle('playing', playing);
     b.classList.toggle('paused', paused);
     if (playing) b.textContent = '❚❚ Pause';
     else if (paused) b.textContent = '▶ Paused';
     else b.replaceChildren(speakerIcon(), label);
-    b.title = paused ? 'Paused: press to carry on' : playing ? 'Pause' : b === els.readingRead ? 'Play the open story, line by line' : 'Play every story in the list, line by line';
+    b.title = paused ? 'Paused: press to carry on' : playing ? 'Pause' : b === els.readingRead ? 'Play the story, line by line' : 'Play every story in the list, line by line';
   }
 }
 
@@ -6822,6 +6801,8 @@ let popReturning = false; // while ‹ shows the one before again: it isn't said
 
 function popEnter(open) {
   window.CSS?.highlights?.delete(HOVER_HIGHLIGHT); // a phrase's lit word (showPhrasePop)
+  els.wordModal.classList.remove('story'); // a story's dialog (showStoryPop) sets it again
+  els.wordModalEn.classList.remove('now-playing'); // its title, while Read all says it
   if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, back: [] };
   else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop });
   wordPop.here = open;
@@ -6926,6 +6907,9 @@ function hideWordPop() {
   popAnchor?.classList.remove('on');
   popAnchor = null;
   if (!wordPop) return;
+  if (storyRunOn()) stopReadStories(); // a story's Read or Read all ends with its dialog (2026-11-22)
+  state.readingId = null;
+  els.wordModal.classList.remove('story');
   const { lastFocus } = wordPop;
   wordPop = null;
   els.wordModal.hidden = true;
@@ -9081,12 +9065,6 @@ function bindEvents() {
     const page = b.dataset.studyPage;
     closeMore();
     if (state.settingsOpen) closeSettings();
-    // Reading again, with a story open: it closes, back to the top of the list.
-    if (page === 'reading' && state.view === 'reading' && state.readingId) {
-      closeReading();
-      window.scrollTo(0, 0);
-      return;
-    }
     if (page !== state.view || state.section !== 'words') setView(page);
   }));
 
@@ -9137,19 +9115,35 @@ function bindEvents() {
     renderDictionary();
     window.scrollTo(0, 0);
   });
-  [els.readingRead, els.readingReadAll].forEach((b) => b.addEventListener('click', () => {
+  els.readingReadAll.addEventListener('click', () => {
     const run = state.storyReading;
-    if (run.paused?.btn === b) { // carry on from where it was paused
-      readStories(b, run.paused);
+    if (run.paused?.btn === els.readingReadAll) { // carry on from where it was paused
+      readStories(els.readingReadAll, run.paused);
       return;
     }
-    if (run.active && run.btn === b) { // running: pause it (the user's call, 2026-10-12; it stopped)
+    if (run.active && run.btn === els.readingReadAll) { // running: pause it (the user's call, 2026-10-12; it stopped)
       pauseReadStories();
       return;
     }
     if (storyRunOn()) stopReadStories(); // the other button's run ends
-    readStories(b);
-  }));
+    readStories(els.readingReadAll);
+  });
+  // The story dialog's Read: the run on its story (its own, or a Read all's) paused or carried on;
+  // else this story read.
+  els.readingRead.addEventListener('click', () => {
+    const run = state.storyReading;
+    const here = runStoryId() === state.readingId;
+    if (run.paused && here) {
+      readStories(run.paused.btn, run.paused);
+      return;
+    }
+    if (run.active && here) {
+      pauseReadStories();
+      return;
+    }
+    if (storyRunOn()) stopReadStories();
+    readStories(els.readingRead);
+  });
 
   // Deck picker
   // While adding words to a list (Add words), the topic button picks the next place to add from, so
@@ -9207,8 +9201,7 @@ function bindEvents() {
   [[els.readerTranslit, 'readerTranslit'], [els.readerEnglish, 'readerEnglish'], [els.readerSpaces, 'readerSpaces']].forEach(([btn, key]) => {
     btn.addEventListener('click', () => {
       setPreferences({ [key]: !getPreferences()[key] });
-      hideWordPop(); // the lines move
-      applyReaderToggles();
+      applyReaderToggles(); // in the story's dialog (2026-11-22), which stays open; it closed the old word pop-up, as the lines moved
     });
   });
 

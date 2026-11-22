@@ -116,12 +116,6 @@ html.kb .tabs { display: none; }
 .reading-bar-right { justify-content: flex-end; }
 .reading-bar-right > button { flex: 0 0 auto; }
 .reading-bar-right .reading-search { flex: 1 1 0; }
-/* The open story's Read and bookmark under its title and description, not beside them: beside them,
-   with the bookmark (2026-11-22), the text had 140 px of the row. */
-.reading-entry.open .reading-item { padding-bottom: 64px; }
-.reading-entry.open .reading-item-main { margin-right: 0; }
-.reading-entry.open .reading-head #reading-read { top: auto; right: auto; bottom: 10px; left: 16px; transform: none; }
-.reading-entry.open .reading-head .story-save { top: auto; bottom: 10px; transform: none; }
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- the section's top row, pinned ---------- */
