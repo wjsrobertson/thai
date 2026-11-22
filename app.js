@@ -130,7 +130,7 @@ const els = {
   setWaitHard: document.getElementById('setting-wait-hard'),
   setWaitEasy: document.getElementById('setting-wait-easy'),
   setRetention: document.getElementById('setting-retention'),
-  reviewBy: document.getElementById('review-by'), // the picker's Add words line
+  pickerTabs: document.querySelectorAll('[data-picker-tab]'), // the picker's Topics | My Words (or My Phrases, My Stories)
   reviewByHelp: document.getElementById('review-by-help'),
   reviewOnlyAdd: document.getElementById('review-only-add'), // an empty list's Add words, on Cards
   addingBar: document.getElementById('adding-bar'), // the List page while adding words to a list
@@ -336,7 +336,8 @@ const state = {
   review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
   moving: null,             // the open Change dialog (openMoveWords): { lastFocus }
-  pickerTab: 'words',       // what the picker shows: 'words' | 'phrases' | 'stories' (openDeckPicker; its tabs until 2026-11-22)
+  pickerOf: 'words',        // the kind the picker shows: 'words' | 'phrases' | 'stories' (openDeckPicker)
+  pickerPane: 'topics',     // its tab: 'topics' | 'mine' (Topics | My Words, My Phrases or My Stories; renderPickerHead)
   addTo: null,              // the list the picker is choosing words for (Add words), or null
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
@@ -1785,47 +1786,66 @@ function pickScope(id) {
   window.scrollTo(0, 0);
 }
 
-// What the picker shows (state.pickerTab): the section's kind, Words, Phrases or Stories (2026-11-22,
-// the user's call: they were its tabs, Words | Phrases | Stories, till they became sections the same
-// day; Topics | My lists from the lists spike, 2026-10-20). Vocabulary's picker is words; Add words
-// (or phrases) the kind of the list being added to. Words and Phrases each show your lists of that
-// kind, then the topics of that kind (pickerModel), then, searching, the cards of that kind it finds;
-// Stories your story lists, then the topics, for the stories that use their words.
+// What the picker shows (state.pickerOf): the section's kind, Words, Phrases or Stories (2026-11-22;
+// Vocabulary's is words, Add words' (or phrases') the kind of the list being added to). It has two
+// tabs (state.pickerPane), Topics and your lists of that kind: Topics | My Words, Topics | My Phrases,
+// Topics | My Stories (the user's call, 2026-11-22: "change the topic picker back to the way it used
+// to be"; for a few hours it was your lists over the topics in one pane, with no tabs, and before that
+// Words | Phrases | Stories, then Topics | My Words | My Stories; Topics | My lists from the lists
+// spike, 2026-10-20). Topics is the topics of the kind (pickerModel; Stories' are the word topics, for
+// the stories that use their words), then, searching, the cards of the kind it finds.
+const MY_TAB = { words: 'My Words', phrases: 'My Phrases', stories: 'My Stories' };
 function renderPickerHead() {
-  const tab = state.pickerTab;
+  const of = state.pickerOf;
+  const mine = state.pickerPane === 'mine';
+  els.pickerTabs.forEach((b) => {
+    b.setAttribute('aria-checked', String((b.dataset.pickerTab === 'mine') === mine));
+    if (b.dataset.pickerTab === 'mine') b.textContent = MY_TAB[of];
+  });
+  // A line under the tabs only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const adding = state.pickerFor === 'add';
-  // A line under the title only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
-  els.reviewBy.hidden = !adding;
-  els.reviewByHelp.textContent = !adding ? '' : `Pick a topic or list, then add its ${kindNoun(pickerKind())} to ${into}`;
-  els.deckPickerSearch.placeholder = tab === 'phrases' ? 'Search phrases and your phrase lists' : tab === 'stories' ? 'Search topics and your story lists' : 'Search words and your word lists';
+  els.reviewByHelp.hidden = !adding;
+  els.reviewByHelp.textContent = !adding ? '' : `Pick a ${mine ? 'list' : 'topic'}, then add its ${kindNoun(pickerKind())} to ${into}`;
+  els.deckPickerSearch.placeholder = mine ? `Search your ${of}` : of === 'stories' ? 'Search topics' : `Search topics and ${of}`;
+}
+
+function pickPickerTab(pane) {
+  if (pane !== state.pickerPane) { // a new tab, a new search
+    state.pickerFilter = '';
+    els.deckPickerSearch.value = '';
+  }
+  state.pickerPane = pane;
+  renderPickerHead();
+  renderDeckPicker();
+  els.deckPickerTree.scrollTop = 0;
 }
 
 // The kind of topics the picker lists: Stories' are the word topics.
-const pickerKind = () => (state.pickerTab === 'phrases' ? 'phrases' : 'words');
+const pickerKind = () => (state.pickerOf === 'phrases' ? 'phrases' : 'words');
 
-// Your lists of the picker's kind: a row each (its count, not its progress), then New list. Add words
-// leaves out the list being added to. A search finds a list by its name or by a word in it
-// (wordMatches).
-function pickerListsSection(kind, q) {
+// My Words or My Phrases: your lists of the kind, a row each (its count, not its progress), then New
+// list. Add words leaves out the list being added to. A search finds a list by its name or by a word
+// in it (wordMatches).
+function renderListsPane(kind) {
+  const q = state.pickerFilter.trim();
   const lists = listsOfKind(kind).filter((l) => (state.pickerFor !== 'add' || l.id !== state.addTo)
     && (!q || l.name.toLowerCase().includes(q.toLowerCase()) || resolveScope(listScopeId(l.id)).cards.some((c) => wordMatches(c, q))));
-  if (!lists.length && (q || state.pickerFor !== 'study')) return []; // only the plain picker offers to make one
-  const out = [Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: `Your ${kindNoun(kind, 1)} lists` })];
-  for (const l of lists) {
+  const rows = lists.map((l) => {
     const id = listScopeId(l.id);
     const scope = resolveScope(id);
     const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
-    out.push(row);
-  }
+    return row;
+  });
   if (!lists.length) {
     const empty = document.createElement('div');
-    empty.className = 'modal-empty picker-lists-empty';
-    empty.textContent = state.pickerFor === 'add' ? 'No other lists yet.' : `None yet: make one, then add ${kindNoun(kind)} to it from any topic, or with a ${kindNoun(kind, 1)}'s bookmark.`;
-    out.push(empty);
+    empty.className = 'modal-empty';
+    empty.textContent = q ? `No list matches "${q}".` : state.pickerFor === 'add' ? 'No other lists yet.'
+      : `No lists yet. Make one, then add ${kindNoun(kind)} to it from any topic, or with a ${kindNoun(kind, 1)}'s bookmark.`;
+    rows.push(empty);
   }
-  if (state.pickerFor === 'study' && !q) {
+  if (state.pickerFor === 'study') {
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'ghost new-list';
@@ -1838,34 +1858,31 @@ function pickerListsSection(kind, q) {
       // On its List page, to add words to it, from Cards, Read or Home too (the user's call, 2026-10-22).
       if (state.view !== 'wordlist') setView('wordlist');
     });
-    out.push(add);
+    rows.push(add);
   }
-  out.push(Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: kind === 'phrases' ? 'Topics of phrases' : 'Topics' }));
-  return out;
+  els.deckPickerTree.replaceChildren(...rows);
 }
 
-// The Stories picker's first part (2026-11-22): a row for each of your story lists (how many stories
-// and words), then New list, then the topics' heading, as a word list's part is (pickerListsSection).
-// A search finds a list by its name or a story's title in it.
-function storyListsSection(q) {
+// My Stories (2026-11-22): a row for each of your story lists (how many stories and words), then New
+// list. A search finds one by its name or a story's title in it.
+function renderStoryListsPane() {
+  const q = state.pickerFilter.trim().toLowerCase();
   const lists = getStoryLists().filter((l) => !q || l.name.toLowerCase().includes(q) || savedStories(l).some((d) => d.name.toLowerCase().includes(q)));
-  if (!lists.length && (q || state.pickerFor !== 'study')) return [];
-  const out = [Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: 'Your story lists' })];
-  for (const l of lists) {
+  const rows = lists.map((l) => {
     const id = storiesScopeId(l.id);
     const scope = resolveScope(id);
     const n = scope.cards.length;
     const row = pickerDeckRow({ id, name: l.name, description: `${scope.description} · ${n} ${kindNoun('words', n)}`, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
-    out.push(row);
-  }
+    return row;
+  });
   if (!lists.length) {
     const empty = document.createElement('div');
-    empty.className = 'modal-empty picker-lists-empty';
-    empty.textContent = "None yet: make one, or save a story with its bookmark. A topic below lists the stories that use its words.";
-    out.push(empty);
+    empty.className = 'modal-empty';
+    empty.textContent = q ? `No story list matches "${state.pickerFilter.trim()}".` : 'No story lists yet. Save a story on Read with its bookmark, or make a list here.';
+    rows.push(empty);
   }
-  if (state.pickerFor === 'study' && !q) {
+  if (state.pickerFor === 'study') {
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'ghost new-list';
@@ -1876,10 +1893,9 @@ function storyListsSection(q) {
       pickScope(storiesScopeId(createStoryList(name).id));
       if (state.view !== 'reading') setView('reading'); // where its stories are saved
     });
-    out.push(add);
+    rows.push(add);
   }
-  out.push(Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: 'Stories by topic' }));
-  return out;
+  els.deckPickerTree.replaceChildren(...rows);
 }
 
 // A category or group heading: the collapsible header and, on its right, "All N" to pick all of it.
@@ -1891,7 +1907,7 @@ function pickerHead(prefix, name, countText, container, q, openSet, key, scopeId
   all.className = 'scope-all' + (scopeId === pickerSelectedId() ? ' current' : '');
   const words = (state.pickerFor === 'vocab' ? vocabSource(scopeId)?.words : resolveScope(scopeId)?.cards)?.length || 0; // Vocabulary's: no phrase topics
   // Stories' (2026-11-22): the stories that use all of its words, not a count of words.
-  const stories = state.pickerTab === 'stories';
+  const stories = state.pickerOf === 'stories';
   all.textContent = stories ? 'All' : `All ${words}`;
   all.title = stories ? `The stories for all of ${name}` : `All of ${name}: ${words} words`;
   all.setAttribute('aria-label', all.title);
@@ -1963,7 +1979,7 @@ function pickerGroup(g, q, cat) {
     cards += p.total;
   }
   // Stories' rows leave out how many words you know (2026-11-22): the choice is of stories there.
-  const stories = state.pickerTab === 'stories';
+  const stories = state.pickerOf === 'stories';
   const count = `${g.decks.length} topic${g.decks.length === 1 ? '' : 's'}${stories ? '' : ` · ${known}/${cards}`}`;
   wrap.appendChild(pickerHead('sub', g.name, count, wrap, q, state.expandedGroups, g.key, groupScopeId(cat, g.name, pickerKind() === 'phrases')));
   const list = document.createElement('div');
@@ -1975,10 +1991,15 @@ function pickerGroup(g, q, cat) {
 
 function renderDeckPicker() {
   const kind = pickerKind();
-  const stories = state.pickerTab === 'stories';
+  const stories = state.pickerOf === 'stories';
+  if (state.pickerPane === 'mine') {
+    if (stories) renderStoryListsPane();
+    else renderListsPane(kind);
+    return;
+  }
   const q = state.pickerFilter.trim().toLowerCase();
   const cats = pickerModel(q);
-  els.deckPickerTree.replaceChildren(...(stories ? storyListsSection(q) : pickerListsSection(kind, state.pickerFilter.trim())));
+  els.deckPickerTree.replaceChildren();
 
   for (const c of cats) {
     const group = document.createElement('div');
@@ -1997,7 +2018,7 @@ function renderDeckPicker() {
   // A word's row opens its topic: not for Vocabulary, nor Stories. The picker's kind only.
   const words = q && state.pickerFor !== 'vocab' && !stories ? wordSearch(q, { keep: (w) => (isPhraseCard(w.card) ? 'phrases' : 'words') === kind }) : null;
   if (words?.total) els.deckPickerTree.appendChild(wordHitsSection(words, kind));
-  if (cats.length === 0 && !words?.total && !els.deckPickerTree.querySelector('.list-row')) {
+  if (cats.length === 0 && !words?.total) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
     empty.textContent = `Nothing matches "${state.pickerFilter.trim()}".`;
@@ -2309,9 +2330,12 @@ function openDeckPicker({ addTo = null, vocab = false } = {}) {
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
   state.pickerFor = addTo ? 'add' : vocab ? 'vocab' : 'study';
-  // The section's kind; Add words', the list's; Vocabulary's, words.
-  state.pickerTab = addTo ? listKind(listById(addTo)) : vocab ? 'words' : state.kind;
-  els.deckPickerTitle.textContent = addTo ? `Add ${kindNoun(state.pickerTab)} to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
+  // The section's kind; Add words', the list's; Vocabulary's, words. The tab of the current choice
+  // (one of your lists: My Words; a topic: Topics); Add words' and Vocabulary's, Topics.
+  state.pickerOf = addTo ? listKind(listById(addTo)) : vocab ? 'words' : state.kind;
+  const nowScope = state.pickerFor === 'study' ? resolveScope(state.currentDeckId) : null;
+  state.pickerPane = nowScope?.kind === 'list' || nowScope?.kind === 'stories' ? 'mine' : 'topics';
+  els.deckPickerTitle.textContent = addTo ? `Add ${kindNoun(state.pickerOf)} to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
   renderPickerHead();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -9612,6 +9636,7 @@ function bindEvents() {
     });
   });
 
+  els.pickerTabs.forEach((b) => b.addEventListener('click', () => pickPickerTab(b.dataset.pickerTab)));
   els.deckPickerSearch.addEventListener('input', (e) => {
     state.pickerFilter = e.target.value;
     renderDeckPicker();

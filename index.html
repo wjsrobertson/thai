@@ -94,11 +94,14 @@
         <h2 id="deck-picker-title">Choose a topic</h2>
         <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
       </div>
-      <!-- Add words' line: where they go (renderPickerHead). The picker had tabs here from the lists
-           spike (2026-10-20), Topics | My lists, then Words | Phrases | Stories; they went on 2026-11-22,
-           when those three became sections (the picker shows the section's kind). -->
-      <div class="review-by" id="review-by" hidden>
-        <p class="review-by-help" id="review-by-help"></p>
+      <!-- Topics | My Words (renderPickerHead; the lists spike, 2026-10-20), or My Phrases or My Stories,
+           the section's kind (2026-11-22). Under them, Add words' line: where they go. -->
+      <div class="review-by" id="review-by">
+        <div class="segmented" role="radiogroup" aria-label="What to show">
+          <button type="button" role="radio" class="seg-btn" data-picker-tab="topics" aria-checked="true">Topics</button>
+          <button type="button" role="radio" class="seg-btn" data-picker-tab="mine" aria-checked="false">My Words</button>
+        </div>
+        <p class="review-by-help" id="review-by-help" hidden></p>
       </div>
       <div class="modal-search">
         <input type="search" id="deck-picker-search" placeholder="Search topics" autocomplete="off" />

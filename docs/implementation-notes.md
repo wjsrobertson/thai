@@ -2575,7 +2575,8 @@ now". The topic picker's three tabs (the section above) became three sections, e
   in (`switchKind`) before the engine. Cards' mode and direction are shared prefs, as before, so a
   section's first visit starts in the last one used. Going to another section stops List's Read all
   and Read's.
-- **The picker** (`renderPickerHead`; its tabs and `pickPickerTab` gone): Words your word lists, then
+- **The picker** (`renderPickerHead`; its tabs and `pickPickerTab` gone, back the same day as Topics |
+  My Words, the section below): Words your word lists, then
   the word topics; Phrases your phrase lists, then the topics of phrases; **Stories your story lists,
   then "Stories by topic"**: the word topics, each picking the stories that use its words (Read's
   rule, as Words' Read has), so Stories has stories without a list of your own. Its rows leave out
@@ -2600,6 +2601,28 @@ now". The topic picker's three tabs (the section above) became three sections, e
   Stories with no lists (Greetings' stories, the picker's "None yet"), a new story list and its
   Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
   picker; a story's word to its topic in Words; no script errors, no sideways scroll.
+
+## The picker's Topics | My Words again (2026-11-22)
+
+The user's call, after the sections above: "change the topic picker back to the way it used to be,
+so instead of 'Your words lists' being a separate section at the top of the topics, it is 'Topic |
+My Words' like it used to be. Same for Phrases and Stories".
+- **Two tabs** (`state.pickerPane`, `pickPickerTab`, data-picker-tab `topics` | `mine`): **Topics |
+  My Words** in Words, **Topics | My Phrases** in Phrases, **Topics | My Stories** in Stories (the
+  second tab's name from the section's kind, `state.pickerOf`, which was `state.pickerTab`). Topics is
+  the topic tree of the kind, with the word search (Stories' without it, and without the words-known
+  bars); the other is your lists of the kind (`renderListsPane`, `renderStoryListsPane`), then ＋ New
+  list. The "Your word lists" and "Topics" headings are gone (`pickerListsSection`,
+  `storyListsSection`).
+- **It opens on the tab of the current choice:** one of your lists, the lists' tab; a topic, Topics.
+  Add words (or phrases) and Vocabulary open on Topics, with My Words (or My Phrases) beside it; Add
+  words' line says "Pick a topic" or "Pick a list". A new tab clears the search. Placeholders:
+  "Search topics and words" (phrases; Stories "Search topics"), "Search your words" (phrases,
+  stories).
+- Checked headless (scratch `picker_tabs_probe.py`) at 390 × 664 (text 1.3) and 1280 × 800: each
+  section's picker and both its tabs; a list found by a word in it ("rice"), none ("zzz"); "busy" on
+  Topics finding ยุ่ง; opening on My Phrases with a phrase list chosen and on Topics with a topic in
+  Stories; Add words (both tabs, the list itself left out); Vocabulary's; no script errors.
 
 ## Cards for the last splittable phrases, and their word lists (2026-11-22)
 
