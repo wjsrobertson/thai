@@ -2410,9 +2410,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .pw-go { color: var(--muted); font-size: 22px; }
 .pw-row:hover .pw-th, .pw-row:hover .pw-go { color: var(--accent); }
 .pop-words + .pop-tones { margin-top: 8px; }
-/* Its topics, one a line, as In stories' story names. */
+/* Its topics (a phrase's or a word's), one a line, as In stories' story names. */
 .pop-topics { margin: 12px 0 0; border-top: 1px solid var(--border); }
 .pop-topics .ctx-from { display: flex; margin: 0; }
+.pop-actions + .pop-topics { margin-top: 4px; }
 
 /* Tones (toneSection): each syllable's tone and its rule, under a heading (always open: it was a
    row of small curves that opened, until 2026-10-14). */

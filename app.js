@@ -6642,11 +6642,12 @@ function showWordPop(anchor, card) {
   play.addEventListener('click', () => speakerPress(play, cardSay(card)));
   actions.append(play);
   // Under them, the word's tones (tones.js), closed to a row until tapped; then the word in the
-  // stories (contextSection).
+  // stories (contextSection); then its topics (topicsSection, 2026-11-22).
   const tones = toneSection(card, big);
   const context = contextSection(card);
+  const topics = topicsSection(card, key);
   popEnter(() => showWordPop(anchor, card));
-  els.wordModalBody.replaceChildren(wordBox, actions, ...(tones ? [tones.el] : []), ...(context ? [context] : []));
+  els.wordModalBody.replaceChildren(wordBox, actions, ...[tones?.el, context, topics].filter(Boolean));
   showWordModal();
   els.wordModalBody.scrollTop = 0;
   fitPopWord(big);
@@ -6766,7 +6767,7 @@ function showPhrasePop(anchor, card) {
   if (tones) parts.push(tones.el);
   const context = contextSection(card);
   if (context) parts.push(context);
-  const topics = phraseTopics(card, key);
+  const topics = topicsSection(card, key);
   if (topics) parts.push(topics);
   popEnter(() => showPhrasePop(anchor, card));
   els.wordModalBody.replaceChildren(...parts);
@@ -6811,8 +6812,10 @@ function phraseWordList(words) {
   return box;
 }
 
-// The topics it's in, each opening on the Words page's List with the phrase lit (showWordInTopic).
-function phraseTopics(card, key) {
+// The topics it's in (a word's, 2026-11-22, the user's request, "similar to phrases": at most six, มา's),
+// each opening on the Words page's List with it lit (showWordInTopic). Not the stories, which In stories
+// has; none for a letter or a time (in no topic).
+function topicsSection(card, key = cardKey(card)) {
   const ids = (state.cardIndex.get(key)?.deckIds || []).filter((id) => deckOfId(id) && !isPassage(id));
   if (!ids.length) return null;
   const box = popEl('div', 'pop-topics');

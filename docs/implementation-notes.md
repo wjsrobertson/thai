@@ -2433,6 +2433,13 @@ syllable's rule and the whole table (30 syllables for the longest).
     ไม่ค่อย that, off it nothing, and a tap's word dialog and closing clear it; the accent drawn
     (screenshot); Saying No's first row's Thai opens ไม่ค่อยว่าง's dialog; Colors' สี แดง still opens
     สี; no script errors.
+- **The word dialog's Topic section** (the same day, the user's request: "a Topics section at the end
+  of the word dialog, similar to phrases"): `topicsSection`, the phrase dialog's, under In stories.
+  Every topic the word is in, Thai Script's too (a word there is a rule's example, and the topic
+  shows the rule): at most six (มา), 7,674 words in one, so no Show more. Not the stories (In stories
+  has them); none for a letter or a time. Checked (scratch `word_topics_probe.py`, 390 × 664 and
+  1280 × 800): มา's six, Spoken 1–20 opening on the List with มา lit; ว่าง from ไม่ค่อยว่าง's Word by
+  word with its one topic, and ‹ back to the phrase; no script errors.
 - **Next, offered and put off** (the user: "we can defer any work… until we get the basic dialog
   working nicely"): an **In phrases** section in the word dialog (the phrases that use it, from
   `words`), as the letter dialog lists words that start with it; a Phrases page beside the
