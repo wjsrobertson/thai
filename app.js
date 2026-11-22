@@ -192,6 +192,15 @@ const els = {
   setTextSize: document.getElementById('setting-text-size'),
   setWordlistFirst: document.getElementById('setting-wordlist-first'),
   setListOrder: document.getElementById('setting-list-order'),
+  setVocabPhraseOrder: document.getElementById('setting-vocab-phrase-order'),
+  vocabPhrasePanel: document.getElementById('vocab-phrase-panel'),
+  vocabPhrases: document.getElementById('vocab-phrases'),
+  vocabPhrasesDone: document.getElementById('vocab-phrases-done'),
+  vocabPhraseKinds: [...document.querySelectorAll('[data-phrase-kind]')],
+  vocabPhraseHelp: document.getElementById('vocab-phrase-help'),
+  vocabPhraseAdd: document.getElementById('vocab-phrase-add'),
+  vocabPhraseRows: document.getElementById('vocab-phrase-rows'),
+  vocabPhraseMore: document.getElementById('vocab-phrase-more'),
   setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
   setDevFeatures: document.getElementById('setting-dev-features'),
   setReadStoryTitles: document.getElementById('setting-read-story-titles'),
@@ -264,6 +273,7 @@ const DEFAULT_SETTINGS = {
   testOrder: 'random',            // Test-mode card order: 'random' | 'deck' (the deck's own order)
   wordlistFirst: 'thai',          // the Topics page's first column: 'thai' | 'english' (Settings → List)
   listOrder: 'newest',            // your lists' words: 'newest' | 'oldest' added first (Settings → List; resolveListScope)
+  vocabPhraseOrder: 'topic',      // Vocabulary's Phrases from your words: 'topic' | 'shortest' (Settings → Vocabulary)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
   devFeatures: false,             // pages still being tried out (Settings → App; applyDevFeatures): none now
   readStoryTitles: true,          // Reading's Read all says each story's English title first (Settings → Reading)
@@ -327,6 +337,8 @@ const state = {
   addTo: null,              // the list the picker is choosing words for (Add words), or null
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
+  vocabPhrases: null,       // Phrases from your words while its list shows: 'known' | 'short' (renderVocabPhrases)
+  vocabPhraseShown: 50,     // and how many of it show (VOCAB_PHRASE_PAGE more with each Show more)
 };
 
 // ---------- storage ----------
@@ -4064,6 +4076,7 @@ function renderSettings() {
   els.setTextSize.value = String(s.textSize);
   els.setWordlistFirst.value = s.wordlistFirst;
   els.setListOrder.value = s.listOrder === 'oldest' ? 'oldest' : 'newest';
+  els.setVocabPhraseOrder.value = s.vocabPhraseOrder === 'shortest' ? 'shortest' : 'topic';
   els.setTopicWordGaps.checked = !!s.topicWordGaps;
   els.setDevFeatures.checked = !!s.devFeatures;
   els.setReadStoryTitles.checked = s.readStoryTitles !== false;
@@ -4173,6 +4186,10 @@ function bindSettings() {
   els.setWordlistFirst.addEventListener('change', () => {
     setSettings({ wordlistFirst: els.setWordlistFirst.value === 'english' ? 'english' : 'thai' });
     renderWordlist();
+  });
+  els.setVocabPhraseOrder.addEventListener('change', () => {
+    setSettings({ vocabPhraseOrder: els.setVocabPhraseOrder.value === 'shortest' ? 'shortest' : 'topic' });
+    if (state.vocabPhrases) renderVocabPhrases();
   });
   els.setListOrder.addEventListener('change', () => {
     setSettings({ listOrder: els.setListOrder.value === 'oldest' ? 'oldest' : 'newest' });
@@ -6896,6 +6913,7 @@ function showWordPop(anchor, card) {
   play.append(speakerIcon());
   play.addEventListener('click', () => speakerPress(play, cardSay(card)));
   actions.append(play);
+  if (!card.alpha && !card.time) actions.append(knowButton(card.thai)); // Vocabulary's answer (2026-11-22)
   // Under them, the word's tones (tones.js), closed to a row until tapped; then the word in the
   // stories (contextSection); then its topics (topicsSection, 2026-11-22).
   const tones = toneSection(card, big);
@@ -8719,10 +8737,16 @@ function renderHomeVocab() {
 
 function renderVocab() {
   const run = state.vocabRun;
-  els.vocabHome.hidden = !!run;
+  const phrases = !run && !!state.vocabPhrases;
+  els.vocabHome.hidden = !!run || phrases;
   els.vocabRun.hidden = !run;
+  els.vocabPhrases.hidden = !phrases;
   if (run) {
     renderVocabRun({ say: false }); // coming back to a run: the word, not its sound again
+    return;
+  }
+  if (phrases) {
+    renderVocabPhrases();
     return;
   }
   renderVocabHome();
@@ -8742,6 +8766,192 @@ function renderVocabHome() {
   const recent = (getPreferences().vocabRecent || []).filter((id) => id !== VOCAB_MOST_USED && id !== VOCAB_SLANG);
   const blocks = [VOCAB_MOST_USED, VOCAB_SLANG, ...recent].map((id) => vocabSourceBlock(id, known, at)).filter(Boolean);
   els.vocabSources.replaceChildren(...blocks);
+  renderPhrasePanel(known);
+}
+
+// ---------- Phrases from your words (2026-11-22) ----------
+// The user's request: "a way to find phrases composed solely of words we know… see them in a list and
+// add them to My Words". A phrase (a card in a topic of phrases) whose words (its `words`) are all ones
+// you've said you know, in any run or with the word dialog's "I know this word" (knowButton); and,
+// the user's pick, those one word short, the word to learn lit. A phrase with no word list (59: the
+// Tone Chants, a template with a gap, an idiom not yet given one) can't be told, so isn't listed. A
+// word you haven't answered counts as one you don't know. The lists open in place of the page, a
+// table of List's rows (bookmark, spell, play), by topic or shortest first (Settings → Vocabulary).
+const VOCAB_PHRASE_PAGE = 50;
+let phraseCandidates = null; // [{ card, deck, words, thai: its words' Thai, each once }], built once
+
+function vocabPhraseSets(known = knownMap()) {
+  if (!phraseCandidates) {
+    phraseCandidates = [];
+    const seen = new Set();
+    for (const d of state.decks) {
+      if (!d.phrases) continue;
+      for (const c of d.cards) {
+        const key = cardKey(c);
+        const words = !seen.has(key) && phraseWords(c);
+        seen.add(key);
+        if (words) phraseCandidates.push({ card: c, deck: d, words, thai: [...new Set(words.map((w) => w.thai))] });
+      }
+    }
+  }
+  const all = [];
+  const short = [];
+  for (const p of phraseCandidates) {
+    const missing = p.thai.filter((t) => known[t] !== 1);
+    if (!missing.length) all.push(p);
+    else if (missing.length === 1) short.push({ ...p, missing: missing[0] });
+  }
+  return { known: all, short };
+}
+
+// The page's panel: how many of each, each opening its list. Not shown until there's a phrase in one.
+function renderPhrasePanel(known) {
+  const sets = vocabPhraseSets(known);
+  els.vocabPhrasePanel.hidden = !sets.known.length && !sets.short.length;
+  if (els.vocabPhrasePanel.hidden) return;
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  const row = (kind, n, text) => {
+    const r = el('div', 'vocab-source-head');
+    const t = el('span', 'vocab-source-text');
+    t.append(el('span', 'vocab-source-name', fmtCount(n)), el('span', 'vocab-source-sub', text));
+    const go = el('button', 'ghost vocab-go', 'See');
+    go.type = 'button';
+    go.disabled = !n;
+    go.setAttribute('aria-label', `See the ${plural(n, 'phrase')} ${text}`);
+    go.addEventListener('click', () => openVocabPhrases(kind));
+    r.append(t, go);
+    return r;
+  };
+  els.vocabPhrasePanel.replaceChildren(el('p', 'vocab-phrase-title', 'Phrases from your words'),
+    row('known', sets.known.length, sets.known.length === 1 ? 'uses only words you know' : 'use only words you know'),
+    row('short', sets.short.length, sets.short.length === 1 ? 'is one word short' : 'are one word short'));
+}
+
+function openVocabPhrases(kind) {
+  state.vocabPhrases = kind;
+  state.vocabPhraseShown = VOCAB_PHRASE_PAGE;
+  renderVocab();
+  window.scrollTo(0, 0);
+}
+
+function leaveVocabPhrases() {
+  state.vocabPhrases = null;
+  renderVocab();
+  window.scrollTo(0, 0);
+}
+
+// A list: Every word known | One word short (with their counts), what it is, Add all to your list, and
+// the phrases as List's rows, under their topics or shortest first; a one-word-short phrase's Thai has
+// its missing word lit, a tap on it opening that word (its "I know this word" then moves the phrase
+// over). A page at a time.
+function renderVocabPhrases() {
+  const kind = state.vocabPhrases;
+  const sets = vocabPhraseSets();
+  els.vocabPhraseKinds.forEach((b) => {
+    const k = b.dataset.phraseKind;
+    b.setAttribute('aria-checked', String(k === kind));
+    b.textContent = `${k === 'known' ? 'All known' : 'One word short'} · ${fmtCount(sets[k].length)}`; // "Every word known" wrapped on a phone
+  });
+  els.vocabPhraseHelp.textContent = kind === 'known'
+    ? 'Phrases made only of words you know. Tap one for its words, tones and stories.'
+    : "Phrases you're one word from: the word you don't know yet is lit. Tap it, and if you know it, say so there.";
+  let list = sets[kind];
+  if (getSettings().vocabPhraseOrder === 'shortest') list = [...list].sort((a, b) => a.words.length - b.words.length || a.card.thai.length - b.card.thai.length);
+  const byTopic = getSettings().vocabPhraseOrder !== 'shortest';
+  // Add all: those not in your list yet; with every one in, it says so.
+  const target = targetWords();
+  const cards = mergeProgressIntoCards(list.map((p) => p.card));
+  const out = cards.filter((c) => !target.has(c.key));
+  els.vocabPhraseAdd.hidden = !cards.length;
+  els.vocabPhraseAdd.classList.toggle('all-in', !out.length);
+  els.vocabPhraseAdd.replaceChildren(reviewIcon(!out.length), out.length ? `Add all to ${targetName()}` : `All in ${targetName()}`);
+  els.vocabPhraseAdd.onclick = () => {
+    if (!out.length) return toast(`They're all in '${targetName()}'`);
+    const keys = out.map((c) => c.key);
+    setInTarget(keys, true);
+    toastAdded(keys, plural(keys.length, 'phrase'));
+    renderVocabPhrases();
+  };
+  const cols = wordlistColumns();
+  const words = targetWords();
+  const rows = [];
+  let lastDeck = null;
+  list.slice(0, state.vocabPhraseShown).forEach((p, i) => {
+    if (byTopic && p.deck !== lastDeck) {
+      lastDeck = p.deck;
+      const th = document.createElement('tr');
+      th.className = 'wl-topic';
+      th.innerHTML = '<td colspan="4"></td>';
+      th.firstChild.textContent = p.deck.name;
+      rows.push(th);
+    }
+    const tr = wordRow(cards[i], cols, words);
+    if (p.missing) {
+      // Its Thai word by word, the one not known yet lit; that word opens its own dialog.
+      const td = tr.querySelector('td.col-thai');
+      td.textContent = '';
+      p.words.forEach((w, n) => {
+        if (n) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
+        if (w.thai !== p.missing) {
+          td.append(w.thai);
+          return;
+        }
+        const span = Object.assign(document.createElement('span'), { className: 'vp-missing', textContent: w.thai, tabIndex: 0 });
+        span.setAttribute('role', 'button');
+        span.title = `${w.thai}: ${w.english}`;
+        const open = (e) => {
+          e.preventDefault();
+          e.stopPropagation(); // not the phrase's
+          showWordPop(span, w);
+        };
+        span.addEventListener('click', open);
+        span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+        td.append(span);
+      });
+    }
+    rows.push(tr);
+  });
+  if (!list.length) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="empty" colspan="4"></td>';
+    tr.firstChild.textContent = kind === 'known' ? 'None yet: say which words you know, and the phrases made of them come here.' : 'None one word short.';
+    rows.push(tr);
+  }
+  els.vocabPhraseRows.replaceChildren(...rows);
+  els.vocabPhraseRows.closest('table').classList.toggle('show-spaces', !!getSettings().topicWordGaps); // Word gaps, as on List
+  const left = list.length - state.vocabPhraseShown;
+  els.vocabPhraseMore.hidden = left <= 0;
+  els.vocabPhraseMore.textContent = `Show ${Math.min(left, VOCAB_PHRASE_PAGE)} more · ${fmtCount(left)} left`;
+}
+
+// "I know this word" (2026-11-22, the user's request, "ideally not too cumbersome"): Vocabulary's
+// answer for a word, from its dialog, one tap either way; a phrase one word short moves over when its
+// word is known. It's the same answer a run gives (store.known, with its time).
+function knowButton(thai) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  const paint = () => {
+    const known = knownMap()[thai] === 1;
+    b.className = 'know-btn' + (known ? ' known' : '');
+    b.textContent = known ? '✓ I know this word' : 'I know this word';
+    b.setAttribute('aria-pressed', String(known));
+    b.title = known ? `Counted as a word you know (Vocabulary). Tap if you don't.` : `Count ${thai} as a word you know (Vocabulary)`;
+  };
+  paint();
+  b.addEventListener('click', () => {
+    setKnown(thai, knownMap()[thai] !== 1);
+    paint();
+  });
+  return b;
+}
+
+function setKnown(thai, yes) {
+  const store = loadStore();
+  (store.known ||= {})[thai] = yes ? 1 : 0;
+  (store.knownAt ||= {})[thai] = Date.now();
+  saveStore(store);
+  if (state.view === 'vocab') renderVocab(); // a run's word, the counts, a phrase list
+  if (state.view === 'home') renderHomeVocab();
 }
 
 // Going through a list again (2026-11-14, the user's request): the words you said No to, or every one
@@ -9021,6 +9231,11 @@ function undoVocab() {
 }
 
 function handleVocabKey(e) {
+  if (state.vocabPhrases && !state.vocabRun && e.key === 'Escape') {
+    e.preventDefault();
+    leaveVocabPhrases();
+    return;
+  }
   if (!state.vocabRun || e.metaKey || e.ctrlKey || e.altKey) return;
   const key = e.key.toLowerCase();
   const act = { arrowright: () => answerVocab(true), y: () => answerVocab(true), arrowleft: () => answerVocab(false), n: () => answerVocab(false),
@@ -9053,6 +9268,17 @@ async function resetVocab() {
 function bindVocab() {
   els.vocabChoose.addEventListener('click', () => openDeckPicker({ vocab: true }));
   els.vocabDone.addEventListener('click', leaveVocabRun);
+  els.vocabPhrasesDone.addEventListener('click', leaveVocabPhrases);
+  els.vocabPhraseKinds.forEach((b) => b.addEventListener('click', () => {
+    if (b.dataset.phraseKind === state.vocabPhrases) return;
+    state.vocabPhrases = b.dataset.phraseKind;
+    state.vocabPhraseShown = VOCAB_PHRASE_PAGE;
+    renderVocabPhrases();
+  }));
+  els.vocabPhraseMore.addEventListener('click', () => {
+    state.vocabPhraseShown += VOCAB_PHRASE_PAGE;
+    renderVocabPhrases();
+  });
   els.vocabNo.addEventListener('click', () => answerVocab(false));
   els.vocabYes.addEventListener('click', () => answerVocab(true));
   els.vocabUndo.addEventListener('click', undoVocab);

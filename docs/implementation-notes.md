@@ -2509,6 +2509,46 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## Phrases from your words, and "I know this word" (2026-11-22)
+
+The user's request: on Vocabulary, "a way to find phrases composed solely of words we know… see them
+in a list and add them to My Words". Offered with the counts it would find (knowing the most-used
+500: 208 phrases, and 244 one word short), the user took **one word short** too ("a great idea"), the
+order as a setting defaulting to by topic, and "I know this word" in the word dialog ("ideally not
+too cumbersome").
+
+- **Which phrases** (`vocabPhraseSets`): a card in a topic of phrases with a word list (`words`, 602
+  of them); **all known** when each of its words (each once) is one you've said you know, **one word
+  short** when exactly one isn't. A word you haven't answered isn't known. Not listed: the 59 with no
+  word list (the Tone Chants, a template with a gap such as ขอ…บาท, a one-chunk phrase such as
+  แล้วแต่, and idioms never given one: see below).
+- **The page's panel** (`renderPhrasePanel`, under "Go through a topic or list"): "Phrases from your
+  words", 208 "use only words you know" and 244 "are one word short", each with See. Hidden while
+  there's none of either.
+- **A list** (`renderVocabPhrases`, in place of the page, ‹ Done or Escape back): **All known · 208 |
+  One word short · 244** ("Every word known" wrapped on a phone), a line on it, **Add all to My words**
+  (the target list; "All in My words" once they are), and List's rows (`wordRow`: bookmark, spell,
+  play; a row opens the phrase dialog), under their topics or shortest first, 50 at a time. In a
+  phrase one word short, the word to learn is in the accent, underlined, on one line (`.vp-missing`);
+  a tap opens that word. The rows are stacked at every width, as a phone's List rows are: in
+  Vocabulary's 560 column the table's columns left the Thai 140 wide and broke ปีใหม่ over two lines.
+- **The order:** Settings → **Vocabulary** (a new section) → Phrases from your words: **By topic**
+  (the default) or **Shortest first** (fewest words, then shortest Thai; no headings).
+- **"I know this word"** (`knowButton`): in the word dialog after its round buttons, a pill; tapped,
+  "✓ I know this word" in green, and tapped again it's taken back (answered No). It's the same answer
+  a run gives (`store.known`, with its time, `setKnown`), so the counts, a run and the phrase lists
+  follow: knowing ปีใหม่ moved สวัสดีปีใหม่ from one word short to all known (209 / 243). Not on a
+  phrase's dialog, a letter's or a time's.
+- **Why some idioms have no word list** (the user asked): the lists were written when the phrases
+  first went into stories; phrases added later (most idioms, a few sentence patterns and Southern
+  phrases) never got one, though their words have cards. Three lack a word's card (พร้า; ปราศรัย,
+  เชือด). Offered as a data change of its own.
+- Checked headless (scratch `vocab_phrases_probe2.py`) at 390 × 664 and 1280 × 800, the most-used 500
+  known: the panel (208, 244); All known (topic headings, 50 and Show 50 more · 158 left); One word
+  short (สวัสดีปีใหม่ with ปีใหม่ lit); ปีใหม่ tapped → its dialog, I know this word → ✓, back: 209 /
+  243; Add all (209 added, All in My words); Shortest first (ลงมา, ดีเลย, ไปไหน; no headings); Escape;
+  the button on ไป on List both ways; none on a phrase's dialog; no sideways scroll, no script errors.
+
 ## My Stories in the topic picker (2026-11-22)
 
 The user's call, the same day as My Stories: no "Topic | My Stories" switch on Read; the topic picker

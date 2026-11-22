@@ -709,6 +709,22 @@
         </div>
       </details>
 
+      <details class="settings-cat" data-cat="vocab">
+        <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" /><path d="m8 12.2 2.8 2.8L16.2 9" /></svg>Vocabulary</summary>
+        <div class="setting-list">
+          <div class="setting-group" data-search="vocabulary phrases from your words order sort sorted topic shortest known short">
+            <label class="setting-row">
+              <span class="setting-label">Phrases from your words</span>
+              <select id="setting-vocab-phrase-order">
+                <option value="topic">By topic</option>
+                <option value="shortest">Shortest first</option>
+              </select>
+              <span class="setting-help">The phrases made of words you know, or one word short.</span>
+            </label>
+          </div>
+        </div>
+      </details>
+
       <details class="settings-cat" data-cat="app">
         <summary><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM12 18h.01" /></svg>App</summary>
         <div class="setting-list">
@@ -882,8 +898,26 @@
         </div>
         <div class="vocab-sources" id="vocab-sources"></div>
         <button type="button" class="ghost vocab-choose" id="vocab-choose">Go through a topic or list</button>
+        <!-- Phrases from your words (renderPhrasePanel; 2026-11-22): how many use only words you know,
+             and how many are one word short, each opening its list. -->
+        <div class="vocab-source vocab-phrase-panel" id="vocab-phrase-panel" hidden></div>
         <p class="vocab-help">Say Yes if you'd know what it means when you hear it. A word counts once,
           wherever you answer it; phrases are counted apart from words.</p>
+      </div>
+      <!-- A list of Phrases from your words (renderVocabPhrases), in place of the page. -->
+      <div class="vocab-phrases" id="vocab-phrases" hidden>
+        <div class="vocab-top">
+          <button type="button" class="ghost vocab-done" id="vocab-phrases-done">‹ Done</button>
+          <span class="vocab-run-name">Phrases from your words</span>
+        </div>
+        <div class="segmented vocab-phrase-kinds" role="radiogroup" aria-label="Which phrases">
+          <button type="button" role="radio" class="seg-btn" data-phrase-kind="known" aria-checked="true"></button>
+          <button type="button" role="radio" class="seg-btn" data-phrase-kind="short" aria-checked="false"></button>
+        </div>
+        <p class="vocab-phrase-help" id="vocab-phrase-help"></p>
+        <button type="button" class="ghost wordlist-add-all vocab-phrase-add" id="vocab-phrase-add"></button>
+        <table class="wordtable vocab-phrase-table"><tbody id="vocab-phrase-rows"></tbody></table>
+        <button type="button" class="ghost reading-more" id="vocab-phrase-more" hidden></button>
       </div>
       <div class="vocab-run" id="vocab-run" hidden>
         <div class="vocab-top">
