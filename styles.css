@@ -2259,27 +2259,46 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 }
 .vocab { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 .vocab-home, .vocab-run, .vocab-phrases { display: flex; flex-direction: column; gap: 14px; }
-.vocab-home[hidden], .vocab-run[hidden], .vocab-phrases[hidden], .vocab-phrase-panel[hidden] { display: none; }
-/* The page: the count, big, then a panel a list. */
+.vocab-home[hidden], .vocab-run[hidden], .vocab-phrases[hidden], .vocab-phrase-link[hidden] { display: none; }
+/* The page: the count, big, Phrases from your words, then a panel of a row a list (2026-11-22; a
+   panel a list till then). */
 .vocab-total { padding: 4px 0; text-align: center; }
 .vocab-total-n { margin: 0; color: var(--accent); font-size: calc(48px * var(--fs, 1)); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .vocab-total-text { margin: 4px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); white-space: pre-line; }
-.vocab-sources { display: flex; flex-direction: column; gap: 12px; }
-.vocab-source {
+:is(.vocab-sources, .vocab-phrase-link) { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+.vocab-sources { display: flex; flex-direction: column; overflow: hidden; }
+.vocab-row + .vocab-row, .vocab-add { border-top: 1px solid var(--border); }
+/* A row: the name over its bar (a button opening the rest, where there's a rest), Start or Continue. */
+.vocab-row-line { display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 14px; }
+.vocab-row-main {
   display: flex;
+  flex: 1 1 auto;
   flex-direction: column;
-  gap: 10px;
-  padding: 14px 16px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  gap: 7px;
+  min-width: 0;
+  min-height: 44px;
+  justify-content: center;
+  padding: 4px 0;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  text-align: left;
 }
-.vocab-source-head { display: flex; align-items: center; gap: 12px; }
-.vocab-source-text { display: flex; flex-direction: column; flex: 1 1 auto; min-width: 0; }
-.vocab-source-name { color: var(--ink); font-size: calc(17px * var(--fs, 1)); font-weight: 600; }
-.vocab-source-sub { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-:is(.vocab-go, .vocab-choose, .vocab-done, .vocab-undo) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
-.vocab-go { flex: none; min-width: 96px; }
+.vocab-row-top { display: flex; align-items: baseline; gap: 10px; }
+.vocab-row-name { flex: 1 1 auto; min-width: 0; color: var(--ink); font-size: calc(16px * var(--fs, 1)); font-weight: 600; }
+.vocab-row-caret { display: inline-block; width: 1.1em; color: var(--muted); font-size: .8em; } /* ▸, or ▾ open */
+@media (hover: hover) { button.vocab-row-main:hover .vocab-row-caret { color: var(--accent); } }
+.vocab-row-count { flex: none; color: var(--ink); font-size: calc(14px * var(--fs, 1)); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.vocab-row-sub { color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
+.vocab-row-more { display: flex; flex-direction: column; gap: 10px; padding: 2px 14px 14px; }
+.vocab-row-more[hidden] { display: none; }
+/* ＋ Another topic or list: the panel's last row. */
+.vocab-add { width: 100%; min-height: 52px; padding: 0 14px; background: none; border-right: 0; border-bottom: 0; border-left: 0; border-radius: 0; color: var(--accent); font-size: 16px; text-align: left; }
+@media (hover: hover) { .vocab-add:hover { background: var(--panel-2); } }
+:is(.vocab-go, .vocab-done, .vocab-undo) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
+.vocab-go { flex: none; min-width: 92px; }
 /* A band: its name, the bar (known, then not known, then the rest to go) and known/total. */
 .vocab-band { display: grid; grid-template-columns: 5.6em 1fr 5.6em; align-items: center; gap: 10px; font-size: calc(14px * var(--fs, 1)); }
 .vocab-band-name { color: var(--muted); white-space: nowrap; }
@@ -2287,12 +2306,15 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-bar-yes { background: var(--good); }
 .vocab-bar-no { background: color-mix(in srgb, var(--again) 55%, var(--panel-2)); }
 .vocab-band-count { color: var(--ink); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-.vocab-help { margin: 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); line-height: 1.45; }
-/* Phrases from your words (2026-11-22): the page's panel, two counts each with See; and a list, in
-   place of the page: Every word known | One word short, a line on it, Add all, List's rows. In a
+/* Phrases from your words (2026-11-22): the page's row under the count, its two counts, opening a
+   list in place of the page: Every word known | One word short, a line on it, Add all, List's rows. In a
    phrase one word short, the word to learn is in the accent, underlined (a tap opens it). */
-.vocab-phrase-title { margin: 0; color: var(--ink); font-size: calc(17px * var(--fs, 1)); font-weight: 600; }
-.vocab-phrase-panel .vocab-source-name { color: var(--accent); font-variant-numeric: tabular-nums; }
+.vocab-phrase-link { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 8px 14px; color: var(--ink); text-align: left; }
+@media (hover: hover) { .vocab-phrase-link:hover { background: var(--panel-2); } }
+.vocab-phrase-text { display: flex; flex: 1 1 auto; flex-direction: column; gap: 2px; min-width: 0; }
+.vocab-phrase-title { font-size: calc(16px * var(--fs, 1)); font-weight: 600; }
+.vocab-phrase-sub { color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-variant-numeric: tabular-nums; }
+.vocab-phrase-chevron { flex: none; color: var(--muted); font-size: 22px; line-height: 1; }
 .vocab-phrase-kinds { display: flex; }
 .vocab-phrase-kinds .seg-btn { flex: 1; min-height: 44px; font-size: 15px; }
 .vocab-phrase-help { margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); line-height: 1.45; }

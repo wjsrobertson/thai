@@ -2602,6 +2602,36 @@ now". The topic picker's three tabs (the section above) became three sections, e
   Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
   picker; a story's word to its topic in Words; no script errors, no sideways scroll.
 
+## Vocabulary tidied: a row a list (2026-11-22)
+
+The user's call: "Vocabulary section needs to be cleaned up it is unweildy. Any suggestions"; seven
+offered (with about 450 words answered and five lists the page was 2½ phone screens and 15 buttons),
+and "all please".
+- **A row a list**, in one panel (`vocabSourceRow`): its name, known/total, a bar under them (known,
+  not known, to go) and Start, Continue or See. A list being gone through again says "Again: 4 of 30
+  to go" under its bar. Each list was a card with its name, "182 of 899 answered", its bars and an
+  Again row.
+- **Most used is its band:** the row is named for the band you're in, the first not all answered
+  ("Top 500 words", 375/500; "Most used words" once all are), not five bars that repeat one count
+  ("Most used words · Top 500" wrapped on a phone).
+- **A row's name opens the rest under it** (▸, ▾ open; one at a time, `state.vocabOpen`,
+  `toggleVocabRow`): Most used's bands, Again (Didn't know · 75, All · 450) or Stop going through
+  again, and, for a topic or list gone through lately, **Remove from this page**
+  (`removeVocabSource`: out of prefs.vocabRecent, its pass ended, its answers kept, being the words').
+  The end of a run still offers Again.
+- **One number a row:** known/total (the bar's red is the ones you didn't know); "answered" only in
+  the total at the top.
+- **Phrases from your words** is a row under the count ("101 all known · 205 one word short", opening
+  the list with phrases in it), not a panel with two See at the foot.
+- **＋ Another topic or list** is the panel's last row (it was "Go through a topic or list", between
+  the lists and the phrases), and the help paragraph at the foot went: the run asks "Do you know this
+  word?".
+- Checked headless (scratch `vocab_tidy_probe.py`, after `vocab_look.py` of the old page) at 390 × 664
+  (text Larger and 1.3) and 1280 × 800, with 450 answered, Grammar gone through again and three
+  lately: the page 675 tall on a phone (1,475 before); Most used opened (its bands and Again), Food
+  opening and Most used closing; Remove (the toast, vocabRecent); ＋ Another opening the picker; the
+  phrases row opening All known; Continue opening a run and Done back; no script errors.
+
 ## Stories without its search and Read all (2026-11-22)
 
 The user's call: "remove the search and read all from the Stories section". Stories is the topic

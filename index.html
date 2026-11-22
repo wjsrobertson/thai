@@ -912,13 +912,13 @@
           <p class="vocab-total-n" id="vocab-total-n"></p>
           <p class="vocab-total-text" id="vocab-total-text"></p>
         </div>
-        <div class="vocab-sources" id="vocab-sources"></div>
-        <button type="button" class="ghost vocab-choose" id="vocab-choose">Go through a topic or list</button>
         <!-- Phrases from your words (renderPhrasePanel; 2026-11-22): how many use only words you know,
-             and how many are one word short, each opening its list. -->
-        <div class="vocab-source vocab-phrase-panel" id="vocab-phrase-panel" hidden></div>
-        <p class="vocab-help">Say Yes if you'd know what it means when you hear it. A word counts once,
-          wherever you answer it; phrases are counted apart from words.</p>
+             and how many are one word short, opening their list. -->
+        <button type="button" class="vocab-phrase-link" id="vocab-phrase-panel" hidden></button>
+        <!-- A row a list (vocabSourceRow), then this, moved to the panel's foot (renderVocabHome). The
+             help paragraph under them went on 2026-11-22 (the run's "Do you know this word?" says it). -->
+        <div class="vocab-sources" id="vocab-sources"></div>
+        <button type="button" class="vocab-add" id="vocab-choose">＋ Another topic or list</button>
       </div>
       <!-- A list of Phrases from your words (renderVocabPhrases), in place of the page. -->
       <div class="vocab-phrases" id="vocab-phrases" hidden>

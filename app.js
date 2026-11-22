@@ -339,6 +339,7 @@ const state = {
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
   vocabPhrases: null,       // Phrases from your words while its list shows: 'known' | 'short' (renderVocabPhrases)
+  vocabOpen: null,          // the Vocabulary page's row open to its bands, Again and Remove (vocabSourceRow)
   vocabPhraseShown: 50,     // and how many of it show (VOCAB_PHRASE_PAGE more with each Show more)
 };
 
@@ -8867,8 +8868,11 @@ function renderVocab() {
   if (!vocabFreq) loadVocabFreq().then(() => { if (state.view === 'vocab' && !state.vocabRun) renderVocabHome(); });
 }
 
-// The page: the count, then Most used (by bands: the top 100, 500…), Slang & Swearing, and the topics
-// and lists gone through lately, each with Start or Continue.
+// The page (tidied 2026-11-22, the user's call: "it is unwieldy"; each list was a card with its bars,
+// Start or Continue and an Again row, the phrases' panel and a paragraph of help at the foot): the
+// count; Phrases from your words, a row; then one panel of rows, Most used, Slang & Swearing and the
+// topics and lists gone through lately (vocabSourceRow), with ＋ Another topic or list at its foot.
+const vocabRecent = () => (getPreferences().vocabRecent || []).filter((id) => id !== VOCAB_MOST_USED && id !== VOCAB_SLANG);
 function renderVocabHome() {
   const known = knownMap();
   const t = vocabTotals();
@@ -8877,9 +8881,8 @@ function renderVocabHome() {
     + (t.phrases ? `, and ${plural(t.phrases, 'phrase')}` : '')
     + (t.answered ? `\n${fmtCount(t.answered)} answered` : ''); // its own line (pre-line)
   const at = knownAtMap();
-  const recent = (getPreferences().vocabRecent || []).filter((id) => id !== VOCAB_MOST_USED && id !== VOCAB_SLANG);
-  const blocks = [VOCAB_MOST_USED, VOCAB_SLANG, ...recent].map((id) => vocabSourceBlock(id, known, at)).filter(Boolean);
-  els.vocabSources.replaceChildren(...blocks);
+  const rows = [VOCAB_MOST_USED, VOCAB_SLANG, ...vocabRecent()].map((id) => vocabSourceRow(id, known, at)).filter(Boolean);
+  els.vocabSources.replaceChildren(...rows, els.vocabChoose);
   renderPhrasePanel(known);
 }
 
@@ -8918,27 +8921,18 @@ function vocabPhraseSets(known = knownMap()) {
   return { known: all, short };
 }
 
-// The page's panel: how many of each, each opening its list. Not shown until there's a phrase in one.
+// The page's row, under the count (2026-11-22; a panel at the foot, a See for each, till then): how
+// many of each, opening the list with phrases in it. Not shown until there's a phrase in one.
 function renderPhrasePanel(known) {
   const sets = vocabPhraseSets(known);
   els.vocabPhrasePanel.hidden = !sets.known.length && !sets.short.length;
   if (els.vocabPhrasePanel.hidden) return;
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
-  const row = (kind, n, text) => {
-    const r = el('div', 'vocab-source-head');
-    const t = el('span', 'vocab-source-text');
-    t.append(el('span', 'vocab-source-name', fmtCount(n)), el('span', 'vocab-source-sub', text));
-    const go = el('button', 'ghost vocab-go', 'See');
-    go.type = 'button';
-    go.disabled = !n;
-    go.setAttribute('aria-label', `See the ${plural(n, 'phrase')} ${text}`);
-    go.addEventListener('click', () => openVocabPhrases(kind));
-    r.append(t, go);
-    return r;
-  };
-  els.vocabPhrasePanel.replaceChildren(el('p', 'vocab-phrase-title', 'Phrases from your words'),
-    row('known', sets.known.length, sets.known.length === 1 ? 'uses only words you know' : 'use only words you know'),
-    row('short', sets.short.length, sets.short.length === 1 ? 'is one word short' : 'are one word short'));
+  const text = el('span', 'vocab-phrase-text');
+  text.append(el('span', 'vocab-phrase-title', 'Phrases from your words'),
+    el('span', 'vocab-phrase-sub', `${fmtCount(sets.known.length)} all known · ${fmtCount(sets.short.length)} one word short`));
+  els.vocabPhrasePanel.replaceChildren(text, el('span', 'vocab-phrase-chevron', '›'));
+  els.vocabPhrasePanel.onclick = () => openVocabPhrases(sets.known.length ? 'known' : 'short');
 }
 
 function openVocabPhrases(kind) {
@@ -9091,7 +9085,12 @@ function setVocabPass(id, pass) {
   setPreferences({ vocabPasses: passes });
 }
 
-function vocabSourceBlock(id, known, at) {
+// A list's row: its name (Most used's the band you're in, the first not all answered), a bar of it (known, not
+// known, the rest to go), known/total, and Start, Continue or See; going through it again, how many
+// are left. Its name opens the rest under it, one row at a time (state.vocabOpen): Most used's bands,
+// Again (Didn't know · 30, All · 182) or Stop going through again, and Remove from this page for one
+// gone through lately (its answers kept: they're the words').
+function vocabSourceRow(id, known, at) {
   const src = vocabSource(id);
   if (!src || !src.words.length) return null; // Most used before its list has come, or a list since deleted or emptied
   const p = vocabProgress(src.words, known);
@@ -9101,46 +9100,83 @@ function vocabSourceBlock(id, known, at) {
     setVocabPass(id, null);
     pass = null;
   }
-  const box = document.createElement('div');
-  box.className = 'vocab-source';
-  const head = document.createElement('div');
-  head.className = 'vocab-source-head';
-  const text = document.createElement('span');
-  text.className = 'vocab-source-text';
-  const name = document.createElement('span');
-  name.className = 'vocab-source-name';
-  name.textContent = src.name;
-  const sub = document.createElement('span');
-  sub.className = 'vocab-source-sub';
-  sub.textContent = pass ? `Again, ${pass.mode === 'all' ? 'all of them' : "the ones you didn't know"}: ${fmtCount(left)} of ${fmtCount(pass.total)} left`
-    : p.answered === p.total ? `All ${fmtCount(p.total)} answered` : p.answered ? `${fmtCount(p.answered)} of ${fmtCount(p.total)} answered` : plural(p.total, 'word');
-  text.append(name, sub);
-  const go = document.createElement('button');
-  go.type = 'button';
-  go.className = 'ghost vocab-go';
-  go.textContent = pass ? 'Continue' : p.answered === p.total ? 'See' : p.answered ? 'Continue' : 'Start';
-  go.setAttribute('aria-label', `${go.textContent}: ${src.name}`);
-  go.addEventListener('click', () => startVocabRun(id));
-  head.append(text, go);
-  box.append(head);
-  const bands = id === VOCAB_MOST_USED ? [...VOCAB_BANDS.filter((n) => n < src.words.length), src.words.length] : [src.words.length];
-  for (const n of bands) {
-    const band = vocabProgress(src.words.slice(0, n), known);
-    box.append(vocabBand(n === src.words.length ? `All ${fmtCount(n)}` : `Top ${fmtCount(n)}`, band));
-  }
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  const sizes = id === VOCAB_MOST_USED ? [...VOCAB_BANDS.filter((n) => n < src.words.length), src.words.length] : [src.words.length];
+  const bandName = (n) => (n === src.words.length ? `All ${fmtCount(n)}` : `Top ${fmtCount(n)}`);
+  const n = sizes.find((m) => vocabProgress(src.words.slice(0, m), known).answered < m) ?? sizes[sizes.length - 1];
+  const band = n === src.words.length ? p : vocabProgress(src.words.slice(0, n), known);
+
+  const more = [];
+  if (sizes.length > 1) more.push(...sizes.map((m) => vocabBand(bandName(m), vocabProgress(src.words.slice(0, m), known))));
   if (pass) {
-    const row = document.createElement('div');
-    row.className = 'vocab-again-row';
+    const row = el('div', 'vocab-again-row');
     row.append(vocabButton('Stop going through again', `Stop going through ${src.name} again`, () => {
       setVocabPass(id, null);
       renderVocab();
     }));
-    box.append(row);
+    more.push(row);
   } else {
     const row = vocabAgainRow(id, src, p);
-    if (row) box.append(row);
+    if (row) more.push(row);
   }
-  return box;
+  if (id !== VOCAB_MOST_USED && id !== VOCAB_SLANG) {
+    const row = el('div', 'vocab-again-row');
+    row.append(vocabButton('Remove from this page', `Remove ${src.name} from this page`, () => removeVocabSource(id, src.name)));
+    more.push(row);
+  }
+
+  const open = state.vocabOpen === id;
+  const row = el('div', `vocab-row${open ? ' open' : ''}`);
+  row.dataset.id = id;
+  const line = el('div', 'vocab-row-line');
+  const main = el(more.length ? 'button' : 'div', 'vocab-row-main');
+  const top = el('span', 'vocab-row-top');
+  const name = el('span', 'vocab-row-name');
+  if (more.length) name.append(el('span', 'vocab-row-caret', open ? '▾' : '▸'));
+  // Most used by its band, "Top 500 words" ("Most used words · Top 500" wrapped on a phone).
+  name.append(sizes.length > 1 && n < src.words.length ? `Top ${fmtCount(n)} words` : src.name);
+  top.append(name, el('span', 'vocab-row-count', `${fmtCount(band.yes)}/${fmtCount(band.total)}`));
+  main.append(top, vocabBar(band));
+  if (pass) main.append(el('span', 'vocab-row-sub', `Again: ${fmtCount(left)} of ${fmtCount(pass.total)} to go`)); // which (Didn't know or All) wrapped on a phone
+  const details = el('div', 'vocab-row-more');
+  details.id = `vocab-more-${id.replace(/[^\w-]/g, '_')}`;
+  details.hidden = !open;
+  details.append(...more);
+  if (more.length) {
+    main.type = 'button';
+    main.setAttribute('aria-expanded', String(open));
+    main.setAttribute('aria-controls', details.id);
+    main.addEventListener('click', () => toggleVocabRow(id));
+  }
+  const go = el('button', 'ghost vocab-go', pass ? 'Continue' : p.answered === p.total ? 'See' : p.answered ? 'Continue' : 'Start');
+  go.type = 'button';
+  go.setAttribute('aria-label', `${go.textContent}: ${src.name}`);
+  go.addEventListener('click', () => startVocabRun(id));
+  line.append(main, go);
+  row.append(line, ...(more.length ? [details] : []));
+  return row;
+}
+
+function toggleVocabRow(id) {
+  state.vocabOpen = state.vocabOpen === id ? null : id;
+  for (const r of els.vocabSources.querySelectorAll('.vocab-row')) {
+    const on = r.dataset.id === state.vocabOpen;
+    r.classList.toggle('open', on);
+    const more = r.querySelector('.vocab-row-more');
+    if (!more) continue;
+    more.hidden = !on;
+    r.querySelector('.vocab-row-caret').textContent = on ? '▾' : '▸';
+    r.querySelector('.vocab-row-main').setAttribute('aria-expanded', String(on));
+  }
+}
+
+// Off the page (it comes back when gone through again): its answers stay, as they're the words'.
+function removeVocabSource(id, name) {
+  setPreferences({ vocabRecent: (getPreferences().vocabRecent || []).filter((x) => x !== id) });
+  setVocabPass(id, null);
+  if (state.vocabOpen === id) state.vocabOpen = null;
+  renderVocabHome();
+  toast(`Removed '${name}' from this page. Your answers are kept.`);
 }
 
 function vocabButton(text, label, onClick) {
@@ -9169,6 +9205,22 @@ function vocabAgainRow(id, src, p) {
 }
 
 // A row: its name, a bar (known green, not known red, the rest unanswered) and "known/total".
+// A bar: known, then not known, then the rest to go.
+function vocabBar({ yes, answered, total }) {
+  const bar = document.createElement('span');
+  bar.className = 'vocab-bar';
+  bar.setAttribute('role', 'img');
+  bar.setAttribute('aria-label', `${fmtCount(yes)} known, ${fmtCount(answered - yes)} not, ${fmtCount(total - answered)} to go`);
+  const fill = (cls, n) => {
+    const f = document.createElement('span');
+    f.className = cls;
+    f.style.width = `${(100 * n) / total}%`;
+    return f;
+  };
+  bar.append(fill('vocab-bar-yes', yes), fill('vocab-bar-no', answered - yes));
+  return bar;
+}
+
 function vocabBand(label, { yes, answered, total }) {
   const row = document.createElement('div');
   row.className = 'vocab-band';
@@ -9177,15 +9229,9 @@ function vocabBand(label, { yes, answered, total }) {
   const name = document.createElement('span');
   name.className = 'vocab-band-name';
   name.textContent = label;
-  const bar = document.createElement('span');
-  bar.className = 'vocab-bar';
-  const fill = (cls, n) => {
-    const f = document.createElement('span');
-    f.className = cls;
-    f.style.width = `${(100 * n) / total}%`;
-    return f;
-  };
-  bar.append(fill('vocab-bar-yes', yes), fill('vocab-bar-no', answered - yes));
+  const bar = vocabBar({ yes, answered, total });
+  bar.removeAttribute('role');
+  bar.removeAttribute('aria-label');
   const count = document.createElement('span');
   count.className = 'vocab-band-count';
   count.textContent = `${fmtCount(yes)}/${fmtCount(total)}`;
