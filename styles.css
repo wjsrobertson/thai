@@ -2950,7 +2950,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .wordtable .row-speak:hover { color: var(--accent); background: var(--panel-2); }
 .wordtable .row-speak .speaker-icon, .word-hit .row-speak .speaker-icon { width: 30px; height: 30px; }
 .wordlist-add-all[hidden] { display: none; }
-.wordlist-add-all.all-in { display: inline-grid; justify-items: center; color: var(--good); border-color: var(--good); }
+.wordlist-add-all.all-in { display: inline-grid; justify-items: center; align-content: center; color: var(--good); border-color: var(--good); }
 .wordlist-add-all.all-in > span { grid-area: 1 / 1; }
 .wordlist-add-all .label-hover { visibility: hidden; }
 @media (hover: hover) {
@@ -3073,7 +3073,8 @@ html.dialog-kb .modal.confirm-modal {
 .speaker-icon .mute-x { display: none; }
 :root[data-muted] .speaker-icon .wave { display: none; }
 :root[data-muted] .speaker-icon .mute-x { display: inline; }
-/* The "add to Review" icon (reviewIcon): Home's 🔁 as a line icon in the text colour. */
+/* Adding to a list (reviewIcon): a bookmark (2026-11-22; Home's 🔁 as two arrows until then), filled in
+   the colour of its button (✓'s green) when the word's in the list. */
 .review-icon {
   width: 1.05em;
   height: 1.05em;
@@ -3085,6 +3086,7 @@ html.dialog-kb .modal.confirm-modal {
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+.review-icon.filled { fill: currentColor; }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 4px; }
 .confirm-actions button { padding: 10px 20px; font-size: 16px; }
 .confirm-actions .round-again.danger { background: var(--again); color: var(--on-accent); } /* can't be undone */

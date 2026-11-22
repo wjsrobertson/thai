@@ -2509,6 +2509,21 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## The bookmark for adding words, everywhere (2026-11-22)
+
+The user's call, liking the stories' bookmark: "use it for letter/words/phrases too, everything
+instead of the (=) icon which looks more like reload or something". `reviewIcon` (Home's 🔁 as two
+arrows) is now the bookmark (`PAGE_ICONS.mylist`, already the icon for one of your lists), so every
+add-to-a-list button has it: a Topics row's, word search's, the word and phrase dialogs', Word by
+word's, Add all ("Add all to My words"), and Home's "Tap [bookmark] to add one to a list of your own".
+In the list it adds to, a word's is **filled** in ✓'s green (`reviewIcon(true)`, `.review-icon.filled`;
+it was a ✓), as a saved story's is, and Add all's "✓ All in My words" is a filled bookmark and "All in
+My words" (its label now centred in the button: `align-content: center`). The dot for "in another of
+your lists" is as it was. Letters have no add button (the Alphabet's Cards hold every letter), so
+nothing changed there. Toasts still say "✓ Added". Checked headless at 390 × 664 (scratch
+`bookmark_icon_probe.py`): Colors' rows with สีแดง added, Add all and All in, the word dialog, Home;
+no script errors.
+
 ## 34 everyday phrases, and Catching Up & Good Wishes (2026-11-01)
 
 After เป็นไงบ้าง (below) the user asked what else was missing. I checked about 280 everyday phrases

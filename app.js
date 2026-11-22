@@ -4475,7 +4475,7 @@ function renderWordlist() {
   } else if (allIn) {
     // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
     const idle = Object.assign(document.createElement('span'), { className: 'label-idle' });
-    idle.append('✓ All in ', name(targetName()));
+    idle.append(reviewIcon(true), 'All in ', name(targetName()));
     const hover = Object.assign(document.createElement('span'), { className: 'label-hover', textContent: '− Remove all' });
     els.wordlistAddAll.replaceChildren(idle, hover);
   } else {
@@ -5413,7 +5413,7 @@ function reviewButton(key, thai, words = null) {
     const added = inList.has(key);
     const others = added ? [] : listsOf(key);
     rv.className = 'row-review' + (added ? ' added' : others.length ? ' elsewhere' : '');
-    rv.replaceChildren(added ? '✓' : reviewIcon());
+    rv.replaceChildren(reviewIcon(added));
     rv.title = added ? `Remove ${thai} from '${targetName()}'`
       : `Add ${thai} to '${targetName()}'` + (others.length ? ` (it's in ${listNames(others)})` : '');
     rv.setAttribute('aria-label', rv.title);
@@ -5873,7 +5873,10 @@ const PAGE_ICONS = {
   alphabet: 'M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6',
   mylist: 'M6 3h12v18l-6-4.5L6 21z', // a bookmark: one of your lists (2026-10-20)
 };
-const reviewIcon = () => lineIcon('review-icon', '0 0 24 24', 'M16 1l4 4-4 4M4 11V9a4 4 0 0 1 4-4h12M8 23l-4-4 4-4M20 13v2a4 4 0 0 1-4 4H4');
+// Adding to a list: a bookmark (2026-11-22, the user's call: the story bookmark "for letter/words/
+// phrases too, everything instead of the (=) icon which looks more like reload"; it was Home's 🔁 as
+// two arrows). `filled` when the word's in the list (it was a ✓), as a saved story's is.
+const reviewIcon = (filled = false) => lineIcon('review-icon' + (filled ? ' filled' : ''), '0 0 24 24', PAGE_ICONS.mylist);
 
 // A toast: a short message at the bottom of the screen that fades out after `ms`. A new one
 // replaces any still showing.
