@@ -2419,6 +2419,20 @@ syllable's rule and the whole table (30 syllables for the longest).
   one left with how far down it was scrolled, and ‹ or Backspace goes back to it, without saying it
   again (`popSay`) and scrolled where it was. Closing forgets them. The user: "the back button will
   come in handy in other places in the app".
+- **Two changes after trying it** (the same day, the user's calls):
+  - **A mouse over a word in the big phrase lights it** in the accent, as a word on a Topics row
+    does. By the CSS Custom Highlight API (`::highlight(pop-word-hover)`, Firefox 140+, Safari 17.2+,
+    Chromium 105+), so the phrase stays one piece of text; the word is found as a tap's is, with a
+    short reach (6 px), once a frame. Only for a mouse; cleared when the dialog shows something else
+    or closes.
+  - **A phrase row's Thai on the List opens the phrase dialog**, as its transliteration and English
+    do ("the same as English and transliteration do"); its words are a tap away in there. Word gaps
+    still show in it. A word topic's card of several words (สีแดง, สวัสดีครับ: 1,018 of them) still
+    opens its words one by one.
+  - Checked (scratch `phrase_hover_probe.py`, 1280 × 800): the mouse over ว่าง lights ว่าง, over
+    ไม่ค่อย that, off it nothing, and a tap's word dialog and closing clear it; the accent drawn
+    (screenshot); Saying No's first row's Thai opens ไม่ค่อยว่าง's dialog; Colors' สี แดง still opens
+    สี; no script errors.
 - **Next, offered and put off** (the user: "we can defer any work… until we get the basic dialog
   working nicely"): an **In phrases** section in the word dialog (the phrases that use it, from
   `words`), as the letter dialog lists words that start with it; a Phrases page beside the

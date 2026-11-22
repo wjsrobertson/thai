@@ -4545,10 +4545,20 @@ function wordRow(c, cols, words) {
     td.className = COL_META[key].cls;
     td.textContent = c[key];
     // The Thai opens the word pop-up, as a word in the reader does (2026-10-09, the user's request).
-    // A phrase is split into its words, each opening its own pop-up (2026-10-10, the user's
-    // request; phraseWords); the row's buttons still add, spell and play the whole phrase.
+    // A card of several words is split into its words, each opening its own pop-up (2026-10-10, the
+    // user's request; phraseWords); the row's buttons still add, spell and play the whole of it.
+    // A phrase's Thai opens the phrase dialog instead, as its transliteration and English do
+    // (2026-11-22, the user's call); its words are a tap away in there. Word gaps still show.
     const parts = key === 'thai' && phraseWords(c);
-    if (parts) {
+    const phrase = key === 'thai' && isPhraseCard(c);
+    if (parts && phrase) {
+      td.textContent = '';
+      parts.forEach((w, i) => {
+        if (i) td.append(Object.assign(document.createElement('span'), { className: 'tw-gap', textContent: ' ' }));
+        td.append(w.thai);
+      });
+    }
+    if (parts && !phrase) {
       td.textContent = '';
       td.classList.add('col-phrase');
       parts.forEach((w, i) => {
@@ -4569,7 +4579,7 @@ function wordRow(c, cols, words) {
     } else if (key === 'thai') {
       td.tabIndex = 0;
       td.setAttribute('role', 'button');
-      td.title = 'Show the word';
+      td.title = phrase ? 'Show the phrase' : 'Show the word';
       const open = (e) => {
         e.preventDefault();
         showWordPop(td, c);
@@ -6554,6 +6564,7 @@ let wordPop = null;   // while it's open: { lastFocus, here, back } (popEnter)
 let popReturning = false; // while ‹ shows the one before again: it isn't said again (popSay)
 
 function popEnter(open) {
+  window.CSS?.highlights?.delete(HOVER_HIGHLIGHT); // a phrase's lit word (showPhrasePop)
   if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, back: [] };
   else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop });
   wordPop.here = open;
@@ -6653,6 +6664,7 @@ function showWordModal() {
 }
 
 function hideWordPop() {
+  window.CSS?.highlights?.delete(HOVER_HIGHLIGHT);
   popAnchor?.classList.remove('on');
   popAnchor = null;
   if (!wordPop) return;
@@ -6680,6 +6692,7 @@ function isPhraseCard(card) {
 }
 
 const popEl = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+const HOVER_HIGHLIGHT = 'pop-word-hover';
 
 function showPhrasePop(anchor, card) {
   if (state.storyReading.active) pauseReadStories();
@@ -6711,10 +6724,38 @@ function showPhrasePop(anchor, card) {
   big.title = spans.length ? 'Tap a word to open it' : `Play ${card.thai}`;
   big.addEventListener('click', (e) => {
     if (!spans.length) return speak(cardSay(card)); // a saying with no words listed (ช้าๆ ได้พร้าเล่มงาม)
-    const hit = partAt(big, e.clientX, e.clientY);
-    const n = hit ? spans.findIndex(([a, b]) => hit.i >= a && hit.i < b) : -1;
+    const n = wordAt(e.clientX, e.clientY);
     if (n >= 0) showWordPop(null, words[n]);
   });
+  // A mouse over a word lights it, as a word on a Topics row does (2026-11-22, the user's call). In
+  // the accent by the CSS Custom Highlight API (::highlight(pop-word-hover)), so the phrase stays one
+  // piece of text; a browser without it just doesn't light. Not on touch, which has no hover.
+  const wordAt = (x, y, reach) => {
+    const hit = partAt(big, x, y, reach);
+    return hit ? spans.findIndex(([a, b]) => hit.i >= a && hit.i < b) : -1;
+  };
+  if (spans.length && window.CSS?.highlights) {
+    let lit = -1;
+    let frame = 0;
+    const light = (n) => {
+      if (n === lit) return;
+      lit = n;
+      big.style.cursor = n < 0 ? 'default' : '';
+      if (n < 0) return CSS.highlights.delete(HOVER_HIGHLIGHT);
+      const range = document.createRange();
+      range.setStart(big.firstChild, spans[n][0]);
+      range.setEnd(big.firstChild, spans[n][1]);
+      CSS.highlights.set(HOVER_HIGHLIGHT, new Highlight(range));
+    };
+    big.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse' || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (big.isConnected) light(wordAt(e.clientX, e.clientY, 6));
+      });
+    });
+    big.addEventListener('pointerleave', () => light(-1));
+  }
   wordBox.append(big);
   const actions = playButton(cardSay(card), `Play ${card.thai}`);
   actions.prepend(reviewButton(key, card.thai));

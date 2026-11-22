@@ -2380,6 +2380,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* A phrase (showPhrasePop): smaller, and it wraps; past two lines it shrinks (fitPopPhrase). A tap on
    a word opens it. */
 .word-modal .pop-word.pop-phrase { font-size: calc(44px * var(--fs, 1)); line-height: 1.6; white-space: normal; overflow-wrap: anywhere; }
+/* The word under the mouse, lit as a Topics row's word is (Custom Highlight API). */
+::highlight(pop-word-hover) { color: var(--accent); }
 /* Its words, read down: the Thai, then the transliteration over the meaning, the columns lined up
    across the rows (subgrid); each opens the word. */
 .pop-words { margin: 12px 0 0; border-top: 1px solid var(--border); }
