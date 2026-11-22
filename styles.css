@@ -613,6 +613,9 @@ html.modal-open body {
 
 /* Word search results, below the matching topics (wordHitsSection). */
 .word-hits { margin-top: 6px; }
+/* The picker's Words and Phrases: "Your word lists", then "Topics" (pickerListsSection, 2026-11-22). */
+.picker-section-head { padding: 12px 12px 6px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+.picker-lists-empty { padding: 4px 12px 8px; text-align: left; }
 .word-hits-head {
   padding: 8px 12px;
   color: var(--muted);

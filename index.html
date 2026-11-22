@@ -88,9 +88,11 @@
       <!-- Topics | My lists (renderPickerTabs; the lists spike, 2026-10-20), on every page. -->
       <div class="review-by" id="review-by">
         <div class="segmented" role="radiogroup" aria-label="What to show">
-          <button type="button" role="radio" class="seg-btn" data-picker-tab="topics" aria-checked="true">Topics</button>
-          <button type="button" role="radio" class="seg-btn" data-picker-tab="lists" aria-checked="false">My Words</button>
-          <button type="button" role="radio" class="seg-btn" data-picker-tab="stories" aria-checked="false">My Stories</button>
+          <!-- By kind (2026-11-22, the user's call; Topics | My Words | My Stories until then): each kind's
+               lists of yours, then its topics (renderDeckPicker). -->
+          <button type="button" role="radio" class="seg-btn" data-picker-tab="words" aria-checked="true">Words</button>
+          <button type="button" role="radio" class="seg-btn" data-picker-tab="phrases" aria-checked="false">Phrases</button>
+          <button type="button" role="radio" class="seg-btn" data-picker-tab="stories" aria-checked="false">Stories</button>
         </div>
         <p class="review-by-help" id="review-by-help"></p>
       </div>
@@ -235,7 +237,7 @@
            Over Add all and Read all, and on a phone pinned under the row above (2026-10-20, the user's call). -->
       <div class="adding-pin wordlist-only" id="adding-bar" hidden>
         <div class="adding-bar" role="status">
-          <span class="adding-text">Adding words to <b id="adding-name"></b></span>
+          <span class="adding-text">Adding <span id="adding-noun">words</span> to <b id="adding-name"></b></span>
           <button type="button" class="ghost" id="adding-done">Done</button>
         </div>
       </div>

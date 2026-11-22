@@ -333,7 +333,7 @@ const state = {
   review: null,             // Review mode's stream while it runs (see enterReview)
   confirm: null,            // the open confirm dialog: { resolve, setting, lastFocus }
   moving: null,             // the open Change dialog (openMoveWords): { lastFocus }
-  pickerTab: 'topics',      // the picker's tab: 'topics' | 'lists' | 'all' (renderPickerTabs)
+  pickerTab: 'words',       // the picker's tab: 'words' | 'phrases' | 'stories' (renderPickerTabs; Topics | My lists until 2026-11-22)
   addTo: null,              // the list the picker is choosing words for (Add words), or null
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
@@ -1028,10 +1028,11 @@ function renderReviewOnly() {
   els.stage.classList.toggle('review-only-none', empty);
   // A story list's (2026-11-22): no stories, so no words; its button goes to Read, where they're saved.
   const stories = flashScope()?.kind === 'stories';
-  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no ${stories ? 'stories' : 'words'} yet`;
+  const noun = kindNoun(scopeKind(flashScope())); // a phrase list's: phrases (2026-11-22)
+  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no ${stories ? 'stories' : noun} yet`;
   if (empty) {
-    els.reviewOnlyAdd.textContent = stories ? 'Find stories' : 'Add words';
-    els.reviewOnlyAdd.nextElementSibling.textContent = stories ? 'Save stories on Read with their bookmark' : 'Choose words from a topic or another of your lists';
+    els.reviewOnlyAdd.textContent = stories ? 'Find stories' : `Add ${noun}`;
+    els.reviewOnlyAdd.nextElementSibling.textContent = stories ? 'Save stories on Read with their bookmark' : `Choose ${noun} from a topic or another of your lists`;
   }
 }
 
@@ -1492,15 +1493,19 @@ function resolveScope(id) {
   let kind = 'topic';
   let name = '';
   let decks = [];
+  // A category's or group's All is of one kind (2026-11-22, the picker's Words | Phrases): cat: and
+  // group: its word topics, pcat: and pgroup: its topics of phrases.
+  const phrasesId = /^p(cat|group):/.test(id);
+  const ofKind = (d) => !!d.phrases === phrasesId;
   if (id === 'all') { // every topic's words (distractorPool); Cards and Reading had it as Everything until 2026-10-20
     [kind, name, decks] = ['all', 'Everything', state.decks.filter((d) => !d.passage)];
-  } else if (id.startsWith('cat:')) {
-    [kind, name] = ['category', id.slice(4)];
-    decks = state.decks.filter((d) => catOf(d) === name);
-  } else if (id.startsWith('group:')) {
-    const [cat, group] = id.slice(6).split('::');
+  } else if (/^p?cat:/.test(id)) {
+    [kind, name] = ['category', id.slice(id.indexOf(':') + 1)];
+    decks = state.decks.filter((d) => catOf(d) === name && ofKind(d));
+  } else if (/^p?group:/.test(id)) {
+    const [cat, group] = id.slice(id.indexOf(':') + 1).split('::');
     [kind, name] = ['group', group];
-    decks = state.decks.filter((d) => catOf(d) === cat && d.group === group);
+    decks = state.decks.filter((d) => catOf(d) === cat && d.group === group && ofKind(d));
   } else {
     const d = state.decks.find((x) => x.id === id);
     if (d) [name, decks] = [d.name, [d]];
@@ -1518,16 +1523,21 @@ function resolveScope(id) {
   }
   const n = decks.length;
   const many = kind === 'group' || kind === 'category';
+  const phrases = kind === 'topic' ? !!decks[0].phrases : phrasesId; // a topic of phrases, or a phrases All
   const scope = {
-    id, kind, name, decks, cards, deckOf,
-    description: many ? `All ${n} topics` : kind === 'all' ? 'Every topic' : decks[0].description || '',
-    label: many ? `${name} · all ${n} topics` : name,
+    id, kind, name, decks, cards, deckOf, phrases,
+    description: many ? `All ${n} ${phrases ? 'phrase ' : ''}topics` : kind === 'all' ? 'Every topic' : decks[0].description || '',
+    label: many ? `${name} · all ${n} ${phrases ? 'phrase ' : ''}topics` : name,
   };
   scopeCache.set(id, scope);
   return scope;
 }
 const currentScope = () => resolveScope(state.currentDeckId);
-const groupScopeId = (cat, group) => `group:${cat}::${group}`;
+const groupScopeId = (cat, group, phrases = false) => `${phrases ? 'p' : ''}group:${cat}::${group}`;
+const catScopeId = (cat, phrases = false) => `${phrases ? 'p' : ''}cat:${cat}`;
+// What a choice holds: 'phrases' (a topic of phrases, a phrases All, a phrase list) or 'words' (the
+// rest, a story list too: its words, 2026-11-22).
+const scopeKind = (scope) => (scope?.phrases ? 'phrases' : 'words');
 
 let deckById = null;
 const deckOfId = (id) => (deckById ||= new Map(state.decks.map((d) => [d.id, d]))).get(id);
@@ -1547,12 +1557,13 @@ function resolveListScope(id) {
     deckOf.set(key, deckOfId(entry.deckIds.find((d) => !deckOfId(d)?.passage) || entry.deckIds[0]));
   }
   const n = cards.length;
-  return { id, kind: 'list', name: list.name, decks: [], cards, deckOf, description: `${n} word${n === 1 ? '' : 's'}`, label: list.name };
+  const phrases = listKind(list) === 'phrases'; // a phrase list (2026-11-22)
+  return { id, kind: 'list', phrases, name: list.name, decks: [], cards, deckOf, description: `${n} ${kindNoun(phrases ? 'phrases' : 'words', n)}`, label: list.name };
 }
 
 // One of your story lists (2026-11-22, the user's call: in the picker, Topics | My Words | My Stories,
 // rather than a switch on Read): Read shows its stories, newest saved first; List and Cards their
-// words, each once, the very common ones left out ("leave out the very common words": READING_COMMON,
+// words (not their phrases), each once, the very common ones left out ("leave out the very common words": READING_COMMON,
 // which Read leaves out when it matches stories to a topic). decks are the stories, for the List
 // page's headings (groupOf: a word's first story in the list); deckOf is each word's first topic, as a
 // word list's is, which grades and Tone Pairs' partners go by. A word's card is its topic's (with its
@@ -1568,7 +1579,8 @@ function resolveStoriesScope(id) {
   for (const d of decks) {
     for (const c of d.cards) {
       const key = cardKey(c);
-      if (groupOf.has(key) || READING_COMMON.has(c.thai)) continue;
+      // Its words only (2026-11-22): a phrase belongs in a phrase list, so Add all stays one kind.
+      if (groupOf.has(key) || READING_COMMON.has(c.thai) || isPhraseCard(c)) continue;
       const entry = state.cardIndex.get(key);
       const topic = deckOfId(entry?.deckIds.find((x) => !deckOfId(x)?.passage));
       groupOf.set(key, d);
@@ -1702,7 +1714,7 @@ function pickerModel(q) {
   const cats = new Map();
   for (const d of state.decks) {
     if (d.passage) continue; // Reading's passages have their own page
-    if (d.phrases && state.pickerFor === 'vocab') continue; // a topic of phrases (Small Talk) isn't vocabulary (vocabSource)
+    if (!!d.phrases !== (pickerKind() === 'phrases')) continue; // the tab's kind: Words or Phrases (Vocabulary's: words)
     const cat = d.category || 'Uncategorized';
     // Names only: descriptions matched too until word search (2026-10-08), whose results they
     // pushed off a phone screen ("like" found nine topics).
@@ -1779,11 +1791,12 @@ function renderPickerTabs() {
   // A line under the tabs only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
   els.reviewByHelp.hidden = !adding;
-  els.reviewByHelp.textContent = !adding ? '' : tab === 'lists' ? `Pick a list, then add its words to ${into}` : tab === 'stories' ? `Pick a story list, then add its words to ${into}` : `Pick a topic, then add its words to ${into}`;
-  // Every tab searches (My lists since 2026-10-20, the user's request): topics and words, your lists,
-  // or your story lists. Vocabulary's picker has no My Stories (2026-11-22).
-  els.deckPickerSearch.placeholder = tab === 'lists' ? 'Search your words' : tab === 'stories' ? 'Search your stories' : 'Search topics';
-  els.pickerTabs.forEach((b) => { if (b.dataset.pickerTab === 'stories') b.hidden = state.pickerFor === 'vocab'; });
+  els.reviewByHelp.textContent = !adding ? '' : `Pick a topic or list, then add its ${kindNoun(pickerKind())} to ${into}`;
+  // Every tab searches: your lists and the topics and cards of its kind, or your story lists.
+  els.deckPickerSearch.placeholder = tab === 'phrases' ? 'Search phrases and your phrase lists' : tab === 'stories' ? 'Search your stories' : 'Search words and your word lists';
+  // Vocabulary's picker is words only; Add words (or phrases) the kind of the list being added to.
+  const only = state.pickerFor === 'vocab' ? 'words' : adding ? listKind(listById(state.addTo)) : null;
+  els.pickerTabs.forEach((b) => { b.hidden = !!only && b.dataset.pickerTab !== only; });
 }
 
 function pickPickerTab(tab) {
@@ -1797,26 +1810,34 @@ function pickPickerTab(tab) {
   els.deckPickerTree.scrollTop = 0;
 }
 
-// My lists: a row for each (as a topic's, with its progress), then New list. Add words leaves out
-// the list being added to. A search finds a list by its name or by a word in it (wordMatches).
-function renderListsPane() {
-  const q = state.pickerFilter.trim();
-  const lists = getLists().filter((l) => (state.pickerFor !== 'add' || l.id !== state.addTo)
+// The picker by kind (2026-11-22, the user's call): Words | Phrases | Stories. Words and Phrases each
+// show your lists of that kind, then the topics of that kind (pickerModel), then, searching, the
+// cards of that kind it finds. The tab's kind: Vocabulary's picker is words only; Add words (or
+// phrases) the kind of the list being added to.
+const pickerKind = () => (state.pickerTab === 'phrases' ? 'phrases' : 'words');
+
+// Your lists of the tab's kind: a row each (its count, not its progress), then New list. Add words
+// leaves out the list being added to. A search finds a list by its name or by a word in it
+// (wordMatches).
+function pickerListsSection(kind, q) {
+  const lists = listsOfKind(kind).filter((l) => (state.pickerFor !== 'add' || l.id !== state.addTo)
     && (!q || l.name.toLowerCase().includes(q.toLowerCase()) || resolveScope(listScopeId(l.id)).cards.some((c) => wordMatches(c, q))));
-  const rows = lists.map((l) => {
+  if (!lists.length && (q || state.pickerFor !== 'study')) return []; // only the plain picker offers to make one
+  const out = [Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: `Your ${kindNoun(kind, 1)} lists` })];
+  for (const l of lists) {
     const id = listScopeId(l.id);
     const scope = resolveScope(id);
     const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
-    return row;
-  });
+    out.push(row);
+  }
   if (!lists.length) {
     const empty = document.createElement('div');
-    empty.className = 'modal-empty';
-    empty.textContent = q ? `No list matches "${q}".` : state.pickerFor === 'add' ? 'No other lists yet.' : 'No lists yet. Make one, then add words to it from any topic.';
-    rows.push(empty);
+    empty.className = 'modal-empty picker-lists-empty';
+    empty.textContent = state.pickerFor === 'add' ? 'No other lists yet.' : `None yet: make one, then add ${kindNoun(kind)} to it from any topic, or with a ${kindNoun(kind, 1)}'s bookmark.`;
+    out.push(empty);
   }
-  if (state.pickerFor === 'study') {
+  if (state.pickerFor === 'study' && !q) {
     const add = document.createElement('button');
     add.type = 'button';
     add.className = 'ghost new-list';
@@ -1824,14 +1845,15 @@ function renderListsPane() {
     add.addEventListener('click', async () => {
       const name = await askListName('New list', '', 'Make list');
       if (!name) return;
-      const list = createList(name);
+      const list = createList(name, { kind });
       pickScope(listScopeId(list.id));
       // On its List page, to add words to it, from Cards, Read or Home too (the user's call, 2026-10-22).
       if (state.view !== 'wordlist') setView('wordlist');
     });
-    rows.push(add);
+    out.push(add);
   }
-  els.deckPickerTree.replaceChildren(...rows);
+  out.push(Object.assign(document.createElement('div'), { className: 'picker-section-head', textContent: kind === 'phrases' ? 'Topics of phrases' : 'Topics' }));
+  return out;
 }
 
 // My Stories (2026-11-22): a row for each of your story lists (how many stories and words), then
@@ -1843,7 +1865,7 @@ function renderStoryListsPane() {
     const id = storiesScopeId(l.id);
     const scope = resolveScope(id);
     const n = scope.cards.length;
-    const row = pickerDeckRow({ id, name: l.name, description: `${scope.description} · ${n} word${n === 1 ? '' : 's'}`, cards: scope.cards }, { progress: false });
+    const row = pickerDeckRow({ id, name: l.name, description: `${scope.description} · ${n} ${kindNoun('words', n)}`, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
     return row;
   });
@@ -1948,7 +1970,7 @@ function pickerGroup(g, q, cat) {
     cards += p.total;
   }
   const count = `${g.decks.length} topic${g.decks.length === 1 ? '' : 's'} · ${known}/${cards}`;
-  wrap.appendChild(pickerHead('sub', g.name, count, wrap, q, state.expandedGroups, g.key, groupScopeId(cat, g.name)));
+  wrap.appendChild(pickerHead('sub', g.name, count, wrap, q, state.expandedGroups, g.key, groupScopeId(cat, g.name, pickerKind() === 'phrases')));
   const list = document.createElement('div');
   list.className = 'sub-decks';
   for (const d of g.decks) list.appendChild(pickerDeckRow(d));
@@ -1957,23 +1979,20 @@ function pickerGroup(g, q, cat) {
 }
 
 function renderDeckPicker() {
-  if (state.pickerTab === 'lists') {
-    renderListsPane();
-    return;
-  }
   if (state.pickerTab === 'stories') {
     renderStoryListsPane();
     return;
   }
+  const kind = pickerKind();
   const q = state.pickerFilter.trim().toLowerCase();
   const cats = pickerModel(q);
-  els.deckPickerTree.innerHTML = '';
+  els.deckPickerTree.replaceChildren(...pickerListsSection(kind, state.pickerFilter.trim()));
 
   for (const c of cats) {
     const group = document.createElement('div');
     group.className = 'cat-group' + (c.open ? '' : ' collapsed');
     const count = `${c.deckCount} topic${c.deckCount === 1 ? '' : 's'}`;
-    group.appendChild(pickerHead('cat', c.name, count, group, q, state.expandedCategories, c.name, `cat:${c.name}`));
+    group.appendChild(pickerHead('cat', c.name, count, group, q, state.expandedCategories, c.name, catScopeId(c.name, kind === 'phrases')));
     const list = document.createElement('div');
     list.className = 'cat-decks';
     for (const item of c.items) {
@@ -1983,9 +2002,10 @@ function renderDeckPicker() {
     els.deckPickerTree.appendChild(group);
   }
 
-  const words = q && state.pickerFor !== 'vocab' ? wordSearch(q) : null; // a word's row opens its topic: not for Vocabulary
-  if (words?.total) els.deckPickerTree.appendChild(wordHitsSection(words));
-  if (cats.length === 0 && !words?.total) {
+  // A word's row opens its topic: not for Vocabulary. The tab's kind only.
+  const words = q && state.pickerFor !== 'vocab' ? wordSearch(q, { keep: (w) => (isPhraseCard(w.card) ? 'phrases' : 'words') === kind }) : null;
+  if (words?.total) els.deckPickerTree.appendChild(wordHitsSection(words, kind));
+  if (cats.length === 0 && !words?.total && !els.deckPickerTree.querySelector('.list-row')) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
     empty.textContent = `Nothing matches "${state.pickerFilter.trim()}".`;
@@ -2149,14 +2169,14 @@ function wordSearch(query, { limit = WORD_HITS_SHOWN, keep = null } = {}) {
   return { hits: hits.slice(0, limit), total: hits.length };
 }
 
-function wordHitsSection({ hits, total }) {
+function wordHitsSection({ hits, total }, kind = 'words') {
   const section = document.createElement('div');
   section.className = 'word-hits';
   const head = document.createElement('div');
   head.className = 'word-hits-head';
-  head.textContent = `${total} word${total === 1 ? '' : 's'}`;
+  head.textContent = `${total} ${kindNoun(kind, total)}`;
   section.appendChild(head);
-  const inList = targetWords();
+  const inList = targetWords(kind);
   for (const h of hits) section.appendChild(wordHitRow(h, inList));
   if (total > hits.length) {
     const more = document.createElement('p');
@@ -2296,8 +2316,9 @@ function openDeckPicker({ addTo = null, vocab = false } = {}) {
   state.addTo = addTo;
   state.pickerFor = addTo ? 'add' : vocab ? 'vocab' : 'study';
   els.deckPickerTitle.textContent = addTo ? `Add words to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
-  const now = state.pickerFor === 'study' ? state.currentDeckId || '' : '';
-  state.pickerTab = now.startsWith('list:') ? 'lists' : now.startsWith('stories:') ? 'stories' : 'topics';
+  // The tab of the current choice's kind; Add words', the list's; Vocabulary's, Words.
+  const nowScope = state.pickerFor === 'study' ? resolveScope(state.currentDeckId) : null;
+  state.pickerTab = addTo ? listKind(listById(addTo)) : nowScope?.kind === 'stories' ? 'stories' : nowScope?.phrases ? 'phrases' : 'words';
   renderPickerTabs();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -4497,15 +4518,19 @@ function renderWordlist() {
     return el;
   }));
   renderLetterBoard(deck);
-  const words = targetWords();
-  const target = targetList();
+  const kind = scopeKind(deck); // a choice of phrases adds to your phrase list (2026-11-22)
+  const words = targetWords(kind);
+  const target = targetList(kind);
   const isList = deck.kind === 'list';
   const own = isList && deck.id === listScopeId(target?.id); // the list 🔁 adds to
   // Adding words to a list from another topic or list (Add words): a bar over the page says where
   // they go, with Done to go back to it.
   const adding = state.addingTo && deck.id !== listScopeId(state.addingTo) ? listById(state.addingTo) : null;
   els.addingBar.hidden = !adding;
-  if (adding) els.addingName.textContent = adding.name;
+  if (adding) {
+    els.addingName.textContent = adding.name;
+    document.getElementById('adding-noun').textContent = kindNoun(listKind(adding)); // "Adding phrases to" (2026-11-22)
+  }
   const isStories = deck.kind === 'stories';
   els.listActions.hidden = !isList && !isStories; // Rename and Delete, a story list's too (2026-11-22)
 
@@ -4537,7 +4562,7 @@ function renderWordlist() {
   if (rows.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = q ? `No words match "${q}".` : isList ? 'No words yet. Add words chooses some from a topic or another list.'
+    tr.firstChild.textContent = q ? `No ${kindNoun(kind)} match "${q}".` : isList ? `No ${kindNoun(kind)} yet. Add ${kindNoun(kind)} chooses some from a topic or another list.`
       : isStories ? 'No stories yet. Save them on Read with their bookmark, and their words are here.' : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
@@ -4570,17 +4595,17 @@ function renderWordlist() {
   els.wordlistAddAll.classList.toggle('all-in', allIn);
   els.wordlistAddAll.hidden = !own && state.listCards.length === 0; // an empty story list: nothing to add
   if (own) {
-    els.wordlistAddAll.replaceChildren('＋ Add words');
+    els.wordlistAddAll.replaceChildren(`＋ Add ${kindNoun(kind)}`);
   } else if (allIn) {
     // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
     const idle = Object.assign(document.createElement('span'), { className: 'label-idle' });
-    idle.append(reviewIcon(true), 'All in ', name(targetName()));
+    idle.append(reviewIcon(true), 'All in ', name(targetName(kind)));
     const hover = Object.assign(document.createElement('span'), { className: 'label-hover', textContent: '− Remove all' });
     els.wordlistAddAll.replaceChildren(idle, hover);
   } else {
-    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to ', name(targetName())); // "…to Cards" until 2026-10-20
+    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to ', name(targetName(kind))); // "…to Cards" until 2026-10-20
   }
-  els.wordlistAddAll.title = own ? `Add words to '${targetName()}'` : allIn ? `Remove all from '${targetName()}'` : `Add all to '${targetName()}'`;
+  els.wordlistAddAll.title = own ? `Add ${kindNoun(kind)} to '${targetName(kind)}'` : allIn ? `Remove all from '${targetName(kind)}'` : `Add all to '${targetName(kind)}'`;
 }
 
 // A long list in pages (the user's call, 2026-10-20: your lists can grow without end), as Reading's
@@ -5412,14 +5437,50 @@ function migrateLists() {
   saveStore(store);
 }
 
-// Where 🔁 adds: the target list, or the first list; null with none yet (the first 🔁 makes My words).
-function targetList() {
-  const lists = getLists();
-  return lists.find((l) => l.id === getPreferences().targetListId) || lists[0] || null;
+// Word lists and phrase lists (2026-11-22, the user's call: the picker's Words | Phrases | Stories,
+// "so that phrases and word lists get separated out"): one store, a phrase list marked kind
+// 'phrases'. A card's kind is a phrase's (isPhraseCard) or a word's; its bookmark adds to its own
+// kind's target, so each kind has one (prefs.targetListId, prefs.phraseTargetId).
+const listKind = (l) => (l?.kind === 'phrases' ? 'phrases' : 'words');
+const listsOfKind = (kind) => getLists().filter((l) => listKind(l) === kind);
+function keyKind(key) {
+  const card = state.cardIndex.get(key)?.card;
+  return card && isPhraseCard(card) ? 'phrases' : 'words';
 }
-const targetName = () => targetList()?.name || 'My words';
-const targetWords = () => new Set(targetList()?.words || []);
-const setTarget = (id) => setPreferences({ targetListId: id });
+const TARGET_PREF = { words: 'targetListId', phrases: 'phraseTargetId' };
+const DEFAULT_LIST = { words: 'My words', phrases: 'My phrases' };
+const kindNoun = (kind, n = 2) => (kind === 'phrases' ? (n === 1 ? 'phrase' : 'phrases') : (n === 1 ? 'word' : 'words'));
+
+// Where a bookmark adds: its kind's target list, or the first of that kind; null with none yet (the
+// first bookmark makes My words, or My phrases).
+function targetList(kind = 'words') {
+  const lists = listsOfKind(kind);
+  return lists.find((l) => l.id === getPreferences()[TARGET_PREF[kind]]) || lists[0] || null;
+}
+const targetName = (kind = 'words') => targetList(kind)?.name || DEFAULT_LIST[kind];
+const targetWords = (kind = 'words') => new Set(targetList(kind)?.words || []);
+const setTarget = (id) => setPreferences({ [TARGET_PREF[listKind(listById(id))]]: id });
+
+// Phrases out of word lists, into My phrases (the user's call, the same day), once, when phrase lists
+// began; their order kept, progress untouched (it's per card).
+function migratePhraseLists() {
+  const store = loadStore();
+  if (store.phraseListsMoved) return;
+  store.phraseListsMoved = 1;
+  const moved = [];
+  for (const l of store.lists || []) {
+    if (listKind(l) === 'phrases') continue;
+    const keep = [];
+    for (const k of l.words) (keyKind(k) === 'phrases' ? moved : keep).push(k);
+    l.words = keep;
+  }
+  if (moved.length) {
+    let list = store.lists.find((l) => listKind(l) === 'phrases' && l.name === DEFAULT_LIST.phrases);
+    if (!list) store.lists.push(list = { id: newListId(), name: DEFAULT_LIST.phrases, words: [], kind: 'phrases' });
+    for (const k of moved) if (!list.words.includes(k)) list.words.push(k);
+  }
+  saveStore(store);
+}
 
 // After a list changes: its scope is rebuilt, and whatever shows it is redrawn. The List page keeps
 // its rows (state.listCards) until it's opened afresh, so a word taken out of the list it shows stays
@@ -5453,19 +5514,21 @@ function changeList(id, change) {
   return list;
 }
 
-function createList(name, { target = true } = {}) {
+function createList(name, { target = true, kind = 'words' } = {}) {
   const store = loadStore();
-  const list = { id: newListId(), name, words: [] };
+  const list = { id: newListId(), name, words: [], ...(kind === 'phrases' ? { kind } : {}) };
   (store.lists ||= []).push(list);
   saveStore(store);
   if (target) setTarget(list.id);
   return list;
 }
 
-// Adds words to (on) or takes them out of the target list, making My words if there's no list yet.
-// Taking out keeps their progress. Returns the list's name, for the toast.
-function setInTarget(keys, on) {
-  const list = targetList() || createList('My words');
+// Adds words to (on) or takes them out of their kind's target list, making My words (or My phrases)
+// if there's no list yet. A list holds one kind: keys of the other are left out. Taking out keeps
+// their progress. Returns the list's name, for the toast.
+function setInTarget(keys, on, kind = keys.length ? keyKind(keys[0]) : 'words') {
+  keys = keys.filter((k) => keyKind(k) === kind);
+  const list = targetList(kind) || createList(DEFAULT_LIST[kind], { kind });
   // Adding words from a topic, a word taken out of the list is faded (renderWordlist), but not one
   // put in on this visit: in and out again, it's as it was (the user's call, 2026-10-21).
   if (addingFrom()) {
@@ -5490,7 +5553,7 @@ function setInTarget(keys, on) {
 // A word put back on its own list's page (its faded row, or its dialog over the page) says
 // "Re-added", without Change (the user's call, 2026-10-20): it's going back where it was.
 function toggleInTarget(key, thai, on) {
-  const back = on && state.view === 'wordlist' && ((currentScope()?.id === listScopeId(targetList()?.id)
+  const back = on && state.view === 'wordlist' && ((currentScope()?.id === listScopeId(targetList(keyKind(key))?.id)
     && state.listCards.some((c) => c.key === key)) || (addingFrom() && state.takenOut.has(key)));
   const name = setInTarget([key], on);
   if (back) toast(`✓ Re-added ${thai} to '${name}'`, { tone: 'good' });
@@ -5505,17 +5568,18 @@ function toggleInTarget(key, thai, on) {
 function reviewButton(key, thai, words = null) {
   const rv = document.createElement('button');
   rv.type = 'button';
-  rv.paint = (inList = targetWords()) => {
+  const kind = keyKind(key); // a phrase's goes to your phrase list (2026-11-22)
+  rv.paint = (inList = targetWords(kind)) => {
     const added = inList.has(key);
     const others = added ? [] : listsOf(key);
     rv.className = 'row-review' + (added ? ' added' : others.length ? ' elsewhere' : '');
     rv.replaceChildren(reviewIcon(added));
-    rv.title = added ? `Remove ${thai} from '${targetName()}'`
-      : `Add ${thai} to '${targetName()}'` + (others.length ? ` (it's in ${listNames(others)})` : '');
+    rv.title = added ? `Remove ${thai} from '${targetName(kind)}'`
+      : `Add ${thai} to '${targetName(kind)}'` + (others.length ? ` (it's in ${listNames(others)})` : '');
     rv.setAttribute('aria-label', rv.title);
   };
   rv.paint(words || undefined);
-  rv.addEventListener('click', () => toggleInTarget(key, thai, !targetWords().has(key)));
+  rv.addEventListener('click', () => toggleInTarget(key, thai, !targetWords(kind).has(key)));
   return rv;
 }
 
@@ -5524,17 +5588,19 @@ function reviewButton(key, thai, words = null) {
 // While adding words to a list (Add words: its bar over a topic), they're going where you chose, so
 // no Change (the user's call, 2026-10-20).
 function toastAdded(keys, what) {
-  const list = targetList();
+  const kind = keys.length ? keyKind(keys[0]) : 'words';
+  const list = targetList(kind);
   // A word already in other lists says so (the same day), as its 🔁's dot did.
   const also = keys.length === 1 ? listsOf(keys[0]).filter((l) => l.id !== list.id) : [];
-  toast(`✓ Added ${what} to '${list.name}'` + (also.length ? ` · also in ${listNames(also)}` : ''), { tone: 'good', action: addingFrom() ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id) } });
+  toast(`✓ Added ${what} to '${list.name}'` + (also.length ? ` · also in ${listNames(also)}` : ''), { tone: 'good', action: addingFrom() ? null : { label: 'Change', fn: () => openMoveWords(keys, what, list.id, LIST_KINDS[kind]) } });
 }
 
 // The toast after taking words out (🔁's ✓, or Remove all), with Move (the user's request, 2026-11-01:
 // a word meant for another list). Move opens Change's dialog with no list ticked (they're in none of
 // them now), and a tap puts them in that one. While adding words to a list, no Move, as toastAdded.
 function toastRemoved(keys, what, name) {
-  toast(`Removed ${what} from '${name}'`, { action: addingFrom() ? null : { label: 'Move', fn: () => openMoveWords(keys, what, null) } });
+  const kind = keys.length ? keyKind(keys[0]) : 'words';
+  toast(`Removed ${what} from '${name}'`, { action: addingFrom() ? null : { label: 'Move', fn: () => openMoveWords(keys, what, null, LIST_KINDS[kind]) } });
 }
 
 // Whether the List page shows a topic (or list) that words are being added from (Add words).
@@ -5566,9 +5632,14 @@ function listNames(lists) {
 // fromId is null for words just taken out (toastRemoved's Move): nothing to take them out of.
 // `kind`: word lists, or story lists (STORY_LISTS, 2026-11-22: a saved story's Change and Move).
 const WORD_LISTS = {
-  lists: () => getLists(), change: (id, fn) => changeList(id, fn), create: (name, o) => createList(name, o),
+  lists: () => listsOfKind('words'), change: (id, fn) => changeList(id, fn), create: (name, o) => createList(name, o),
   setTarget: (id) => setTarget(id), key: 'words', one: 'word', many: 'words', also: 'Add new words there too',
 };
+const PHRASE_LISTS = {
+  lists: () => listsOfKind('phrases'), change: (id, fn) => changeList(id, fn), create: (name, o) => createList(name, { ...o, kind: 'phrases' }),
+  setTarget: (id) => setTarget(id), key: 'words', one: 'phrase', many: 'phrases', also: 'Add new phrases there too',
+};
+const LIST_KINDS = { words: WORD_LISTS, phrases: PHRASE_LISTS };
 function openMoveWords(keys, what, fromId, kind = WORD_LISTS) {
   state.moving = { lastFocus: document.activeElement };
   els.moveTitle.textContent = `Put ${what} in`;
@@ -5621,7 +5692,7 @@ function moveWordsTo(keys, what, fromId, toId, kind = WORD_LISTS) {
   closeMoveWords();
   if (always) {
     kind.setTarget(toId);
-    if (kind === WORD_LISTS && state.addingTo) state.addingTo = toId; // adding from a topic: its bar names the new list
+    if (kind !== STORY_LISTS && state.addingTo) state.addingTo = toId; // adding from a topic: its bar names the new list
   }
   if (toId === fromId) {
     if (always) kind.change(toId, () => {}); // repainted for the new target
@@ -5654,10 +5725,11 @@ async function renameList(id) {
 async function deleteList(id) {
   const list = listById(id);
   if (!list) return;
+  const kind = listKind(list);
   const n = list.words.length;
   const ok = await confirmDialog({
     title: `Delete '${list.name}'?`,
-    message: `${n ? `Its ${n} word${n === 1 ? '' : 's'} stay in their topics, and your progress on them is kept.` : 'It has no words.'}`,
+    message: `${n ? `Its ${n} ${kindNoun(kind, n)} stay in their topics, and your progress on them is kept.` : `It has no ${kindNoun(kind)}.`}`,
     confirmLabel: 'Delete',
     danger: true,
   });
@@ -5666,11 +5738,12 @@ async function deleteList(id) {
   store.lists = (store.lists || []).filter((l) => l.id !== id);
   saveStore(store);
   scopeCache.delete(listScopeId(id));
-  if (getPreferences().targetListId === id) setTarget(store.lists[0]?.id || null);
+  const next = store.lists.find((l) => listKind(l) === kind) || null; // the next of its kind
+  if (getPreferences()[TARGET_PREF[kind]] === id) setPreferences({ [TARGET_PREF[kind]]: next?.id || null });
   if (state.addingTo === id) state.addingTo = null;
-  // Showing it: the next list, or the first topic.
+  // Showing it: the next list of its kind, or the first topic of its kind.
   if (state.currentDeckId === listScopeId(id)) {
-    selectDeck(store.lists[0] ? listScopeId(store.lists[0].id) : state.decks.find((d) => !d.passage).id);
+    selectDeck(next ? listScopeId(next.id) : state.decks.find((d) => !d.passage && !!d.phrases === (kind === 'phrases')).id);
     window.scrollTo(0, 0); // the new choice at its top, as the picker's (pickScope; the user's call, 2026-10-26)
   }
   toast(`Deleted '${list.name}'`);
@@ -6401,7 +6474,7 @@ function renderReadingList() {
       wider.className = 'ghost';
       wider.textContent = `Try all of ${cat}`;
       wider.addEventListener('click', () => {
-        selectDeck(`cat:${cat}`);
+        selectDeck(catScopeId(cat, scope.phrases));
         window.scrollTo(0, 0); // the category's stories from the top (2026-10-26)
       });
       empty.append(wider);
@@ -6535,6 +6608,18 @@ const READING_COMMON = new Set(('ไป มา มี เป็น อยู่ 
 const READING_LIST_SHARE = 0.25;
 
 function storiesFor(scope) {
+  // A phrase list's: the stories with any of its phrases, the most first (2026-11-22; the word lists'
+  // share of a story's words would find almost none).
+  if (scope.kind === 'list' && scope.phrases) {
+    const keys = new Set(scope.cards.map(cardKey));
+    const found = [];
+    for (const d of state.decks) {
+      if (!d.passage) continue;
+      const hits = d.cards.filter((c) => keys.has(cardKey(c)));
+      if (hits.length) found.push({ d, hits, share: 0 });
+    }
+    return found.sort((a, b) => b.hits.length - a.hits.length || a.d.name.localeCompare(b.d.name));
+  }
   const words = new Set(scope.cards.map((c) => c.thai).filter((w) => !READING_COMMON.has(w)));
   const found = [];
   for (const d of state.decks) {
@@ -8881,21 +8966,21 @@ function renderVocabPhrases() {
   if (getSettings().vocabPhraseOrder === 'shortest') list = [...list].sort((a, b) => a.words.length - b.words.length || a.card.thai.length - b.card.thai.length);
   const byTopic = getSettings().vocabPhraseOrder !== 'shortest';
   // Add all: those not in your list yet; with every one in, it says so.
-  const target = targetWords();
+  const target = targetWords('phrases'); // your phrase list (2026-11-22)
   const cards = mergeProgressIntoCards(list.map((p) => p.card));
   const out = cards.filter((c) => !target.has(c.key));
   els.vocabPhraseAdd.hidden = !cards.length;
   els.vocabPhraseAdd.classList.toggle('all-in', !out.length);
-  els.vocabPhraseAdd.replaceChildren(reviewIcon(!out.length), out.length ? `Add all to ${targetName()}` : `All in ${targetName()}`);
+  els.vocabPhraseAdd.replaceChildren(reviewIcon(!out.length), out.length ? `Add all to ${targetName('phrases')}` : `All in ${targetName('phrases')}`);
   els.vocabPhraseAdd.onclick = () => {
-    if (!out.length) return toast(`They're all in '${targetName()}'`);
+    if (!out.length) return toast(`They're all in '${targetName('phrases')}'`);
     const keys = out.map((c) => c.key);
     setInTarget(keys, true);
     toastAdded(keys, plural(keys.length, 'phrase'));
     renderVocabPhrases();
   };
   const cols = wordlistColumns();
-  const words = targetWords();
+  const words = targetWords('phrases');
   const rows = [];
   let lastDeck = null;
   list.slice(0, state.vocabPhraseShown).forEach((p, i) => {
@@ -9620,27 +9705,29 @@ function bindEvents() {
   // it. On the target list's own page it's Add words instead (renderWordlist).
   els.wordlistAddAll.addEventListener('click', async () => {
     const deck = currentScope();
-    const target = targetList();
+    const kind = scopeKind(deck); // one kind to a choice and a list (2026-11-22)
+    const noun = (n) => kindNoun(kind, n);
+    const target = targetList(kind);
     if (target && deck?.id === listScopeId(target.id)) {
       openAddWords(target.id);
       return;
     }
-    const name = targetName();
-    const words = targetWords();
+    const name = targetName(kind);
+    const words = targetWords(kind);
     const keys = state.listCards.map((c) => c.key).filter((key) => !words.has(key));
     if (!keys.length) {
       // All in the list: take them all out (their progress is kept).
       const n = state.listCards.length;
       const ok = await confirmDialog({
         title: `Remove all from '${name}'?`,
-        message: `Remove all ${n} words in ${deck.name} from '${name}'? Your progress on them is kept.`,
+        message: `Remove all ${n} ${noun(n)} in ${deck.name} from '${name}'? Your progress on them is kept.`,
         confirmLabel: `Remove ${n}`,
         setting: 'confirmRemoveAll',
       });
       if (ok) {
         const keys = state.listCards.map((c) => c.key);
-        setInTarget(keys, false);
-        toastRemoved(keys, `${n} words`, name);
+        setInTarget(keys, false, kind);
+        toastRemoved(keys, `${n} ${noun(n)}`, name);
       }
       return;
     }
@@ -9648,14 +9735,14 @@ function bindEvents() {
     const ok = await confirmDialog({
       title: `Add all to '${name}'?`,
       message: n === state.listCards.length
-        ? `Add all ${n} words in ${deck.name} to '${name}'?`
-        : `Add the ${n} words in ${deck.name} that aren't in '${name}' yet?`,
+        ? `Add all ${n} ${noun(n)} in ${deck.name} to '${name}'?`
+        : `Add the ${n} ${noun(n)} in ${deck.name} that aren't in '${name}' yet?`,
       confirmLabel: `Add ${n}`,
       setting: 'confirmAddAll',
     });
     if (ok) {
-      setInTarget(keys, true);
-      toastAdded(keys, `${n} ${n === 1 ? 'word' : 'words'}`);
+      setInTarget(keys, true, kind);
+      toastAdded(keys, `${n} ${noun(n)}`);
     }
   });
   // Cards on an empty list: its Add words, on the List page.
@@ -10070,10 +10157,12 @@ function backupSummary(store) {
     const words = Object.keys(store.reviewWords || {}).length;
     return `${words} word${words === 1 ? '' : 's'} in Cards, ${progress}`;
   }
-  const n = store.lists.length;
+  const n = store.lists.filter((l) => l.kind !== 'phrases').length;
+  const phrases = store.lists.length - n; // phrase lists (2026-11-22)
   const known = Object.values(store.known || {}).filter((k) => k === 1).length; // Vocabulary's (2026-11-14)
   const stories = (store.storyLists || []).length; // Read's My Stories (2026-11-22)
-  return `${n} list${n === 1 ? '' : 's'}` + (stories ? `, ${stories} story list${stories === 1 ? '' : 's'}` : '') + `, ${progress}` + (known ? `, ${known} words known` : '');
+  return `${n} list${n === 1 ? '' : 's'}` + (phrases ? `, ${phrases} phrase list${phrases === 1 ? '' : 's'}` : '')
+    + (stories ? `, ${stories} story list${stories === 1 ? '' : 's'}` : '') + `, ${progress}` + (known ? `, ${known} words known` : '');
 }
 
 async function exportBackup() {
@@ -10154,6 +10243,7 @@ async function init() {
   migrateLeitnerToItems();
   migrateCardRenames();
   migrateLists(); // after the renames, which fix the old words in Cards it's made from
+  migratePhraseLists(); // phrases out of word lists (2026-11-22)
 
   const prefs = getPreferences();
   // 2026-10-06: Wordlists' "Show first" moved from the page (prefs.primaryCol) to Settings.

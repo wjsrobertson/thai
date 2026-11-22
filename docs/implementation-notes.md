@@ -2509,6 +2509,50 @@ saving a sentence), only the search for now.
   mode kept over a reload; Read all opening the list's first; Delete Isan; no sideways scroll, no
   script errors. No layout check (nothing that lines up moved; the switch is new, under the bar).
 
+## The picker by kind: Words | Phrases | Stories; phrase lists (2026-11-22)
+
+The user's question: "what are the implications of making My Phrases… so that phrases and word lists
+get separated out". Offered with where it gets awkward (Add all on a choice holding both kinds, Add
+words, the lists you have, four tabs), the user asked whether keeping phrases apart from words in
+Topics would solve it; it does for categories and groups, and the other two places (a story list's
+cards, Thai Script's Tone Chants) were offered fixes. The user: "go ahead with Words | Phrases |
+Stories. I agree with your suggestions", and phrases already in word lists "add them in My Phrases".
+
+- **The picker's tabs are kinds** (Topics | My Words | My Stories until now): **Words** shows your word
+  lists ("Your word lists", ＋ New list), then the word topics ("Topics"); **Phrases** your phrase lists,
+  then the topics of phrases ("Topics of phrases"), in the same categories and groups; **Stories** your
+  story lists. A search covers the tab's lists, topics and cards of its kind (`wordSearch`'s `keep`).
+  It opens on the current choice's kind. Vocabulary's picker has only Words; Add words (or phrases)
+  only the list's kind ("Pick a topic or list, then add its phrases to 'My phrases'"). A section of
+  lists is left out when empty, but for the plain picker's offer to make one.
+- **A category's or group's All is one kind:** `cat:` and `group:` its word topics, `pcat:` and
+  `pgroup:` its topics of phrases ("Conversation · all 9 phrase topics", 155 phrases; Words'
+  Conversation 5 topics, 70 words). 16 of the 25 categories and 12 of the 64 groups held both.
+  `scope.phrases` says a choice holds phrases (`scopeKind`).
+- **Phrase lists** are kept with the word lists (`store.lists`), marked `kind: 'phrases'`, so a
+  list's page, Rename, Delete, Change and Move work for both. Each kind has its own target
+  (`prefs.targetListId`, `prefs.phraseTargetId`; `targetList(kind)`). A card's bookmark goes by its
+  kind (`keyKind`: `isPhraseCard`): a phrase to My phrases, its words (Word by word's rows) to My
+  words; the toasts say which, and Change offers lists of that kind ("Add new phrases there too").
+  Add all, Add words / Add phrases, the empty texts, Cards' empty message and the adding bar ("Adding
+  phrases to …") say phrases for a choice of phrases. Vocabulary's phrase lists add to My phrases.
+  Read on a phrase list shows the stories with any of its phrases (the word lists' rule, a quarter of
+  a story's words, would find almost none). The backup's summary counts them apart.
+- **Phrases in word lists moved** (`migratePhraseLists`, once, `store.phraseListsMoved`): every word
+  list's phrases into one list, My phrases, in their order; progress is per card, so untouched.
+- **A story list's List and Cards** are its stories' words only, not their phrases (291 stories have
+  some), so its Add all is words.
+- **Tone Chants isn't a topic of phrases** any more (decks.json): its chants are script drills, and the
+  word dialog's full rule for each syllable suits กา ก่า ก้า ก๊า ก๋า better than the phrase dialog's
+  strip; Thai Script is all words. topic_kinds.py still finds every topic one kind; audit 0 errors.
+- Checked headless (scratch `kinds_probe.py`, `kinds_shot.py`) at 390 × 664 (text Larger and 1.3) and
+  1280 × 800, from a word list holding ไป, ข้าว and ไม่ค่อยว่าง: ไม่ค่อยว่าง moved to My phrases; the
+  tabs and sections; Phrases' Conversation All (155) → Add all, 154 to My phrases; Words' Conversation
+  (70); a phrase's bookmark to My phrases and its word's to My words; My phrases on List (＋ Add
+  phrases, its picker Phrases only), Cards and Read (Next Time); a story list's rows no phrases; "busy"
+  finding ยุ่ง on Words and ไม่ค่อยว่าง on Phrases; Tone Chants in the word dialog; Vocabulary's picker
+  Words only; no script errors.
+
 ## Cards for the last splittable phrases, and their word lists (2026-11-22)
 
 The user's call: "go ahead and add the missing sense cards. tone chants not required for this". 22
