@@ -8744,14 +8744,13 @@ function answerTime(i) {
 //   once however many topics have it, and a list skips the words answered in another. A word with two
 //   meanings (ผม "I" and "hair") is one answer.
 // - "Most used" is data/frequency.json (tools/frequency.py): the words with a card, in the subtitle
-//   list's order. Slang & Swearing is a list of its own, as subtitles soften swearing and frequency
-//   ranks real slang far down (เหี้ย #2890).
+//   list's order, but not slang or swearing (vocabSlangOnly). Slang & Swearing was a list of its own
+//   on the page till 2026-11-26; now it's a category like any other, from ＋ Another topic or list.
 // - The count is of words; phrases (isPhrase) are counted apart.
 const VOCAB_MOST_USED = 'most-used';
-const VOCAB_SLANG = 'cat:Slang & Swearing';
 const VOCAB_BANDS = [100, 500, 1000, 2000];
 const VOCAB_PRELOAD = 8; // the next words' clips fetched ahead
-const VOCAB_RECENT = 6;  // the topics and lists gone through lately, on the page after the two above
+const VOCAB_RECENT = 6;  // the topics and lists gone through lately, on the page after Most used
 
 let vocabFreq = null;    // { words, ranks } once fetched (loadVocabFreq), on the first visit
 let vocabFreqLoad = null;
@@ -8800,6 +8799,11 @@ function vocabIndex() {
 // a dialect's topics isn't the standard word the list counts (Southern ยัง "to have"): a last resort.
 const VOCAB_ASIDE = new Set(['Thai Script', 'Southern Thai', 'Isan Thai', 'Northern Thai']);
 const scriptOnly = ({ decks }) => decks.every((d) => VOCAB_ASIDE.has(d.category));
+// Slang and swearing aren't in Most used (the user's call, 2026-11-26: "slang and swearing should not
+// be in the vocabulary section by default… Users can still add it"): a word whose cards are all in
+// Slang & Swearing is left out (172 of 5,131: แม่ง at 976, เหี้ย at 2,269), and a slang card's meaning
+// isn't shown beside a word's others. A card in another topic too is a standard word's.
+const vocabSlangOnly = ({ decks }) => decks.every((d) => d.category === 'Slang & Swearing');
 // A gloss's senses, to tell one that adds nothing: นาย's "Mr" is in "you… / boss / Mr.", and ของ's
 // "of / belonging to" in "of, belonging to / thing".
 const glossParts = (english) => english.toLowerCase().split(/\s*[\/,;]\s*/).map((m) => m.replace(/[.:]+$/, '').trim()).filter(Boolean);
@@ -8807,7 +8811,8 @@ function vocabWordCard(thai) {
   const e = vocabIndex().get(thai);
   if (!e) return null;
   const top = ({ decks }) => decks.some((d) => d.group === 'Top 500 Spoken Words');
-  const sorted = [...e.cards].sort((a, b) => top(b) - top(a) || scriptOnly(a) - scriptOnly(b) || b.decks.length - a.decks.length);
+  const cards = e.cards.filter((x) => !vocabSlangOnly(x));
+  const sorted = [...(cards.length ? cards : e.cards)].sort((a, b) => top(b) - top(a) || scriptOnly(a) - scriptOnly(b) || b.decks.length - a.decks.length);
   const meanings = [];
   const parts = new Set();
   for (const entry of sorted) {
@@ -8829,7 +8834,7 @@ function vocabSource(id) {
   if (id === VOCAB_MOST_USED) {
     if (!vocabFreq) return null;
     const index = vocabIndex();
-    return { id, name: 'Most used words', words: vocabFreq.words.filter((w) => index.has(w)), shown: vocabWordCard };
+    return { id, name: 'Most used words', words: vocabFreq.words.filter((w) => index.has(w) && !index.get(w).cards.every(vocabSlangOnly)), shown: vocabWordCard };
   }
   const scope = resolveScope(id);
   if (!scope || scope.kind === 'all') return null;
@@ -8894,9 +8899,10 @@ function renderVocab() {
 
 // The page (tidied 2026-11-22, the user's call: "it is unwieldy"; each list was a card with its bars,
 // Start or Continue and an Again row, the phrases' panel and a paragraph of help at the foot): the
-// count; Phrases from your words, a row; then one panel of rows, Most used, Slang & Swearing and the
-// topics and lists gone through lately (vocabSourceRow), with ＋ Another topic or list at its foot.
-const vocabRecent = () => (getPreferences().vocabRecent || []).filter((id) => id !== VOCAB_MOST_USED && id !== VOCAB_SLANG);
+// count; Phrases from your words, a row; then one panel of rows, Most used and the topics and lists
+// gone through lately (vocabSourceRow), with ＋ Another topic or list at its foot. Slang & Swearing had
+// a row of its own after Most used till 2026-11-26 (the user's call; vocabSlangOnly).
+const vocabRecent = () => (getPreferences().vocabRecent || []).filter((id) => id !== VOCAB_MOST_USED);
 function renderVocabHome() {
   const known = knownMap();
   const t = vocabTotals();
@@ -8905,7 +8911,7 @@ function renderVocabHome() {
     + (t.phrases ? `, and ${plural(t.phrases, 'phrase')}` : '')
     + (t.answered ? `\n${fmtCount(t.answered)} answered` : ''); // its own line (pre-line)
   const at = knownAtMap();
-  const rows = [VOCAB_MOST_USED, VOCAB_SLANG, ...vocabRecent()].map((id) => vocabSourceRow(id, known, at)).filter(Boolean);
+  const rows = [VOCAB_MOST_USED, ...vocabRecent()].map((id) => vocabSourceRow(id, known, at)).filter(Boolean);
   els.vocabSources.replaceChildren(...rows, els.vocabChoose);
   renderPhrasePanel(known);
 }
@@ -9143,7 +9149,7 @@ function vocabSourceRow(id, known, at) {
     const row = vocabAgainRow(id, src, p);
     if (row) more.push(row);
   }
-  if (id !== VOCAB_MOST_USED && id !== VOCAB_SLANG) {
+  if (id !== VOCAB_MOST_USED) {
     const row = el('div', 'vocab-again-row');
     row.append(vocabButton('Remove from this page', `Remove ${src.name} from this page`, () => removeVocabSource(id, src.name)));
     more.push(row);
@@ -9279,7 +9285,7 @@ async function startVocabRun(id, mode = null) {
     setVocabPass(id, pass);
   }
   state.vocabRun = { id, src, history: [], thai: null, card: null };
-  if (id !== VOCAB_MOST_USED && id !== VOCAB_SLANG) {
+  if (id !== VOCAB_MOST_USED) {
     const recent = (getPreferences().vocabRecent || []).filter((x) => x !== id);
     setPreferences({ vocabRecent: [id, ...recent].slice(0, VOCAB_RECENT) });
   }

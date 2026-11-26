@@ -2260,12 +2260,27 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
       in. Checked: Most used's first 300 words (scratch `vocab_glosses_probe.py`), each with its main
       meaning first.
   - **Slang & Swearing** (the category, 332 words): its own list, as subtitles soften swearing and
-    frequency ranks real slang far down (เหี้ย #2890, ควย #9080).
+    frequency ranks real slang far down (เหี้ย #2890, ควย #9080). **Not by default since 2026-11-26**
+    (the user's call: "slang and swearing should not be in the vocabulary section by default - only
+    top xxx words. Users can still add it of course"):
+    - Its fixed row went: the page has Most used, then what you've gone through lately. The category
+      is any other's, from ＋ Another topic or list (its All · 332), then a recent row with Remove.
+      Nothing was moved for a list already started: answers are per word, so they stay and show again
+      if it's added back.
+    - Most used leaves out a word whose cards are all in Slang & Swearing (`vocabSlangOnly`): 172 of
+      5,131, 10 in the top 1,000 (ดี้ 431, เจ๋ง 618, เลว, อิน, ทอม, เท, หุบปาก, ยัย, งี่เง่า, แม่ง 976), so it's
+      4,959. Filtered in the app, not frequency.json, which stays the words with a card. A word with
+      a card elsewhere too stays, without its slang meaning beside the others (`vocabWordCard`). The
+      bands count the list as filtered.
+    - Checked headless (scratch `vocab_no_slang_probe.py`) at 390 × 664 and 1280 × 800, with the first
+      980 most used known: Most used alone on the page, 970/1,000, the run on at 971 / 4,959 (ผี, past
+      แม่ง); the picker's Slang & Swearing All 332 starting a run, then its row (25/332, Remove); no
+      script errors.
   - **Go through a topic or list:** the topic picker (`openDeckPicker({ vocab: true })`,
     `pickerFor` 'vocab'): a topic, a group's or category's All, or a list of yours starts a run
     rather than choosing the topic. Nothing is lit as current, the word hits and ＋ New list are left
     out. A topic's words show that topic's card (ฉัน in Monks is "to eat (of a monk)"). The last six
-    gone through are listed after Slang (`prefs.vocabRecent`).
+    gone through are listed after Slang (`prefs.vocabRecent`); after Most used since Slang's row went.
 - **A run** (`state.vocabRun`, `renderVocabRun`): ‹ Done, the list's name and the place (6 / 5,126);
   a card with "Do you know this word?" (or phrase), the Thai on one line (shrunk to fit,
   `fitPopWord`; a tap opens the word dialog), its ▶, the transliteration and the meanings; the last
