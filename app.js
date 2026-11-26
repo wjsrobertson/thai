@@ -87,8 +87,7 @@ const els = {
   timeSection: document.getElementById('time-section'),
   vocabSection: document.getElementById('vocab-section'),
   vocabHome: document.getElementById('vocab-home'),
-  vocabTotalN: document.getElementById('vocab-total-n'),
-  vocabTotalText: document.getElementById('vocab-total-text'),
+  vocabTotal: document.getElementById('vocab-total'), // "You know 18 words
   vocabSources: document.getElementById('vocab-sources'),
   vocabChoose: document.getElementById('vocab-choose'),
   vocabRun: document.getElementById('vocab-run'),
@@ -9021,10 +9020,8 @@ const vocabRecent = () => (getPreferences().vocabRecent || []).filter((id) => id
 function renderVocabHome() {
   const known = knownMap();
   const t = vocabTotals();
-  els.vocabTotalN.textContent = fmtCount(t.words);
-  els.vocabTotalText.textContent = `word${t.words === 1 ? '' : 's'} you know`
-    + (t.phrases ? `, and ${plural(t.phrases, 'phrase')}` : '')
-    + (t.answered ? `\n${fmtCount(t.answered)} answered` : ''); // its own line (pre-line)
+  // One line (the user's call, 2026-11-26: "this massive title is not needed… 'you know 18 words'").
+  els.vocabTotal.textContent = `You know ${plural(t.words, 'word')}` + (t.phrases ? ` and ${plural(t.phrases, 'phrase')}` : '');
   const at = knownAtMap();
   const rows = [VOCAB_MOST_USED, ...vocabRecent()].map((id) => vocabSourceRow(id, known, at)).filter(Boolean);
   els.vocabSources.replaceChildren(...rows, els.vocabChoose);

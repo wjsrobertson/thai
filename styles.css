@@ -2260,11 +2260,9 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab { max-width: 560px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
 .vocab-home, .vocab-run, .vocab-phrases { display: flex; flex-direction: column; gap: 14px; }
 .vocab-home[hidden], .vocab-run[hidden], .vocab-phrases[hidden], .vocab-phrase-link[hidden] { display: none; }
-/* The page: the count, big, Phrases from your words, then a panel of a row a list (2026-11-22; a
-   panel a list till then). */
-.vocab-total { padding: 4px 0; text-align: center; }
-.vocab-total-n { margin: 0; color: var(--accent); font-size: calc(48px * var(--fs, 1)); font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.vocab-total-text { margin: 4px 0 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); white-space: pre-line; }
+/* The page: "You know 18 words", a line of plain text (2026-11-26, the user's call; the count was 48 px
+   over two lines till then), Phrases from your known vocabulary, then a panel of a row a list. */
+.vocab-total { margin: 0; color: var(--ink); font-size: calc(16px * var(--fs, 1)); font-variant-numeric: tabular-nums; }
 :is(.vocab-sources, .vocab-phrase-link) { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
 .vocab-sources { display: flex; flex-direction: column; overflow: hidden; }
 .vocab-row + .vocab-row, .vocab-add { border-top: 1px solid var(--border); }
