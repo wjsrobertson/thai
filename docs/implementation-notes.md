@@ -2946,6 +2946,24 @@ too cumbersome").
   - Checked headless (scratch `psort3_probe.py`) at 390 × 664 and 1280 × 800: Add all and One by one
     side by side; after Add all, "All in My phrases" one row, 44 tall; all 16 gone through: neither
     button, the message centred in the table, "Show the 16 gone through" under it.
+- **The user's next four** (the same day):
+  1. One word short's line: "the word you don't know yet is **highlighted**" (was "lit").
+  2. "Show the 3 gone through" ("not nice to read"): the wording is the user's to choose; offered.
+  3. **One by one** has the bookmark, as Add all has; its wording offered too.
+  4. **Change, not a dropdown** ("keep the list name in title… add a change button… reuse that
+     dialog… you can hide the 'Add new phrases there too'"): the head is "Add to 'Travel phrases'?"
+     over "1 of 407", then **Change** and ✕ (`renderPhraseSortTitle`). Change opens the lists dialog
+     a word's Change uses (`#move-modal`), as `openListChooser`: "Add phrases to", your phrase lists
+     (the current one ticked, each with its count), ＋ New list; a tap chooses and closes it, without
+     moving anything; its "Add new phrases there too" is hidden (`.move-default[hidden]`, over
+     `.checkbox-inline`'s inline-flex), and `openMoveWords` shows it again. The choice still makes
+     that list your phrase list (`setTarget`). Esc closes the lists dialog first, then One by one
+     (the key handler now checks `state.moving` before it). On a phone a long name wraps the title.
+  - Checked headless (scratch `psort4_probe.py`) at 390 × 664 and 1280 × 800: the new line; the head;
+    Change → "Add phrases to", Travel phrases ✓, no checkbox; Esc closing only it; New list "Idioms
+    to learn" → the title, Add into it; Change → Travel phrases, the focus back on Change, Add into
+    it; Add all then "Add all to Travel phrases"; One by one with its bookmark, 44 tall; no script
+    errors.
 
 ## My Stories in the topic picker (2026-11-22)
 

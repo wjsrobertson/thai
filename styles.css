@@ -2335,23 +2335,11 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    green going right (Add), red going left (No); Undo; No and Add as a run's. On a phone the card takes
    the height between the head and the answers. */
 .phrase-sort .word-body.ps-body { display: flex; flex: 1 1 auto; flex-direction: column; gap: 10px; padding: 12px 16px 16px; } /* over .word-modal .word-body (later) */
-.ps-title { margin-right: 8px; font-weight: 600; }
-/* Add to [list]: the list they go into (renderPhraseSortList). */
-.ps-list { display: flex; align-items: center; gap: 10px; }
-.ps-list-label { flex: none; color: var(--muted); font-size: calc(16px * var(--fs, 1)); }
-.ps-list select {
-  flex: 1 1 auto;
-  min-width: 0;
-  min-height: 44px;
-  padding: 8px 12px;
-  background: var(--panel-2); /* as Settings' selects */
-  border: 1px solid var(--control-border);
-  border-radius: 10px;
-  color: var(--ink);
-  font: inherit;
-  font-size: calc(16px * var(--fs, 1)); /* 16 at least: iOS zooms into a smaller field */
-}
-.ps-list select:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ps-title { font-weight: 600; }
+/* The head: "Add to 'My phrases'?" over "4 of 407", then Change and ✕. */
+.ps-panel .pop-text { display: flex; flex-direction: column; }
+.ps-title { overflow-wrap: anywhere; }
+.ps-change { flex: none; min-height: 44px; padding: 8px 14px; font-size: 16px; }
 .ps-count { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ps-card {
   display: flex;
@@ -3176,6 +3164,7 @@ html.dialog-kb .modal.confirm-modal {
 .move-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -8px -8px 0 0; }
 .move-head h2 { min-width: 0; overflow-wrap: anywhere; }
 .move-default { min-height: 44px; }
+.move-default[hidden] { display: none; } /* openListChooser: no "Add new … there too" */
 .move-default input { width: 18px; height: 18px; margin: 0; accent-color: var(--accent); }
 .move-lists {
   display: flex;

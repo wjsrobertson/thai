@@ -208,7 +208,7 @@ const els = {
   phraseSortTitle: document.getElementById('phrase-sort-title'),
   phraseSortCount: document.getElementById('phrase-sort-count'),
   psCard: document.getElementById('ps-card'),
-  psList: document.getElementById('ps-list'),
+  psChange: document.getElementById('ps-change'),
   psLastText: document.getElementById('ps-last-text'),
   psUndo: document.getElementById('ps-undo'),
   psAnswers: document.getElementById('ps-answers'),
@@ -5797,6 +5797,7 @@ function openMoveWords(keys, what, fromId, kind = WORD_LISTS) {
   state.moving = { lastFocus: document.activeElement };
   els.moveTitle.textContent = `Put ${what} in`;
   els.moveDefault.checked = false;
+  els.moveDefault.closest('label').hidden = false; // openListChooser hides it
   els.moveDefaultLabel.textContent = kind.also;
   const rows = kind.lists().map((l) => {
     const b = document.createElement('button');
@@ -5824,6 +5825,48 @@ function openMoveWords(keys, what, fromId, kind = WORD_LISTS) {
     if (!name) return;
     els.moveDefault.checked = always;
     moveWordsTo(keys, what, fromId, kind.create(name, { target: false }).id, kind);
+  });
+  els.moveLists.replaceChildren(...rows, add);
+  els.moveModal.hidden = false;
+  setModalOpen(true);
+  (els.moveLists.querySelector('[aria-current]') || els.moveLists.firstChild).focus();
+}
+
+// The same dialog to choose a list, not move anything (2026-11-26, One by one's Change): `title`
+// ("Add phrases to"), your lists of `kind` with `current` ticked, ＋ New list; a tap closes it and
+// calls `pick(id)`. Without "Add new … there too": choosing is the point.
+function openListChooser({ title, kind, current, pick }) {
+  state.moving = { lastFocus: document.activeElement };
+  els.moveTitle.textContent = title;
+  els.moveDefault.checked = false;
+  els.moveDefault.closest('label').hidden = true;
+  const choose = (id) => {
+    closeMoveWords();
+    pick(id);
+  };
+  const rows = kind.lists().map((l) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'move-row';
+    b.innerHTML = '<span class="move-name"></span><span class="move-tick" aria-hidden="true"></span><span class="move-count"></span>';
+    b.querySelector('.move-name').textContent = l.name;
+    if (l.id === current) {
+      b.querySelector('.move-tick').textContent = '✓';
+      b.setAttribute('aria-current', 'true');
+    }
+    const n = l[kind.key].length;
+    b.querySelector('.move-count').textContent = `${n} ${n === 1 ? kind.one : kind.many}`;
+    b.addEventListener('click', () => choose(l.id));
+    return b;
+  });
+  const add = document.createElement('button');
+  add.type = 'button';
+  add.className = 'move-row move-new';
+  add.textContent = '＋ New list';
+  add.addEventListener('click', async () => {
+    closeMoveWords();
+    const name = await askListName('New list', '', 'Make list');
+    if (name) pick(kind.create(name, { target: false }).id);
   });
   els.moveLists.replaceChildren(...rows, add);
   els.moveModal.hidden = false;
@@ -9082,7 +9125,7 @@ function renderVocabPhrases() {
   });
   els.vocabPhraseHelp.textContent = kind === 'known'
     ? 'Phrases made only of words you know. Tap one for its words, tones and stories.'
-    : "Phrases you're one word from: the word you don't know yet is lit. Tap it, and if you know it, say so there.";
+    : "Phrases you're one word from: the word you don't know yet is highlighted. Tap it, and if you know it, say so there.";
   const list = vocabPhraseList(kind, sets, { done: state.vocabPhraseShowDone });
   const byTopic = getSettings().vocabPhraseOrder !== 'shortest';
   const choices = phraseChoices();
@@ -9103,7 +9146,7 @@ function renderVocabPhrases() {
   // One by one: those not in your list, nor gone through (openPhraseSort).
   const toSort = phraseSortQueue(list).length;
   els.vocabPhraseSort.hidden = !toSort;
-  els.vocabPhraseSort.textContent = `One by one · ${fmtCount(toSort)}`;
+  els.vocabPhraseSort.replaceChildren(reviewIcon(), `One by one · ${fmtCount(toSort)}`); // the bookmark, as Add all's (the user's call, 2026-11-26)
   els.vocabPhraseSort.title = `Go through the ${plural(toSort, 'phrase')} not in ${targetName('phrases')} one at a time, adding the ones you want`;
   // The ones gone through: hidden, unless shown (they're then marked Added or Not added).
   const done = sets[kind].filter((p) => cardKey(p.card) in choices).length;
@@ -9230,7 +9273,7 @@ function openPhraseSort() {
   const queue = phraseSortQueue(vocabPhraseList(kind));
   if (!queue.length) return;
   phraseSort = { kind, queue, i: 0, added: 0, history: [], lastFocus: document.activeElement };
-  renderPhraseSortList();
+  renderPhraseSortTitle();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
   els.phraseSort.hidden = false;
@@ -9303,7 +9346,7 @@ function answerPhraseSort(yes) {
     setInTarget([key], true, 'phrases'); // makes My phrases if there's none
     ps.history[ps.history.length - 1].listId = targetList('phrases').id;
     ps.added += 1;
-    renderPhraseSortList(); // a first list made
+    renderPhraseSortTitle(); // a first list made: its name
   }
   ps.i += 1;
   renderPhraseSort();
@@ -9380,36 +9423,23 @@ function bindPhraseSortSwipe() {
   els.psNo.addEventListener('click', () => answerPhraseSort(false));
   els.psYes.addEventListener('click', () => answerPhraseSort(true));
   els.psUndo.addEventListener('click', undoPhraseSort);
-  els.psList.addEventListener('change', changePhraseSortList);
+  els.psChange.addEventListener('click', () => openListChooser({
+    title: 'Add phrases to', kind: PHRASE_LISTS, current: targetList('phrases')?.id,
+    pick: (id) => { setTarget(id); renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); },
+  }));
   els.phraseSort.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePhraseSort));
 }
 
-// Add to: your phrase lists, the one bookmarks fill chosen (targetList), and New list. Choosing one
-// makes it that (setTarget), so Add all, a bookmark and this agree (the user's call, 2026-11-26: "User
-// should be able to change which list the phrases are being added to"). With no phrase list yet,
-// My phrases, made by the first Add.
-function renderPhraseSortList() {
-  const lists = listsOfKind('phrases');
-  const now = targetList('phrases');
-  const opts = lists.length ? lists.map((l) => new Option(l.name, l.id, false, l.id === now?.id)) : [new Option(DEFAULT_LIST.phrases, '', false, true)];
-  els.psList.replaceChildren(...opts, new Option('＋ New list…', 'new'));
-}
-
-async function changePhraseSortList() {
-  const v = els.psList.value;
-  if (v === 'new') {
-    const name = await askListName('New list', '', 'Make list');
-    if (name) createList(name, { kind: 'phrases' }); // and makes it the target
-    renderPhraseSortList();
-  } else if (v) {
-    setTarget(v);
-  }
-  els.psList.focus({ preventScroll: true });
+// "Add to 'My phrases'?" with Change beside it (the user's call, 2026-11-26: "keep the list name in
+// title… add a change button… reuse that dialog"; for an hour it was an Add to [list] dropdown). The
+// list is your phrase list (targetList): Change makes another that (setTarget), so Add all and a
+// bookmark go there too. With none yet, My phrases, made by the first Add.
+function renderPhraseSortTitle() {
+  els.phraseSortTitle.textContent = `Add to '${targetName('phrases')}'?`;
 }
 
 function handlePhraseSortKey(e) {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
-  if (e.target === els.psList && e.key !== 'Escape') return; // its own keys choose a list
   const p = phraseSort.queue[phraseSort.i];
   const act = { escape: closePhraseSort, backspace: undoPhraseSort, u: undoPhraseSort,
     ...(p ? { arrowright: () => answerPhraseSort(true), y: () => answerPhraseSort(true), arrowleft: () => answerPhraseSort(false),
@@ -10230,15 +10260,15 @@ function bindEvents() {
       }
       return; // Enter / Space act on the focused button
     }
-    if (phraseSort) { // Vocabulary's One by one
-      handlePhraseSortKey(e);
-      return;
-    }
-    if (state.moving) {
+    if (state.moving) { // over One by one too (its Change)
       if (e.key === 'Escape') {
         e.preventDefault();
         closeMoveWords();
       }
+      return;
+    }
+    if (phraseSort) { // Vocabulary's One by one
+      handlePhraseSortKey(e);
       return;
     }
     if (state.pickerOpen) {
