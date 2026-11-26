@@ -2866,6 +2866,10 @@ too cumbersome").
   - Fixed on the way: on a wide screen `.wordtable td` (later in styles.css, the same specificity)
     put its padding and line back on this table's cells, a line under each of a phrase's Thai,
     transliteration and English; the rule is now `.vocab-phrase-table tbody td`.
+  - Show more was still under the tree (the user's report, the same day: "in the wrong place now"):
+    `.reading-more`'s `display: block` beat `[hidden]`, so it showed though hidden (the probe had
+    read the attribute, not the box). `.reading-more[hidden]` now hides it, there and anywhere else
+    the class is used (the List page's had a rule of its own, `.wordlist-more[hidden]`, now gone).
   - Checked headless (scratch `vptree_probe.py`) at 390 × 664 and 1280 × 800, the most-used 1,500
     known: 15 category rows; Conversation, then Small Talk: Questions opened (12 phrases); One word
     short with both still open (29, 10); a lit word's I know this word moving one over (28, 9), still

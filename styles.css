@@ -2117,7 +2117,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Show more under the stories (pagedStories). */
 .reading-more { display: block; width: 100%; min-height: 44px; margin: 4px 0 12px; font-size: 16px; }
 .wordlist-more { margin-top: 12px; } /* the List page's (renderWordlist), under the table */
-.wordlist-more[hidden] { display: none; }
+.reading-more[hidden] { display: none; } /* its display: block beat [hidden]: Vocabulary's phrases showed theirs by topic, where there's none (2026-11-26) */
 .wordlist-search { margin: 0 0 12px; }
 .wordlist-search[hidden] { display: none; }
 /* Paused by a word's dialog (pauseReadStories): its button carries on. */
