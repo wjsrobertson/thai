@@ -2948,8 +2948,11 @@ too cumbersome").
     button, the message centred in the table, "Show the 16 gone through" under it.
 - **The user's next four** (the same day):
   1. One word short's line: "the word you don't know yet is **highlighted**" (was "lit").
-  2. "Show the 3 gone through" ("not nice to read"): the wording is the user's to choose; offered.
-  3. **One by one** has the bookmark, as Add all has; its wording offered too.
+  2. "Show the 3 gone through" ("not nice to read"): offered four, the user picked **Show 3 already
+     sorted** (Hide 3 already sorted); the empty list's "None left: you've sorted all 16."
+  3. **One by one** has the bookmark, as Add all has, and offered four wordings the user picked
+     **Sort into My phrases · 64** (your phrase list's name, as Add all's). Wider: on a phone it
+     wraps under Add all, as before. The dialog's own head is unchanged ("Add to 'My phrases'?").
   4. **Change, not a dropdown** ("keep the list name in title… add a change button… reuse that
      dialog… you can hide the 'Add new phrases there too'"): the head is "Add to 'Travel phrases'?"
      over "1 of 407", then **Change** and ✕ (`renderPhraseSortTitle`). Change opens the lists dialog

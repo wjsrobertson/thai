@@ -9146,12 +9146,13 @@ function renderVocabPhrases() {
   // One by one: those not in your list, nor gone through (openPhraseSort).
   const toSort = phraseSortQueue(list).length;
   els.vocabPhraseSort.hidden = !toSort;
-  els.vocabPhraseSort.replaceChildren(reviewIcon(), `One by one · ${fmtCount(toSort)}`); // the bookmark, as Add all's (the user's call, 2026-11-26)
+  // "Sort into My phrases · 64", with the bookmark, as Add all's (the user's calls, 2026-11-26; it was "One by one").
+  els.vocabPhraseSort.replaceChildren(reviewIcon(), `Sort into ${targetName('phrases')} · ${fmtCount(toSort)}`);
   els.vocabPhraseSort.title = `Go through the ${plural(toSort, 'phrase')} not in ${targetName('phrases')} one at a time, adding the ones you want`;
   // The ones gone through: hidden, unless shown (they're then marked Added or Not added).
   const done = sets[kind].filter((p) => cardKey(p.card) in choices).length;
   els.vocabPhraseDoneToggle.hidden = !done;
-  els.vocabPhraseDoneToggle.textContent = state.vocabPhraseShowDone ? `Hide the ${fmtCount(done)} gone through` : `Show the ${fmtCount(done)} gone through`;
+  els.vocabPhraseDoneToggle.textContent = `${state.vocabPhraseShowDone ? 'Hide' : 'Show'} ${fmtCount(done)} already sorted`; // the user's pick, 2026-11-26 (was "Show the 3 gone through")
   const cols = wordlistColumns();
   const words = targetWords('phrases');
   const rows = [];
@@ -9188,7 +9189,7 @@ function renderVocabPhrases() {
   if (!list.length) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = done ? `None left: you've gone through ${done === 1 ? 'it' : `all ${fmtCount(done)}`}.`
+    tr.firstChild.textContent = done ? `None left: you've sorted ${done === 1 ? 'it' : `all ${fmtCount(done)}`}.`
       : kind === 'known' ? 'None yet: say which words you know, and the phrases made of them come here.' : 'None one word short.';
     rows.push(tr);
   }
