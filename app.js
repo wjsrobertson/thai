@@ -9659,7 +9659,7 @@ function toggleVocabRow(id) {
 // asks first (the user's call, 2026-11-26), every time: no setting, as it's seldom used.
 async function removeVocabSource(id, name) {
   const ok = await confirmDialog({
-    title: `Remove '${name}' from this page?`,
+    title: `Remove '${name}' from vocabulary?`,
     message: 'Your answers are kept, and it comes back if you go through it again (＋ Another topic or list).',
     confirmLabel: 'Remove',
   });
@@ -9668,7 +9668,7 @@ async function removeVocabSource(id, name) {
   setVocabPass(id, null);
   if (state.vocabOpen === id) state.vocabOpen = null;
   renderVocabHome();
-  toast(`Removed '${name}' from this page. Your answers are kept.`);
+  toast(`Removed '${name}' from vocabulary. Your answers are kept.`);
 }
 
 function vocabButton(text, label, onClick) {
@@ -9693,7 +9693,7 @@ function vocabButton(text, label, onClick) {
 // of different widths, "Again:" pushing the first in, the list's name twice):
 //   Go through again              [Didn't know · 4] [All · 23]   (Stop going through again, for a pass saved before)
 //   Words you didn't know → My words  [Sort one by one] [Add all (4)]   (or "All 4 are in My words")
-//   [Remove from this page]        across both, a little apart (a topic or list you chose)
+//   [Remove from vocabulary]        across both, a little apart (a topic or list you chose)
 // The words' pair: Sort one by one goes through those not in your word list nor sorted (openSort);
 // Add all asks first, with Change (confirmDialog's `change`). Each word's card is the one the list
 // shows (src.shown); a phrase among them isn't added.
@@ -9734,7 +9734,7 @@ function vocabActions(id, src, p, known = knownMap(), { pass = null, removable =
     }
   }
   if (removable) {
-    const b = vocabButton('Remove from this page', `Remove ${src.name} from this page`, () => removeVocabSource(id, src.name));
+    const b = vocabButton('Remove from vocabulary', `Remove ${src.name} from vocabulary`, () => removeVocabSource(id, src.name));
     b.classList.add('vocab-actions-wide');
     grid.append(b);
   }

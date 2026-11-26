@@ -2390,6 +2390,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   the page, 261 on a wide screen, all 44 tall. Checked headless (scratch `grid_probe.py`) at 390 ×
   664 and 1280 × 800: Most used's grid, a topic's with Remove, the note after Add all, a run's end; no
   sideways scroll, no script errors.
+- **Remove from vocabulary** (the user's wording, the same evening): the button, its confirm ("Remove
+  'Greetings & Politeness' from vocabulary?") and its toast, for "Remove from this page".
 - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again
