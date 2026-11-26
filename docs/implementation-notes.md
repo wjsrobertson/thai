@@ -2372,6 +2372,11 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
 - **The words' buttons reworded** (the user's call, the same day): **Sort unknown into My words** and
   **Add unknown into My words** (was "Sort into My words", "Add the 4 you didn't know to My words" /
   "Add 3 more…"); the confirm says how many.
+- **Remove from this page asks first** (2026-11-26, the user's call): "Remove 'Greetings & Politeness'
+  from this page?", "Your answers are kept, and it comes back if you go through it again (＋ Another
+  topic or list).", Cancel or Remove (`removeVocabSource`). Every time, no Don't ask again (no setting:
+  it's seldom used), and not red (nothing is lost). Checked headless (scratch `remove_probe.py`) at
+  390 × 664 and 1280 × 800: the dialog, Cancel keeping the row, Remove taking it off with its toast.
 - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again

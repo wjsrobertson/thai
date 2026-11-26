@@ -9671,8 +9671,15 @@ function toggleVocabRow(id) {
   }
 }
 
-// Off the page (it comes back when gone through again): its answers stay, as they're the words'.
-function removeVocabSource(id, name) {
+// Off the page (it comes back when gone through again): its answers stay, as they're the words'. It
+// asks first (the user's call, 2026-11-26), every time: no setting, as it's seldom used.
+async function removeVocabSource(id, name) {
+  const ok = await confirmDialog({
+    title: `Remove '${name}' from this page?`,
+    message: 'Your answers are kept, and it comes back if you go through it again (＋ Another topic or list).',
+    confirmLabel: 'Remove',
+  });
+  if (!ok) return;
   setPreferences({ vocabRecent: (getPreferences().vocabRecent || []).filter((x) => x !== id) });
   setVocabPass(id, null);
   if (state.vocabOpen === id) state.vocabOpen = null;
