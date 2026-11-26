@@ -2851,6 +2851,25 @@ too cumbersome").
   short (สวัสดีปีใหม่ with ปีใหม่ lit); ปีใหม่ tapped → its dialog, I know this word → ✓, back: 209 /
   243; Add all (209 added, All in My words); Shortest first (ลงมา, ดีเลย, ไปไหน; no headings); Escape;
   the button on ไป on List both ways; none on a phrase's dialog; no sideways scroll, no script errors.
+- **By topic, a tree** (2026-11-26, the user's call: the list "can get very long - 'All known' and
+  'One word short' - probably needs to be tree menu by topics"): knowing the most-used 1,500, All
+  known is 407 and One word short 167, which under headings, 50 at a time, was a long scroll.
+  - Now the categories, closed, a row each ("▸ Basics · 85"; 15 rows), each opening to its topics
+    ("▸ Small Talk: Questions · 12", indented), each opening to its phrases (`vocabPhraseTree`). As
+    the topic picker's tree, but without its groups: a category here has five topics at most. Every
+    row is a full-width button (48 tall, a topic's 44) with `aria-expanded`, its caret ▸ or ▾ (a
+    rotated ▸ sat off-centre), its count on the right in the muted colour.
+  - What's open stays open while Vocabulary is (`state.vocabPhraseOpen`, keys `c:` + category, `t:` +
+    topic id), across All known | One word short, and when I know this word moves a phrase over.
+  - An open topic shows whole, so by topic there's no Show more; Shortest first keeps its flat list,
+    50 at a time. Add all still adds the whole set, open or not.
+  - Fixed on the way: on a wide screen `.wordtable td` (later in styles.css, the same specificity)
+    put its padding and line back on this table's cells, a line under each of a phrase's Thai,
+    transliteration and English; the rule is now `.vocab-phrase-table tbody td`.
+  - Checked headless (scratch `vptree_probe.py`) at 390 × 664 and 1280 × 800, the most-used 1,500
+    known: 15 category rows; Conversation, then Small Talk: Questions opened (12 phrases); One word
+    short with both still open (29, 10); a lit word's I know this word moving one over (28, 9), still
+    open; no Show more; no script errors.
 
 ## My Stories in the topic picker (2026-11-22)
 

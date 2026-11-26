@@ -341,7 +341,8 @@ const state = {
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
   vocabPhrases: null,       // Phrases from your words while its list shows: 'known' | 'short' (renderVocabPhrases)
   vocabOpen: null,          // the Vocabulary page's row open to its bands, Again and Remove (vocabSourceRow)
-  vocabPhraseShown: 50,     // and how many of it show (VOCAB_PHRASE_PAGE more with each Show more)
+  vocabPhraseShown: 50,     // and how many of it show (VOCAB_PHRASE_PAGE more with each Show more), shortest first
+  vocabPhraseOpen: new Set(), // by topic: the categories ('c:' + name) and topics ('t:' + id) open
 };
 
 // ---------- storage ----------
@@ -9037,7 +9038,7 @@ function leaveVocabPhrases() {
 }
 
 // A list: Every word known | One word short (with their counts), what it is, Add all to your list, and
-// the phrases as List's rows, under their topics or shortest first; a one-word-short phrase's Thai has
+// the phrases as List's rows, in a tree of topics (vocabPhraseTree) or shortest first; a one-word-short phrase's Thai has
 // its missing word lit, a tap on it opening that word (its "I know this word" then moves the phrase
 // over). A page at a time.
 function renderVocabPhrases() {
@@ -9071,16 +9072,7 @@ function renderVocabPhrases() {
   const cols = wordlistColumns();
   const words = targetWords('phrases');
   const rows = [];
-  let lastDeck = null;
-  list.slice(0, state.vocabPhraseShown).forEach((p, i) => {
-    if (byTopic && p.deck !== lastDeck) {
-      lastDeck = p.deck;
-      const th = document.createElement('tr');
-      th.className = 'wl-topic';
-      th.innerHTML = '<td colspan="4"></td>';
-      th.firstChild.textContent = p.deck.name;
-      rows.push(th);
-    }
+  const phraseRow = (p, i) => {
     const tr = wordRow(cards[i], cols, words);
     if (p.missing) {
       // Its Thai word by word, the one not known yet lit; that word opens its own dialog.
@@ -9101,8 +9093,10 @@ function renderVocabPhrases() {
         return span;
       });
     }
-    rows.push(tr);
-  });
+    return tr;
+  };
+  if (byTopic) rows.push(...vocabPhraseTree(list, phraseRow));
+  else list.slice(0, state.vocabPhraseShown).forEach((p, i) => rows.push(phraseRow(p, i)));
   if (!list.length) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
@@ -9111,9 +9105,59 @@ function renderVocabPhrases() {
   }
   els.vocabPhraseRows.replaceChildren(...rows);
   els.vocabPhraseRows.closest('table').classList.toggle('show-spaces', !!getSettings().topicWordGaps); // Word gaps, as on List
-  const left = list.length - state.vocabPhraseShown;
+  const left = byTopic ? 0 : list.length - state.vocabPhraseShown; // by topic, an open topic shows whole
   els.vocabPhraseMore.hidden = left <= 0;
   els.vocabPhraseMore.textContent = `Show ${Math.min(left, VOCAB_PHRASE_PAGE)} more · ${fmtCount(left)} left`;
+}
+
+// By topic, a tree (2026-11-26, the user's call: the list "can get very long… probably needs to be
+// tree menu by topics"; till then every phrase, under its topic's heading, 50 at a time): the
+// categories, each opening to its topics, each opening to its phrases, as the topic picker's are
+// (without its groups: a category here has five topics at most). All closed at first; what's open
+// stays so while Vocabulary's open (state.vocabPhraseOpen), across All known | One word short, so a
+// phrase moving over on I know this word doesn't close anything. `row(p, i)` is a phrase's row.
+function vocabPhraseTree(list, row) {
+  const cats = new Map(); // category -> Map(deck -> [[p, i]])
+  list.forEach((p, i) => {
+    const cat = p.deck.category || 'Uncategorized';
+    if (!cats.has(cat)) cats.set(cat, new Map());
+    const decks = cats.get(cat);
+    if (!decks.has(p.deck)) decks.set(p.deck, []);
+    decks.get(p.deck).push([p, i]);
+  });
+  const open = state.vocabPhraseOpen;
+  const head = (key, name, n, level) => {
+    const tr = document.createElement('tr');
+    tr.className = `vp-head vp-${level}`;
+    const td = document.createElement('td');
+    td.colSpan = 4;
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'vp-head-btn';
+    b.setAttribute('aria-expanded', String(open.has(key)));
+    b.append(Object.assign(document.createElement('span'), { className: 'vp-caret', textContent: open.has(key) ? '▾' : '▸', ariaHidden: 'true' }),
+      Object.assign(document.createElement('span'), { className: 'vp-head-name', textContent: name }),
+      Object.assign(document.createElement('span'), { className: 'vp-head-count', textContent: fmtCount(n) }));
+    b.addEventListener('click', () => {
+      if (open.has(key)) open.delete(key);
+      else open.add(key);
+      renderVocabPhrases();
+    });
+    td.append(b);
+    tr.append(td);
+    return tr;
+  };
+  const out = [];
+  for (const [cat, decks] of cats) {
+    const n = [...decks.values()].reduce((sum, ps) => sum + ps.length, 0);
+    out.push(head(`c:${cat}`, cat, n, 'cat'));
+    if (!open.has(`c:${cat}`)) continue;
+    for (const [deck, ps] of decks) {
+      out.push(head(`t:${deck.id}`, deck.name, ps.length, 'topic'));
+      if (open.has(`t:${deck.id}`)) for (const [p, i] of ps) out.push(row(p, i));
+    }
+  }
+  return out;
 }
 
 // "I know this word" (2026-11-22, the user's request, "ideally not too cumbersome"): Vocabulary's

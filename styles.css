@@ -2336,11 +2336,39 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-phrase-table tbody tr:last-child { border-bottom: 0; }
 .vocab-phrase-table tbody tr.wl-topic { display: block; padding: 0; border-bottom: 0; }
 .vocab-phrase-table tr.wl-topic td { padding: 16px 14px 6px; }
-.vocab-phrase-table td { display: block; min-width: 0; padding: 0; border: 0; }
+/* tbody: over .wordtable td's padding and line (later in this file), which gave a wide screen a line under
+   each cell and the tree's rows two (2026-11-26). */
+.vocab-phrase-table tbody td { display: block; min-width: 0; padding: 0; border: 0; }
 .vocab-phrase-table tbody td:not(:last-child) { grid-column: 1; }
 .vocab-phrase-table tbody td:last-child { grid-column: 2; grid-row: 1 / span 3; }
 .vocab-phrase-table td.empty { grid-column: 1 / -1; padding: 24px; }
 .vocab-phrase-table .col-thai { min-width: 0; }
+/* By topic, a tree (2026-11-26): a category's row, its topics' rows indented under it, a topic's
+   phrases under that; each a full-width button, its caret, and the count. */
+.vocab-phrase-table tbody tr.vp-head { display: block; padding: 0; border-bottom: 1px solid var(--border); }
+.vocab-phrase-table tbody tr.vp-head:last-child { border-bottom: 0; }
+.vocab-phrase-table tbody tr.vp-head:hover { background: none; }
+.vp-head-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 14px;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  color: var(--ink);
+  font: inherit;
+  font-size: calc(16px * var(--fs, 1));
+  text-align: left;
+}
+.vp-cat .vp-head-btn { font-weight: 600; }
+.vp-topic .vp-head-btn { min-height: 44px; padding-left: 36px; }
+@media (hover: hover) { .vp-head-btn:hover { background: var(--panel-2); } }
+.vp-caret { flex: none; width: 1em; color: var(--muted); font-size: .8em; } /* ▸, or ▾ open, as Vocabulary's rows */
+.vp-head-name { flex: 1 1 auto; min-width: 0; }
+.vp-head-count { flex: none; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 400; font-variant-numeric: tabular-nums; }
 .vp-missing { white-space: nowrap; color: var(--accent); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.3em; border-radius: 6px; cursor: pointer; }
 .vp-missing:hover, .vp-missing:focus-visible { background: var(--panel-2); outline: none; }
 /* The word dialog's "I know this word" (knowButton), after its round buttons: a pill, green once known. */
