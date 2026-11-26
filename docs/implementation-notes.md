@@ -2341,6 +2341,19 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Fits one line at 390. Checked headless (scratch `addunknown_probe.py`) at 390 × 664 and 1280 × 800:
   the button (4), its confirm, Add 4 (My words 4) and the line after; one taken out of the list and
   a pass of No's to its end: "Add 1 more…", then the line; no script errors.
+- **Sort into My words** (2026-11-26, the user's request: "add a 'sort into xxxx' option as well"):
+  before Add the 4 you didn't know, **Sort into My words** with the bookmark, on the list's panel and
+  at a run's end. It opens One by one's dialog for words (`openSort('words', wordSortQueue(src))`; the
+  dialog's code now takes `of`, 'phrases' or 'words'): "Add to 'My words'?", 1 of 4, a card with the
+  word's topic (an ordinary one before a Thai Script one: ให้ is Everyday Actions, not The 20 ใ
+  Words), Thai, transliteration, meaning, ▶; No or Add, the swipe, Undo, keys, Change ("Add words
+  to", your word lists; it makes the chosen one your word list). Its queue: the words you said No to
+  that aren't in your word list or sorted yet. A sorted word is kept in `store.wordChoices` only so
+  it isn't asked again; it hides nothing (unlike phrases, there's no list here to leave). Gone when
+  none are left to sort. Checked headless (scratch `sortwords_probe.py`) at 390 × 664 and 1280 × 800:
+  both buttons; the dialog (เขา, 1 of 4); Add, No, Undo (the No taken back); Change's lists; Esc twice;
+  the row then "Add 3 more…" and Sort into asking 3, not the one added; all three added (My words 4)
+  and both buttons gone; the phrases' Sort into unchanged (My phrases 1); no script errors.
 - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again

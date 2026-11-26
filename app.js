@@ -9284,7 +9284,12 @@ async function addAllVocabPhrases(keys) {
 // in its order, leaving out what's in your list already. Keys: ← N No, → Y Add, Backspace U Undo,
 // P play, Esc close.
 const PS_SWIPE = 80; // px across that decides a swipe
-let phraseSort = null; // { kind, queue, i, added, history: [{ p, prev, wasIn }] }
+let phraseSort = null; // { of, queue, i, added, history: [{ p, prev, wasIn, listId }] }
+// Sort into for words too (2026-11-26, the user's request: a "'sort into xxxx' option as well" beside
+// Add the 4 you didn't know to My words): `of` 'words' goes into your word list, remembered in
+// store.wordChoices (only so Sort into doesn't ask again: it hides nothing else); 'phrases' as above.
+const SORT_CHOICES = { phrases: 'phraseChoices', words: 'wordChoices' };
+const sortChoices = (of) => loadStore()[SORT_CHOICES[of]] || {};
 
 function phraseSortQueue(list) {
   const choices = phraseChoices();
@@ -9293,10 +9298,32 @@ function phraseSortQueue(list) {
 }
 
 function openPhraseSort() {
-  const kind = state.vocabPhrases;
-  const queue = phraseSortQueue(vocabPhraseList(kind));
+  openSort('phrases', phraseSortQueue(vocabPhraseList(state.vocabPhrases)));
+}
+
+// The words of a Vocabulary list you said No to, not in your word list nor sorted yet: { card, deck }
+// (the card the list shows, its first topic).
+function wordSortQueue(src, known = knownMap()) {
+  const choices = sortChoices('words');
+  const target = targetWords('words');
+  const seen = new Set();
+  const queue = [];
+  for (const w of src.words) {
+    if (known[w] !== 0) continue;
+    const card = src.shown(w)?.card;
+    const key = card && cardKey(card);
+    if (!key || seen.has(key) || keyKind(key) !== 'words' || key in choices || target.has(key)) continue;
+    seen.add(key);
+    const decks = vocabIndex().get(w)?.cards.find((e) => e.card === card)?.decks || [];
+    const deck = decks.find((d) => !VOCAB_ASIDE.has(d.category)) || decks[0]; // not a Thai Script topic's name (ให้: The 20 ใ Words)
+    queue.push({ card, deck });
+  }
+  return queue;
+}
+
+function openSort(of, queue) {
   if (!queue.length) return;
-  phraseSort = { kind, queue, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  phraseSort = { of, queue, i: 0, added: 0, history: [], lastFocus: document.activeElement };
   renderPhraseSortTitle();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
@@ -9322,7 +9349,7 @@ function renderPhraseSort({ say = true } = {}) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   els.phraseSortCount.textContent = p ? `${fmtCount(ps.i + 1)} of ${fmtCount(ps.queue.length)}` : '';
   const last = ps.history[ps.history.length - 1];
-  els.psLastText.textContent = last ? `${last.p.card.thai} ${phraseChoices()[cardKey(last.p.card)] ? '✓ Added' : '✗ Not added'}` : '';
+  els.psLastText.textContent = last ? `${last.p.card.thai} ${sortChoices(ps.of)[cardKey(last.p.card)] ? '✓ Added' : '✗ Not added'}` : '';
   els.psUndo.classList.toggle('off', !last);
   els.psAnswers.classList.toggle('off', !p);
   els.psCard.style.transform = '';
@@ -9344,7 +9371,7 @@ function renderPhraseSort({ say = true } = {}) {
   if (p.missing) appendPhraseParts(thai, p.card.thai, p.words, (w, text) => (w.thai === p.missing ? el('span', 'vp-missing', text) : text));
   else thai.textContent = p.card.thai;
   const play = playButton(cardSay(p.card), `Play ${p.card.thai} (P)`);
-  const parts = [el('p', 'ps-topic', p.deck.name), thai, el('p', 'ps-tr', p.card.translit), el('p', 'ps-en', p.card.english)];
+  const parts = [el('p', 'ps-topic', p.deck?.name || ''), thai, el('p', 'ps-tr', p.card.translit), el('p', 'ps-en', p.card.english)];
   if (p.missing) {
     const w = p.words.find((x) => x.thai === p.missing);
     parts.push(el('p', 'ps-missing', `New word: ${w.thai} ${w.english}`));
@@ -9361,14 +9388,14 @@ function answerPhraseSort(yes) {
   if (!p) return;
   const key = cardKey(p.card);
   const store = loadStore();
-  const choices = (store.phraseChoices ||= {});
-  const was = targetList('phrases');
+  const choices = (store[SORT_CHOICES[ps.of]] ||= {});
+  const was = targetList(ps.of);
   ps.history.push({ p, prev: choices[key], wasIn: !!was?.words.includes(key) });
   choices[key] = yes ? 1 : 0;
   saveStore(store);
   if (yes) { // in the list now, not at the end
-    setInTarget([key], true, 'phrases'); // makes My phrases if there's none
-    ps.history[ps.history.length - 1].listId = targetList('phrases').id;
+    setInTarget([key], true, ps.of); // makes My phrases (or My words) if there's none
+    ps.history[ps.history.length - 1].listId = targetList(ps.of).id;
     ps.added += 1;
     renderPhraseSortTitle(); // a first list made: its name
   }
@@ -9382,7 +9409,7 @@ function undoPhraseSort() {
   if (!last) return;
   const key = cardKey(last.p.card);
   const store = loadStore();
-  const choices = (store.phraseChoices ||= {});
+  const choices = (store[SORT_CHOICES[ps.of]] ||= {});
   if (choices[key] && !last.wasIn) { // out of the list it went into, though another's chosen since
     changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
     ps.added -= 1;
@@ -9448,7 +9475,7 @@ function bindPhraseSortSwipe() {
   els.psYes.addEventListener('click', () => answerPhraseSort(true));
   els.psUndo.addEventListener('click', undoPhraseSort);
   els.psChange.addEventListener('click', () => openListChooser({
-    title: 'Add phrases to', kind: PHRASE_LISTS, current: targetList('phrases')?.id,
+    title: `Add ${phraseSort.of} to`, kind: LIST_KINDS[phraseSort.of], current: targetList(phraseSort.of)?.id,
     pick: (id) => { setTarget(id); renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); },
   }));
   els.phraseSort.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePhraseSort));
@@ -9459,7 +9486,7 @@ function bindPhraseSortSwipe() {
 // list is your phrase list (targetList): Change makes another that (setTarget), so Add all and a
 // bookmark go there too. With none yet, My phrases, made by the first Add.
 function renderPhraseSortTitle() {
-  els.phraseSortTitle.textContent = `Add to '${targetName('phrases')}'?`;
+  els.phraseSortTitle.textContent = `Add to '${targetName(phraseSort?.of || 'phrases')}'?`;
 }
 
 function handlePhraseSortKey(e) {
@@ -9667,6 +9694,13 @@ function vocabAddUnknownRow(src, known = knownMap()) {
   const out = keys.filter((k) => !have.has(k));
   const row = document.createElement('div');
   row.className = 'vocab-again-row';
+  // Sort into My words first, as on the phrases' list: each in turn, Add or No (openSort).
+  const toSort = wordSortQueue(src, known);
+  if (toSort.length) {
+    const sort = vocabButton('', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)));
+    sort.replaceChildren(reviewIcon(), `Sort into ${name}`);
+    row.append(sort);
+  }
   if (!out.length) {
     row.append(Object.assign(document.createElement('span'), { className: 'vocab-again-label', textContent: `The ${plural(keys.length, 'word')} you didn't know ${keys.length === 1 ? 'is' : 'are'} in ${name}` }));
     return row;
