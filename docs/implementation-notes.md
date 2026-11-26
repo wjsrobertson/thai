@@ -2910,6 +2910,29 @@ too cumbersome").
     One by one gone and the list empty but for those shown; no sideways scroll, no script errors.
     Fit at 390 × 664, 763 and 430 × 932: nothing scrolls, the answers 16 above the tab bar (the card
     220 tall at the least, growing to fill).
+- **The user's four points on it** (the same day):
+  1. **Wording:** "Phrases from your known vocabulary" (the Vocabulary page's row, the list's pinned
+     row, Settings → Vocabulary) for "Phrases from your words", and **All words known** for All known
+     (the row's "16 all words known · 99 one word short"). The switch's halves stay one line at 390
+     (44 tall). The pinned row's title is cut with "…" at 390 ("Phrases from your known vocab…"),
+     beside ‹ Done.
+  2. **Which list** ("User should be able to change which list the phrases are being added to"): an
+     **Add to [list]** row over the card (`renderPhraseSortList`): your phrase lists, the one
+     bookmarks fill chosen, then **＋ New list…** (named in the usual dialog, which sits over this one).
+     Choosing one makes it your phrase list (`setTarget`), so Add all and a phrase's bookmark go there
+     too, rather than this dialog having a list of its own that the page's buttons didn't. With no
+     phrase list yet it shows My phrases, made by the first Add. Undo takes a phrase out of the list
+     it went into, though another's chosen since (`history[].listId`). The dropdown keeps its own
+     keys: ← → don't answer while it has the focus. The end says how many were added, not where.
+  3. **Opening on All words known**, always, even empty (it opened on One word short when All known
+     had none).
+  4. **Added as you go** (the user asked to be sure): each Add puts the phrase in the list then
+     (`answerPhraseSort` → `setInTarget`), not at the end; closing midway keeps what's been added.
+  - Checked headless (scratch `psort2_probe.py`) at 390 × 664 and 1280 × 800: with the most-used 40
+    known, the row's wording, the list opening on All words known (16) and the switch one line; with
+    1,500 and a list "Travel phrases": Add into it; New list "Idioms to learn" chosen, two Adds into
+    it; Travel phrases chosen again, then Undo, out of Idioms to learn (2 → 1); Add all then "Add all to
+    Travel phrases"; no script errors.
 
 ## My Stories in the topic picker (2026-11-22)
 

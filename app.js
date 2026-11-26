@@ -208,6 +208,7 @@ const els = {
   phraseSortTitle: document.getElementById('phrase-sort-title'),
   phraseSortCount: document.getElementById('phrase-sort-count'),
   psCard: document.getElementById('ps-card'),
+  psList: document.getElementById('ps-list'),
   psLastText: document.getElementById('ps-last-text'),
   psUndo: document.getElementById('ps-undo'),
   psAnswers: document.getElementById('ps-answers'),
@@ -9031,10 +9032,12 @@ function renderPhrasePanel(known) {
   const n = (k) => vocabPhraseList(k, sets).length; // not gone through one by one
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const text = el('span', 'vocab-phrase-text');
-  text.append(el('span', 'vocab-phrase-title', 'Phrases from your words'),
-    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} all known · ${fmtCount(n('short'))} one word short`));
+  // "Phrases from your known vocabulary", "all words known" (the user's wording, 2026-11-26; it was
+  // "Phrases from your words", "all known").
+  text.append(el('span', 'vocab-phrase-title', 'Phrases from your known vocabulary'),
+    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} all words known · ${fmtCount(n('short'))} one word short`));
   els.vocabPhrasePanel.replaceChildren(text, el('span', 'vocab-phrase-chevron', '›'));
-  els.vocabPhrasePanel.onclick = () => openVocabPhrases(n('known') || !n('short') ? 'known' : 'short');
+  els.vocabPhrasePanel.onclick = () => openVocabPhrases('known') // always All words known, even empty (the user's call, 2026-11-26);
 }
 
 function openVocabPhrases(kind) {
@@ -9075,7 +9078,7 @@ function renderVocabPhrases() {
   els.vocabPhraseKinds.forEach((b) => {
     const k = b.dataset.phraseKind;
     b.setAttribute('aria-checked', String(k === kind));
-    b.textContent = `${k === 'known' ? 'All known' : 'One word short'} · ${fmtCount(vocabPhraseList(k, sets).length)}`; // "Every word known" wrapped on a phone
+    b.textContent = `${k === 'known' ? 'All words known' : 'One word short'} · ${fmtCount(vocabPhraseList(k, sets).length)}`; // "Every word known" wrapped on a phone (2026-11-22); this fits at 390
   });
   els.vocabPhraseHelp.textContent = kind === 'known'
     ? 'Phrases made only of words you know. Tap one for its words, tones and stories.'
@@ -9227,7 +9230,7 @@ function openPhraseSort() {
   const queue = phraseSortQueue(vocabPhraseList(kind));
   if (!queue.length) return;
   phraseSort = { kind, queue, i: 0, added: 0, history: [], lastFocus: document.activeElement };
-  els.phraseSortTitle.textContent = `Add to '${targetName('phrases')}'?`;
+  renderPhraseSortList();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
   els.phraseSort.hidden = false;
@@ -9264,7 +9267,7 @@ function renderPhraseSort({ say = true } = {}) {
     close.type = 'button';
     close.addEventListener('click', closePhraseSort);
     els.psCard.replaceChildren(el('p', 'ps-thai ps-done', `All ${fmtCount(n)} gone through`),
-      el('p', 'ps-en', `${fmtCount(ps.added)} added to '${targetName('phrases')}'`), close);
+      el('p', 'ps-en', `${fmtCount(ps.added)} added`), close); // perhaps to more than one list
     close.focus({ preventScroll: true });
     return;
   }
@@ -9292,12 +9295,15 @@ function answerPhraseSort(yes) {
   const key = cardKey(p.card);
   const store = loadStore();
   const choices = (store.phraseChoices ||= {});
-  ps.history.push({ p, prev: choices[key], wasIn: targetWords('phrases').has(key) });
+  const was = targetList('phrases');
+  ps.history.push({ p, prev: choices[key], wasIn: !!was?.words.includes(key) });
   choices[key] = yes ? 1 : 0;
   saveStore(store);
-  if (yes) {
-    setInTarget([key], true, 'phrases');
+  if (yes) { // in the list now, not at the end
+    setInTarget([key], true, 'phrases'); // makes My phrases if there's none
+    ps.history[ps.history.length - 1].listId = targetList('phrases').id;
     ps.added += 1;
+    renderPhraseSortList(); // a first list made
   }
   ps.i += 1;
   renderPhraseSort();
@@ -9310,8 +9316,8 @@ function undoPhraseSort() {
   const key = cardKey(last.p.card);
   const store = loadStore();
   const choices = (store.phraseChoices ||= {});
-  if (choices[key] && !last.wasIn) {
-    setInTarget([key], false, 'phrases');
+  if (choices[key] && !last.wasIn) { // out of the list it went into, though another's chosen since
+    changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
     ps.added -= 1;
   }
   if (last.prev === undefined) delete choices[key];
@@ -9374,11 +9380,36 @@ function bindPhraseSortSwipe() {
   els.psNo.addEventListener('click', () => answerPhraseSort(false));
   els.psYes.addEventListener('click', () => answerPhraseSort(true));
   els.psUndo.addEventListener('click', undoPhraseSort);
+  els.psList.addEventListener('change', changePhraseSortList);
   els.phraseSort.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePhraseSort));
+}
+
+// Add to: your phrase lists, the one bookmarks fill chosen (targetList), and New list. Choosing one
+// makes it that (setTarget), so Add all, a bookmark and this agree (the user's call, 2026-11-26: "User
+// should be able to change which list the phrases are being added to"). With no phrase list yet,
+// My phrases, made by the first Add.
+function renderPhraseSortList() {
+  const lists = listsOfKind('phrases');
+  const now = targetList('phrases');
+  const opts = lists.length ? lists.map((l) => new Option(l.name, l.id, false, l.id === now?.id)) : [new Option(DEFAULT_LIST.phrases, '', false, true)];
+  els.psList.replaceChildren(...opts, new Option('＋ New list…', 'new'));
+}
+
+async function changePhraseSortList() {
+  const v = els.psList.value;
+  if (v === 'new') {
+    const name = await askListName('New list', '', 'Make list');
+    if (name) createList(name, { kind: 'phrases' }); // and makes it the target
+    renderPhraseSortList();
+  } else if (v) {
+    setTarget(v);
+  }
+  els.psList.focus({ preventScroll: true });
 }
 
 function handlePhraseSortKey(e) {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.target === els.psList && e.key !== 'Escape') return; // its own keys choose a list
   const p = phraseSort.queue[phraseSort.i];
   const act = { escape: closePhraseSort, backspace: undoPhraseSort, u: undoPhraseSort,
     ...(p ? { arrowright: () => answerPhraseSort(true), y: () => answerPhraseSort(true), arrowleft: () => answerPhraseSort(false),

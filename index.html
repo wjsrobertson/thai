@@ -168,10 +168,12 @@
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel word-panel ps-panel" role="document">
       <div class="modal-head word-head">
-        <div class="pop-text"><span class="ps-title" id="phrase-sort-title"></span><span class="ps-count" id="phrase-sort-count"></span></div>
+        <div class="pop-text"><span class="ps-title" id="phrase-sort-title">One by one</span><span class="ps-count" id="phrase-sort-count"></span></div>
         <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
       </div>
       <div class="modal-body word-body ps-body">
+        <!-- The phrase list they go into: your phrase list (the target, as bookmarks and Add all), or another, or a new one. -->
+        <label class="ps-list"><span class="ps-list-label">Add to</span><select id="ps-list"></select></label>
         <div class="ps-card" id="ps-card"></div>
         <div class="vocab-last ps-last">
           <span class="vocab-last-text" id="ps-last-text" role="status"></span>
@@ -753,7 +755,7 @@
         <div class="setting-list">
           <div class="setting-group" data-search="vocabulary phrases from your words order sort sorted topic shortest known short">
             <label class="setting-row">
-              <span class="setting-label">Phrases from your words</span>
+              <span class="setting-label">Phrases from your known vocabulary</span>
               <select id="setting-vocab-phrase-order">
                 <option value="topic">By topic</option>
                 <option value="shortest">Shortest first</option>
@@ -953,7 +955,7 @@
       <div class="vocab-phrases" id="vocab-phrases" hidden>
         <div class="vocab-top">
           <button type="button" class="ghost vocab-done" id="vocab-phrases-done">‹ Done</button>
-          <span class="vocab-run-name">Phrases from your words</span>
+          <span class="vocab-run-name">Phrases from your known vocabulary</span>
         </div>
         <div class="segmented vocab-phrase-kinds" role="radiogroup" aria-label="Which phrases">
           <button type="button" role="radio" class="seg-btn" data-phrase-kind="known" aria-checked="true"></button>
