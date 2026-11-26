@@ -9183,14 +9183,16 @@ function renderVocabPhrases() {
   };
   if (byTopic) rows.push(...vocabPhraseTree(list, phraseRow));
   else list.slice(0, state.vocabPhraseShown).forEach((p, i) => rows.push(phraseRow(p, i)));
-  if (!list.length) {
+  // Empty: a line, unless what's left is sorted (the user's call, 2026-11-26: "None left: you've
+  // sorted all 3" was a box not needed); Show 3 already sorted is then all there is.
+  if (!list.length && !done) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = done ? `None left: you've sorted ${done === 1 ? 'it' : `all ${fmtCount(done)}`}.`
-      : kind === 'known' ? 'None yet: say which words you know, and the phrases made of them come here.' : 'None one word short.';
+    tr.firstChild.textContent = kind === 'known' ? 'None yet: say which words you know, and the phrases made of them come here.' : 'None one word short.';
     rows.push(tr);
   }
   els.vocabPhraseRows.replaceChildren(...rows);
+  els.vocabPhraseRows.closest('table').hidden = !rows.length; // no empty box
   els.vocabPhraseRows.closest('table').classList.toggle('show-spaces', !!getSettings().topicWordGaps); // Word gaps, as on List
   const left = byTopic ? 0 : list.length - state.vocabPhraseShown; // by topic, an open topic shows whole
   els.vocabPhraseMore.hidden = left <= 0;

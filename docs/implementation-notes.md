@@ -2982,8 +2982,11 @@ too cumbersome").
     sorted…", or with all of them in, "Count the 5 phrases as sorted…?" (Count as sorted).
   - Confirmed, every phrase the list shows that isn't sorted is counted as sorted, Added
     (`phraseChoices` 1), and those not in your phrase list go in; a toast says so (its Change moves
-    them, as everywhere). The list is then empty: "None left: you've sorted all 16.", with Show 16
-    already sorted; Sort into and Add all go. The counts (the tabs, Vocabulary's row) follow.
+    them, as everywhere). The list is then empty, with Show 16 already sorted; Sort into and Add all
+    go. The counts (the tabs, Vocabulary's row) follow. It said "None left: you've sorted all 16." in
+    the table's box till the user's call the same evening ("we don't need this box… just don't
+    display it"): with everything left sorted, the table is hidden (`.vocab-phrase-table[hidden]`,
+    over its display: block) and nothing is said. "None yet…" for a list with nothing in it stays.
   - The green "All in My phrases" state is gone (`.all-in` no longer set here; its CSS for this page
     with it): a list whose phrases are all in your list already still offers Add all, which then
     just counts them as sorted.

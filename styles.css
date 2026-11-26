@@ -2380,6 +2380,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    English down the left, the buttons on the right. In Vocabulary's 560 column the table's columns left
    the Thai 140 wide, a word of it broken across two lines. */
 .vocab-phrase-table, .vocab-phrase-table tbody { display: block; width: 100%; }
+.vocab-phrase-table[hidden] { display: none; } /* nothing to list: no empty box */
 .vocab-phrase-table tbody tr {
   display: grid;
   grid-template-columns: 1fr auto;
