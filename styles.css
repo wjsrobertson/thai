@@ -3141,6 +3141,11 @@ html.dialog-kb .modal.confirm-modal {
   gap: 12px;
 }
 .confirm-panel h2 { margin: 0; font-size: calc(19px * var(--fs, 1)); color: var(--ink); }
+/* An add's title with Change right after it (confirmDialog's `change`, 2026-11-26), wrapping under a long name. */
+.confirm-head { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 4px; }
+.confirm-head h2 { overflow-wrap: anywhere; }
+.confirm-change { flex: none; min-height: 44px; padding: 4px 10px; font-size: 15px; }
+.confirm-change[hidden] { display: none; }
 .confirm-panel p { margin: 0; color: var(--muted); font-size: calc(16px * var(--fs, 1)); line-height: 1.45; white-space: pre-line; }
 .confirm-panel p[hidden], .confirm-dont-ask[hidden], .confirm-input[hidden] { display: none; }
 /* A list's name (askListName): 16px, so iOS doesn't zoom in on it. */

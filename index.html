@@ -115,7 +115,8 @@
        aria-labelledby="confirm-title" aria-describedby="confirm-message">
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel confirm-panel" role="document">
-      <h2 id="confirm-title"></h2>
+      <!-- Change (an add's: confirmDialog's `change`, 2026-11-26) picks another list from the lists dialog. -->
+      <div class="confirm-head"><h2 id="confirm-title"></h2><button type="button" class="ghost confirm-change" id="confirm-change" hidden>Change</button></div>
       <p id="confirm-message"></p>
       <input type="text" id="confirm-input" class="confirm-input" maxlength="60" autocomplete="off" hidden />
       <div class="confirm-dont-ask" id="confirm-dont-ask-row">

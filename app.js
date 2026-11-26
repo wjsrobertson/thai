@@ -139,6 +139,7 @@ const els = {
   listRename: document.getElementById('list-rename'),
   listDelete: document.getElementById('list-delete'),
   confirmInput: document.getElementById('confirm-input'),
+  confirmChange: document.getElementById('confirm-change'), // an add's Change (confirmDialog's `change`)
   wordlistAddAll: document.getElementById('wordlist-add-all'),
   confirmModal: document.getElementById('confirm-modal'),
   wordModal: document.getElementById('word-modal'),
@@ -5834,7 +5835,7 @@ function openMoveWords(keys, what, fromId, kind = WORD_LISTS) {
 // The same dialog to choose a list, not move anything (2026-11-26, One by one's Change): `title`
 // ("Add phrases to"), your lists of `kind` with `current` ticked, ＋ New list; a tap closes it and
 // calls `pick(id)`. Without "Add new … there too": choosing is the point.
-function openListChooser({ title, kind, current, pick }) {
+function openListChooser({ title, kind, current, pick, noNew = false }) {
   state.moving = { lastFocus: document.activeElement };
   els.moveTitle.textContent = title;
   els.moveDefault.checked = false;
@@ -5867,7 +5868,7 @@ function openListChooser({ title, kind, current, pick }) {
     const name = await askListName('New list', '', 'Make list');
     if (name) pick(kind.create(name, { target: false }).id);
   });
-  els.moveLists.replaceChildren(...rows, add);
+  els.moveLists.replaceChildren(...rows, ...(noNew ? [] : [add])); // noNew: over the confirm dialog, which asks a new list's name
   els.moveModal.hidden = false;
   setModalOpen(true);
   (els.moveLists.querySelector('[aria-current]') || els.moveLists.firstChild).focus();
@@ -6276,16 +6277,36 @@ function holdToast(held) {
 // it's off, it resolves true straight away without showing anything.
 // With `input` ({ value, placeholder }), a text box under the message (a list's name, 2026-10-20),
 // focused, Enter confirming; the caller reads els.confirmInput.
-function confirmDialog({ title, message = '', confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false, input = null }) {
+// With `change` ({ kind, text }), an add to your word or phrase list: Change beside the title opens the
+// lists dialog (openListChooser) to pick another, which becomes your list of that kind (setTarget), and
+// the dialog's title, message and button are made again by text() (the user's call, 2026-11-26: Add
+// all's "Add to 'xxx'?" "should have the 'change' button to allow selecting a different list"). The
+// caller works out what to add once confirmed, from the list then chosen. No ＋ New list there: its
+// name is asked in this same dialog.
+function confirmDialog({ title, message = '', confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false, input = null, change = null }) {
   if (setting && getSettings()[setting] === false) return Promise.resolve(true);
   if (state.confirm) closeConfirm(false);
   els.confirmInput.hidden = !input;
   els.confirmInput.value = input?.value || '';
   els.confirmInput.placeholder = input?.placeholder || '';
-  els.confirmTitle.textContent = title;
-  els.confirmMessage.textContent = message;
-  els.confirmMessage.hidden = !message;
-  els.confirmOk.textContent = confirmLabel;
+  const paint = (t) => {
+    els.confirmTitle.textContent = t.title;
+    els.confirmMessage.textContent = t.message || '';
+    els.confirmMessage.hidden = !t.message;
+    els.confirmOk.textContent = t.confirmLabel || 'OK';
+  };
+  paint(change ? change.text() : { title, message, confirmLabel });
+  els.confirmChange.hidden = !change;
+  els.confirmChange.onclick = !change ? null : () => openListChooser({
+    title: `Add ${kindNoun(change.kind)} to`, kind: LIST_KINDS[change.kind], current: targetList(change.kind)?.id, noNew: true,
+    pick: (id) => {
+      setTarget(id);
+      paint(change.text());
+      if (state.view === 'wordlist') renderWordlist(); // the buttons under it name the list (Add all to …)
+      else if (state.view === 'vocab') renderVocab();
+      els.confirmChange.focus({ preventScroll: true });
+    },
+  });
   els.confirmOk.classList.toggle('danger', danger);
   els.confirmCancel.textContent = cancelLabel;
   els.confirmDontAskRow.hidden = !setting;
@@ -9247,19 +9268,24 @@ function vocabPhraseTree(list, row) {
 }
 
 async function addAllVocabPhrases(keys) {
-  const name = targetName('phrases');
-  const target = targetWords('phrases');
-  const out = keys.filter((k) => !target.has(k));
   const n = keys.length;
+  const outOf = () => { const target = targetWords('phrases'); return keys.filter((k) => !target.has(k)); };
   const ok = await confirmDialog({
-    title: `Add all to '${name}'?`,
-    message: !out.length ? `They're all in '${name}' already. Count the ${plural(n, 'phrase')} as sorted, so they leave this list?`
-      : out.length === n ? `Add ${n === 1 ? 'this phrase' : `these ${fmtCount(n)} phrases`} to '${name}'? They then count as sorted, so they leave this list.`
-      : `Add the ${plural(out.length, 'phrase')} not in '${name}' yet? All ${fmtCount(n)} then count as sorted, so they leave this list.`,
-    confirmLabel: out.length ? `Add ${fmtCount(out.length)}` : 'Count as sorted',
     setting: 'confirmAddAll',
+    change: { kind: 'phrases', text: () => { // again after Change: another list
+      const name = targetName('phrases');
+      const out = outOf();
+      return {
+        title: `Add all to '${name}'?`,
+        message: !out.length ? `They're all in '${name}' already. Count the ${plural(n, 'phrase')} as sorted, so they leave this list?`
+          : out.length === n ? `Add ${n === 1 ? 'this phrase' : `these ${fmtCount(n)} phrases`} to '${name}'? They then count as sorted, so they leave this list.`
+          : `Add the ${plural(out.length, 'phrase')} not in '${name}' yet? All ${fmtCount(n)} then count as sorted, so they leave this list.`,
+        confirmLabel: out.length ? `Add ${fmtCount(out.length)}` : 'Count as sorted',
+      };
+    } },
   });
   if (!ok) return;
+  const out = outOf(); // into the list chosen
   const store = loadStore();
   const choices = (store.phraseChoices ||= {});
   for (const k of keys) choices[k] = 1;
@@ -9698,7 +9724,7 @@ function vocabAddUnknownRow(src, known = knownMap()) {
   const toSort = wordSortQueue(src, known);
   if (toSort.length) {
     const sort = vocabButton('', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)));
-    sort.replaceChildren(reviewIcon(), `Sort into ${name}`);
+    sort.replaceChildren(reviewIcon(), `Sort unknown into ${name}`); // the user's wording, 2026-11-26
     row.append(sort);
   }
   if (!out.length) {
@@ -9708,19 +9734,27 @@ function vocabAddUnknownRow(src, known = knownMap()) {
   const n = out.length;
   const what = n === keys.length ? `the ${n === 1 ? 'word' : fmtCount(n)} you didn't know` : `the ${fmtCount(n)} you didn't know not in it yet`;
   const b = vocabButton('', `Add ${what} to ${name}`, async () => {
+    const outOf = () => { const have = targetWords('words'); return keys.filter((k) => !have.has(k)); };
     const ok = await confirmDialog({
-      title: `Add to '${name}'?`,
-      message: `Add ${n === keys.length ? `the ${plural(n, 'word')}` : `the ${plural(n, 'word')} of ${fmtCount(keys.length)}`} in ${src.name} you didn't know to '${name}'${n === keys.length ? '' : ` (the others are in it already)`}?`,
-      confirmLabel: `Add ${fmtCount(n)}`,
       setting: 'confirmAddAll',
+      change: { kind: 'words', text: () => { // again after Change: another list
+        const to = targetName('words');
+        const m = outOf().length;
+        return !m ? { title: `Add to '${to}'?`, message: `The ${plural(keys.length, 'word')} in ${src.name} you didn't know ${keys.length === 1 ? 'is' : 'are'} in '${to}' already.`, confirmLabel: 'OK' }
+          : { title: `Add to '${to}'?`, confirmLabel: `Add ${fmtCount(m)}`,
+            message: `Add ${m === keys.length ? `the ${plural(m, 'word')}` : `the ${plural(m, 'word')} of ${fmtCount(keys.length)}`} in ${src.name} you didn't know to '${to}'${m === keys.length ? '' : ' (the others are in it already)'}?` };
+      } },
     });
     if (!ok) return;
-    setInTarget(out, true, 'words');
-    toastAdded(out, plural(n, 'word'));
+    const add = outOf(); // into the list chosen
+    if (add.length) {
+      setInTarget(add, true, 'words');
+      toastAdded(add, plural(add.length, 'word'));
+    }
     if (state.vocabRun) renderVocabRun({ say: false });
     else renderVocab();
   });
-  b.replaceChildren(reviewIcon(), n === keys.length ? `Add the ${fmtCount(n)} you didn't know to ${name}` : `Add ${fmtCount(n)} more you didn't know to ${name}`);
+  b.replaceChildren(reviewIcon(), `Add unknown into ${name}`); // the user's wording, 2026-11-26 (was "Add the 4 you didn't know to …", "Add 3 more…"); the confirm says how many
   row.append(b);
   return row;
 }
@@ -10289,18 +10323,25 @@ function bindEvents() {
       }
       return;
     }
-    const n = keys.length;
+    const all = state.listCards.map((c) => c.key);
+    const outOf = () => { const have = targetWords(kind); return all.filter((key) => !have.has(key)); };
     const ok = await confirmDialog({
-      title: `Add all to '${name}'?`,
-      message: n === state.listCards.length
-        ? `Add all ${n} ${noun(n)} in ${deck.name} to '${name}'?`
-        : `Add the ${n} ${noun(n)} in ${deck.name} that aren't in '${name}' yet?`,
-      confirmLabel: `Add ${n}`,
       setting: 'confirmAddAll',
+      change: { kind, text: () => { // again after Change: another list (2026-11-26)
+        const to = targetName(kind);
+        const m = outOf().length;
+        if (!m) return { title: `Add all to '${to}'?`, message: `They're all in '${to}' already.`, confirmLabel: 'OK' };
+        return {
+          title: `Add all to '${to}'?`,
+          message: m === all.length ? `Add all ${m} ${noun(m)} in ${deck.name} to '${to}'?` : `Add the ${m} ${noun(m)} in ${deck.name} that aren't in '${to}' yet?`,
+          confirmLabel: `Add ${m}`,
+        };
+      } },
     });
-    if (ok) {
-      setInTarget(keys, true, kind);
-      toastAdded(keys, `${n} ${noun(n)}`);
+    const add = ok ? outOf() : []; // into the list chosen
+    if (add.length) {
+      setInTarget(add, true, kind);
+      toastAdded(add, `${add.length} ${noun(add.length)}`);
     }
   });
   // Cards on an empty list: its Add words, on the List page.
@@ -10356,6 +10397,13 @@ function bindEvents() {
   });
 
   document.addEventListener('keydown', (e) => {
+    if (state.moving && state.confirm) { // the lists dialog over the confirm (its Change): Esc closes it first
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeMoveWords();
+      }
+      return;
+    }
     if (state.confirm) {
       if (e.key === 'Escape') {
         e.preventDefault();

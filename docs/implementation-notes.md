@@ -2354,6 +2354,24 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   both buttons; the dialog (เขา, 1 of 4); Add, No, Undo (the No taken back); Change's lists; Esc twice;
   the row then "Add 3 more…" and Sort into asking 3, not the one added; all three added (My words 4)
   and both buttons gone; the phrases' Sort into unchanged (My phrases 1); no script errors.
+- **Change on an add's confirm** (2026-11-26, the user's call: Add all's "Add to 'xxx'?" "should have
+  the 'change' button to allow selecting a different list"): the confirm dialog takes `change` ({ kind,
+  text }); its title then has **Change** right after it (`.confirm-head`, as One by one's), which opens
+  the lists dialog (`openListChooser`, "Add words to" / "Add phrases to", the current list ticked) over
+  it. A pick makes that list your list of the kind (`setTarget`), and the title, message and button
+  are made again (text()); the page under it is redrawn too, so its buttons name the new list even if
+  you then Cancel. Each caller works out what to add once confirmed, from the list then chosen. Used
+  by all three adds that ask: Vocabulary's Add unknown into My words, the phrases' Add all, and the
+  List page's Add all. Over a confirm the lists dialog has no ＋ New list (a new list's name is asked
+  in the same confirm dialog, which can't be open twice); Esc closes it first (the key handler checks
+  `state.moving && state.confirm` before the confirm). Checked headless (scratch
+  `confchange_probe.py`) at 390 × 664 and 1280 × 800: each of the three, Change → the lists, Esc
+  closing only them, a pick → the new title and message, the focus back on Change; adds into the
+  list picked (Food words 4, My words 25); Cancel after a pick leaves "Sort into Travel phrases";
+  no script errors.
+- **The words' buttons reworded** (the user's call, the same day): **Sort unknown into My words** and
+  **Add unknown into My words** (was "Sort into My words", "Add the 4 you didn't know to My words" /
+  "Add 3 more…"); the confirm says how many.
 - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again
