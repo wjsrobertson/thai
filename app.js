@@ -9564,6 +9564,8 @@ function vocabSourceRow(id, known, at) {
   } else {
     const row = vocabAgainRow(id, src, p);
     if (row) more.push(row);
+    const add = vocabAddUnknownRow(src, known);
+    if (add) more.push(add);
   }
   if (id !== VOCAB_MOST_USED) {
     const row = el('div', 'vocab-again-row');
@@ -9647,6 +9649,45 @@ function vocabAgainRow(id, src, p) {
   const no = p.answered - p.yes;
   if (no) row.append(vocabButton(`Didn't know · ${fmtCount(no)}`, `Go through the ${plural(no, 'word')} in ${src.name} you didn't know again`, () => startVocabRun(id, 'unknown')));
   row.append(vocabButton(`All · ${fmtCount(p.answered)}`, `Go through all ${plural(p.answered, 'word')} you've answered in ${src.name} again`, () => startVocabRun(id, 'all')));
+  return row;
+}
+
+// The words you didn't know into My words (2026-11-26, the user's request: "an option to add the words
+// the user didn't know into 'My words'"): under Again, on a list's panel and at its end, "Add the 4
+// you didn't know to My words" (your word list, the target, as a bookmark's), asking first as Add all
+// does (confirmAddAll). Each word's card is the one the list shows (src.shown: Most used's main card,
+// a topic's own). Those in the list already are left out; with all of them in, a line says so. A
+// phrase among them isn't added (a word list holds words).
+function vocabAddUnknownRow(src, known = knownMap()) {
+  const keys = [...new Set(src.words.filter((w) => known[w] === 0).map((w) => src.shown(w)?.card).filter(Boolean)
+    .map(cardKey).filter((k) => keyKind(k) === 'words'))];
+  if (!keys.length) return null;
+  const name = targetName('words');
+  const have = targetWords('words');
+  const out = keys.filter((k) => !have.has(k));
+  const row = document.createElement('div');
+  row.className = 'vocab-again-row';
+  if (!out.length) {
+    row.append(Object.assign(document.createElement('span'), { className: 'vocab-again-label', textContent: `The ${plural(keys.length, 'word')} you didn't know ${keys.length === 1 ? 'is' : 'are'} in ${name}` }));
+    return row;
+  }
+  const n = out.length;
+  const what = n === keys.length ? `the ${n === 1 ? 'word' : fmtCount(n)} you didn't know` : `the ${fmtCount(n)} you didn't know not in it yet`;
+  const b = vocabButton('', `Add ${what} to ${name}`, async () => {
+    const ok = await confirmDialog({
+      title: `Add to '${name}'?`,
+      message: `Add ${n === keys.length ? `the ${plural(n, 'word')}` : `the ${plural(n, 'word')} of ${fmtCount(keys.length)}`} in ${src.name} you didn't know to '${name}'${n === keys.length ? '' : ` (the others are in it already)`}?`,
+      confirmLabel: `Add ${fmtCount(n)}`,
+      setting: 'confirmAddAll',
+    });
+    if (!ok) return;
+    setInTarget(out, true, 'words');
+    toastAdded(out, plural(n, 'word'));
+    if (state.vocabRun) renderVocabRun({ say: false });
+    else renderVocab();
+  });
+  b.replaceChildren(reviewIcon(), n === keys.length ? `Add the ${fmtCount(n)} you didn't know to ${name}` : `Add ${fmtCount(n)} more you didn't know to ${name}`);
+  row.append(b);
   return row;
 }
 
@@ -9772,7 +9813,7 @@ function renderVocabRun({ say = true } = {}) {
     const fresh = p.total - p.answered;
     els.vocabEnd.replaceChildren(
       ...(fresh ? [vocabButton(`New words · ${fmtCount(fresh)}`, `Carry on with the ${plural(fresh, 'word')} not answered yet`, () => startVocabRun(run.id, 'new'))] : []),
-      ...[vocabAgainRow(run.id, run.src, p)].filter(Boolean),
+      ...[vocabAgainRow(run.id, run.src, p), vocabAddUnknownRow(run.src, known)].filter(Boolean),
     );
     return;
   }

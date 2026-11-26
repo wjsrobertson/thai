@@ -2330,7 +2330,18 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     Continue carries on with it, and **Stop going through again** ends it. Its end: "Done: the 7 you
     didn't know · You know 4 of them now". A pass with nothing left is dropped when the page next
     shows. An answer in another list counts, as everywhere.
-  - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
+  - **The words you didn't know into My words** (2026-11-26, the user's request: "an option to add the
+  words the user didn't know into 'My words'"): under Again, on a list's panel and at the end of a
+  run or a pass, **Add the 4 you didn't know to My words** with the bookmark (`vocabAddUnknownRow`;
+  your word list, the target, as a bookmark's). It asks first, as Add all does (`confirmAddAll`):
+  "Add the 4 words in Most used words you didn't know to 'My words'?" (Add 4). Each word's card is
+  the one the list shows (`src.shown`). With some in the list already it's "Add 1 more you didn't know
+  to My words" (the confirm: "…the 1 word of 4… (the others are in it already)"); with all of them
+  in, a line instead: "The 4 words you didn't know are in My words". A phrase among them isn't added.
+  Fits one line at 390. Checked headless (scratch `addunknown_probe.py`) at 390 × 664 and 1280 × 800:
+  the button (4), its confirm, Add 4 (My words 4) and the line after; one taken out of the list and
+  a pass of No's to its end: "Add 1 more…", then the line; no script errors.
+- **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again
     rather than the pause above (Continue on with the pass, Stop going through again); that code
