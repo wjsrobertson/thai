@@ -2323,6 +2323,11 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-phrase-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 :is(.vocab-phrase-add, .vocab-phrase-sort, .vocab-phrase-done) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
 :is(.vocab-phrase-add, .vocab-phrase-sort, .vocab-phrase-done)[hidden] { display: none; }
+/* Over List's .wordlist-add-all.all-in (later in this file), whose inline-grid stacks its two labels
+   in one cell: here it put the bookmark over "All in My phrases", and beat [hidden], so with nothing
+   left it still showed (the user's screenshot, 2026-11-26: "this looks really awful"). */
+.vocab-phrase-actions > .vocab-phrase-add.all-in:not([hidden]) { display: inline-flex; align-items: center; justify-content: center; }
+.vocab-phrase-actions > button[hidden] { display: none; }
 .vocab-phrase-done { align-self: center; }
 /* A phrase gone through, shown: Added or Not added under its meaning (or note). */
 .vp-chosen-tag { display: table; margin-top: 6px; padding: 0 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); font-style: normal; white-space: nowrap; }
@@ -2403,7 +2408,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-phrase-table tbody td { display: block; min-width: 0; padding: 0; border: 0; }
 .vocab-phrase-table tbody td:not(:last-child) { grid-column: 1; }
 .vocab-phrase-table tbody td:last-child { grid-column: 2; grid-row: 1 / span 3; }
-.vocab-phrase-table td.empty { grid-column: 1 / -1; padding: 24px; }
+.vocab-phrase-table tbody td.empty { grid-column: 1 / -1; grid-row: auto; padding: 24px; text-align: center; } /* tbody: over td:last-child's column 2, which put it off to the right */
 .vocab-phrase-table .col-thai { min-width: 0; }
 /* By topic, a tree (2026-11-26): a category's row, its topics' rows indented under it, a topic's
    phrases under that; each a full-width button, its caret, and the count. */

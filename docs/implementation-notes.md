@@ -2933,6 +2933,19 @@ too cumbersome").
     1,500 and a list "Travel phrases": Add into it; New list "Idioms to learn" chosen, two Adds into
     it; Travel phrases chosen again, then Undo, out of Idioms to learn (2 → 1); Add all then "Add all to
     Travel phrases"; no script errors.
+- **Fixed from the user's screenshot** (the same day, Firefox at a wide size: "this looks really
+  awful"): with every phrase gone through, "All in My phrases" still showed, its bookmark stacked over
+  its words, and "None left…" sat off to the right of its box. All three were the cascade:
+  - List's `.wordlist-add-all.all-in` (later in styles.css) is an inline-grid that stacks its two
+    labels in one cell: here it put the icon and the words in two rows, and beat `[hidden]`. Now
+    `.vocab-phrase-actions > .vocab-phrase-add.all-in:not([hidden])` is an inline-flex row, and
+    `.vocab-phrase-actions > button[hidden]` hides. (All in had stacked since 2026-11-22.)
+  - The empty message's cell is its row's last, and `tbody td:last-child` (column 2, for the
+    buttons) outranked `td.empty`'s whole row: now `tbody td.empty`, centred. The "None yet" message
+    had it too.
+  - Checked headless (scratch `psort3_probe.py`) at 390 × 664 and 1280 × 800: Add all and One by one
+    side by side; after Add all, "All in My phrases" one row, 44 tall; all 16 gone through: neither
+    button, the message centred in the table, "Show the 16 gone through" under it.
 
 ## My Stories in the topic picker (2026-11-22)
 
