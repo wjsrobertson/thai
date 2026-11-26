@@ -178,6 +178,7 @@ const els = {
   reviewGrades: document.getElementById('review-grades'),
   resetAll: document.getElementById('reset-all'),
   resetSettings: document.getElementById('reset-settings'),
+  startOver: document.getElementById('start-over'),
   setMuted: document.getElementById('setting-muted'),
   setAudioSource: document.getElementById('setting-audio-source'),
   setWriteCheck: document.getElementById('setting-write-check'),
@@ -7916,6 +7917,29 @@ async function resetSettings() {
   toast('Settings reset to defaults');
 }
 
+// Start over (2026-11-26, the user's call: "clear everything except cached audio"): the store
+// emptied, as on a new install, then the app reloaded so nothing in memory outlives it, as loading a
+// backup does. Downloaded audio is in IndexedDB, not the store, so it stays; so do the notes that
+// keep it in step (the prefs below), and "Download all audio" being on, as Reset settings keeps it.
+const AUDIO_PREFS = ['audioComplete', 'audioPruned', 'offlineSaved', 'oldAudioCacheGone'];
+
+async function startOver() {
+  const ok = await confirmDialog({
+    title: 'Start over?',
+    message: "This deletes your progress, lists, known words and settings on this device, as on a new install. Downloaded audio stays.\nTo keep a copy, export a backup first (under App). This can't be undone.",
+    confirmLabel: 'Start over',
+    danger: true,
+  });
+  if (!ok) return;
+  const store = loadStore();
+  const prefs = store.prefs || {};
+  const fresh = { prefs: Object.fromEntries(AUDIO_PREFS.filter((k) => k in prefs).map((k) => [k, prefs[k]])) };
+  if (store.settings?.offlineAudio) fresh.settings = { offlineAudio: true };
+  saveStore(fresh);
+  try { sessionStorage.setItem('learnthai:toast', 'Started over'); } catch { /* no toast then */ }
+  location.reload();
+}
+
 // ---------- TTS ----------
 
 let thaiVoice = null;
@@ -9594,6 +9618,7 @@ function bindEvents() {
   els.resetAll.addEventListener('click', resetAllProgress);
   els.resetVocab.addEventListener('click', resetVocab);
   els.resetSettings.addEventListener('click', resetSettings);
+  els.startOver.addEventListener('click', startOver);
 
   [els.cardSpell, els.cardSpellFront].forEach((btn) => btn.addEventListener('click', (e) => {
     e.stopPropagation(); // not a flip
@@ -10184,7 +10209,7 @@ function backupSummary(store) {
   const known = Object.values(store.known || {}).filter((k) => k === 1).length; // Vocabulary's (2026-11-14)
   const stories = (store.storyLists || []).length; // Read's My Stories (2026-11-22)
   return `${n} list${n === 1 ? '' : 's'}` + (phrases ? `, ${phrases} phrase list${phrases === 1 ? '' : 's'}` : '')
-    + (stories ? `, ${stories} story list${stories === 1 ? '' : 's'}` : '') + `, ${progress}` + (known ? `, ${known} words known` : '');
+    + (stories ? `, ${stories} story list${stories === 1 ? '' : 's'}` : '') + `, ${progress}` + (known ? `, ${known} word${known === 1 ? '' : 's'} known` : '');
 }
 
 async function exportBackup() {

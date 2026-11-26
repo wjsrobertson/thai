@@ -2240,7 +2240,7 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   counts once however many topics have it, a list skips words answered in another, and a word with
   two meanings (ผม "I" and "hair") is one answer. A No is kept too, so a run picks up where it left
   off. In the backup (the whole store), its summary ("…, 13 words known"); Settings → Reset →
-  **Clear vocabulary** forgets them (`resetVocab`). Reset all progress leaves them.
+  **Clear vocabulary** forgets them (`resetVocab`). Reset all progress leaves them; Start over doesn't.
 - **The count:** words known; phrases (`isPhrase`) are counted apart ("and 1 phrase"), so a topic of
   sayings doesn't swell it. Under it, how many answered.
 - **The lists** (`vocabSource`), each a panel with Start, Continue or See and a bar (known green, not
@@ -4938,7 +4938,7 @@ Dictionary, each a line icon over its name, the current one in the accent colour
   - A number is a small box on the right of its row.
   - An action is a button under its row's help, side by side with the others (`.setting-action`,
     red if it deletes): Download all audio, Install app, Export and Load. They were rows at first,
-    which didn't look like buttons (the user's call). The three Resets are red rows
+    which didn't look like buttons (the user's call). The Resets (four since Start over) are red rows
     (`.setting-button`) with their help under them. The ids are unchanged.
   - Where a category has more than one list, a small heading sits over each
     (`.setting-list-head`: Topics' Read all; Flashcards' Recognition and Scheduling; App's About).
@@ -6407,6 +6407,15 @@ centred card on every screen size (mobile.css turns the other modals into full-s
     - **"Reset settings"** clears `store.settings`, so every value falls back to `DEFAULT_SETTINGS`.
       It keeps `offlineAudio`, so downloaded audio stays downloaded. It then re-renders what
       settings drive directly, without redrawing the card, which would play its word.
+    - **"Start over"** (2026-11-26, the user's call: "a reset all option… clear everything except
+      cached audio"; the name was mine, as "Reset all" read too close to "Reset all progress").
+      The last row, as the biggest. `startOver` empties the store, as on a new install: progress,
+      lists (word, phrase and story), known words, settings, page choices. It keeps only
+      what the downloaded audio needs: the clips themselves (IndexedDB, not the store), the prefs
+      that keep them in step (`AUDIO_PREFS`: the clip-list signatures and the saved count), and
+      `offlineAudio` if on, as Reset settings does. Then it reloads, as loading a backup does, so
+      nothing in memory outlives it; the `sessionStorage` note shows "Started over" after. The
+      dialog says to export a backup first (it's under App, just above).
   - **Settings → App "Delete downloaded audio"**: not `danger`, since clips download again as
     they're played. A toast confirms.
   - **Wordlist "✓ All in Review"** (`confirmRemoveAll`): once the whole deck is in Review, the same
