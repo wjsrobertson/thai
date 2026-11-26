@@ -9607,24 +9607,8 @@ function vocabSourceRow(id, known, at) {
 
   const more = [];
   if (sizes.length > 1) more.push(...sizes.map((m) => vocabBand(bandName(m), vocabProgress(src.words.slice(0, m), known))));
-  if (pass) {
-    const row = el('div', 'vocab-again-row');
-    row.append(vocabButton('Stop going through again', `Stop going through ${src.name} again`, () => {
-      setVocabPass(id, null);
-      renderVocab();
-    }));
-    more.push(row);
-  } else {
-    const row = vocabAgainRow(id, src, p);
-    if (row) more.push(row);
-    const add = vocabAddUnknownRow(src, known);
-    if (add) more.push(add);
-  }
-  if (id !== VOCAB_MOST_USED) {
-    const row = el('div', 'vocab-again-row');
-    row.append(vocabButton('Remove from this page', `Remove ${src.name} from this page`, () => removeVocabSource(id, src.name)));
-    more.push(row);
-  }
+  const actions = vocabActions(id, src, p, known, { pass, removable: id !== VOCAB_MOST_USED });
+  if (actions) more.push(actions);
 
   const open = state.vocabOpen === id;
   const row = el('div', `vocab-row${open ? ' open' : ''}`);
@@ -9697,20 +9681,6 @@ function vocabButton(text, label, onClick) {
   return b;
 }
 
-// "Again:" Didn't know · 7, All · 18: on a list's panel, and at the end of a list or a pass.
-function vocabAgainRow(id, src, p) {
-  if (!p.answered) return null;
-  const row = document.createElement('div');
-  row.className = 'vocab-again-row';
-  const label = document.createElement('span');
-  label.className = 'vocab-again-label';
-  label.textContent = 'Again:';
-  row.append(label);
-  const no = p.answered - p.yes;
-  if (no) row.append(vocabButton(`Didn't know · ${fmtCount(no)}`, `Go through the ${plural(no, 'word')} in ${src.name} you didn't know again`, () => startVocabRun(id, 'unknown')));
-  row.append(vocabButton(`All · ${fmtCount(p.answered)}`, `Go through all ${plural(p.answered, 'word')} you've answered in ${src.name} again`, () => startVocabRun(id, 'all')));
-  return row;
-}
 
 // The words you didn't know into My words (2026-11-26, the user's request: "an option to add the words
 // the user didn't know into 'My words'"): under Again, on a list's panel and at its end, "Add the 4
@@ -9718,52 +9688,79 @@ function vocabAgainRow(id, src, p) {
 // does (confirmAddAll). Each word's card is the one the list shows (src.shown: Most used's main card,
 // a topic's own). Those in the list already are left out; with all of them in, a line says so. A
 // phrase among them isn't added (a word list holds words).
-function vocabAddUnknownRow(src, known = knownMap()) {
+// What's under a list's bars, and at the end of a run: a grid of equal buttons, two to a row, each
+// pair under a small heading (the user's call, 2026-11-26: the buttons "look messy"; they were rows
+// of different widths, "Again:" pushing the first in, the list's name twice):
+//   Go through again              [Didn't know · 4] [All · 23]   (Stop going through again, for a pass saved before)
+//   Words you didn't know → My words  [Sort one by one] [Add all (4)]   (or "All 4 are in My words")
+//   [Remove from this page]        across both, a little apart (a topic or list you chose)
+// The words' pair: Sort one by one goes through those not in your word list nor sorted (openSort);
+// Add all asks first, with Change (confirmDialog's `change`). Each word's card is the one the list
+// shows (src.shown); a phrase among them isn't added.
+function vocabActions(id, src, p, known = knownMap(), { pass = null, removable = false } = {}) {
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  const grid = el('div', 'vocab-actions');
+  const head = (text) => grid.append(el('p', 'vocab-actions-head', text));
+  if (pass) {
+    head('Going through again');
+    grid.append(vocabButton('Stop going through again', `Stop going through ${src.name} again`, () => {
+      setVocabPass(id, null);
+      renderVocab();
+    }));
+  } else if (p.answered) {
+    head('Go through again');
+    const no = p.answered - p.yes;
+    if (no) grid.append(vocabButton(`Didn't know · ${fmtCount(no)}`, `Go through the ${plural(no, 'word')} in ${src.name} you didn't know again`, () => startVocabRun(id, 'unknown')));
+    grid.append(vocabButton(`All · ${fmtCount(p.answered)}`, `Go through all ${plural(p.answered, 'word')} you've answered in ${src.name} again`, () => startVocabRun(id, 'all')));
+  }
   const keys = [...new Set(src.words.filter((w) => known[w] === 0).map((w) => src.shown(w)?.card).filter(Boolean)
     .map(cardKey).filter((k) => keyKind(k) === 'words'))];
-  if (!keys.length) return null;
-  const name = targetName('words');
-  const have = targetWords('words');
-  const out = keys.filter((k) => !have.has(k));
-  const row = document.createElement('div');
-  row.className = 'vocab-again-row';
-  // Sort into My words first, as on the phrases' list: each in turn, Add or No (openSort).
-  const toSort = wordSortQueue(src, known);
-  if (toSort.length) {
-    const sort = vocabButton('', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)));
-    sort.replaceChildren(reviewIcon(), `Sort unknown into ${name}`); // the user's wording, 2026-11-26
-    row.append(sort);
-  }
-  if (!out.length) {
-    row.append(Object.assign(document.createElement('span'), { className: 'vocab-again-label', textContent: `The ${plural(keys.length, 'word')} you didn't know ${keys.length === 1 ? 'is' : 'are'} in ${name}` }));
-    return row;
-  }
-  const n = out.length;
-  const what = n === keys.length ? `the ${n === 1 ? 'word' : fmtCount(n)} you didn't know` : `the ${fmtCount(n)} you didn't know not in it yet`;
-  const b = vocabButton('', `Add ${what} to ${name}`, async () => {
-    const outOf = () => { const have = targetWords('words'); return keys.filter((k) => !have.has(k)); };
-    const ok = await confirmDialog({
-      setting: 'confirmAddAll',
-      change: { kind: 'words', text: () => { // again after Change: another list
-        const to = targetName('words');
-        const m = outOf().length;
-        return !m ? { title: `Add to '${to}'?`, message: `The ${plural(keys.length, 'word')} in ${src.name} you didn't know ${keys.length === 1 ? 'is' : 'are'} in '${to}' already.`, confirmLabel: 'OK' }
-          : { title: `Add to '${to}'?`, confirmLabel: `Add ${fmtCount(m)}`,
-            message: `Add ${m === keys.length ? `the ${plural(m, 'word')}` : `the ${plural(m, 'word')} of ${fmtCount(keys.length)}`} in ${src.name} you didn't know to '${to}'${m === keys.length ? '' : ' (the others are in it already)'}?` };
-      } },
-    });
-    if (!ok) return;
-    const add = outOf(); // into the list chosen
-    if (add.length) {
-      setInTarget(add, true, 'words');
-      toastAdded(add, plural(add.length, 'word'));
+  if (keys.length && !pass) {
+    const name = targetName('words');
+    const have = targetWords('words');
+    const n = keys.filter((k) => !have.has(k)).length;
+    head(`Words you didn't know → ${name}`);
+    if (!n) {
+      grid.append(el('p', 'vocab-actions-note', keys.length === 1 ? `It's in ${name}` : `All ${fmtCount(keys.length)} are in ${name}`));
+    } else {
+      if (wordSortQueue(src, known).length) {
+        const sort = vocabButton('', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)));
+        sort.replaceChildren(reviewIcon(), 'Sort one by one');
+        grid.append(sort);
+      }
+      const add = vocabButton('', `Add the ${plural(n, 'word')} you didn't know to ${name}`, () => addUnknownWords(src, keys));
+      add.replaceChildren(reviewIcon(), `Add all (${fmtCount(n)})`);
+      grid.append(add);
     }
-    if (state.vocabRun) renderVocabRun({ say: false });
-    else renderVocab();
+  }
+  if (removable) {
+    const b = vocabButton('Remove from this page', `Remove ${src.name} from this page`, () => removeVocabSource(id, src.name));
+    b.classList.add('vocab-actions-wide');
+    grid.append(b);
+  }
+  return grid.children.length ? grid : null;
+}
+
+async function addUnknownWords(src, keys) {
+  const outOf = () => { const have = targetWords('words'); return keys.filter((k) => !have.has(k)); };
+  const ok = await confirmDialog({
+    setting: 'confirmAddAll',
+    change: { kind: 'words', text: () => { // again after Change: another list
+      const to = targetName('words');
+      const m = outOf().length;
+      return !m ? { title: `Add to '${to}'?`, message: `The ${plural(keys.length, 'word')} in ${src.name} you didn't know ${keys.length === 1 ? 'is' : 'are'} in '${to}' already.`, confirmLabel: 'OK' }
+        : { title: `Add to '${to}'?`, confirmLabel: `Add ${fmtCount(m)}`,
+          message: `Add ${m === keys.length ? `the ${plural(m, 'word')}` : `the ${plural(m, 'word')} of ${fmtCount(keys.length)}`} in ${src.name} you didn't know to '${to}'${m === keys.length ? '' : ' (the others are in it already)'}?` };
+    } },
   });
-  b.replaceChildren(reviewIcon(), `Add unknown into ${name}`); // the user's wording, 2026-11-26 (was "Add the 4 you didn't know to …", "Add 3 more…"); the confirm says how many
-  row.append(b);
-  return row;
+  if (!ok) return;
+  const add = outOf(); // into the list chosen
+  if (add.length) {
+    setInTarget(add, true, 'words');
+    toastAdded(add, plural(add.length, 'word'));
+  }
+  if (state.vocabRun) renderVocabRun({ say: false });
+  else renderVocab();
 }
 
 // A row: its name, a bar (known green, not known red, the rest unanswered) and "known/total".
@@ -9888,7 +9885,7 @@ function renderVocabRun({ say = true } = {}) {
     const fresh = p.total - p.answered;
     els.vocabEnd.replaceChildren(
       ...(fresh ? [vocabButton(`New words · ${fmtCount(fresh)}`, `Carry on with the ${plural(fresh, 'word')} not answered yet`, () => startVocabRun(run.id, 'new'))] : []),
-      ...[vocabAgainRow(run.id, run.src, p), vocabAddUnknownRow(run.src, known)].filter(Boolean),
+      ...[vocabActions(run.id, run.src, p, known)].filter(Boolean),
     );
     return;
   }

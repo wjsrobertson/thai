@@ -2377,6 +2377,19 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   topic or list).", Cancel or Remove (`removeVocabSource`). Every time, no Don't ask again (no setting:
   it's seldom used), and not red (nothing is lost). Checked headless (scratch `remove_probe.py`) at
   390 × 664 and 1280 × 800: the dialog, Cancel keeping the row, Remove taking it off with its toast.
+- **A grid, not rows of buttons** (2026-11-26, the user's screenshot: "the buttons look messy"; offered
+  three ways, the user took the grid, and asked for Remove from this page to be thought of too): under
+  a list's bars and at a run's end (`vocabActions`, in place of `vocabAgainRow` and the add row), equal
+  buttons two to a row (`.vocab-actions`, 1fr 1fr), each pair under a small muted heading across both:
+  **Go through again** [Didn't know · 4] [All · 23]; **Words you didn't know → My words** [Sort one by
+  one] [Add all (4)] (with both bookmarks; or "All 4 are in My words"); then, for a topic or list you
+  chose, [Remove from this page] across both, 8 apart. The list's name is said once, in the heading,
+  so the buttons are short (they were "Sort unknown into My words", "Add unknown into My words";
+  "Again:" pushed the first row in, the second had no label, and each button was its own width).
+  The buttons keep to one line (6 px side padding, nowrap): 162 wide at a run's end at 390, 164 on
+  the page, 261 on a wide screen, all 44 tall. Checked headless (scratch `grid_probe.py`) at 390 ×
+  664 and 1280 × 800: Most used's grid, a topic's with Remove, the note after Add all, a run's end; no
+  sideways scroll, no script errors.
 - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again

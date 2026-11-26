@@ -2466,13 +2466,17 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-en { display: flex; flex-direction: column; gap: 2px; color: var(--ink); font-size: calc(18px * var(--fs, 1)); line-height: 1.35; }
 .vocab-en p { margin: 0; }
 .vocab-en p.also { color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
-/* Again: Didn't know · 7, All · 18 (a panel's foot, the end of a list); Stop going through again. */
-.vocab-again-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.vocab-again-label { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-.vocab-again { min-height: 44px; padding: 8px 14px; font-size: 15px; font-variant-numeric: tabular-nums; }
-.vocab-end { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; }
+/* Under a list's bars and at a run's end (vocabActions, 2026-11-26): equal buttons two to a row, each
+   pair under a small muted heading that spans both; Remove from this page across both, set apart. */
+.vocab-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
+.vocab-actions-head { grid-column: 1 / -1; margin: 6px 0 -2px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); overflow-wrap: anywhere; }
+.vocab-actions-head:first-child { margin-top: 0; }
+.vocab-actions-note { grid-column: 1 / -1; margin: 0; color: var(--ink); font-size: calc(15px * var(--fs, 1)); }
+.vocab-actions .vocab-again { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 6px; white-space: nowrap; } /* one line in 162 (a run's end at 390) */
+.vocab-actions .vocab-actions-wide { grid-column: 1 / -1; margin-top: 8px; }
+.vocab-again { min-height: 44px; padding: 8px 12px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.vocab-end { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; width: 100%; }
 .vocab-end[hidden] { display: none; }
-.vocab-end .vocab-again-row { justify-content: center; }
 .vocab-card.done .vocab-tr { color: var(--ink); font-style: normal; } /* the end's "You know 11 of them." */
 .vocab-last { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; }
 .vocab-last-text { min-width: 0; overflow: hidden; color: var(--muted); font-size: calc(16px * var(--fs, 1)); text-overflow: ellipsis; white-space: nowrap; }
