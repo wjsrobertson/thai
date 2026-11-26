@@ -2874,6 +2874,42 @@ too cumbersome").
     known: 15 category rows; Conversation, then Small Talk: Questions opened (12 phrases); One word
     short with both still open (29, 10); a lit word's I know this word moving one over (28, 9), still
     open; no Show more; no script errors.
+- **One by one** (2026-11-26, the user's request: "in addition to the 'Add all to My phrases' - I'd
+  like the option to go through a wizard to add phrases to a phrase list. It should pop up like the
+  phrase dialog, but simplified and with a yes / no button + swipe left/right… The app should remember
+  the user has chosen and not show them again on the phrases 'all known' and one word short lists.
+  The user should have some way of viewing these though, but by default they are hidden"):
+  - **The button**, "One by one · 404", beside Add all (they wrap to two lines on a phone). It goes
+    through the list the page shows (All known or One word short), in its order (by topic: the
+    tree's, `vocabPhraseList`), leaving out what's in your phrase list already. Hidden when none.
+  - **The dialog** (`openPhraseSort`, `#phrase-sort`): the word dialog's frame (a card on a wide
+    screen; on a phone the room between the pinned row and the tab bar). "Add to 'My phrases'? 4 of
+    407", ✕; a card with the phrase's topic, Thai (in One word short its new word lit, and "New word:
+    ปีใหม่ new year" under the meaning), transliteration, meaning and ▶; the last answer ("แล้วเจอกัน ✗
+    Not added") with Undo; **No** and **Add** as a Vocabulary run's. Each phrase is said as it shows
+    (`speak`, so Mute holds), the next eight fetched ahead; a tap on the card says it again. The end:
+    "All 167 gone through · 12 added to 'My phrases'", Done. Keys: → Y Add, ← N No, Backspace U Undo,
+    P play, Esc close. Simplified, as asked: no tones, word list, stories or topics.
+  - **The swipe** (`bindPhraseSortSwipe`; the app had no swipe till now): the card follows a finger or
+    the mouse across, tilting, tinted green past 80 px right and red past 80 px left; let go there and
+    it flies off that way and answers, short of it springs back. A drag more up than across is left
+    to scroll (`touch-action: pan-y`), and the click after a swipe is swallowed. With reduced motion it
+    answers without flying. It's a shortcut: the buttons are the way (style guide §2).
+  - **Remembered** in `store.phraseChoices` (card key → 1 added, 0 not); Add also puts it in your
+    phrase list (`setInTarget`, the list Add all fills), and Undo takes it out again, the answer back
+    to what it was. Taking a phrase out of the list later doesn't bring it back to the lists.
+  - **Hidden by default:** the lists, their counts (the tabs, Vocabulary's row) and Add all leave out
+    what's been gone through. Under the list, "Show the 3 gone through" puts them back in their places,
+    each marked Added or Not added (`.vp-chosen-tag`); "Hide the 3 gone through" again. A list whose
+    every phrase has been gone through says "None left: you've gone through all 167." Vocabulary's
+    Clear doesn't forget them (they're choices about phrases, not answers about words).
+  - Checked headless (scratch `psort_probe.py`, `psort_fit.py`), the most-used 1,500 known, at 390 ×
+    844 and 1280 × 800: Add (My phrases: 1), a swipe left (Not added), right (Added, 2), a 30 px drag
+    springing back, Undo (out of the list again), ← (Not added), a drag out and back; Esc; All known
+    404 and "Show the 3 gone through", then their tags; One word short's 167 all No'd to the end, then
+    One by one gone and the list empty but for those shown; no sideways scroll, no script errors.
+    Fit at 390 × 664, 763 and 430 × 932: nothing scrolls, the answers 16 above the tab bar (the card
+    220 tall at the least, growing to fill).
 
 ## My Stories in the topic picker (2026-11-22)
 

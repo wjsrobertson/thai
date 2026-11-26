@@ -202,6 +202,17 @@ const els = {
   vocabPhraseAdd: document.getElementById('vocab-phrase-add'),
   vocabPhraseRows: document.getElementById('vocab-phrase-rows'),
   vocabPhraseMore: document.getElementById('vocab-phrase-more'),
+  vocabPhraseSort: document.getElementById('vocab-phrase-sort'), // One by one (openPhraseSort)
+  vocabPhraseDoneToggle: document.getElementById('vocab-phrase-done-toggle'), // Show / Hide the ones gone through
+  phraseSort: document.getElementById('phrase-sort'),
+  phraseSortTitle: document.getElementById('phrase-sort-title'),
+  phraseSortCount: document.getElementById('phrase-sort-count'),
+  psCard: document.getElementById('ps-card'),
+  psLastText: document.getElementById('ps-last-text'),
+  psUndo: document.getElementById('ps-undo'),
+  psAnswers: document.getElementById('ps-answers'),
+  psNo: document.getElementById('ps-no'),
+  psYes: document.getElementById('ps-yes'),
   setTopicWordGaps: document.getElementById('setting-topic-word-gaps'),
   setDevFeatures: document.getElementById('setting-dev-features'),
   setReadStoryTitles: document.getElementById('setting-read-story-titles'),
@@ -343,6 +354,7 @@ const state = {
   vocabOpen: null,          // the Vocabulary page's row open to its bands, Again and Remove (vocabSourceRow)
   vocabPhraseShown: 50,     // and how many of it show (VOCAB_PHRASE_PAGE more with each Show more), shortest first
   vocabPhraseOpen: new Set(), // by topic: the categories ('c:' + name) and topics ('t:' + id) open
+  vocabPhraseShowDone: false, // the phrases gone through one by one shown too (store.phraseChoices)
 };
 
 // ---------- storage ----------
@@ -9014,14 +9026,15 @@ function vocabPhraseSets(known = knownMap()) {
 // many of each, opening the list with phrases in it. Not shown until there's a phrase in one.
 function renderPhrasePanel(known) {
   const sets = vocabPhraseSets(known);
-  els.vocabPhrasePanel.hidden = !sets.known.length && !sets.short.length;
+  els.vocabPhrasePanel.hidden = !sets.known.length && !sets.short.length; // gone through or not: the page can show them
   if (els.vocabPhrasePanel.hidden) return;
+  const n = (k) => vocabPhraseList(k, sets).length; // not gone through one by one
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const text = el('span', 'vocab-phrase-text');
   text.append(el('span', 'vocab-phrase-title', 'Phrases from your words'),
-    el('span', 'vocab-phrase-sub', `${fmtCount(sets.known.length)} all known · ${fmtCount(sets.short.length)} one word short`));
+    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} all known · ${fmtCount(n('short'))} one word short`));
   els.vocabPhrasePanel.replaceChildren(text, el('span', 'vocab-phrase-chevron', '›'));
-  els.vocabPhrasePanel.onclick = () => openVocabPhrases(sets.known.length ? 'known' : 'short');
+  els.vocabPhrasePanel.onclick = () => openVocabPhrases(n('known') || !n('short') ? 'known' : 'short');
 }
 
 function openVocabPhrases(kind) {
@@ -9041,20 +9054,35 @@ function leaveVocabPhrases() {
 // the phrases as List's rows, in a tree of topics (vocabPhraseTree) or shortest first; a one-word-short phrase's Thai has
 // its missing word lit, a tap on it opening that word (its "I know this word" then moves the phrase
 // over). A page at a time.
+// Gone through one by one (2026-11-26; openPhraseSort): store.phraseChoices, card key -> 1 added, 0 not.
+const phraseChoices = () => loadStore().phraseChoices || {};
+
+// A list as the page shows it: by default without the phrases gone through one by one (`done` keeps
+// them); shortest first, or by topic in the tree's order (vocabPhraseTree: a category's topics
+// together, as decks.json's order can come back to a category), which One by one goes in too.
+function vocabPhraseList(kind, sets = vocabPhraseSets(), { done = false } = {}) {
+  const choices = phraseChoices();
+  const list = sets[kind].filter((p) => done || !(cardKey(p.card) in choices));
+  if (getSettings().vocabPhraseOrder === 'shortest') return list.sort((a, b) => a.words.length - b.words.length || a.card.thai.length - b.card.thai.length);
+  const catAt = new Map();
+  for (const p of list) if (!catAt.has(p.deck.category)) catAt.set(p.deck.category, catAt.size);
+  return list.sort((a, b) => catAt.get(a.deck.category) - catAt.get(b.deck.category)); // stable: topics keep their order
+}
+
 function renderVocabPhrases() {
   const kind = state.vocabPhrases;
   const sets = vocabPhraseSets();
   els.vocabPhraseKinds.forEach((b) => {
     const k = b.dataset.phraseKind;
     b.setAttribute('aria-checked', String(k === kind));
-    b.textContent = `${k === 'known' ? 'All known' : 'One word short'} · ${fmtCount(sets[k].length)}`; // "Every word known" wrapped on a phone
+    b.textContent = `${k === 'known' ? 'All known' : 'One word short'} · ${fmtCount(vocabPhraseList(k, sets).length)}`; // "Every word known" wrapped on a phone
   });
   els.vocabPhraseHelp.textContent = kind === 'known'
     ? 'Phrases made only of words you know. Tap one for its words, tones and stories.'
     : "Phrases you're one word from: the word you don't know yet is lit. Tap it, and if you know it, say so there.";
-  let list = sets[kind];
-  if (getSettings().vocabPhraseOrder === 'shortest') list = [...list].sort((a, b) => a.words.length - b.words.length || a.card.thai.length - b.card.thai.length);
+  const list = vocabPhraseList(kind, sets, { done: state.vocabPhraseShowDone });
   const byTopic = getSettings().vocabPhraseOrder !== 'shortest';
+  const choices = phraseChoices();
   // Add all: those not in your list yet; with every one in, it says so.
   const target = targetWords('phrases'); // your phrase list (2026-11-22)
   const cards = mergeProgressIntoCards(list.map((p) => p.card));
@@ -9069,11 +9097,25 @@ function renderVocabPhrases() {
     toastAdded(keys, plural(keys.length, 'phrase'));
     renderVocabPhrases();
   };
+  // One by one: those not in your list, nor gone through (openPhraseSort).
+  const toSort = phraseSortQueue(list).length;
+  els.vocabPhraseSort.hidden = !toSort;
+  els.vocabPhraseSort.textContent = `One by one · ${fmtCount(toSort)}`;
+  els.vocabPhraseSort.title = `Go through the ${plural(toSort, 'phrase')} not in ${targetName('phrases')} one at a time, adding the ones you want`;
+  // The ones gone through: hidden, unless shown (they're then marked Added or Not added).
+  const done = sets[kind].filter((p) => cardKey(p.card) in choices).length;
+  els.vocabPhraseDoneToggle.hidden = !done;
+  els.vocabPhraseDoneToggle.textContent = state.vocabPhraseShowDone ? `Hide the ${fmtCount(done)} gone through` : `Show the ${fmtCount(done)} gone through`;
   const cols = wordlistColumns();
   const words = targetWords('phrases');
   const rows = [];
   const phraseRow = (p, i) => {
     const tr = wordRow(cards[i], cols, words);
+    const choice = choices[cardKey(p.card)];
+    if (choice !== undefined) { // shown with the ones gone through
+      tr.classList.add('vp-chosen');
+      tr.cells[tr.cells.length - 2]?.append(Object.assign(document.createElement('span'), { className: 'vp-chosen-tag', textContent: choice ? 'Added' : 'Not added' }));
+    }
     if (p.missing) {
       // Its Thai word by word, the one not known yet lit; that word opens its own dialog.
       const td = tr.querySelector('td.col-thai');
@@ -9100,7 +9142,8 @@ function renderVocabPhrases() {
   if (!list.length) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = kind === 'known' ? 'None yet: say which words you know, and the phrases made of them come here.' : 'None one word short.';
+    tr.firstChild.textContent = done ? `None left: you've gone through ${done === 1 ? 'it' : `all ${fmtCount(done)}`}.`
+      : kind === 'known' ? 'None yet: say which words you know, and the phrases made of them come here.' : 'None one word short.';
     rows.push(tr);
   }
   els.vocabPhraseRows.replaceChildren(...rows);
@@ -9158,6 +9201,191 @@ function vocabPhraseTree(list, row) {
     }
   }
   return out;
+}
+
+// One by one (2026-11-26, the user's request: "the option to go through a wizard to add phrases to a
+// phrase list. It should pop up like the phrase dialog, but simplified and with a yes / no button +
+// swipe left/right… The app should remember the user has chosen and not show them again on the
+// phrases 'all known' and one word short lists… by default they are hidden"). A dialog laid out as
+// the phrase dialog: a phrase at a time (its topic, Thai, transliteration, meaning, and in One word
+// short the word to learn lit), said as it shows; No or Add, or a swipe left or right on it (a
+// shortcut: the buttons are the way, style guide §2); Undo. Each answer is kept (phraseChoices), and
+// Add puts it in your phrase list (the target, as Add all). It goes through the list the page shows,
+// in its order, leaving out what's in your list already. Keys: ← N No, → Y Add, Backspace U Undo,
+// P play, Esc close.
+const PS_SWIPE = 80; // px across that decides a swipe
+let phraseSort = null; // { kind, queue, i, added, history: [{ p, prev, wasIn }] }
+
+function phraseSortQueue(list) {
+  const choices = phraseChoices();
+  const target = targetWords('phrases');
+  return list.filter((p) => !(cardKey(p.card) in choices) && !target.has(cardKey(p.card)));
+}
+
+function openPhraseSort() {
+  const kind = state.vocabPhrases;
+  const queue = phraseSortQueue(vocabPhraseList(kind));
+  if (!queue.length) return;
+  phraseSort = { kind, queue, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  els.phraseSortTitle.textContent = `Add to '${targetName('phrases')}'?`;
+  const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
+  els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
+  els.phraseSort.hidden = false;
+  setModalOpen(true);
+  renderPhraseSort();
+  els.psYes.focus({ preventScroll: true });
+}
+
+function closePhraseSort() {
+  if (!phraseSort) return;
+  const { lastFocus } = phraseSort;
+  phraseSort = null;
+  els.phraseSort.hidden = true;
+  setModalOpen(!!document.querySelector('.modal:not([hidden])'));
+  if (state.view === 'vocab') renderVocab(); // what was gone through leaves the list
+  if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true });
+}
+
+function renderPhraseSort({ say = true } = {}) {
+  const ps = phraseSort;
+  const p = ps.queue[ps.i];
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  els.phraseSortCount.textContent = p ? `${fmtCount(ps.i + 1)} of ${fmtCount(ps.queue.length)}` : '';
+  const last = ps.history[ps.history.length - 1];
+  els.psLastText.textContent = last ? `${last.p.card.thai} ${phraseChoices()[cardKey(last.p.card)] ? '✓ Added' : '✗ Not added'}` : '';
+  els.psUndo.classList.toggle('off', !last);
+  els.psAnswers.classList.toggle('off', !p);
+  els.psCard.style.transform = '';
+  els.psCard.classList.remove('ps-going', 'ps-yes', 'ps-no');
+  if (!p) { // the end
+    const n = ps.history.length;
+    els.psCard.classList.add('ps-end');
+    const close = el('button', 'ghost vocab-go', 'Done');
+    close.type = 'button';
+    close.addEventListener('click', closePhraseSort);
+    els.psCard.replaceChildren(el('p', 'ps-thai ps-done', `All ${fmtCount(n)} gone through`),
+      el('p', 'ps-en', `${fmtCount(ps.added)} added to '${targetName('phrases')}'`), close);
+    close.focus({ preventScroll: true });
+    return;
+  }
+  els.psCard.classList.remove('ps-end');
+  const thai = el('p', 'ps-thai');
+  thai.lang = 'th';
+  if (p.missing) appendPhraseParts(thai, p.card.thai, p.words, (w, text) => (w.thai === p.missing ? el('span', 'vp-missing', text) : text));
+  else thai.textContent = p.card.thai;
+  const play = playButton(cardSay(p.card), `Play ${p.card.thai} (P)`);
+  const parts = [el('p', 'ps-topic', p.deck.name), thai, el('p', 'ps-tr', p.card.translit), el('p', 'ps-en', p.card.english)];
+  if (p.missing) {
+    const w = p.words.find((x) => x.thai === p.missing);
+    parts.push(el('p', 'ps-missing', `New word: ${w.thai} ${w.english}`));
+  }
+  parts.push(play);
+  els.psCard.replaceChildren(...parts);
+  if (say) speak(cardSay(p.card));
+  if (ps.i + 1 < ps.queue.length) preloadDeckAudio({ cards: ps.queue.slice(ps.i + 1, ps.i + 1 + VOCAB_PRELOAD).map((x) => x.card) });
+}
+
+function answerPhraseSort(yes) {
+  const ps = phraseSort;
+  const p = ps?.queue[ps.i];
+  if (!p) return;
+  const key = cardKey(p.card);
+  const store = loadStore();
+  const choices = (store.phraseChoices ||= {});
+  ps.history.push({ p, prev: choices[key], wasIn: targetWords('phrases').has(key) });
+  choices[key] = yes ? 1 : 0;
+  saveStore(store);
+  if (yes) {
+    setInTarget([key], true, 'phrases');
+    ps.added += 1;
+  }
+  ps.i += 1;
+  renderPhraseSort();
+}
+
+function undoPhraseSort() {
+  const ps = phraseSort;
+  const last = ps?.history.pop();
+  if (!last) return;
+  const key = cardKey(last.p.card);
+  const store = loadStore();
+  const choices = (store.phraseChoices ||= {});
+  if (choices[key] && !last.wasIn) {
+    setInTarget([key], false, 'phrases');
+    ps.added -= 1;
+  }
+  if (last.prev === undefined) delete choices[key];
+  else choices[key] = last.prev;
+  saveStore(store);
+  ps.i -= 1;
+  renderPhraseSort();
+}
+
+// A swipe: the card follows the finger across (a vertical drag scrolls, touch-action: pan-y), tinted
+// green to the right, red to the left; let go past PS_SWIPE and it goes that way and answers, else it
+// springs back. A tap that doesn't move is a tap (its play button, a lit word).
+function bindPhraseSortSwipe() {
+  const card = els.psCard;
+  let from = null;
+  let dx = 0;
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  card.addEventListener('pointerdown', (e) => {
+    if (!phraseSort?.queue[phraseSort.i] || e.button !== 0) return;
+    from = { x: e.clientX, y: e.clientY, id: e.pointerId, across: false };
+    dx = 0;
+  });
+  card.addEventListener('pointermove', (e) => {
+    if (!from || e.pointerId !== from.id) return;
+    dx = e.clientX - from.x;
+    if (!from.across) {
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(e.clientY - from.y) > Math.abs(dx)) { from = null; return; } // a scroll
+      from.across = true;
+      card.setPointerCapture(e.pointerId);
+    }
+    card.style.transform = `translateX(${dx}px) rotate(${dx / 30}deg)`;
+    card.classList.toggle('ps-yes', dx > PS_SWIPE);
+    card.classList.toggle('ps-no', dx < -PS_SWIPE);
+  });
+  const end = (e) => {
+    if (!from || e.pointerId !== from.id) return;
+    const across = from.across;
+    from = null;
+    if (!across) return;
+    swallowClickUntil = performance.now() + 300; // not a tap on what was under the finger
+    if (Math.abs(dx) < PS_SWIPE || e.type === 'pointercancel') {
+      card.classList.remove('ps-yes', 'ps-no');
+      card.style.transform = '';
+      return;
+    }
+    const yes = dx > 0;
+    if (still.matches) return answerPhraseSort(yes);
+    card.classList.add('ps-going');
+    card.style.transform = `translateX(${yes ? '120%' : '-120%'}) rotate(${yes ? 12 : -12}deg)`;
+    setTimeout(() => { if (phraseSort) answerPhraseSort(yes); }, 180);
+  };
+  card.addEventListener('pointerup', end);
+  card.addEventListener('pointercancel', end);
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('button, .vp-missing')) return;
+    const p = phraseSort?.queue[phraseSort.i];
+    if (p) speak(cardSay(p.card)); // the card: play it
+  });
+  els.psNo.addEventListener('click', () => answerPhraseSort(false));
+  els.psYes.addEventListener('click', () => answerPhraseSort(true));
+  els.psUndo.addEventListener('click', undoPhraseSort);
+  els.phraseSort.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePhraseSort));
+}
+
+function handlePhraseSortKey(e) {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  const p = phraseSort.queue[phraseSort.i];
+  const act = { escape: closePhraseSort, backspace: undoPhraseSort, u: undoPhraseSort,
+    ...(p ? { arrowright: () => answerPhraseSort(true), y: () => answerPhraseSort(true), arrowleft: () => answerPhraseSort(false),
+      n: () => answerPhraseSort(false), p: () => speak(cardSay(p.card)) } : {}) }[e.key.toLowerCase()];
+  if (!act) return;
+  e.preventDefault();
+  act();
 }
 
 // "I know this word" (2026-11-22, the user's request, "ideally not too cumbersome"): Vocabulary's
@@ -9567,6 +9795,12 @@ function bindVocab() {
     state.vocabPhraseShown = VOCAB_PHRASE_PAGE;
     renderVocabPhrases();
   }));
+  els.vocabPhraseSort.addEventListener('click', openPhraseSort);
+  els.vocabPhraseDoneToggle.addEventListener('click', () => {
+    state.vocabPhraseShowDone = !state.vocabPhraseShowDone;
+    renderVocabPhrases();
+  });
+  bindPhraseSortSwipe();
   els.vocabPhraseMore.addEventListener('click', () => {
     state.vocabPhraseShown += VOCAB_PHRASE_PAGE;
     renderVocabPhrases();
@@ -9964,6 +10198,10 @@ function bindEvents() {
         closeConfirm(false);
       }
       return; // Enter / Space act on the focused button
+    }
+    if (phraseSort) { // Vocabulary's One by one
+      handlePhraseSortKey(e);
+      return;
     }
     if (state.moving) {
       if (e.key === 'Escape') {

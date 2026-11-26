@@ -2318,8 +2318,54 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-phrase-kinds { display: flex; }
 .vocab-phrase-kinds .seg-btn { flex: 1; min-height: 44px; font-size: 15px; }
 .vocab-phrase-help { margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); line-height: 1.45; }
-.vocab-phrase-add { align-self: flex-start; min-height: 44px; padding: 8px 16px; font-size: 16px; }
-.vocab-phrase-add[hidden] { display: none; }
+/* Add all and One by one, side by side (they wrap on a narrow screen); under the list, Show or Hide
+   the ones gone through (2026-11-26). */
+.vocab-phrase-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+:is(.vocab-phrase-add, .vocab-phrase-sort, .vocab-phrase-done) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
+:is(.vocab-phrase-add, .vocab-phrase-sort, .vocab-phrase-done)[hidden] { display: none; }
+.vocab-phrase-done { align-self: center; }
+/* A phrase gone through, shown: Added or Not added under its meaning (or note). */
+.vp-chosen-tag { display: table; margin-top: 6px; padding: 0 8px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); font-size: calc(13px * var(--fs, 1)); font-style: normal; white-space: nowrap; }
+/* One by one (openPhraseSort): the word dialog's frame; the phrase in a card that a swipe moves, tinted
+   green going right (Add), red going left (No); Undo; No and Add as a run's. On a phone the card takes
+   the height between the head and the answers. */
+.phrase-sort .word-body.ps-body { display: flex; flex: 1 1 auto; flex-direction: column; gap: 10px; padding: 12px 16px 16px; } /* over .word-modal .word-body (later) */
+.ps-title { margin-right: 8px; font-weight: 600; }
+.ps-count { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ps-card {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 220px; /* fits 390 × 664 between the bars; on a phone it grows to fill */
+  padding: 16px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  text-align: center;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: grab;
+}
+.ps-card.ps-end { cursor: default; }
+.ps-card.ps-yes { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--panel)); }
+.ps-card.ps-no { border-color: var(--again); background: color-mix(in srgb, var(--again) 14%, var(--panel)); }
+@media (prefers-reduced-motion: no-preference) {
+  .ps-card.ps-going { transition: transform .18s ease-in; }
+}
+.ps-card p { margin: 0; }
+.ps-topic { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.ps-thai { color: var(--ink); font-size: calc(40px * var(--fs, 1)); line-height: 1.6; overflow-wrap: anywhere; }
+.ps-thai.ps-done { font-size: calc(24px * var(--fs, 1)); font-weight: 600; line-height: 1.4; }
+.ps-tr { color: var(--accent); font-style: italic; font-size: calc(19px * var(--fs, 1)); }
+.ps-en { color: var(--ink); font-size: calc(18px * var(--fs, 1)); line-height: 1.35; }
+.ps-card .ps-missing { margin-top: 4px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
+.ps-card .pop-actions { justify-content: center; margin-top: 6px; }
+.ps-card .vp-missing { cursor: inherit; }
+.ps-card .vocab-go { margin-top: 10px; }
 /* Its rows stacked at every width, as a phone's List rows are (mobile.css): Thai, transliteration and
    English down the left, the buttons on the right. In Vocabulary's 560 column the table's columns left
    the Thai 140 wide, a word of it broken across two lines. */
