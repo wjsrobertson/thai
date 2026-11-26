@@ -2971,6 +2971,26 @@ too cumbersome").
     to learn" → the title, Add into it; Change → Travel phrases, the focus back on Change, Add into
     it; Add all then "Add all to Travel phrases"; One by one with its bookmark, 44 tall; no script
     errors.
+- **Add all asks, and its phrases count as sorted** (the user's calls, the same day: "'Add all to my
+  phrases' - this needs a confirmation dialog"; "after they have all been added they should no longer
+  appear in the All words known or one words short sections. They should count as sorted… no need
+  for a green button that says 'All in My phrases'. Just show a short message"):
+  - It asks first (`addAllVocabPhrases`, `confirmDialog` with `confirmAddAll`, the List page's Add
+    all's, so Settings → List's "ask first" and its Don't ask again cover both): "Add these 16
+    phrases to 'My phrases'? They then count as sorted, so they leave this list." (Add 16), or, with
+    some in the list already, "Add the 98 phrases not in 'My phrases' yet? All 99 then count as
+    sorted…", or with all of them in, "Count the 5 phrases as sorted…?" (Count as sorted).
+  - Confirmed, every phrase the list shows that isn't sorted is counted as sorted, Added
+    (`phraseChoices` 1), and those not in your phrase list go in; a toast says so (its Change moves
+    them, as everywhere). The list is then empty: "None left: you've sorted all 16.", with Show 16
+    already sorted; Sort into and Add all go. The counts (the tabs, Vocabulary's row) follow.
+  - The green "All in My phrases" state is gone (`.all-in` no longer set here; its CSS for this page
+    with it): a list whose phrases are all in your list already still offers Add all, which then
+    just counts them as sorted.
+  - Checked headless (scratch `addall_probe.py`) at 390 × 664 and 1280 × 800, the most-used 40
+    known: the dialog's text; Cancel (nothing added); Add 16 (My phrases 16, 16 sorted, the list's
+    None left, All words known · 0); in One word short, one bookmarked first, then "Add the 98… All
+    99…" (My phrases 115, One word short · 0); no script errors.
 
 ## My Stories in the topic picker (2026-11-22)
 

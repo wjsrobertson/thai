@@ -2323,10 +2323,9 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-phrase-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 :is(.vocab-phrase-add, .vocab-phrase-sort, .vocab-phrase-done) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
 :is(.vocab-phrase-add, .vocab-phrase-sort, .vocab-phrase-done)[hidden] { display: none; }
-/* Over List's .wordlist-add-all.all-in (later in this file), whose inline-grid stacks its two labels
-   in one cell: here it put the bookmark over "All in My phrases", and beat [hidden], so with nothing
-   left it still showed (the user's screenshot, 2026-11-26: "this looks really awful"). */
-.vocab-phrase-actions > .vocab-phrase-add.all-in:not([hidden]) { display: inline-flex; align-items: center; justify-content: center; }
+/* [hidden] over .wordlist-add-all's display (later in this file). Its .all-in, a green "All in My
+   phrases", stacked the bookmark over the words and beat [hidden] (the user's screenshot, 2026-11-26:
+   "this looks really awful"); Add all here no longer has it: its phrases count as sorted and go. */
 .vocab-phrase-actions > button[hidden] { display: none; }
 .vocab-phrase-done { align-self: center; }
 /* A phrase gone through, shown: Added or Not added under its meaning (or note). */

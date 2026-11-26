@@ -9129,20 +9129,17 @@ function renderVocabPhrases() {
   const list = vocabPhraseList(kind, sets, { done: state.vocabPhraseShowDone });
   const byTopic = getSettings().vocabPhraseOrder !== 'shortest';
   const choices = phraseChoices();
-  // Add all: those not in your list yet; with every one in, it says so.
-  const target = targetWords('phrases'); // your phrase list (2026-11-22)
+  // Add all (2026-11-26, the user's calls: "needs a confirmation dialog"; "after they have all been
+  // added they should no longer appear… They should count as sorted… no need for a green button that
+  // says 'All in My phrases'"): asks first (confirmAddAll, as List's Add all), then adds those not in
+  // your phrase list and counts every one not sorted yet as sorted (Added), so they leave the list,
+  // which then says "None left: you've sorted all 16." Those already in the list (a bookmark) are
+  // counted too. Till then it added them and stayed, turning into a green "All in My phrases".
   const cards = mergeProgressIntoCards(list.map((p) => p.card));
-  const out = cards.filter((c) => !target.has(c.key));
-  els.vocabPhraseAdd.hidden = !cards.length;
-  els.vocabPhraseAdd.classList.toggle('all-in', !out.length);
-  els.vocabPhraseAdd.replaceChildren(reviewIcon(!out.length), out.length ? `Add all to ${targetName('phrases')}` : `All in ${targetName('phrases')}`);
-  els.vocabPhraseAdd.onclick = () => {
-    if (!out.length) return toast(`They're all in '${targetName('phrases')}'`);
-    const keys = out.map((c) => c.key);
-    setInTarget(keys, true);
-    toastAdded(keys, plural(keys.length, 'phrase'));
-    renderVocabPhrases();
-  };
+  const unsorted = list.filter((p) => !(cardKey(p.card) in choices)); // not those shown as sorted
+  els.vocabPhraseAdd.hidden = !unsorted.length;
+  els.vocabPhraseAdd.replaceChildren(reviewIcon(), `Add all to ${targetName('phrases')}`);
+  els.vocabPhraseAdd.onclick = () => addAllVocabPhrases(unsorted.map((p) => cardKey(p.card)));
   // One by one: those not in your list, nor gone through (openPhraseSort).
   const toSort = phraseSortQueue(list).length;
   els.vocabPhraseSort.hidden = !toSort;
@@ -9248,6 +9245,33 @@ function vocabPhraseTree(list, row) {
     }
   }
   return out;
+}
+
+async function addAllVocabPhrases(keys) {
+  const name = targetName('phrases');
+  const target = targetWords('phrases');
+  const out = keys.filter((k) => !target.has(k));
+  const n = keys.length;
+  const ok = await confirmDialog({
+    title: `Add all to '${name}'?`,
+    message: !out.length ? `They're all in '${name}' already. Count the ${plural(n, 'phrase')} as sorted, so they leave this list?`
+      : out.length === n ? `Add ${n === 1 ? 'this phrase' : `these ${fmtCount(n)} phrases`} to '${name}'? They then count as sorted, so they leave this list.`
+      : `Add the ${plural(out.length, 'phrase')} not in '${name}' yet? All ${fmtCount(n)} then count as sorted, so they leave this list.`,
+    confirmLabel: out.length ? `Add ${fmtCount(out.length)}` : 'Count as sorted',
+    setting: 'confirmAddAll',
+  });
+  if (!ok) return;
+  const store = loadStore();
+  const choices = (store.phraseChoices ||= {});
+  for (const k of keys) choices[k] = 1;
+  saveStore(store);
+  if (out.length) {
+    setInTarget(out, true, 'phrases');
+    toastAdded(out, plural(out.length, 'phrase'));
+  } else {
+    toast(`✓ ${plural(n, 'phrase')} counted as sorted`, { tone: 'good' });
+  }
+  if (state.view === 'vocab') renderVocab(); // the list, its counts, Vocabulary's row
 }
 
 // One by one (2026-11-26, the user's request: "the option to go through a wizard to add phrases to a
