@@ -9712,8 +9712,12 @@ async function startVocabRun(id, mode = null) {
   renderVocabRun();
 }
 
+// Done. Going through again (Didn't know · 4, All · 22) ends there too, its answers kept: the list's
+// row then has Again's buttons, not a paused pass with Stop going through again (the user's call,
+// 2026-11-26: "they have already stopped"). A plain run still carries on where it was (Continue).
 function leaveVocabRun() {
   if (!state.vocabRun) return;
+  if (vocabPasses()[state.vocabRun.id]) setVocabPass(state.vocabRun.id, null);
   state.vocabRun = null;
   stopAudio();
   renderVocab();

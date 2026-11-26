@@ -2330,6 +2330,13 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     Continue carries on with it, and **Stop going through again** ends it. Its end: "Done: the 7 you
     didn't know · You know 4 of them now". A pass with nothing left is dropped when the page next
     shows. An answer in another list counts, as everywhere.
+  - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
+    through again'… they have already stopped. Just make it display the two buttons as before"):
+    `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again
+    rather than the pause above (Continue on with the pass, Stop going through again); that code
+    stays for a pass saved before. A plain run still pauses (Continue). Checked headless (scratch
+    `pass_probe.py`) at 390 × 664 and 1280 × 800: Didn't know · 4, a Yes, Done → Didn't know · 3,
+    All · 22, no pass saved; All, then Done at once → the same; a plain run's Done → Continue.
   - **Undo** puts back the answer before (and its time), not "unanswered", so in a pass the word is
     due again. It replaced the end's **Go through again**, which cleared the list's answers after a
     confirm (`againVocab`, gone).
