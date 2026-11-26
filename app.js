@@ -9097,8 +9097,12 @@ function renderPhrasePanel(known) {
   // "Phrases from your words", "all known").
   text.append(el('span', 'vocab-phrase-title', 'Phrases from your known vocabulary'),
     el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} with all words known · ${fmtCount(n('short'))} with one word short`));
-  els.vocabPhrasePanel.replaceChildren(text, el('span', 'vocab-phrase-chevron', '›'));
-  els.vocabPhrasePanel.onclick = () => openVocabPhrases('known') // always All words known, even empty (the user's call, 2026-11-26);
+  // With none in either (all sorted), it says so but doesn't open: no ›, disabled (the user's call,
+  // 2026-11-26: "if there are 0 then this should not even be clickable").
+  const none = !n('known') && !n('short');
+  els.vocabPhrasePanel.disabled = none;
+  els.vocabPhrasePanel.replaceChildren(text, ...(none ? [] : [el('span', 'vocab-phrase-chevron', '›')]));
+  els.vocabPhrasePanel.onclick = () => openVocabPhrases('known'); // always All words known, even empty (the user's call, 2026-11-26)
 }
 
 function openVocabPhrases(kind) {

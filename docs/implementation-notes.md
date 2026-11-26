@@ -2392,6 +2392,13 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   sideways scroll, no script errors.
 - **Remove from vocabulary** (the user's wording, the same evening): the button, its confirm ("Remove
   'Greetings & Politeness' from vocabulary?") and its toast, for "Remove from this page".
+- **Phrases from your known vocabulary, not clickable at 0** (the user's call, the same evening: "if
+  there are 0 then this should not even be clickable"): with none in either list (all sorted), the row
+  still says "0 with all words known · 0 with one word short" but is disabled, without its ›, and
+  doesn't light on hover (`renderPhrasePanel`; `.vocab-phrase-link:disabled`, its text kept in the
+  ink colour). Hidden, as before, when there are no such phrases at all. Checked headless (scratch
+  `panel_probe.py`) at 390 × 664 and 1280 × 800: 16 · 99 clickable; both Add all'd, then 0 · 0,
+  disabled, a tap staying on the page; no script errors.
 - **Done ends a pass** (2026-11-26, the user's call: after Done, the row "should not say 'Stop going
     through again'… they have already stopped. Just make it display the two buttons as before"):
     `leaveVocabRun` drops it, its answers kept, so the row has Didn't know · 3 and All · 22 again
