@@ -2282,8 +2282,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     out. A topic's words show that topic's card (ฉัน in Monks is "to eat (of a monk)"). The last six
     gone through are listed after Slang (`prefs.vocabRecent`); after Most used since Slang's row went.
 - **The count, one line** (2026-11-26, the user's call: "this massive title is not needed. Just have
-  normal text, one line saying: 'you know 18 words'"): "You know 18 words" (and "and 3 phrases" when
-  there are some), 16 px in the ink colour, left-aligned (`#vocab-total`). Till then the number in 48 px
+  normal text, one line saying: 'you know 18 words'"): "You know 18 words" (words only: for an hour it
+  added "and 3 phrases", which the user didn't want), 16 px in the ink colour, left-aligned (`#vocab-total`). Till then the number in 48 px
   accent, centred, over "words you know" and "22 answered"; how many you've answered isn't shown now.
   Checked headless (scratch `vhome_probe.py`) at 390 × 664 and 1280 × 800: one line, 22 tall.
 - **Words to learn** (2026-11-26, the user's request: "words that have been flagged as not known - we

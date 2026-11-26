@@ -9021,7 +9021,7 @@ function renderVocabHome() {
   const known = knownMap();
   const t = vocabTotals();
   // One line (the user's call, 2026-11-26: "this massive title is not needed… 'you know 18 words'").
-  els.vocabTotal.textContent = `You know ${plural(t.words, 'word')}` + (t.phrases ? ` and ${plural(t.phrases, 'phrase')}` : '');
+  els.vocabTotal.textContent = `You know ${plural(t.words, 'word')}`; // words only, not phrases (the user's call, the same day)
   const at = knownAtMap();
   const rows = [VOCAB_MOST_USED, ...vocabRecent()].map((id) => vocabSourceRow(id, known, at)).filter(Boolean);
   els.vocabSources.replaceChildren(...rows, els.vocabChoose);
