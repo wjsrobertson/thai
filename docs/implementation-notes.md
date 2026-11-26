@@ -2951,8 +2951,12 @@ too cumbersome").
   2. "Show the 3 gone through" ("not nice to read"): offered four, the user picked **Show 3 already
      sorted** (Hide 3 already sorted); the empty list's "None left: you've sorted all 16."
   3. **One by one** has the bookmark, as Add all has, and offered four wordings the user picked
-     **Sort into My phrases · 64** (your phrase list's name, as Add all's). Wider: on a phone it
-     wraps under Add all, as before. The dialog's own head is unchanged ("Add to 'My phrases'?").
+     **Sort into My phrases** (your phrase list's name, as Add all's; its count, "· 64", dropped the
+     same day, the user's call). Vocabulary's row then said "16 with all words known · 99 with one
+     word short" (the user's wording). Sort into then went before Add all (the user's call: on a
+     phone it's the top one). In the dialog's head, Change moved from beside ✕ to right after the
+     list's name ("Add to 'Travel phrases'? [Change]", `.ps-title-row`), compact (78 × 44, 15 px):
+     after "My phrases" at 390 and 430, after "Travel phrases" at 430; at 390 that one wraps under.
   4. **Change, not a dropdown** ("keep the list name in title… add a change button… reuse that
      dialog… you can hide the 'Add new phrases there too'"): the head is "Add to 'Travel phrases'?"
      over "1 of 407", then **Change** and ✕ (`renderPhraseSortTitle`). Change opens the lists dialog

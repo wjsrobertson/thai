@@ -2336,10 +2336,12 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    the height between the head and the answers. */
 .phrase-sort .word-body.ps-body { display: flex; flex: 1 1 auto; flex-direction: column; gap: 10px; padding: 12px 16px 16px; } /* over .word-modal .word-body (later) */
 .ps-title { font-weight: 600; }
-/* The head: "Add to 'My phrases'?" over "4 of 407", then Change and ✕. */
-.ps-panel .pop-text { display: flex; flex-direction: column; }
+/* The head: "Add to 'My phrases'?" with Change right after it (wrapping under a long name), over
+   "4 of 407"; ✕ on the right. */
+.ps-panel .pop-text { display: flex; flex-direction: column; gap: 2px; }
+.ps-title-row { display: flex; flex-wrap: wrap; align-items: center; column-gap: 8px; row-gap: 4px; }
 .ps-title { overflow-wrap: anywhere; }
-.ps-change { flex: none; min-height: 44px; padding: 8px 14px; font-size: 16px; }
+.ps-change { flex: none; min-height: 44px; padding: 4px 10px; font-size: 15px; } /* compact: after "My phrases" at 390; a name as long as "Travel phrases" fits at 430, wraps under it at 390 */
 .ps-count { color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
 .ps-card {
   display: flex;

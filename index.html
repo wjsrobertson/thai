@@ -168,9 +168,9 @@
     <div class="modal-backdrop" data-close></div>
     <div class="modal-panel word-panel ps-panel" role="document">
       <div class="modal-head word-head">
-        <div class="pop-text"><span class="ps-title" id="phrase-sort-title"></span><span class="ps-count" id="phrase-sort-count"></span></div>
-        <!-- Another list: the lists dialog (openListChooser), as a word's Change (2026-11-26). -->
-        <button type="button" class="ghost ps-change" id="ps-change">Change</button>
+        <!-- Change, right after the list's name (the user's call, 2026-11-26), opens the lists dialog
+             (openListChooser), as a word's Change does. -->
+        <div class="pop-text"><span class="ps-title-row"><span class="ps-title" id="phrase-sort-title"></span><button type="button" class="ghost ps-change" id="ps-change">Change</button></span><span class="ps-count" id="phrase-sort-count"></span></div>
         <button type="button" class="modal-close" data-close aria-label="Close">✕</button>
       </div>
       <div class="modal-body word-body ps-body">
@@ -963,8 +963,9 @@
         </div>
         <p class="vocab-phrase-help" id="vocab-phrase-help"></p>
         <div class="vocab-phrase-actions">
-          <button type="button" class="ghost wordlist-add-all vocab-phrase-add" id="vocab-phrase-add"></button>
+          <!-- Sort into first, then Add all (the user's call, 2026-11-26). -->
           <button type="button" class="ghost vocab-phrase-sort" id="vocab-phrase-sort"></button>
+          <button type="button" class="ghost wordlist-add-all vocab-phrase-add" id="vocab-phrase-add"></button>
         </div>
         <table class="wordtable vocab-phrase-table"><tbody id="vocab-phrase-rows"></tbody></table>
         <button type="button" class="ghost reading-more" id="vocab-phrase-more" hidden></button>

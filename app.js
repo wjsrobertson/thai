@@ -9078,7 +9078,7 @@ function renderPhrasePanel(known) {
   // "Phrases from your known vocabulary", "all words known" (the user's wording, 2026-11-26; it was
   // "Phrases from your words", "all known").
   text.append(el('span', 'vocab-phrase-title', 'Phrases from your known vocabulary'),
-    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} all words known · ${fmtCount(n('short'))} one word short`));
+    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} with all words known · ${fmtCount(n('short'))} with one word short`));
   els.vocabPhrasePanel.replaceChildren(text, el('span', 'vocab-phrase-chevron', '›'));
   els.vocabPhrasePanel.onclick = () => openVocabPhrases('known') // always All words known, even empty (the user's call, 2026-11-26);
 }
@@ -9147,7 +9147,7 @@ function renderVocabPhrases() {
   const toSort = phraseSortQueue(list).length;
   els.vocabPhraseSort.hidden = !toSort;
   // "Sort into My phrases · 64", with the bookmark, as Add all's (the user's calls, 2026-11-26; it was "One by one").
-  els.vocabPhraseSort.replaceChildren(reviewIcon(), `Sort into ${targetName('phrases')} · ${fmtCount(toSort)}`);
+  els.vocabPhraseSort.replaceChildren(reviewIcon(), `Sort into ${targetName('phrases')}`); // without its count (the user's call, the same day)
   els.vocabPhraseSort.title = `Go through the ${plural(toSort, 'phrase')} not in ${targetName('phrases')} one at a time, adding the ones you want`;
   // The ones gone through: hidden, unless shown (they're then marked Added or Not added).
   const done = sets[kind].filter((p) => cardKey(p.card) in choices).length;
