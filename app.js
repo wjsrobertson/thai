@@ -1013,7 +1013,7 @@ function buildQueue(cards) {
 // Which words those are, as a string, to tell when they've changed: only a list's can.
 function reviewOnlySignature() {
   const scope = flashScope();
-  return scope?.kind === 'list' || scope?.kind === 'stories' ? `${scope.id}\n${scope.cards.map(cardKey).join('\n')}` : scope?.id || '';
+  return scope?.kind === 'list' || scope?.kind === 'stories' || isLearnScope(scope) ? `${scope.id}\n${scope.cards.map(cardKey).join('\n')}` : scope?.id || '';
 }
 
 // The Cards queue: indices into state.cards, the scope's words (Recognition's answer choices come
@@ -1030,7 +1030,10 @@ function renderReviewOnly() {
   els.reviewOnlyEmpty.hidden = !empty;
   els.stage.classList.toggle('review-only-none', empty);
   const noun = kindNoun(scopeKind(flashScope())); // a phrase list's: phrases (2026-11-22)
-  if (empty) els.reviewOnlyEmptyTitle.textContent = `'${flashScope()?.name || 'This list'}' has no ${noun} yet`;
+  const learn = isLearnScope(flashScope()); // Words to learn: nothing to add, it fills from Vocabulary
+  els.reviewOnlyAdd.parentElement.hidden = learn;
+  if (empty) els.reviewOnlyEmptyTitle.textContent = learn ? `None yet. The ${noun} you say you don't know in Vocabulary come here.`
+    : `'${flashScope()?.name || 'This list'}' has no ${noun} yet`;
   if (empty) {
     els.reviewOnlyAdd.textContent = `Add ${noun}`;
     els.reviewOnlyAdd.nextElementSibling.textContent = `Choose ${noun} from a topic or another of your lists`;
@@ -1490,6 +1493,11 @@ function resolveScope(id) {
     if (scope) scopeCache.set(id, scope);
     return scope;
   }
+  if (id === LEARN_WORDS || id === LEARN_PHRASES) {
+    const scope = resolveLearnScope(id);
+    scopeCache.set(id, scope);
+    return scope;
+  }
   const catOf = (d) => d.category || 'Uncategorized';
   let kind = 'topic';
   let name = '';
@@ -1560,6 +1568,47 @@ function resolveListScope(id) {
   const n = cards.length;
   const phrases = listKind(list) === 'phrases'; // a phrase list (2026-11-22)
   return { id, kind: 'list', phrases, name: list.name, decks: [], cards, deckOf, description: `${n} ${kindNoun(phrases ? 'phrases' : 'words', n)}`, label: list.name };
+}
+
+// Words to learn, Phrases to learn (2026-11-26, the user's request: "words that have been flagged as
+// not known - we need an option to view them on the Words section"): what you said No to in
+// Vocabulary (store.known 0), on My Words or My Phrases above your lists, for List and Cards as a list
+// is. It's built from the answers, not saved: a word you then know leaves it, and Vocabulary's Clear
+// empties it (vocabAnswersChanged drops it from scopeCache). A word shows its main card, the one Most
+// used shows (vocabWordCard); newest No first, or oldest (Settings → List, as your lists).
+const LEARN_WORDS = 'learn:words';
+const LEARN_PHRASES = 'learn:phrases';
+const isLearnScope = (scope) => scope?.kind === 'learn';
+function resolveLearnScope(id) {
+  const phrases = id === LEARN_PHRASES;
+  const index = vocabIndex();
+  const at = knownAtMap();
+  const thais = Object.entries(knownMap())
+    .filter(([thai, k]) => k === 0 && index.has(thai) && index.get(thai).phrase === phrases)
+    .map(([thai]) => thai)
+    .sort((a, b) => (at[b] || 0) - (at[a] || 0));
+  if (getSettings().listOrder === 'oldest') thais.reverse();
+  const cards = [];
+  const deckOf = new Map();
+  for (const thai of thais) {
+    const { card } = vocabWordCard(thai);
+    const key = cardKey(card);
+    if (deckOf.has(key)) continue;
+    deckOf.set(key, index.get(thai).cards.find((e) => e.card === card).decks[0]);
+    cards.push(card);
+  }
+  const name = phrases ? 'Phrases to learn' : 'Words to learn';
+  const noun = phrases ? 'phrases' : 'words';
+  const n = cards.length;
+  return {
+    id, kind: 'learn', phrases, name, decks: [], cards, deckOf, label: name,
+    description: n ? `${fmtCount(n)} ${kindNoun(noun, n)} you didn't know, from Vocabulary` : `The ${noun} you say you don't know in Vocabulary`,
+  };
+}
+// After an answer in Vocabulary (a run's, the word dialog's I know this word, Undo, Clear).
+function vocabAnswersChanged() {
+  scopeCache.delete(LEARN_WORDS);
+  scopeCache.delete(LEARN_PHRASES);
 }
 
 // One of your story lists (2026-11-22, the user's call: in the picker, Topics | My Words | My Stories,
@@ -1673,7 +1722,7 @@ function renderDeckButton() {
   }
   const scope = state.view === 'flashcards' || state.view === 'reading' ? flashScope() : currentScope();
   els.deckButtonLabel.textContent = scope?.label || 'Choose a topic';
-  const icon = !scope ? 'topics' : scope.kind === 'topic' ? (scope.phrases ? 'phrases' : 'topics') : scope.kind === 'list' ? 'mylist' : scope.kind === 'stories' ? 'reading' : 'group';
+  const icon = !scope ? 'topics' : scope.kind === 'topic' ? (scope.phrases ? 'phrases' : 'topics') : scope.kind === 'list' ? 'mylist' : scope.kind === 'stories' ? 'reading' : isLearnScope(scope) ? 'topics' : 'group';
   els.deckButtonIcon.replaceChildren(lineIcon('page-icon', '0 0 24 24', PAGE_ICONS[icon]));
 }
 
@@ -1835,7 +1884,15 @@ function renderListsPane(kind) {
     row.classList.add('list-row');
     return row;
   });
-  if (!lists.length) {
+  // Words to learn (or Phrases), first (2026-11-26; resolveLearnScope). Not in Vocabulary's own
+  // picker: it goes through the words not yet answered, and these are; its Didn't know goes over them.
+  const learn = state.pickerFor === 'vocab' ? null : resolveScope(kind === 'phrases' ? LEARN_PHRASES : LEARN_WORDS);
+  if (learn && (!q || learn.name.toLowerCase().includes(q.toLowerCase()) || learn.cards.some((c) => wordMatches(c, q)))) {
+    const row = pickerDeckRow(learn, { progress: false });
+    row.classList.add('list-row');
+    rows.unshift(row);
+  }
+  if (!lists.length && !(q && rows.length)) { // a search that found Words to learn says nothing more
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
     empty.textContent = q ? `No list matches "${q}".` : state.pickerFor === 'add' ? 'No other lists yet.'
@@ -2330,7 +2387,7 @@ function openDeckPicker({ addTo = null, vocab = false } = {}) {
   // (one of your lists: My Words; a topic: Topics); Add words' and Vocabulary's, Topics.
   state.pickerOf = addTo ? listKind(listById(addTo)) : vocab ? 'words' : state.kind;
   const nowScope = state.pickerFor === 'study' ? resolveScope(state.currentDeckId) : null;
-  state.pickerPane = nowScope?.kind === 'list' || nowScope?.kind === 'stories' ? 'mine' : 'topics';
+  state.pickerPane = nowScope?.kind === 'list' || nowScope?.kind === 'stories' || isLearnScope(nowScope) ? 'mine' : 'topics';
   els.deckPickerTitle.textContent = addTo ? `Add ${kindNoun(state.pickerOf)} to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
   renderPickerHead();
   // Every open starts from the current choice: its category and group open, the rest closed.
@@ -4644,7 +4701,8 @@ function renderWordlist() {
   if (rows.length === 0) {
     const tr = document.createElement('tr');
     tr.innerHTML = '<td class="empty" colspan="4"></td>';
-    tr.firstChild.textContent = q ? `No ${kindNoun(kind)} match "${q}".` : isList ? `No ${kindNoun(kind)} yet. Add ${kindNoun(kind)} chooses some from a topic or another list.` : 'No matches.';
+    tr.firstChild.textContent = q ? `No ${kindNoun(kind)} match "${q}".` : isList ? `No ${kindNoun(kind)} yet. Add ${kindNoun(kind)} chooses some from a topic or another list.`
+      : isLearnScope(deck) ? `None yet. The ${kindNoun(kind)} you say you don't know in Vocabulary come here.` : 'No matches.';
     els.wordtableBody.appendChild(tr);
   } else {
     // A list's words taken out of it since the page opened: faded, but still usable, 🔁 putting one
@@ -4737,7 +4795,7 @@ function wordMatches(c, q, near = false) {
 // The List page's rows for a list, afresh (they're kept while it's open: listsChanged).
 function freshListCards() {
   const scope = currentScope();
-  if (scope?.kind === 'list' || scope?.kind === 'stories') state.listCards = mergeProgressIntoCards(scope.cards);
+  if (scope?.kind === 'list' || scope?.kind === 'stories' || isLearnScope(scope)) state.listCards = mergeProgressIntoCards(scope.cards);
 }
 
 // A word's row, as on the Topics page and in the Dictionary: its Thai (opening the word dialog; a
@@ -9084,6 +9142,7 @@ function setKnown(thai, yes) {
   (store.known ||= {})[thai] = yes ? 1 : 0;
   (store.knownAt ||= {})[thai] = Date.now();
   saveStore(store);
+  vocabAnswersChanged();
   if (state.view === 'vocab') renderVocab(); // a run's word, the counts, a phrase list
   if (state.view === 'home') renderHomeVocab();
 }
@@ -9396,6 +9455,7 @@ function answerVocab(yes) {
   store.known[run.thai] = yes ? 1 : 0;
   store.knownAt[run.thai] = Date.now();
   saveStore(store);
+  vocabAnswersChanged();
   renderVocabRun();
 }
 
@@ -9413,6 +9473,7 @@ function undoVocab() {
   put((store.known ||= {}), last.prev);
   put((store.knownAt ||= {}), last.prevAt);
   saveStore(store);
+  vocabAnswersChanged();
   renderVocabRun();
 }
 
@@ -9444,6 +9505,7 @@ async function resetVocab() {
   delete store.known;
   delete store.knownAt;
   saveStore(store);
+  vocabAnswersChanged();
   setPreferences({ vocabPasses: {} });
   if (state.vocabRun) state.vocabRun.history = [];
   if (state.view === 'vocab') renderVocab();

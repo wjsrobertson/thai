@@ -2281,6 +2281,28 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
     rather than choosing the topic. Nothing is lit as current, the word hits and ＋ New list are left
     out. A topic's words show that topic's card (ฉัน in Monks is "to eat (of a monk)"). The last six
     gone through are listed after Slang (`prefs.vocabRecent`); after Most used since Slang's row went.
+- **Words to learn** (2026-11-26, the user's request: "words that have been flagged as not known - we
+  need an option to view them on the Words section. maybe the topic picker can have a new section"):
+  the first row on the picker's My Words tab, "Words to learn · 3 words you didn't know, from
+  Vocabulary" (and on My Phrases, Phrases to learn), above your lists. Picked, it's a choice like a
+  list: List (paged, its search, Add all to My words) and Cards; the topic button has the topics icon.
+  - It's built from the answers (`resolveLearnScope`, ids `learn:words` and `learn:phrases`, kind
+    `learn`), not saved, so nothing can go out of step: a word answered Yes anywhere (a run, the word
+    dialog's I know this word, Undo, Clear) leaves it (`vocabAnswersChanged` drops it from
+    `scopeCache`; the List page keeps its rows till it's opened afresh, as a list's does; Cards
+    rebuilds its queue by `reviewOnlySignature`).
+  - Each word shows its main card, the one Most used shows (`vocabWordCard`), so a slang sense or a
+    Thai Script spelling note doesn't stand in for a common word. Newest No first, or oldest with
+    Settings → List's order, as your lists. Words or phrases by `vocabIndex`'s `phrase`.
+  - Shown even empty ("The words you say you don't know in Vocabulary"), so you can find it before
+    you've said No; empty, the List page and Cards say "None yet. The words you say you don't know
+    in Vocabulary come here." (Cards without its Add words). Not in Vocabulary's own picker: a run
+    goes through words not answered, and a list's Didn't know already goes over these.
+  - Named "Words to learn" over the user's "New Vocab": they're words met and not known, not new.
+  - Checked headless (scratch `learn_probe.py`) at 390 × 664 and 1280 × 800: three words and a phrase
+    said No (one Yes); My Words' row (3), its List (กิน ไป น้ำ, newest first) and Cards (1 / 3); the
+    choice kept over a reload; My Phrases' row (1); with no answers, the empty List and Cards;
+    Vocabulary's picker without it; no script errors.
 - **A run** (`state.vocabRun`, `renderVocabRun`): ‹ Done, the list's name and the place (6 / 5,126);
   a card with "Do you know this word?" (or phrase), the Thai on one line (shrunk to fit,
   `fitPopWord`; a tap opens the word dialog), its ▶, the transliteration and the meanings; the last
