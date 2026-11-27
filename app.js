@@ -6725,7 +6725,7 @@ function storyListActions(scope) {
   const box = popEl('div', 'list-actions');
   const id = scope.id.slice(8);
   const moves = savedStories(storyListById(id) || { stories: [] }).length ? [['Move items', (x) => openMoveItems('stories', x), 'ghost']] : [];
-  for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete list', deleteStoryList, 'ghost danger'], ...moves]) {
+  for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete', deleteStoryList, 'ghost danger'] /* "Delete list" till 2026-11-27 */, ...moves]) {
     const b = popEl('button', cls, label);
     b.type = 'button';
     b.addEventListener('click', () => fn(id));

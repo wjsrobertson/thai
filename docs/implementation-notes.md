@@ -2823,6 +2823,13 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Delete, not Delete list (2026-11-27)
+
+The user's call: "change 'Delete list' button to just say 'Delete'", on a word, phrase or story
+list's row (Rename · Delete · Move items); its tooltip says "Delete this list". The confirm it opens
+is unchanged. Checked headless (scratch `move_probe.py`) at 390 × 664: Delete 76 wide (was 100), the
+row's labels on both pages; no script errors.
+
 ## Move items: One by one out of a list into another (2026-11-27)
 
 The user's request: "a [Move items] button next to [Delete list] - it opens a wizard very similar to
