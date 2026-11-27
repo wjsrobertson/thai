@@ -6659,10 +6659,19 @@ function renderReadingList() {
       });
       empty.append(wider);
     }
-    els.readingList.replaceChildren(...(mine ? [storyListBar(scope, [])] : []), empty, ...(mine ? [storyListActions(scope)] : []));
+    els.readingList.replaceChildren(...(mine ? storyListHead(scope, []) : []), empty);
     return;
   }
-  els.readingList.replaceChildren(...(mine ? [storyListBar(scope, stories)] : []), ...pagedStories(stories), ...(mine ? [storyListActions(scope)] : []));
+  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : []), ...pagedStories(stories));
+}
+
+// A story list's top, laid out as a word list's List page (2026-11-27, the user's call: "the same on
+// Stories as Words and Phrases"): Add stories and Read all, the list's name, then Rename and Delete
+// list (which till then sat under its stories).
+function storyListHead(scope, stories) {
+  const name = popEl('div', 'wordlist-deck-name');
+  name.append(popEl('span', 'wordlist-title', scope.name));
+  return [storyListBar(scope, stories), name, storyListActions(scope)];
 }
 
 // A story list's row over its stories: Add stories, and Read all (2026-11-27, the user's call: "a
@@ -6709,10 +6718,9 @@ function storyAddButton(scope) {
   return b;
 }
 
-// A story list's Rename and Delete, under its stories on Read (as a word list's are under its words
-// on List, where a story list's are too).
+// A story list's Rename and Delete, under its name (storyListHead), as a word list's (.list-actions).
 function storyListActions(scope) {
-  const box = popEl('div', 'story-list-actions');
+  const box = popEl('div', 'list-actions');
   const id = scope.id.slice(8);
   for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete list', deleteStoryList, 'ghost danger']]) {
     const b = popEl('button', cls, label);

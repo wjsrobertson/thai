@@ -2112,13 +2112,11 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Taken out of the list shown: faded until it's next drawn, its bookmark as it is (storyListsChanged). */
 .reading-entry.unsaved .reading-item-main { opacity: .4; }
 /* A story list's Rename and Delete, under its stories on Read (storyListActions). */
-.story-list-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 16px; }
 /* A story list's Add stories, across the top of its stories (2026-11-27), as tall as a word list's. */
 /* With Read all beside it (2026-11-27), as a word list's Add words and Read all: Add takes the room. */
 .story-list-bar { display: flex; gap: 8px; margin: 0 0 12px; }
 .story-add { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 8px 14px; font-size: 16px; }
 .story-list-bar .story-read-all { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 0; /* the icon's own margin, as Words' */ min-height: 44px; margin-left: 0; padding: 8px 14px; font-size: 16px; }
-.story-list-actions .ghost { min-height: 44px; padding: 8px 14px; font-size: 16px; }
 /* Show more under the stories (pagedStories). */
 .reading-more { display: block; width: 100%; min-height: 44px; margin: 4px 0 12px; font-size: 16px; }
 .wordlist-more { margin-top: 12px; } /* the List page's (renderWordlist), under the table */

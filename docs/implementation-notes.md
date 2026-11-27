@@ -2809,6 +2809,15 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   row's sizes; Read all → the first story open, Read ❚❚ Pause, the button ■ Stop; closing → Read all;
   Stop → Read all; an empty list with Add stories alone (366 wide); no script errors. (Headless
   plays no sound, so going on to the next story wasn't watched: that's the old Read all's loop.)
+- **The top as a word list's** (the same day, the user's call: "Make the top layout the same on
+  Stories as Words and Phrases... [add phrases] [read all] / title / [Rename] [delete..]"): Add stories
+  and Read all, the list's name (`.wordlist-deck-name` > `.wordlist-title`), then Rename and Delete
+  list (`.list-actions`, moved from under the stories; `.story-list-actions` gone), then the stories
+  or the empty line (`storyListHead`). Measured headless (scratch `storyhead_probe.py`) against a word
+  list at 390 × 664: every one of the five at the same place and size (the buttons at 76, the name
+  at 132, Rename and Delete at 171). At 1280 × 800 the order's the same, but a word list's Add words
+  and Read all sit in the top bar, right, and Stories' in a row over its 760 column, so the name is 4
+  higher there; no script errors.
 - Checked headless (scratch `addstories_probe.py`) at 390 × 664 and 1280 × 800: an empty My stories
   (the button 366 × 44 at 390); the picker's title and line, My Stories listing only Isan; Greetings
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
