@@ -2722,6 +2722,29 @@ main area after stories".
   the bar and More's list as above, no label clipped (76 wide a tab at 390), Alphabet from More opens
   it with More lit, the Vocabulary tab lit on Vocabulary, ⚙ on screen at 620; no script errors.
 
+## Phrases in the Dictionary (2026-11-27)
+
+The user's call: "now that [phrases] are [first class], I think we should add phrases to the search
+results and browsing in dictionary... go ahead with all of them, mixed in. use the app's definition".
+The Dictionary had been words only since 2026-10-12, by `isPhrase`'s guess (several `words`, or a
+space), which also left out 968 word-topic cards (สีแดง, สวัสดีครับ, ไม่เป็นไร, ลูกคนเดียว,
+สองพันห้าร้อย).
+- **What's in:** every card `buildDictionary` took before, plus the 645 of the topics of phrases and
+  those 968: still not Thai Script, stories' copies or self-counting classifiers. Phrases file as
+  words do (first consonant; English by each meaning's headword) and sit among them; a phrase's row
+  opens the phrase dialog (`wordRow`, `isPhraseCard`), the word-topic ones the word dialog split by
+  word, as on a List page.
+- **Counts:** a letter's heading and tooltip say "356 words · 22 phrases" (`dictCount`, by
+  `isPhraseCard`), or just one when there are none of the other. The search box's label and Thai |
+  English's tooltips say words and phrases.
+- **The Alphabet's letter dialog:** "Words that start with ก" stays words (it leaves out
+  `isPhraseCard`s); its "All N in the Dictionary" counts everything under the letter.
+- `isPhrase` stays: Vocabulary goes by it.
+- Checked headless (scratch `dict_probe.py`) at 390 × 664 and 1280 × 800: ท "356 words · 22
+  phrases" with ทำอะไรอยู่ in it; "long time no see" finds ไม่ได้เจอกันนาน, whose Thai opens the
+  phrase dialog; "red" 110 matches with สีแดง; สวัสดีครับ found; English L "457 words · 15 phrases"
+  with "long time no see"; no sideways scroll, no script errors.
+
 ## Vocabulary tidied: a row a list (2026-11-22)
 
 The user's call: "Vocabulary section needs to be cleaned up it is unweildy. Any suggestions"; seven

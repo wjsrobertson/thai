@@ -3843,7 +3843,8 @@ function showLetterPop(anchor, c) {
   const words = dictEntries.filter((e) => e.first === c.thai);
   if (words.length) {
     const reach = (e) => state.cardIndex.get(e.key)?.deckIds.length || 0;
-    const top = [...words].sort((x, y) => reach(y) - reach(x) || x.thai.length - y.thai.length).slice(0, 5);
+    // Words, not the Dictionary's phrases (in it since 2026-11-27): the heading says words.
+    const top = words.filter((e) => !isPhraseCard(e)).sort((x, y) => reach(y) - reach(x) || x.thai.length - y.thai.length).slice(0, 5);
     parts.push(Object.assign(document.createElement('p'), { className: 'letter-words-head', textContent: `Words that start with ${c.thai}` }));
     for (const w of top) {
       const b = document.createElement('button');
@@ -4852,8 +4853,8 @@ function wordRow(c, cols, words) {
 
 // ---------- Dictionary (2026-10-12, the user's idea; an experiment) ----------
 
-// Every word in the topics (not phrases, Thai Script's spelling examples, the stories' copies, or
-// classifiers that count themselves), one row per card key, in Thai dictionary order (Intl.Collator
+// Every word and phrase in the topics (not Thai Script's spelling examples, the stories' copies, or
+// classifiers that count themselves; phrases since 2026-11-27), one row per card key, in Thai dictionary order (Intl.Collator
 // 'th' files เ แ โ ใ ไ words under their
 // consonant: เกิด under ก). The way in is a ก–ฮ grid with a search box above: a letter lists its
 // words, and the search (wordSearch, as the topic picker's) lists its matches, both in a table like
@@ -4869,9 +4870,11 @@ function dictLetterOf(thai) {
   return ch === 'ฤ' ? 'ร' : ch === 'ฦ' ? 'ล' : ch;
 }
 
-// Words only, no phrases (the user's call, 2026-10-12): a phrase card lists its words (`words`, from
-// the story builder), or is written with a space (ขอ … หน่อย, เร็ว ๆ นี้); a doubled word (จริง ๆ) stays.
-// Compounds (ข้าวเหนียว, ห้องน้ำ) have no `words`, so they're words.
+// A guess at a phrase: a card that lists its words (`words`, from the story builder), or is written
+// with a space (ขอ … หน่อย, เร็ว ๆ นี้); a doubled word (จริง ๆ) stays a word, and compounds
+// (ข้าวเหนียว, ห้องน้ำ) have no `words`. Vocabulary goes by it. The Dictionary did too (words only,
+// the user's call, 2026-10-12) till 2026-11-27, when it took phrases in, by the app's own rule
+// (isPhraseCard: a card in a topic of phrases).
 function isPhrase(c) {
   return c.words?.length > 1 || /\s/.test(c.thai.replace(/\s+ๆ/g, 'ๆ'));
 }
@@ -4892,7 +4895,10 @@ function buildDictionary() {
     if (d.passage || d.category === 'Thai Script') continue;
     for (const c of d.cards) {
       const key = cardKey(c);
-      if (!seen.has(key) && /^[ก-ฮเ-ไฤฦ]/.test(c.thai) && !isPhrase(c) && !isSelfClassifier(c)) seen.set(key, { ...c, key, first: dictLetterOf(c.thai) });
+      // Phrases too, mixed in (2026-11-27, the user's call: "all of them, mixed in. use the app's
+      // definition"): a topic of phrases' cards, and the word topics' cards of several words (สีแดง,
+      // สวัสดีครับ) the old rule had left out. A phrase's row opens the phrase dialog (wordRow).
+      if (!seen.has(key) && /^[ก-ฮเ-ไฤฦ]/.test(c.thai) && !isSelfClassifier(c)) seen.set(key, { ...c, key, first: dictLetterOf(c.thai) });
     }
   }
   const thaiOrder = new Intl.Collator('th');
@@ -4930,6 +4936,14 @@ function buildEnglishIndex() {
 }
 const LATIN_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
+// "312 words · 20 phrases", or one of them alone: a letter's count, in its heading and tooltip.
+function dictCount(rows) {
+  const p = rows.filter(isPhraseCard).length;
+  const w = rows.length - p;
+  const part = (n, noun) => `${fmtCount(n)} ${noun}${n === 1 ? '' : 's'}`;
+  return !p ? part(w, 'word') : !w ? part(p, 'phrase') : `${part(w, 'word')} · ${part(p, 'phrase')}`;
+}
+
 function renderDictionary() {
   buildDictionary();
   els.dictLangButtons.forEach((b) => b.setAttribute('aria-checked', b.dataset.dictLang === state.dictLang ? 'true' : 'false'));
@@ -4945,12 +4959,12 @@ function renderDictionary() {
   } else if (state.dictLetter && state.dictLang === 'en') {
     buildEnglishIndex();
     rows = (dictEnglish.get(state.dictLetter) || []).map((x) => x.e);
-    heading = `${state.dictLetter} · ${rows.length} word${rows.length === 1 ? '' : 's'}`;
+    heading = `${state.dictLetter} · ${dictCount(rows)}`;
     els.dictBack.textContent = '‹ All letters';
   } else if (state.dictLetter) {
     rows = dictEntries.filter((e) => e.first === state.dictLetter);
     const name = letterStep(state.dictLetter)?.show || state.dictLetter;
-    heading = `${name} · ${rows.length} word${rows.length === 1 ? '' : 's'}`;
+    heading = `${name} · ${dictCount(rows)}`;
     els.dictBack.textContent = '‹ All letters';
   }
   els.dictGrid.hidden = !!rows;
@@ -4986,13 +5000,14 @@ function renderDictGrid() {
   if (state.dictLang === 'en') {
     buildEnglishIndex();
     els.dictGrid.replaceChildren(...[...LATIN_LETTERS].map((ch) => {
-      const n = dictEnglish.get(ch)?.length || 0;
+      const rows = (dictEnglish.get(ch) || []).map((x) => x.e);
+      const n = rows.length;
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'dict-letter';
       b.disabled = !n;
       b.textContent = ch;
-      b.title = `${ch}: ${n} word${n === 1 ? '' : 's'}`;
+      b.title = `${ch}: ${dictCount(rows)}`;
       b.addEventListener('click', () => {
         state.dictLetter = ch;
         renderDictionary();
@@ -5004,6 +5019,7 @@ function renderDictGrid() {
   }
   const counts = new Map();
   for (const e of dictEntries) counts.set(e.first, (counts.get(e.first) || 0) + 1);
+  const ofLetter = (ch) => dictEntries.filter((e) => e.first === ch);
   els.dictGrid.replaceChildren(...[...DICT_LETTERS].map((ch) => {
     const n = counts.get(ch) || 0;
     const b = document.createElement('button');
@@ -5013,7 +5029,7 @@ function renderDictGrid() {
     const name = (letterStep(ch)?.show || '').split(' ')[1] || '';
     b.lang = 'th';
     b.textContent = ch;
-    b.title = n ? `${ch} ${name}: ${n} word${n === 1 ? '' : 's'}` : `${ch} ${name}: no words (obsolete)`;
+    b.title = n ? `${ch} ${name}: ${dictCount(ofLetter(ch))}` : `${ch} ${name}: no words (obsolete)`;
     b.addEventListener('click', () => {
       state.dictLetter = ch;
       renderDictionary();
