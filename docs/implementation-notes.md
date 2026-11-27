@@ -2839,6 +2839,9 @@ into icons and displayed inline in the list under 'My Words/Stories/Phrases' tab
   `.deck-row-desc:empty` hidden), 44 tall as its icons (`padding-block: 0`), 8 to the pencil, 4
   between the icons, 8 between rows. The selected row's accent box is now the icons' height.
   Measured at 390 × 664 and 1280 × 800: the row, pencil and bin all 44 tall at the same top.
+- **No ▶ before the chosen list's name** (the user's call, the same evening: "just the highlight
+  border is enough"): `.deck-row.list-row.current .deck-row-name::before` has no content. A topic's
+  row keeps its ▶.
 - **The list's page:** Rename and Delete are gone (`#list-rename`, `#list-delete` and their wiring;
   a story list's from `storyListActions`); Move items stays under the name, and the row's hidden on
   an empty list. The "Delete" relabel above lasted an hour.

@@ -616,6 +616,8 @@ html.modal-open body {
   content: "▶ ";
   color: var(--accent);
 }
+/* Not on one of your lists' rows: the accent border is enough (2026-11-27, the user's call). */
+.deck-row.list-row.current .deck-row-name::before { content: none; }
 .deck-row-main {
   min-width: 0;
 }
