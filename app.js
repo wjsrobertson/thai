@@ -1891,6 +1891,10 @@ function renderListsPane(kind) {
 // pickers are for picking. The picker stays open, drawn again after (askListName and confirmDialog
 // sit over it, as ＋ New list's does).
 const ICON_RENAME = 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4';
+// Move items' and Remove items' icons (2026-11-27, the user's call), as in index.html's #list-move and
+// #list-remove: an arrow to a line, and a minus in a circle.
+const ICON_MOVE = 'M3 12h13M11 7l5 5-5 5M20 5v14';
+const ICON_REMOVE = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8';
 const ICON_DELETE = 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6';
 function listRowTools(row, name, rename, del) {
   if (state.pickerFor !== 'study') return row;
@@ -6755,8 +6759,9 @@ function storyListActions(scope) {
   const id = scope.id.slice(8);
   if (!savedStories(storyListById(id) || { stories: [] }).length) return null;
   const box = popEl('div', 'list-actions');
-  for (const [label, fn] of [['Move items', openMoveItems], ['Remove items', openRemoveItems]]) {
-    const b = popEl('button', 'ghost', label);
+  for (const [label, fn, icon] of [['Move items', openMoveItems, ICON_MOVE], ['Remove items', openRemoveItems, ICON_REMOVE]]) {
+    const b = popEl('button', 'ghost');
+    b.append(lineIcon('page-icon list-action-icon', '0 0 24 24', icon), label);
     b.type = 'button';
     b.addEventListener('click', () => fn('stories', id));
     box.append(b);

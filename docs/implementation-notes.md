@@ -2846,6 +2846,11 @@ should say [Remove] [Keep]".
 - **As you go:** a Remove takes it out of the list at once; Undo puts it back where it was. The last
   answer goes back to the list with a toast ("Removed 2 words from 'Food words'", or "Nothing
   removed"). A word's progress is kept, as any taking out keeps it.
+- **Icons** (the same evening, the user's call: "Move items and Remove items buttons should have
+  icons"): an arrow to a line (Move items) and a minus in a circle (Remove items), 18 px, left of the
+  words as Read all's speaker (`.list-action-icon`; in index.html, and `ICON_MOVE`, `ICON_REMOVE` for
+  a story list's). 136 and 157 wide at 390, one line. Checked headless at 390 × 664 and 1280 × 800 on
+  a word, phrase and story list; no script errors.
 - `openSort` sets both buttons' labels and tooltips for each use: [No] [Add], [Keep] [Move],
   [Remove] [Keep].
 - Checked headless (scratch `remove_probe.py`) at 390 × 664 and 1280 × 800: Food words (3) →

@@ -2046,6 +2046,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* A list's Rename and Delete, under its name. */
 .list-actions { display: flex; gap: 8px; margin: 0 0 12px; }
 .list-actions .ghost { min-height: 44px; padding: 8px 14px; }
+/* Move items' and Remove items' icons, left of the words as Read all's speaker (2026-11-27). */
+.list-actions .list-action-icon { width: 18px; height: 18px; margin-right: 0.4em; vertical-align: -0.2em; }
 .ghost.danger { color: var(--again); }
 /* Add all to the list 🔁 adds to: a long name ends in … (the button stays one line). */
 .add-all-name { display: inline-block; max-width: 9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
