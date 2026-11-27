@@ -2823,6 +2823,16 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Flashcards, not Cards (2026-11-27)
+
+The user's call: "In Alphabet, Words, Phrases - change the [Cards] button to say [Flashcards] - change
+in home page too". The page switch's middle (Alphabet: Letters | Flashcards | Write) or second (Words,
+Phrases: List | Flashcards) button, its label, aria-label and title; Home's Words card row
+(**Flashcards** · Browse, Recognition, Recall and Type) and the Alphabet card ("with flashcards and
+writing practice"). Settings' Cards section keeps its name. At 390 the button is 73 wide (50 before),
+the topic button 225 (was 253), one line each; measured headless (scratch `flash_probe.py`) at 390 ×
+664 and 1280 × 800, nothing cut; no script errors.
+
 ## A Stories topic's Add all, Select into and Read all (2026-11-27)
 
 The user's call: "Stories section should have the Add all to list, Select into list and Read all
