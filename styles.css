@@ -3017,28 +3017,8 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    the Dictionary went across both). */
 .home-card-title { display: flex; align-items: center; gap: 12px; font-size: calc(22px * var(--fs, 1)); font-weight: 700; }
 .home-card-title .page-icon { width: 1.2em; height: 1.2em; flex: none; color: var(--accent); }
-/* Three rows: the label (with an accent dot) in its own column, so the descriptions line up. */
-.home-card-list {
-  display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: 14px;
-  row-gap: 12px;
-  font-size: calc(16px * var(--fs, 1));
-  line-height: 1.45;
-}
-.home-card-row { display: contents; }
-.home-card-row > b { font-weight: 600; color: var(--ink); white-space: nowrap; }
-.home-card-row > b::before {
-  content: '';
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  margin: 0 10px 0 2px;
-  border-radius: 50%;
-  background: var(--accent);
-  vertical-align: .2em;
-}
-.home-card-row > span { color: var(--muted); }
+/* A card's rows (.home-card-list, .home-card-row: a label with an accent dot, its text beside) went
+   with the Words card's, its last, on 2026-11-27 (one sentence now, as the others). */
 /* Topics: plain sentences, one per line, at the rows' size. More space between them than the rows
    have, so the card fills out beside Flashcards' (the user's request, 2026-10-08). */
 .home-card-text {

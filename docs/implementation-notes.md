@@ -2823,6 +2823,14 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Home's Words card in one sentence (2026-11-27)
+
+The user's call: "on home page, change Words description to one sentence". Its two rows (List · Every
+word in a topic…, Flashcards · Browse, Recognition…) are "Words by topic, to study with flashcards and
+save to lists of your own.", a `.home-card-text` as the other cards'. The rows' styles
+(`.home-card-list`, `.home-card-row`) went with them: no card has rows now. Checked headless at 390 ×
+664 and 1280 × 800; no script errors.
+
 ## Flashcards, not Cards (2026-11-27)
 
 The user's call: "In Alphabet, Words, Phrases - change the [Cards] button to say [Flashcards] - change
