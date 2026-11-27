@@ -9453,6 +9453,8 @@ function openSort(of, queue, { listId = null, move = null } = {}) {
   els.psChange.hidden = !!listId; // into that list, and no other
   els.psYes.textContent = move ? 'Move' : 'Add';
   els.psYes.title = move ? 'Move (→)' : 'Add (→)';
+  els.psNo.textContent = move ? 'Keep' : 'No'; // Keep · Move (2026-11-27, the user's call; it said No)
+  els.psNo.title = move ? 'Keep (←)' : 'No (←)';
   renderPhraseSortTitle();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);

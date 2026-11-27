@@ -2844,6 +2844,8 @@ adding to the other list, it removes from the current one. Done as you go".
   order; a story list's newest saved first). "Move to 'Travel'? 1 of 3", **Change**, the card, **No**
   and **Move** (the green button's label), the swipe, keys; the last answer "สวัสดีครับ ✗ Kept" or
   "✓ Moved".
+- **Keep and Move** (the same day, the user's call: "[Keep] [Move] rather than no and move"): the
+  red button says Keep here (No in Add words and Vocabulary), its tooltip "Keep (←)".
 - **Where to:** your list of the kind (the target) if it isn't this one, else your first other.
   Change lists the others (`openListChooser`'s new `exclude`) and ＋ New list; a pick is for this
   dialog only (the target's left alone). With no other list, "Move stories to a new list" asks a name
