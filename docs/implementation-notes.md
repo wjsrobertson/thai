@@ -2766,7 +2766,13 @@ words are being selected into. Once the wizard is closed, the user is dropped ba
   at once (`changeList`), Undo takes it out. It doesn't touch `wordChoices` or `phraseChoices`, so
   nothing said here hides a word or phrase in Vocabulary. The last answer's ✓ Added / ✗ Not added now
   comes from the answer itself (`history[].yes`), in both uses.
-- **Closed** (✕, Esc, Done): the list's page, its new words in it (`freshListCards`), at its top.
+- **Closed** (✕, Esc): the list's page, its new words in it (`freshListCards`), at its top.
+- **No end page** (the same day, the user's call: "no need for the 'All 20 gone through [Done]' at
+  the end - once the last selection has been made just go back to the original list"): the last
+  answer closes it, with a toast, "✓ 7 phrases added to 'Chat phrases'" (or "0 words added…").
+  Vocabulary's own use keeps its end page. Checked headless (scratch `addsort_end.py`) at 390 × 664:
+  all 25 of Greetings & Politeness answered → Food words with its 16, the toast; the same for 11
+  phrases (7 added); no script errors.
 - The old way's code stays for a word search's hit in that picker (`showWordInTopic` still opens the
   topic with the bar and Done, `doneAdding`).
 - Checked headless (scratch `addsort_probe.py`) at 390 × 664 and 1280 × 800, a word list "Food words"

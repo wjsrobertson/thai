@@ -9418,6 +9418,14 @@ function answerPhraseSort(yes) {
       ps.added += 1;
     }
     ps.i += 1;
+    // The last one answered: straight back to the list, without the end's "All 20 gone through" and
+    // Done (2026-11-27, the user's call); a toast says how many went in.
+    if (ps.i >= ps.queue.length) {
+      const { added, listId } = ps;
+      closePhraseSort();
+      toast(`${added ? '✓ ' : ''}${plural(added, kindNoun(ps.of, 1))} added to '${listById(listId)?.name || ''}'`, added ? { tone: 'good' } : {});
+      return;
+    }
     renderPhraseSort();
     return;
   }
