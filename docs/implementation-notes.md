@@ -2823,6 +2823,26 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Rename and Delete on the picker's rows (2026-11-27)
+
+The user's call: "Rename and Delete should be removed from inside the list. The buttons can be made
+into icons and displayed inline in the list under 'My Words/Stories/Phrases' tab in the topic picker".
+- **The picker:** each of your lists on My Words, My Phrases and My Stories has a pencil (Rename) and
+  a bin (Delete, in the red of Delete) right of its row (`listRowTools`, `.list-row-wrap`,
+  `.list-tool`: 44 square, bordered as the other ghost buttons; aria-label "Rename 'Food words'").
+  The bin's right edge is ＋ New list's (8 in from the tree's). They open the same dialogs as before
+  (`renameList`, `deleteList`, `renameStoryList`, `deleteStoryList`) over the picker, which stays open
+  and is drawn again. Not in Add words' or Vocabulary's pickers, which are for picking.
+- **The list's page:** Rename and Delete are gone (`#list-rename`, `#list-delete` and their wiring;
+  a story list's from `storyListActions`); Move items stays under the name, and the row's hidden on
+  an empty list. The "Delete" relabel above lasted an hour.
+- Checked headless (scratch `tools_probe.py`) at 390 × 664 and 1280 × 800: Food words' page with Move
+  items alone; My Words' rows with both icons (the row 274 wide at 390, the icons 284 and 332); Rename
+  Travel → Trips with the picker still open; Delete Food words (the one showing) → its dialog, then
+  Trips chosen and the picker open; closing it unlocks the page; My Stories' rows with both; a story
+  list's page with Move items alone; Add stories' picker without them; no sideways scroll, no script
+  errors.
+
 ## Delete, not Delete list (2026-11-27)
 
 The user's call: "change 'Delete list' button to just say 'Delete'", on a word, phrase or story

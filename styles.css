@@ -656,6 +656,11 @@ html.modal-open body {
 }
 /* A list's row has neither (pickerDeckRow): its name gets the width. */
 .deck-row.list-row { grid-template-columns: 1fr; }
+/* Its Rename and Delete as icons on the right (listRowTools, 2026-11-27): 44 square, the row the rest. */
+.list-row-wrap { display: flex; align-items: center; gap: 4px; padding-right: 8px; } /* the bin's right edge on ＋ New list's */
+.list-row-wrap > .deck-row { flex: 1; min-width: 0; }
+.list-tool { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; }
+.list-tool .page-icon { width: 20px; height: 20px; }
 
 /* Word search results, below the matching topics (wordHitsSection). */
 .word-hits { margin-top: 6px; }

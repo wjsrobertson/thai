@@ -136,8 +136,6 @@ const els = {
   addingName: document.getElementById('adding-name'),
   addingDone: document.getElementById('adding-done'),
   listActions: document.getElementById('list-actions'), // a list's Rename and Delete, on the List page
-  listRename: document.getElementById('list-rename'),
-  listDelete: document.getElementById('list-delete'),
   listMove: document.getElementById('list-move'),
   confirmInput: document.getElementById('confirm-input'),
   confirmChange: document.getElementById('confirm-change'), // an add's Change (confirmDialog's `change`)
@@ -1856,7 +1854,7 @@ function renderListsPane(kind) {
     const scope = resolveScope(id);
     const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
-    return row;
+    return listRowTools(row, l.name, () => renameList(l.id), () => deleteList(l.id));
   });
   if (!lists.length) {
     const empty = document.createElement('div');
@@ -1883,6 +1881,34 @@ function renderListsPane(kind) {
   els.deckPickerTree.replaceChildren(...rows);
 }
 
+// A list's Rename and Delete, as icons on its row in the picker's My Words, My Phrases and My Stories
+// (2026-11-27, the user's call: "Rename and Delete should be removed from inside the list. The buttons
+// can be made into icons and displayed inline in the list under 'My Words/Stories/Phrases' tab in the
+// topic picker"): a pencil and a bin, 44 square, right of the row (a button can't hold buttons, so the
+// row and they share a .list-row-wrap). Only when choosing what to study: Add words' and Vocabulary's
+// pickers are for picking. The picker stays open, drawn again after (askListName and confirmDialog
+// sit over it, as ＋ New list's does).
+const ICON_RENAME = 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4';
+const ICON_DELETE = 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6';
+function listRowTools(row, name, rename, del) {
+  if (state.pickerFor !== 'study') return row;
+  const wrap = popEl('div', 'list-row-wrap');
+  const tool = (cls, d, label, fn) => {
+    const b = popEl('button', `ghost list-tool ${cls}`);
+    b.type = 'button';
+    b.title = label;
+    b.setAttribute('aria-label', label);
+    b.append(lineIcon('page-icon', '0 0 24 24', d));
+    b.addEventListener('click', async () => {
+      await fn();
+      if (state.pickerOpen) renderDeckPicker();
+    });
+    return b;
+  };
+  wrap.append(row, tool('list-rename', ICON_RENAME, `Rename '${name}'`, rename), tool('list-delete danger', ICON_DELETE, `Delete '${name}'`, del));
+  return wrap;
+}
+
 // My Stories (2026-11-22): a row for each of your story lists (how many stories and words), then New
 // list. A search finds one by its name or a story's title in it.
 function renderStoryListsPane() {
@@ -1893,7 +1919,7 @@ function renderStoryListsPane() {
     const scope = resolveScope(id);
     const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
-    return row;
+    return listRowTools(row, l.name, () => renameStoryList(l.id), () => deleteStoryList(l.id));
   });
   if (!lists.length) {
     const empty = document.createElement('div');
@@ -4641,8 +4667,8 @@ function renderWordlist() {
     els.addingName.textContent = adding.name;
     document.getElementById('adding-noun').textContent = kindNoun(listKind(adding)); // "Adding phrases to" (2026-11-22)
   }
-  els.listActions.hidden = !isList; // Rename and Delete
-  els.listMove.hidden = !isList || !deck.cards.length; // Move items, with something to move
+  // Move items, with something to move (Rename and Delete went into the picker's rows, 2026-11-27).
+  els.listActions.hidden = !isList || !deck.cards.length;
 
   // In list order (the headings sorted the table until 2026-10-12), a search's matches, a page at a time.
   wordsFor(deck.id);
@@ -6673,7 +6699,7 @@ function renderReadingList() {
 function storyListHead(scope, stories) {
   const name = popEl('div', 'wordlist-deck-name');
   name.append(popEl('span', 'wordlist-title', scope.name));
-  return [storyListBar(scope, stories), name, storyListActions(scope)];
+  return [storyListBar(scope, stories), name, storyListActions(scope)].filter(Boolean);
 }
 
 // A story list's row over its stories: Add stories, and Read all (2026-11-27, the user's call: "a
@@ -6720,17 +6746,16 @@ function storyAddButton(scope) {
   return b;
 }
 
-// A story list's Rename and Delete, under its name (storyListHead), as a word list's (.list-actions).
+// A story list's Move items, under its name (storyListHead), as a word list's (.list-actions); none on
+// an empty list. Its Rename and Delete went into the picker's My Stories rows (listRowTools, 2026-11-27).
 function storyListActions(scope) {
-  const box = popEl('div', 'list-actions');
   const id = scope.id.slice(8);
-  const moves = savedStories(storyListById(id) || { stories: [] }).length ? [['Move items', (x) => openMoveItems('stories', x), 'ghost']] : [];
-  for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete', deleteStoryList, 'ghost danger'] /* "Delete list" till 2026-11-27 */, ...moves]) {
-    const b = popEl('button', cls, label);
-    b.type = 'button';
-    b.addEventListener('click', () => fn(id));
-    box.append(b);
-  }
+  if (!savedStories(storyListById(id) || { stories: [] }).length) return null;
+  const box = popEl('div', 'list-actions');
+  const b = popEl('button', 'ghost', 'Move items');
+  b.type = 'button';
+  b.addEventListener('click', () => openMoveItems('stories', id));
+  box.append(b);
   return box;
 }
 
@@ -10301,8 +10326,6 @@ function bindEvents() {
   });
   els.addingDone.addEventListener('click', doneAdding);
   // A word or phrase list's (its id after "list:"); a story list's are on Read (storyListActions).
-  els.listRename.addEventListener('click', () => renameList(currentScope()?.id.slice(5)));
-  els.listDelete.addEventListener('click', () => deleteList(currentScope()?.id.slice(5)));
   els.listMove.addEventListener('click', () => {
     const scope = currentScope();
     if (scope?.kind === 'list') openMoveItems(scopeKind(scope), scope.id.slice(5));
