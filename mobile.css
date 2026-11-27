@@ -305,7 +305,7 @@ html.settings-open .tab-settings { color: var(--accent); } /* Settings is lit wh
 /* Home and Settings are in More, the bar's last tab, lit while either shows (the user's call,
    2026-10-22: Alphabet, Words, Dictionary, Time, More; Time and Settings were in it from 2026-10-21,
    Home on the bar). Not lit on Home when the app opens, only on coming back to it (markMore). */
-.tab-home, .tab-settings, .tab-vocab { display: none; } /* Vocabulary is in More (2026-11-14) */
+.tab-home, .tab-settings { display: none; } /* Vocabulary was in More 2026-11-14 to 2026-11-27, when it took Alphabet's place on the bar (the user's call) */
 
 /* Study's and the Alphabet's switches share the topic button's row: the button takes what's left
    (.deck-button above; not styles.css's 220px, with three icons beside it). */

@@ -2706,6 +2706,21 @@ now". The topic picker's three tabs (the section above) became three sections, e
   Delete; Add words in Words, kept through a visit to Phrases, then Done; Add phrases; Vocabulary's
   picker; a story's word to its topic in Words; no script errors, no sideways scroll.
 
+## Alphabet in More, Vocabulary on the bar (2026-11-27)
+
+The user's call: "Move alphabet into More... after Home, before Dictionary. Move Vocabulary to the
+main area after stories".
+- **The tabs:** a phone's bar is **Words, Phrases, Stories, Vocabulary, More**; More's list **Home,
+  Alphabet, Dictionary, Time, Settings**. A wider screen has **Words, Phrases, Stories, Vocabulary,
+  More**, More's list there **Alphabet, Dictionary, Time** (Alphabet's row isn't `.more-phone`).
+  The Vocabulary tab lost `.tab-vocab`, which hid it on a phone; its `.more-phone` row went. More is
+  lit on the Alphabet's pages (`markMore`, from the rows), its Cards page too (`pageNow`).
+- Home's cards are as they were (Alphabet first): not asked.
+- **check_layout.py**'s bar check is the new order (not run: only when asked).
+- Checked headless (scratch `tabs_probe.py`) at 390 × 664, 430 × 844, 620 × 800 and 1280 × 800:
+  the bar and More's list as above, no label clipped (76 wide a tab at 390), Alphabet from More opens
+  it with More lit, the Vocabulary tab lit on Vocabulary, ⚙ on screen at 620; no script errors.
+
 ## Vocabulary tidied: a row a list (2026-11-22)
 
 The user's call: "Vocabulary section needs to be cleaned up it is unweildy. Any suggestions"; seven

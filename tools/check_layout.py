@@ -72,7 +72,7 @@ def open_page(ws, tab, **prefs):
 
 
 def go(ws, page, wait=1.2):
-    """A page by its tab, or through More if it has none (Dictionary and Time since 2026-11-22)."""
+    """A page by its tab, or through More if it has none (Dictionary and Time since 2026-11-22, Alphabet since 2026-11-27)."""
     if not tap(ws, f'.tab[data-view={page}]', wait=wait):
         tap(ws, '#tab-more', wait=0.6)
         tap(ws, f'.more-item[data-view={page}]', wait=wait)
@@ -186,16 +186,16 @@ def checks(ws, size):
       m and near(m['t'], bar['b'], 1.5) and near(m['b'], tabs['t'], 1.5), f"dialog {m and m['t']:.0f}–{m and m['b']:.0f}, row ends {bar['b']:.0f}, tabs from {tabs['t']:.0f}")
     tap(ws, '#word-modal-close')
 
-    # The bar: Alphabet, Words, Phrases, Stories, More; Home, Dictionary, Time, Vocabulary and Settings
+    # The bar: Words, Phrases, Stories, Vocabulary, More; Home, Alphabet, Dictionary, Time and Settings
     # in More's list, Settings last (the user's calls: 2026-10-22, Alphabet, Words, Dictionary, Time,
     # More; Vocabulary in More from 2026-11-14; Phrases and Stories tabs, Dictionary and Time in More,
-    # 2026-11-22).
+    # 2026-11-22; Alphabet into More and Vocabulary onto the bar after Stories, 2026-11-27).
     shown = "JSON.stringify([...document.querySelectorAll('.tabs .tab')].filter(t => t.getClientRects().length).map(t => t.id || t.dataset.view))"
     tabs_shown = json.loads(js(ws, shown))
     tap(ws, '#tab-more', wait=0.6)
     more = json.loads(js(ws, "JSON.stringify([...document.querySelectorAll('.more-item')].filter(b => b.getClientRects().length).map(b => b.dataset.view || b.dataset.action))"))
-    C('The tab bar is Alphabet, Words, Phrases, Stories, More; More has Home, Dictionary, Time, Vocabulary and Settings (10-22, 11-22)',
-      tabs_shown == ['alphabet', 'words', 'phrases', 'stories', 'tab-more'] and more == ['home', 'dictionary', 'time', 'vocab', 'settings'], f"bar {tabs_shown}, More {more}")
+    C('The tab bar is Words, Phrases, Stories, Vocabulary, More; More has Home, Alphabet, Dictionary, Time and Settings (10-22, 11-22, 11-27)',
+      tabs_shown == ['words', 'phrases', 'stories', 'vocab', 'tab-more'] and more == ['home', 'alphabet', 'dictionary', 'time', 'settings'], f"bar {tabs_shown}, More {more}")
     tap(ws, '.more-item[data-action=settings]', wait=1.0)
     ss = R(ws, '#settings-search')
     C("Settings: the search where the Dictionary's is, as tall (top, left, height)", same(ss, se, 'tlh'), f"{fmt(ss)} / {fmt(se)}")

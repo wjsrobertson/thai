@@ -3923,7 +3923,7 @@ function useSection(section) {
 // user's call, for Phrases and Stories). Its tab is lit while one of them shows (markMore), but not on
 // Home as the app opens: only once you've been somewhere else and come back (the user's call,
 // 2026-10-22; `state.leftHome`). On a wider screen (2026-11-22) it's a list under its tab of what has
-// no tab there, Dictionary and Time: not the .more-phone rows (Home's the corner's, Vocabulary a tab,
+// no tab there, Alphabet (since 2026-11-27), Dictionary and Time: not the .more-phone rows (Home's the corner's, Vocabulary a tab,
 // Settings ⚙).
 const moreRows = () => [...els.moreItems].filter((b) => PHONE_LAYOUT.matches || !b.classList.contains('more-phone'));
 const moreViews = () => new Set(moreRows().map((b) => b.dataset.view).filter(Boolean));
