@@ -2780,6 +2780,28 @@ words are being selected into. Once the wizard is closed, the user is dropped ba
   25", no Change; Add, No, Add, Undo (1 in the list); ✕ → the list with สวัสดี, no bar; the same for
   phrases from Catching Up & Good Wishes (1 of 11); no choices saved; no script errors.
 
+## A story list's Add stories (2026-11-27)
+
+The user's request: an empty story list's page was "a lot more bare then Phrases or Words. There is
+no 'Add stories' button. I think for consistency we should have an add stories wizard".
+- **The button:** **＋ Add stories** across the top of a story list's Read page, over its stories, or
+  over "Nothing in 'My stories' yet. Add stories from a topic, or save one with its bookmark." when
+  empty (`storyAddButton`, `.story-add`, 44 tall). It makes the list the target (`setStoryTarget`).
+- **The picker** (`openDeckPicker({ addTo, stories: true })`, `state.addToStories`, `addToName`):
+  "Add stories to 'My stories'", "Pick a topic, then add its stories to 'My stories'"; Topics is
+  Stories by topic, My Stories your other story lists (not this one; no ＋ New list), as on Read.
+- **One by one** (`sortStoriesIntoList` → `openSort('stories', [{ story }], { listId })`): the
+  topic's stories as Read lists them (best matches first) or the other list's, not in this one yet.
+  The card: the story's group (its level: Easy…), title, what it's about, its first line in Thai and
+  English, ▶ (the first line, said as it shows; P or a tap on the card too). Add puts it in the list
+  at once (`changeStoryList`), Undo takes it out; no Change. The last answer closes it, with a toast
+  ("✓ 9 stories added to 'My stories'"), back on the list (`renderReadingList`). None to go
+  through: a toast ("All of … is in … already", or "No stories for … yet").
+- Checked headless (scratch `addstories_probe.py`) at 390 × 664 and 1280 × 800: an empty My stories
+  (the button 366 × 44 at 390); the picker's title and line, My Stories listing only Isan; Greetings
+  & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
+  the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
+
 ## Vocabulary tidied: a row a list (2026-11-22)
 
 The user's call: "Vocabulary section needs to be cleaned up it is unweildy. Any suggestions"; seven

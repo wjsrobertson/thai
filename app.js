@@ -1779,9 +1779,10 @@ function pickScope(id) {
     return;
   }
   if (state.pickerFor === 'add') { // a list's Add words: One by one over the list (sortIntoList)
-    const to = state.addTo;
+    const [to, stories] = [state.addTo, state.addToStories];
     closeDeckPicker();
-    sortIntoList(to, id);
+    if (stories) sortStoriesIntoList(to, id);
+    else sortIntoList(to, id);
     return;
   }
   // Add words (pickerFor 'add') showed where they came from on the List page, its 🔁 adding to the
@@ -1822,9 +1823,9 @@ function renderPickerHead() {
   });
   // A line under the tabs only when adding words (the tabs' own taglines went: the user's call, 2026-10-20).
   const adding = state.pickerFor === 'add';
-  const into = adding ? `'${listById(state.addTo)?.name || ''}'` : '';
+  const into = adding ? `'${addToName()}'` : '';
   els.reviewByHelp.hidden = !adding;
-  els.reviewByHelp.textContent = !adding ? '' : `Pick a ${mine ? 'list' : 'topic'}, then add its ${kindNoun(pickerKind())} to ${into}`;
+  els.reviewByHelp.textContent = !adding ? '' : `Pick a ${mine ? 'list' : 'topic'}, then add its ${of === 'stories' ? 'stories' : kindNoun(pickerKind())} to ${into}`;
   els.deckPickerSearch.placeholder = mine ? `Search your ${of}` : of === 'stories' ? 'Search topics' : `Search topics and ${of}`;
 }
 
@@ -1885,7 +1886,7 @@ function renderListsPane(kind) {
 // list. A search finds one by its name or a story's title in it.
 function renderStoryListsPane() {
   const q = state.pickerFilter.trim().toLowerCase();
-  const lists = getStoryLists().filter((l) => !q || l.name.toLowerCase().includes(q) || savedStories(l).some((d) => d.name.toLowerCase().includes(q)));
+  const lists = getStoryLists().filter((l) => (state.pickerFor !== 'add' || l.id !== state.addTo) && (!q || l.name.toLowerCase().includes(q) || savedStories(l).some((d) => d.name.toLowerCase().includes(q))));
   const rows = lists.map((l) => {
     const id = storiesScopeId(l.id);
     const scope = resolveScope(id);
@@ -1896,7 +1897,7 @@ function renderStoryListsPane() {
   if (!lists.length) {
     const empty = document.createElement('div');
     empty.className = 'modal-empty';
-    empty.textContent = q ? `No story list matches "${state.pickerFilter.trim()}".` : 'No story lists yet. Save a story on Read with its bookmark, or make a list here.';
+    empty.textContent = q ? `No story list matches "${state.pickerFilter.trim()}".` : state.pickerFor === 'add' ? 'No other story lists yet.' : 'No story lists yet. Save a story on Read with its bookmark, or make a list here.';
     rows.push(empty);
   }
   if (state.pickerFor === 'study') {
@@ -2336,8 +2337,10 @@ function setModalOpen(open) {
   document.documentElement.classList.toggle('modal-open', open);
 }
 
-// `addTo`: a list's id, for its Add words (openAddWords).
-function openDeckPicker({ addTo = null, vocab = false } = {}) {
+// `addTo`: a list's id, for its Add words (openAddWords); with `stories`, a story list's (Add stories,
+// 2026-11-27).
+const addToName = () => ((state.addToStories ? storyListById(state.addTo) : listById(state.addTo))?.name || '');
+function openDeckPicker({ addTo = null, vocab = false, stories = false } = {}) {
   state.pickerOpen = true;
   state.lastFocus = document.activeElement;
   els.deckPicker.hidden = false;
@@ -2346,13 +2349,14 @@ function openDeckPicker({ addTo = null, vocab = false } = {}) {
   state.pickerFilter = '';
   els.deckPickerSearch.value = '';
   state.addTo = addTo;
+  state.addToStories = !!addTo && stories;
   state.pickerFor = addTo ? 'add' : vocab ? 'vocab' : 'study';
   // The section's kind; Add words', the list's; Vocabulary's, words. The tab of the current choice
   // (one of your lists: My Words; a topic: Topics); Add words' and Vocabulary's, Topics.
-  state.pickerOf = addTo ? listKind(listById(addTo)) : vocab ? 'words' : state.kind;
+  state.pickerOf = addTo ? (stories ? 'stories' : listKind(listById(addTo))) : vocab ? 'words' : state.kind;
   const nowScope = state.pickerFor === 'study' ? resolveScope(state.currentDeckId) : null;
   state.pickerPane = nowScope?.kind === 'list' || nowScope?.kind === 'stories' ? 'mine' : 'topics';
-  els.deckPickerTitle.textContent = addTo ? `Add ${kindNoun(state.pickerOf)} to '${listById(addTo)?.name || ''}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
+  els.deckPickerTitle.textContent = addTo ? `Add ${stories ? 'stories' : kindNoun(state.pickerOf)} to '${addToName()}'` : vocab ? 'Go through a topic or list' : 'Choose a topic or list';
   renderPickerHead();
   // Every open starts from the current choice: its category and group open, the rest closed.
   const current = resolveScope(pickerSelectedId());
@@ -6640,7 +6644,7 @@ function renderReadingList() {
   if (!stories.length) {
     const empty = document.createElement('div');
     empty.className = 'reading-empty';
-    empty.append(!scope ? '' : mine ? `Nothing in '${scope.name}' yet. Pick a topic and save its stories with their bookmark.`
+    empty.append(!scope ? '' : mine ? `Nothing in '${scope.name}' yet. Add stories from a topic, or save one with its bookmark.`
       : `No stories for ${scope.name} yet.`);
     // A narrower choice can try its whole category, whose words are pooled.
     const cat = scope && scope.kind !== 'category' && !mine ? scope.decks[0]?.category : null;
@@ -6655,10 +6659,23 @@ function renderReadingList() {
       });
       empty.append(wider);
     }
-    els.readingList.replaceChildren(empty, ...(mine ? [storyListActions(scope)] : []));
+    els.readingList.replaceChildren(...(mine ? [storyAddButton(scope)] : []), empty, ...(mine ? [storyListActions(scope)] : []));
     return;
   }
-  els.readingList.replaceChildren(...pagedStories(stories), ...(mine ? [storyListActions(scope)] : []));
+  els.readingList.replaceChildren(...(mine ? [storyAddButton(scope)] : []), ...pagedStories(stories), ...(mine ? [storyListActions(scope)] : []));
+}
+
+// A story list's ＋ Add stories, over its stories (2026-11-27, the user's call: as a word list's Add
+// words): the picker, Stories by topic or another story list, then One by one (sortStoriesIntoList).
+function storyAddButton(scope) {
+  const b = popEl('button', 'ghost story-add', '＋ Add stories');
+  b.type = 'button';
+  b.addEventListener('click', () => {
+    const id = scope.id.slice(8);
+    setStoryTarget(id);
+    openDeckPicker({ addTo: id, stories: true });
+  });
+  return b;
 }
 
 // A story list's Rename and Delete, under its stories on Read (as a word list's are under its words
@@ -9339,6 +9356,25 @@ function sortIntoList(listId, scopeId) {
   openSort(kind, queue, { listId });
 }
 
+// A story list's Add stories (2026-11-27, the user's request: an empty story list was "a lot more bare
+// then Phrases or Words. There is no 'Add stories' button… for consistency we should have an add
+// stories wizard"): as a word list's (sortIntoList), over the topic's stories (best matches first, as
+// Read lists them) or another list's, not in this one yet.
+function sortStoriesIntoList(listId, scopeId) {
+  const list = storyListById(listId);
+  const scope = resolveScope(scopeId);
+  if (!list || !scope) return;
+  const queue = listedStories(scope).filter((d) => !list.stories.includes(d.id)).map((story) => ({ story }));
+  if (!queue.length) {
+    toast(listedStories(scope).length ? `All of '${scope.name}' is in '${list.name}' already` : `No stories for ${scope.name} yet`);
+    return;
+  }
+  openSort('stories', queue, { listId });
+}
+
+// What One by one says for an item: a card's Thai, or a story's first line.
+const sortSay = (p) => (p.story ? sentenceText(p.story.passage[0].th) : cardSay(p.card));
+
 function openSort(of, queue, { listId = null } = {}) {
   if (!queue.length) return;
   phraseSort = { of, queue, listId, i: 0, added: 0, history: [], lastFocus: document.activeElement };
@@ -9364,6 +9400,7 @@ function closePhraseSort() {
     freshListCards();
     renderWordlist();
   }
+  if (intoList && state.view === 'reading') renderReadingList();
   if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true });
 }
 
@@ -9373,7 +9410,7 @@ function renderPhraseSort({ say = true } = {}) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   els.phraseSortCount.textContent = p ? `${fmtCount(ps.i + 1)} of ${fmtCount(ps.queue.length)}` : '';
   const last = ps.history[ps.history.length - 1];
-  els.psLastText.textContent = last ? `${last.p.card.thai} ${last.yes ? '✓ Added' : '✗ Not added'}` : '';
+  els.psLastText.textContent = last ? `${last.p.story ? `“${last.p.story.name}”` : last.p.card.thai} ${last.yes ? '✓ Added' : '✗ Not added'}` : '';
   els.psUndo.classList.toggle('off', !last);
   els.psAnswers.classList.toggle('off', !p);
   els.psCard.style.transform = '';
@@ -9390,6 +9427,18 @@ function renderPhraseSort({ say = true } = {}) {
     return;
   }
   els.psCard.classList.remove('ps-end');
+  if (p.story) { // its group, title, what it's about, and its first line, said
+    const d = p.story;
+    const line = d.passage[0];
+    const first = sentenceText(line.th);
+    const th = el('p', 'ps-story-th', first);
+    th.lang = 'th';
+    els.psCard.replaceChildren(el('p', 'ps-topic', d.group || ''), el('p', 'ps-story-title', d.name),
+      ...(d.description ? [el('p', 'ps-story-desc', d.description)] : []), th, el('p', 'ps-en', line.en),
+      playButton(first, 'Play the first line (P)'));
+    if (say) speak(first);
+    return;
+  }
   const thai = el('p', 'ps-thai');
   thai.lang = 'th';
   if (p.missing) appendPhraseParts(thai, p.card.thai, p.words, (w, text) => (w.thai === p.missing ? el('span', 'vp-missing', text) : text));
@@ -9410,11 +9459,12 @@ function answerPhraseSort(yes) {
   const ps = phraseSort;
   const p = ps?.queue[ps.i];
   if (!p) return;
-  const key = cardKey(p.card);
+  const key = p.story ? p.story.id : cardKey(p.card);
   if (ps.listId) { // a list's Add words: into it, no choices kept
     ps.history.push({ p, yes, wasIn: false, listId: ps.listId });
     if (yes) {
-      changeList(ps.listId, (l) => { if (!l.words.includes(key)) l.words.push(key); });
+      if (p.story) changeStoryList(ps.listId, (l) => { if (!l.stories.includes(key)) l.stories.push(key); });
+      else changeList(ps.listId, (l) => { if (!l.words.includes(key)) l.words.push(key); });
       ps.added += 1;
     }
     ps.i += 1;
@@ -9423,7 +9473,9 @@ function answerPhraseSort(yes) {
     if (ps.i >= ps.queue.length) {
       const { added, listId } = ps;
       closePhraseSort();
-      toast(`${added ? '✓ ' : ''}${plural(added, kindNoun(ps.of, 1))} added to '${listById(listId)?.name || ''}'`, added ? { tone: 'good' } : {});
+      const what = ps.of === 'stories' ? `${fmtCount(added)} ${added === 1 ? 'story' : 'stories'}` : plural(added, kindNoun(ps.of, 1));
+      const into = (ps.of === 'stories' ? storyListById : listById)(listId)?.name || '';
+      toast(`${added ? '✓ ' : ''}${what} added to '${into}'`, added ? { tone: 'good' } : {});
       return;
     }
     renderPhraseSort();
@@ -9449,10 +9501,11 @@ function undoPhraseSort() {
   const ps = phraseSort;
   const last = ps?.history.pop();
   if (!last) return;
-  const key = cardKey(last.p.card);
+  const key = last.p.story ? last.p.story.id : cardKey(last.p.card);
   if (ps.listId) {
+    if (last.yes && last.p.story) changeStoryList(last.listId, (l) => { l.stories = l.stories.filter((k) => k !== key); });
+    else if (last.yes) changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
     if (last.yes) {
-      changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
       ps.added -= 1;
     }
     ps.i -= 1;
@@ -9520,7 +9573,7 @@ function bindPhraseSortSwipe() {
   card.addEventListener('click', (e) => {
     if (e.target.closest('button, .vp-missing')) return;
     const p = phraseSort?.queue[phraseSort.i];
-    if (p) speak(cardSay(p.card)); // the card: play it
+    if (p) speak(sortSay(p)); // the card: play it
   });
   els.psNo.addEventListener('click', () => answerPhraseSort(false));
   els.psYes.addEventListener('click', () => answerPhraseSort(true));
@@ -9537,7 +9590,7 @@ function bindPhraseSortSwipe() {
 // list is your phrase list (targetList): Change makes another that (setTarget), so Add all and a
 // bookmark go there too. With none yet, My phrases, made by the first Add.
 function renderPhraseSortTitle() {
-  const into = phraseSort?.listId && listById(phraseSort.listId);
+  const into = phraseSort?.listId && (phraseSort.of === 'stories' ? storyListById : listById)(phraseSort.listId);
   els.phraseSortTitle.textContent = `Add to '${into ? into.name : targetName(phraseSort?.of || 'phrases')}'?`;
 }
 
@@ -9546,7 +9599,7 @@ function handlePhraseSortKey(e) {
   const p = phraseSort.queue[phraseSort.i];
   const act = { escape: closePhraseSort, backspace: undoPhraseSort, u: undoPhraseSort,
     ...(p ? { arrowright: () => answerPhraseSort(true), y: () => answerPhraseSort(true), arrowleft: () => answerPhraseSort(false),
-      n: () => answerPhraseSort(false), p: () => speak(cardSay(p.card)) } : {}) }[e.key.toLowerCase()];
+      n: () => answerPhraseSort(false), p: () => speak(sortSay(p)) } : {}) }[e.key.toLowerCase()];
   if (!act) return;
   e.preventDefault();
   act();
