@@ -6322,12 +6322,13 @@ function confirmDialog({ title, message = '', confirmLabel = 'OK', cancelLabel =
   paint(change ? change.text() : { title, message, confirmLabel });
   els.confirmChange.hidden = !change;
   els.confirmChange.onclick = !change ? null : () => openListChooser({
-    title: `Add ${kindNoun(change.kind)} to`, kind: LIST_KINDS[change.kind], current: targetList(change.kind)?.id, noNew: true,
+    title: `Add ${change.kind === 'stories' ? 'stories' : kindNoun(change.kind)} to`, kind: listKindsOf(change.kind), current: ofTarget(change.kind)?.id, noNew: true,
     pick: (id) => {
-      setTarget(id);
+      ofSetTarget(change.kind, id);
       paint(change.text());
       if (state.view === 'wordlist') renderWordlist(); // the buttons under it name the list (Add all to …)
       else if (state.view === 'vocab') renderVocab();
+      else if (state.view === 'reading') renderReadingList(); // Stories' Add all (2026-11-27)
       els.confirmChange.focus({ preventScroll: true });
     },
   });
@@ -6715,7 +6716,82 @@ function renderReadingList() {
     els.readingList.replaceChildren(...(mine ? storyListHead(scope, []) : []), empty);
     return;
   }
-  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : []), ...pagedStories(stories));
+  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : [storyTopicActions(stories)]), ...pagedStories(stories));
+}
+
+// A topic's stories (2026-11-27, the user's call: "Stories section should have the Add all to list,
+// Select into list and Read all buttons when browsing a topic"), as Words' and Phrases' topics have:
+// Add all to list (your story list: storyTarget; asks first, with Change), or with all of them in it
+// "All in list", which takes them out (asks first); Select into list (One by one, openSort's
+// intoTarget, while some aren't in); Read all (each in turn, as a story list's). On a phone the two
+// adds share a row and Read all goes across under them (mobile.css), as on Words.
+function storyTopicActions(stories) {
+  const box = popEl('div', 'list-actions topic-actions');
+  const ids = stories.map((d) => d.id);
+  const target = storyTarget();
+  const have = new Set(target?.stories || []);
+  const out = ids.filter((id) => !have.has(id));
+  const button = (label, icon, title, fn, cls = '') => {
+    const b = popEl('button', `ghost ${cls}`.trim());
+    b.append(icon, label);
+    b.type = 'button';
+    b.title = title;
+    b.addEventListener('click', fn);
+    return b;
+  };
+  const mark = (filled = false) => lineIcon('page-icon list-action-icon' + (filled ? ' filled' : ''), '0 0 24 24', PAGE_ICONS.mylist);
+  if (!out.length) {
+    box.append(button('All in list', mark(true), `Remove them all from '${target.name}'`, () => removeTopicStories(ids)));
+  } else {
+    box.append(button('Add all to list', mark(), `Add all to '${ofTargetName('stories')}'`, () => addTopicStories(ids)),
+      button('Select into list', mark(), `Go through them one by one, adding the ones you want to '${ofTargetName('stories')}'`, () => {
+        const now = new Set(storyTarget()?.stories || []);
+        openSort('stories', stories.filter((d) => !now.has(d.id)).map((story) => ({ story })), { intoTarget: true });
+      }));
+  }
+  const all = button('Read all', lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_READ), 'Read every story here, one after another', () => {
+    if (storyRunOn() && state.storyReading.all) stopReadStories();
+    else readStories(all, { ids, idx: 0, line: -1, all: true });
+  }, 'story-read-all');
+  box.append(all);
+  paintStoryReadAll(box);
+  return box;
+}
+
+async function addTopicStories(ids) {
+  const outOf = () => { const have = new Set(storyTarget()?.stories || []); return ids.filter((id) => !have.has(id)); };
+  const ok = await confirmDialog({
+    setting: 'confirmAddAll',
+    change: { kind: 'stories', text: () => {
+      const to = ofTargetName('stories');
+      const n = outOf().length;
+      return n ? { title: `Add all to '${to}'?`, message: `Add ${n === 1 ? 'this story' : `these ${fmtCount(n)} stories`} to '${to}'?`, confirmLabel: `Add ${fmtCount(n)}` }
+        : { title: `Add all to '${to}'?`, message: `They're all in '${to}' already.`, confirmLabel: 'OK' };
+    } },
+  });
+  if (!ok) return;
+  const out = outOf();
+  if (!out.length) return;
+  const list = storyTarget() || createStoryList('My stories');
+  changeStoryList(list.id, (l) => { l.stories.push(...out.filter((id) => !l.stories.includes(id))); });
+  toast(`✓ ${ofCount('stories', out.length)} added to '${list.name}'`, { tone: 'good' });
+  renderReadingList();
+}
+
+async function removeTopicStories(ids) {
+  const list = storyTarget();
+  if (!list) return;
+  const ok = await confirmDialog({
+    title: `Remove all from '${list.name}'?`,
+    message: `Remove ${ids.length === 1 ? 'this story' : `these ${fmtCount(ids.length)} stories`} from '${list.name}'?`,
+    confirmLabel: `Remove ${fmtCount(ids.length)}`,
+    setting: 'confirmRemoveAll',
+  });
+  if (!ok) return;
+  const out = new Set(ids);
+  changeStoryList(list.id, (l) => { l.stories = l.stories.filter((id) => !out.has(id)); });
+  toast(`Removed ${ofCount('stories', ids.length)} from '${list.name}'`);
+  renderReadingList();
 }
 
 // A story list's top, laid out as a word list's List page (2026-11-27, the user's call: "the same on
@@ -9462,6 +9538,13 @@ function sortStoriesIntoList(listId, scopeId) {
 // isn't this one, else your first other; Change picks another (not this one: `exclude`), for this
 // dialog only; with no other list, a new one is named first. The last answer goes back to the list.
 const listKindsOf = (of) => (of === 'stories' ? STORY_LISTS : LIST_KINDS[of]);
+// Your list of a kind, words, phrases or stories (2026-11-27, for Stories' Add all and Select into):
+// where its Add all, Select into and bookmarks go; its name ("My stories" before there's one); setting
+// it; and "3 stories".
+const ofTarget = (of) => (of === 'stories' ? storyTarget() : targetList(of));
+const ofTargetName = (of) => ofTarget(of)?.name || (of === 'stories' ? 'My stories' : DEFAULT_LIST[of]);
+const ofSetTarget = (of, id) => (of === 'stories' ? setStoryTarget(id) : setTarget(id));
+const ofCount = (of, n) => `${fmtCount(n)} ${n === 1 ? listKindsOf(of).one : listKindsOf(of).many}`;
 async function openMoveItems(of, fromId) {
   const kind = listKindsOf(of);
   const from = kind.lists().find((l) => l.id === fromId);
@@ -9648,8 +9731,14 @@ function answerPhraseSort(yes) {
   if (ps.intoTarget) { // a topic's Select into: your list of the kind, now; no choices kept
     ps.history.push({ p, yes, wasIn: false });
     if (yes) {
-      setInTarget([key], true, ps.of); // makes My words (or My phrases) if there's none
-      ps.history[ps.history.length - 1].listId = targetList(ps.of).id;
+      if (p.story) { // a story list: yours, or My stories made (2026-11-27)
+        const list = storyTarget() || createStoryList('My stories');
+        changeStoryList(list.id, (l) => { if (!l.stories.includes(key)) l.stories.push(key); });
+        ps.history[ps.history.length - 1].listId = list.id;
+      } else {
+        setInTarget([key], true, ps.of); // makes My words (or My phrases) if there's none
+        ps.history[ps.history.length - 1].listId = targetList(ps.of).id;
+      }
       ps.added += 1;
       renderPhraseSortTitle();
     }
@@ -9657,7 +9746,7 @@ function answerPhraseSort(yes) {
     if (ps.i >= ps.queue.length) { // the last one: back to the topic (as Add words)
       const { added } = ps;
       closePhraseSort();
-      toast(`${added ? '✓ ' : ''}${plural(added, kindNoun(ps.of, 1))} added to '${targetName(ps.of)}'`, added ? { tone: 'good' } : {});
+      toast(`${added ? '✓ ' : ''}${ofCount(ps.of, added)} added to '${ofTargetName(ps.of)}'`, added ? { tone: 'good' } : {});
       return;
     }
     renderPhraseSort();
@@ -9733,8 +9822,9 @@ function undoPhraseSort() {
     return;
   }
   if (ps.intoTarget) {
+    if (last.yes && last.p.story) changeStoryList(last.listId, (l) => { l.stories = l.stories.filter((k) => k !== key); });
+    else if (last.yes) changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
     if (last.yes) {
-      changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
       ps.added -= 1;
     }
     ps.i -= 1;
@@ -9825,8 +9915,8 @@ function bindPhraseSortSwipe() {
       return;
     }
     openListChooser({
-      title: `Add ${of} to`, kind: LIST_KINDS[of], current: targetList(of)?.id,
-      pick: (id) => { setTarget(id); renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); },
+      title: `Add ${of} to`, kind: listKindsOf(of), current: ofTarget(of)?.id,
+      pick: (id) => { ofSetTarget(of, id); renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); },
     });
   });
   els.phraseSort.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePhraseSort));
@@ -9848,7 +9938,7 @@ function renderPhraseSortTitle() {
     return;
   }
   const into = phraseSort?.listId && (phraseSort.of === 'stories' ? storyListById : listById)(phraseSort.listId);
-  els.phraseSortTitle.textContent = `Add to '${into ? into.name : targetName(phraseSort?.of || 'phrases')}'?`;
+  els.phraseSortTitle.textContent = `Add to '${into ? into.name : ofTargetName(phraseSort?.of || 'phrases')}'?`;
 }
 
 function handlePhraseSortKey(e) {

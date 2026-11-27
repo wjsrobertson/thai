@@ -527,3 +527,6 @@ html.modal-open body { overflow: clip; }
 /* A list's four buttons two to a row; an empty list's Add across (2026-11-27). */
 .list-actions { grid-template-columns: 1fr 1fr; max-width: none; }
 .list-actions.only-add { grid-template-columns: 1fr; }
+/* A Stories topic's Add all and Select into in halves, Read all across under them, as Words' (2026-11-27). */
+.list-actions.topic-actions > .story-read-all { grid-column: 1 / -1; }
+.list-actions.topic-actions > .story-read-all:only-child, .list-actions.topic-actions > :first-child:nth-last-child(2) ~ .story-read-all { grid-column: auto; }

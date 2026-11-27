@@ -2823,6 +2823,32 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## A Stories topic's Add all, Select into and Read all (2026-11-27)
+
+The user's call: "Stories section should have the Add all to list, Select into list and Read all
+buttons when browsing a topic".
+- **The buttons** (`storyTopicActions`, `.list-actions.topic-actions`), over a topic's (or group's or
+  category's) stories on Stories: **Add all to list**, **Select into list** (both the bookmark) and
+  **Read all**; on a phone the two adds in halves and Read all across under them, as Words' (179, 179,
+  366 at 390); on a wide screen the three in a row (154 each). The list is your story list
+  (`storyTarget`: where a story's bookmark saves; My stories made if there's none).
+- **Add all to list** asks first (Settings' confirmAddAll), with Change ("Add all to 'Isan'?", "Add
+  18"), and adds those not in it. With all of them in, it's **All in list** (the bookmark filled),
+  which asks and takes them out (confirmRemoveAll), and Select into goes (nothing to select), Read all
+  beside it.
+- **Select into list:** One by one over the stories not in it (the story card, as Add stories'),
+  Change as Vocabulary's (a pick makes it your story list); the last answer back to the topic with a
+  toast.
+- **Read all:** every story here in turn, in the dialog, as a story list's; ■ Stop while it runs.
+- **Shared with words:** confirmDialog's Change and One by one's Change now take story lists too
+  (`listKindsOf`, `ofTarget`, `ofTargetName`, `ofSetTarget`, `ofCount`: "18 stories", not
+  "18 storys").
+- Checked headless (scratch `storytopic_probe.py`) at 390 × 664 and 1280 × 800, Greetings & Politeness
+  (19 stories): Select into "Add to 'My stories'? 1 of 19", Add, No, Change → Isan, Add, Add, Undo (My
+  stories 1, Isan 1); Add all "Add all to 'Isan'?", Change → My stories, Add 18 → 19, the toast, then
+  All in list and Read all; Read all → Old Friends, ■ Stop; All in list → removed, the three back; and
+  `select_probe.py` and `addstories_probe.py` again; no sideways scroll, no script errors.
+
 ## Select into list and Add all to list everywhere, with bookmarks (2026-11-27)
 
 The user's call: "On the vocabulary page - change 'Sort one by one' to say 'Select into list' and 'Add

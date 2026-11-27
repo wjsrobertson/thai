@@ -2054,6 +2054,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* On a list the bar's Add all and Read all are hidden (they're under its name): no empty row of them. */
 .wordlist-bar-right:not(:has(> button:not([hidden]))) { display: none; }
 /* Move items' and Remove items' icons, left of the words as Read all's speaker (2026-11-27). */
+.list-action-icon.filled { fill: currentColor; } /* "All in list"'s bookmark, as a word's in its list */
 .list-actions .list-action-icon { width: 18px; height: 18px; margin-right: 0.4em; vertical-align: -0.2em; }
 .ghost.danger { color: var(--again); }
 /* Add all to the list 🔁 adds to: a long name ends in … (the button stays one line). */
