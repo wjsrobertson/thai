@@ -137,6 +137,7 @@ const els = {
   addingDone: document.getElementById('adding-done'),
   listActions: document.getElementById('list-actions'), // a list's Rename and Delete, on the List page
   listMove: document.getElementById('list-move'),
+  listRemove: document.getElementById('list-remove'),
   confirmInput: document.getElementById('confirm-input'),
   confirmChange: document.getElementById('confirm-change'), // an add's Change (confirmDialog's `change`)
   wordlistAddAll: document.getElementById('wordlist-add-all'),
@@ -6754,10 +6755,12 @@ function storyListActions(scope) {
   const id = scope.id.slice(8);
   if (!savedStories(storyListById(id) || { stories: [] }).length) return null;
   const box = popEl('div', 'list-actions');
-  const b = popEl('button', 'ghost', 'Move items');
-  b.type = 'button';
-  b.addEventListener('click', () => openMoveItems('stories', id));
-  box.append(b);
+  for (const [label, fn] of [['Move items', openMoveItems], ['Remove items', openRemoveItems]]) {
+    const b = popEl('button', 'ghost', label);
+    b.type = 'button';
+    b.addEventListener('click', () => fn('stories', id));
+    box.append(b);
+  }
   return box;
 }
 
@@ -9471,17 +9474,33 @@ async function openMoveItems(of, fromId) {
   openSort(of, queue, { move: { kind, from: fromId, to } });
 }
 
+// Remove items (2026-11-27, the user's request: "a [Remove items] button and wizard? buttons should say
+// [Remove] [Keep]"): One by one over the list's items as Move items, each Remove taking it out at once
+// (Undo puts it back where it was). Remove is the left, red button (←, a swipe left), Keep the right.
+function openRemoveItems(of, fromId) {
+  const kind = listKindsOf(of);
+  const from = kind.lists().find((l) => l.id === fromId);
+  if (!from) return;
+  const scope = of === 'stories' ? null : resolveScope(listScopeId(fromId));
+  const queue = of === 'stories' ? savedStories(from).map((story) => ({ story }))
+    : (scope?.cards || []).map((card) => ({ card, deck: scope.deckOf.get(cardKey(card)) }));
+  openSort(of, queue, { remove: { kind, from: fromId } });
+}
+
 // What One by one says for an item: a card's Thai, or a story's first line.
 const sortSay = (p) => (p.story ? sentenceText(p.story.passage[0].th) : cardSay(p.card));
 
-function openSort(of, queue, { listId = null, move = null } = {}) {
+function openSort(of, queue, { listId = null, move = null, remove = null } = {}) {
   if (!queue.length) return;
-  phraseSort = { of, queue, listId, move, i: 0, added: 0, history: [], lastFocus: document.activeElement };
-  els.psChange.hidden = !!listId; // into that list, and no other
-  els.psYes.textContent = move ? 'Move' : 'Add';
-  els.psYes.title = move ? 'Move (→)' : 'Add (→)';
-  els.psNo.textContent = move ? 'Keep' : 'No'; // Keep · Move (2026-11-27, the user's call; it said No)
-  els.psNo.title = move ? 'Keep (←)' : 'No (←)';
+  phraseSort = { of, queue, listId, move, remove, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  els.psChange.hidden = !!listId || !!remove; // into that list, and no other; Remove items has none
+  // The two buttons: [No] [Add]; Move items' [Keep] [Move] (2026-11-27, the user's call; it said No);
+  // Remove items' [Remove] [Keep], Remove the red one on the left.
+  const [no, yes] = remove ? ['Remove', 'Keep'] : move ? ['Keep', 'Move'] : ['No', 'Add'];
+  els.psNo.textContent = no;
+  els.psNo.title = `${no} (←)`;
+  els.psYes.textContent = yes;
+  els.psYes.title = `${yes} (→)`;
   renderPhraseSortTitle();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
@@ -9494,7 +9513,7 @@ function openSort(of, queue, { listId = null, move = null } = {}) {
 function closePhraseSort() {
   if (!phraseSort) return;
   const { lastFocus } = phraseSort;
-  const intoList = phraseSort.listId || phraseSort.move?.from;
+  const intoList = phraseSort.listId || phraseSort.move?.from || phraseSort.remove?.from;
   phraseSort = null;
   els.phraseSort.hidden = true;
   setModalOpen(!!document.querySelector('.modal:not([hidden])'));
@@ -9513,7 +9532,7 @@ function renderPhraseSort({ say = true } = {}) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   els.phraseSortCount.textContent = p ? `${fmtCount(ps.i + 1)} of ${fmtCount(ps.queue.length)}` : '';
   const last = ps.history[ps.history.length - 1];
-  const [yesText, noText] = ps.move ? ['✓ Moved', '✗ Kept'] : ['✓ Added', '✗ Not added'];
+  const [yesText, noText] = ps.remove ? ['✓ Kept', '✗ Removed'] : ps.move ? ['✓ Moved', '✗ Kept'] : ['✓ Added', '✗ Not added'];
   els.psLastText.textContent = last ? `${last.p.story ? `“${last.p.story.name}”` : last.p.card.thai} ${last.yes ? yesText : noText}` : '';
   els.psUndo.classList.toggle('off', !last);
   els.psAnswers.classList.toggle('off', !p);
@@ -9564,6 +9583,25 @@ function answerPhraseSort(yes) {
   const p = ps?.queue[ps.i];
   if (!p) return;
   const key = p.story ? p.story.id : cardKey(p.card);
+  if (ps.remove) { // Remove items: `yes` is Keep; a No takes it out now
+    const { kind, from } = ps.remove;
+    const fromList = kind.lists().find((l) => l.id === from);
+    ps.history.push({ p, yes, at: fromList?.[kind.key].indexOf(key) ?? -1 });
+    if (!yes) {
+      kind.change(from, (l) => { l[kind.key] = l[kind.key].filter((k) => k !== key); });
+      ps.added += 1; // how many removed
+    }
+    ps.i += 1;
+    if (ps.i >= ps.queue.length) { // the last one: back to the list
+      const n = ps.added;
+      const name = fromList?.name || '';
+      closePhraseSort();
+      toast(n ? `Removed ${fmtCount(n)} ${n === 1 ? kind.one : kind.many} from '${name}'` : 'Nothing removed');
+      return;
+    }
+    renderPhraseSort();
+    return;
+  }
   if (ps.move) { // Move items: out of this list, into the other, now
     const { kind, from, to } = ps.move;
     const fromList = kind.lists().find((l) => l.id === from);
@@ -9628,6 +9666,19 @@ function undoPhraseSort() {
   const last = ps?.history.pop();
   if (!last) return;
   const key = last.p.story ? last.p.story.id : cardKey(last.p.card);
+  if (ps.remove) { // back where it was
+    if (!last.yes) {
+      const { kind, from } = ps.remove;
+      kind.change(from, (l) => {
+        if (l[kind.key].includes(key)) return;
+        l[kind.key].splice(last.at < 0 ? l[kind.key].length : Math.min(last.at, l[kind.key].length), 0, key);
+      });
+      ps.added -= 1;
+    }
+    ps.i -= 1;
+    renderPhraseSort();
+    return;
+  }
   if (ps.move) { // back where it was in this list; out of the other unless it was there before
     if (last.yes) {
       const { kind, from } = ps.move;
@@ -9738,6 +9789,11 @@ function bindPhraseSortSwipe() {
 // list is your phrase list (targetList): Change makes another that (setTarget), so Add all and a
 // bookmark go there too. With none yet, My phrases, made by the first Add.
 function renderPhraseSortTitle() {
+  const remove = phraseSort?.remove;
+  if (remove) {
+    els.phraseSortTitle.textContent = `Remove from '${remove.kind.lists().find((l) => l.id === remove.from)?.name || ''}'?`;
+    return;
+  }
   const move = phraseSort?.move;
   if (move) {
     els.phraseSortTitle.textContent = `Move to '${move.kind.lists().find((l) => l.id === move.to)?.name || ''}'?`;
@@ -10331,6 +10387,10 @@ function bindEvents() {
   els.listMove.addEventListener('click', () => {
     const scope = currentScope();
     if (scope?.kind === 'list') openMoveItems(scopeKind(scope), scope.id.slice(5));
+  });
+  els.listRemove.addEventListener('click', () => {
+    const scope = currentScope();
+    if (scope?.kind === 'list') openRemoveItems(scopeKind(scope), scope.id.slice(5));
   });
   els.deckPicker.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeDeckPicker();

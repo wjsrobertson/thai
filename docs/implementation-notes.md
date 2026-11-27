@@ -2823,6 +2823,27 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Remove items (2026-11-27)
+
+The user's request: "on the actual List page - can we add a [Remove items] button and wizard? buttons
+should say [Remove] [Keep]".
+- **The button:** **Remove items** beside Move items, on a word or phrase list's List page
+  (`#list-remove`) and a story list's (`storyListActions`); not on an empty list (the row's hidden).
+  132 × 44 at 390.
+- **The dialog** (`openRemoveItems` → `openSort(of, queue, { remove: { kind, from } })`): the list's
+  items in the order its page shows; "Remove from 'Food words'? 1 of 3", no Change; **Remove** (the
+  red, left button: ←, N, a swipe left) and **Keep** (the green, right one: →, Y, a swipe right), the
+  order the user wrote them. The last answer "สวัสดีครับ ✓ Kept" or "✗ Removed".
+- **As you go:** a Remove takes it out of the list at once; Undo puts it back where it was. The last
+  answer goes back to the list with a toast ("Removed 2 words from 'Food words'", or "Nothing
+  removed"). A word's progress is kept, as any taking out keeps it.
+- `openSort` sets both buttons' labels and tooltips for each use: [No] [Add], [Keep] [Move],
+  [Remove] [Keep].
+- Checked headless (scratch `remove_probe.py`) at 390 × 664 and 1280 × 800: Food words (3) →
+  "Remove from 'Food words'? 1 of 3", Remove · Keep, no Change; Remove, Keep (2 left), two Undos (all
+  3, in order); Remove, Keep, Remove → 1 left, the toast, the page 1 row; My stories → Move items |
+  Remove items; ← removed its one story, the toast, and the row gone with it; no script errors.
+
 ## Rename and Delete on the picker's rows (2026-11-27)
 
 The user's call: "Rename and Delete should be removed from inside the list. The buttons can be made
