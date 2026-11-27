@@ -660,9 +660,9 @@ html.modal-open body {
 /* A list's row has neither (pickerDeckRow): its name gets the width. */
 .deck-row.list-row { grid-template-columns: 1fr; }
 /* Its Rename and Delete as icons on the right (listRowTools, 2026-11-27): 44 square, the row the rest. */
-.list-row-wrap { display: flex; align-items: center; gap: 4px; padding-right: 8px; } /* the bin's right edge on ＋ New list's */
+.list-row-wrap { display: flex; align-items: center; gap: 4px; padding: 0 8px; } /* both edges on the search box's and ＋ New list's (the chosen row's border spilled 8 left of them: the user, 2026-11-27) */
 .list-row-wrap > .deck-row { flex: 1; min-width: 0; height: 44px; padding-block: 0; } /* the name alone: as tall as its icons */
-.list-row-wrap > .deck-row { margin-right: 4px; } /* 8 to the pencil, 4 between the icons */
+.list-row-wrap > .deck-row { margin-right: 4px; padding-left: 16px; } /* 8 to the pencil, 4 between the icons; the name under the search's placeholder */
 .list-row-wrap + .list-row-wrap { margin-top: 8px; } /* rows apart, their icons not touching */
 .list-tool { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; }
 .list-tool .page-icon { width: 20px; height: 20px; }

@@ -2897,6 +2897,11 @@ into icons and displayed inline in the list under 'My Words/Stories/Phrases' tab
   `.deck-row-desc:empty` hidden), 44 tall as its icons (`padding-block: 0`), 8 to the pencil, 4
   between the icons, 8 between rows. The selected row's accent box is now the icons' height.
   Measured at 390 × 664 and 1280 × 800: the row, pencil and bin all 44 tall at the same top.
+- **Inset to the search box** (the user's screenshot, the same evening: "the highlighted border should
+  not spill out to the left"): `.list-row-wrap` is 8 in on both sides, so a list's row (and the chosen
+  one's border) runs from ＋ New list's left edge to its right; the name 16 in, under the search's
+  placeholder. Measured at 390 × 664: the row 14 to 276, the icons to 376 (New list 14 to 376), the
+  name's text at 31 as the placeholder's; at 1280 × 800, 347 against 349.
 - **No ▶ before the chosen list's name** (the user's call, the same evening: "just the highlight
   border is enough"): `.deck-row.list-row.current .deck-row-name::before` has no content. A topic's
   row keeps its ▶.
