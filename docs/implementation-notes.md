@@ -2734,8 +2734,11 @@ space), which also left out 968 word-topic cards (สีแดง, สวัส�
   words do (first consonant; English by each meaning's headword) and sit among them; a phrase's row
   opens the phrase dialog (`wordRow`, `isPhraseCard`), the word-topic ones the word dialog split by
   word, as on a List page.
-- **Counts:** a letter's heading and tooltip say "356 words · 22 phrases" (`dictCount`, by
-  `isPhraseCard`), or just one when there are none of the other. The search box's label and Thai |
+- **Counts:** a letter's tooltip says "356 words · 22 phrases" (`dictCount`, by `isPhraseCard`),
+  or just one when there are none of the other. Its heading said so too, for an hour: the user then
+  had the heading go when browsing (2026-11-27: "remove the 'ท ทหาร · 356 words · 22 phrases' bit at
+  the top"), so a letter's page has ‹ All letters alone over the table; a search keeps "12 matches".
+  Checked headless at 390 × 664 (ท and English L: no heading, ‹ All letters; searches' counts kept). The search box's label and Thai |
   English's tooltips say words and phrases.
 - **The Alphabet's letter dialog:** "Words that start with ก" stays words (it leaves out
   `isPhraseCard`s); its "All N in the Dictionary" counts everything under the letter.

@@ -4936,7 +4936,7 @@ function buildEnglishIndex() {
 }
 const LATIN_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-// "312 words · 20 phrases", or one of them alone: a letter's count, in its heading and tooltip.
+// "312 words · 20 phrases", or one of them alone: a letter's count, in its tooltip.
 function dictCount(rows) {
   const p = rows.filter(isPhraseCard).length;
   const w = rows.length - p;
@@ -4959,12 +4959,11 @@ function renderDictionary() {
   } else if (state.dictLetter && state.dictLang === 'en') {
     buildEnglishIndex();
     rows = (dictEnglish.get(state.dictLetter) || []).map((x) => x.e);
-    heading = `${state.dictLetter} · ${dictCount(rows)}`;
+    // No heading on a letter (2026-11-27, the user's call): "L · 457 words · 15 phrases" went; the
+    // count's in the letter's tooltip. A search keeps its "12 matches".
     els.dictBack.textContent = '‹ All letters';
   } else if (state.dictLetter) {
     rows = dictEntries.filter((e) => e.first === state.dictLetter);
-    const name = letterStep(state.dictLetter)?.show || state.dictLetter;
-    heading = `${name} · ${dictCount(rows)}`;
     els.dictBack.textContent = '‹ All letters';
   }
   els.dictGrid.hidden = !!rows;
