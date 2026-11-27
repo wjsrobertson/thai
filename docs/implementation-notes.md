@@ -2823,6 +2823,29 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## A topic's Select into (2026-11-27)
+
+The user's request: "When browsing a topic in Words or Phrases - we have 'Add all to xxx' button. We
+should also have the 'Select into xxx' button which opens a dialog like in vocabulary section".
+- **The button** (`#wordlist-select`, a ticked card's icon): "Select into Food words" (the name cut
+  with … past 9em, as Add all's), on a topic, group or category in Words or Phrases while some of its
+  words aren't in your list of the kind; gone when they all are ("All in …"), and on your own lists.
+  On a phone Add all and Read all keep their row as before and Select into has the row under them,
+  across (a grid; in halves beside Add all, "Add all to Food words" overran its button); on a wide
+  screen it sits between them in the bar.
+- **The dialog** (`openSelectInto` → `openSort(of, queue, { intoTarget: true })`): Vocabulary's One by
+  one: "Add to 'Food words'? 1 of 24", **Change** (your lists of the kind; a pick makes it your list,
+  so Add all and the bookmarks follow, as there), No and Add, the swipe, Undo, keys. Its queue: the
+  page's words (or phrases) not in that list, in the page's order. Each Add goes in then
+  (`setInTarget`); Undo takes it out of the list it went into. No choices are kept (unlike
+  Vocabulary's), so it hides nothing. The last answer goes back to the topic with a toast ("✓ 23 words
+  added to 'Travel'", counting every Add, though some went in before a Change).
+- Checked headless (scratch `select_probe.py`) at 390 × 664 and 1280 × 800: Greetings & Politeness with
+  Food words (1 of its words in it): the buttons, none cut; "Add to 'Food words'? 1 of 24", Change;
+  Add, No, Add, Undo (Food words 2); Change → Travel; the rest added → the toast, Travel 22, the bar
+  then "Select into Travel"; Catching Up & Good Wishes into Chat phrases (1 of 11, then 10 added); no
+  wordChoices or phraseChoices saved; no sideways scroll, no script errors.
+
 ## A list's name first, its buttons in one grid (2026-11-27)
 
 The user's screenshot: "the buttons are messy and the title should come first" (a word list's Add

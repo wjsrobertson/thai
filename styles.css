@@ -3139,6 +3139,9 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .wordtable .row-speak:hover { color: var(--accent); background: var(--panel-2); }
 .wordtable .row-speak .speaker-icon, .word-hit .row-speak .speaker-icon { width: 30px; height: 30px; }
 .wordlist-add-all[hidden] { display: none; }
+.wordlist-select[hidden] { display: none; }
+.wordlist-select { white-space: nowrap; text-align: center; } /* not flex: "Select into " keeps its space */
+.wordlist-select .list-action-icon { width: 18px; height: 18px; margin-right: 0.4em; vertical-align: -0.2em; }
 .wordlist-add-all.all-in { display: inline-grid; justify-items: center; align-content: center; color: var(--good); border-color: var(--good); }
 .wordlist-add-all.all-in > span { grid-area: 1 / 1; }
 .wordlist-add-all .label-hover { visibility: hidden; }

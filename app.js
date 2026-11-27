@@ -141,6 +141,7 @@ const els = {
   listReadAll: document.getElementById('list-read-all'),
   listRemove: document.getElementById('list-remove'),
   readAloud: document.getElementById('read-aloud'),
+  wordlistSelect: document.getElementById('wordlist-select'),
   confirmInput: document.getElementById('confirm-input'),
   confirmChange: document.getElementById('confirm-change'), // an add's Change (confirmDialog's `change`)
   wordlistAddAll: document.getElementById('wordlist-add-all'),
@@ -1898,6 +1899,7 @@ const ICON_RENAME = 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4';
 // #list-remove: an arrow to a line, and a minus in a circle.
 const ICON_MOVE = 'M3 12h13M11 7l5 5-5 5M20 5v14';
 const ICON_ADD = 'M12 5v14M5 12h14';
+const ICON_SELECT = 'M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 12l2 2 4-4'; // a card ticked
 const ICON_READ = 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7';
 const ICON_REMOVE = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8';
 const ICON_DELETE = 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6';
@@ -4760,6 +4762,12 @@ function renderWordlist() {
     els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to ', name(targetName(kind))); // "…to Cards" until 2026-10-20
   }
   els.wordlistAddAll.title = own ? `Add ${kindNoun(kind)} to '${targetName(kind)}'` : allIn ? `Remove all from '${targetName(kind)}'` : `Add all to '${targetName(kind)}'`;
+  // A topic's Select into (2026-11-27): while some of its words aren't in your list.
+  els.wordlistSelect.hidden = isList || allIn || state.listCards.length === 0;
+  if (!els.wordlistSelect.hidden) {
+    els.wordlistSelect.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_SELECT), 'Select into ', name(targetName(kind)));
+    els.wordlistSelect.title = `Go through them one by one, adding the ones you want to '${targetName(kind)}'`;
+  }
 }
 
 // A long list in pages (the user's call, 2026-10-20: your lists can grow without end), as Reading's
@@ -9485,12 +9493,27 @@ function openRemoveItems(of, fromId) {
   openSort(of, queue, { remove: { kind, from: fromId } });
 }
 
+// A topic's Select into (2026-11-27, the user's request: "we have 'Add all to xxx' button. We should
+// also have the 'Select into xxx' button which opens a dialog like in vocabulary section"): One by one
+// over the topic's words (or phrases) not in your list of the kind, in the page's order, Add putting
+// each in that list at once. As Vocabulary's, Change picks another list (making it your list of the
+// kind, so Add all and the bookmarks follow); unlike it, no choices are kept, so nothing's hidden.
+function openSelectInto() {
+  const scope = currentScope();
+  if (!scope) return;
+  const of = scopeKind(scope);
+  const have = targetWords(of);
+  const queue = state.listCards.filter((c) => keyKind(c.key) === of && !have.has(c.key))
+    .map((c) => ({ card: c, deck: scope.deckOf.get(c.key) }));
+  openSort(of, queue, { intoTarget: true });
+}
+
 // What One by one says for an item: a card's Thai, or a story's first line.
 const sortSay = (p) => (p.story ? sentenceText(p.story.passage[0].th) : cardSay(p.card));
 
-function openSort(of, queue, { listId = null, move = null, remove = null } = {}) {
+function openSort(of, queue, { listId = null, move = null, remove = null, intoTarget = false } = {}) {
   if (!queue.length) return;
-  phraseSort = { of, queue, listId, move, remove, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  phraseSort = { of, queue, listId, move, remove, intoTarget, i: 0, added: 0, history: [], lastFocus: document.activeElement };
   els.psChange.hidden = !!listId || !!remove; // into that list, and no other; Remove items has none
   // The two buttons: [No] [Add]; Move items' [Keep] [Move] (2026-11-27, the user's call; it said No);
   // Remove items' [Remove] [Keep], Remove the red one on the left.
@@ -9511,7 +9534,7 @@ function openSort(of, queue, { listId = null, move = null, remove = null } = {})
 function closePhraseSort() {
   if (!phraseSort) return;
   const { lastFocus } = phraseSort;
-  const intoList = phraseSort.listId || phraseSort.move?.from || phraseSort.remove?.from;
+  const intoList = phraseSort.listId || phraseSort.move?.from || phraseSort.remove?.from || phraseSort.intoTarget;
   phraseSort = null;
   els.phraseSort.hidden = true;
   setModalOpen(!!document.querySelector('.modal:not([hidden])'));
@@ -9622,6 +9645,24 @@ function answerPhraseSort(yes) {
     renderPhraseSort();
     return;
   }
+  if (ps.intoTarget) { // a topic's Select into: your list of the kind, now; no choices kept
+    ps.history.push({ p, yes, wasIn: false });
+    if (yes) {
+      setInTarget([key], true, ps.of); // makes My words (or My phrases) if there's none
+      ps.history[ps.history.length - 1].listId = targetList(ps.of).id;
+      ps.added += 1;
+      renderPhraseSortTitle();
+    }
+    ps.i += 1;
+    if (ps.i >= ps.queue.length) { // the last one: back to the topic (as Add words)
+      const { added } = ps;
+      closePhraseSort();
+      toast(`${added ? '✓ ' : ''}${plural(added, kindNoun(ps.of, 1))} added to '${targetName(ps.of)}'`, added ? { tone: 'good' } : {});
+      return;
+    }
+    renderPhraseSort();
+    return;
+  }
   if (ps.listId) { // a list's Add words: into it, no choices kept
     ps.history.push({ p, yes, wasIn: false, listId: ps.listId });
     if (yes) {
@@ -9685,6 +9726,15 @@ function undoPhraseSort() {
         if (l[kind.key].includes(key)) return;
         l[kind.key].splice(last.at < 0 ? l[kind.key].length : Math.min(last.at, l[kind.key].length), 0, key);
       });
+      ps.added -= 1;
+    }
+    ps.i -= 1;
+    renderPhraseSort();
+    return;
+  }
+  if (ps.intoTarget) {
+    if (last.yes) {
+      changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
       ps.added -= 1;
     }
     ps.i -= 1;
@@ -10391,6 +10441,7 @@ function bindEvents() {
     if (scope?.kind === 'list') openAddWords(scope.id.slice(5));
   });
   els.listReadAll.addEventListener('click', toggleReadAloud);
+  els.wordlistSelect.addEventListener('click', openSelectInto);
   els.listRemove.addEventListener('click', () => {
     const scope = currentScope();
     if (scope?.kind === 'list') openRemoveItems(scopeKind(scope), scope.id.slice(5));
