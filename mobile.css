@@ -111,10 +111,10 @@ html.kb .tabs { display: none; }
    it stays on one line: 2026-10-08. At 320px the text is a little smaller as well. */
 .wordlist-bar-right > #wordlist-add-all { flex: 1 1 auto; white-space: nowrap; }
 .wordlist-bar-right > #read-aloud { flex: 0 0 auto; }
-/* With a topic's Select into (2026-11-27): Add all and Read all keep their row as before, Select into
-   across a row of its own under them, so neither name is cut. */
-.wordlist-bar-right:has(> #wordlist-select:not([hidden])) { display: grid; grid-template-columns: 1fr auto; row-gap: 8px; }
-.wordlist-bar-right > #wordlist-select { grid-column: 1 / -1; grid-row: 2; }
+/* With a topic's Select into (2026-11-27, the user's call): "Add all to list" and "Select into list"
+   in halves, Read all across under them. */
+.wordlist-bar-right:has(> #wordlist-select:not([hidden])) { display: grid; grid-template-columns: 1fr 1fr; row-gap: 8px; }
+.wordlist-bar-right:has(> #wordlist-select:not([hidden])) > #read-aloud { grid-column: 1 / -1; }
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- the section's top row, pinned ---------- */

@@ -4745,7 +4745,6 @@ function renderWordlist() {
 
   // The list 🔁 adds to: Add words. Anything else: Add all to it, or with the whole lot in, "✓ All
   // in …", which takes them all out.
-  const name = (text) => Object.assign(document.createElement('span'), { className: 'add-all-name', textContent: text });
   const allIn = !own && state.listCards.length > 0 && state.listCards.every((c) => words.has(c.key));
   els.wordlistAddAll.classList.toggle('all-in', allIn);
   els.wordlistAddAll.hidden = isList || state.listCards.length === 0; // a list's is under its name (els.listAdd)
@@ -4755,17 +4754,19 @@ function renderWordlist() {
   } else if (allIn) {
     // Both labels share one grid cell, so hovering ("− Remove all") doesn't change the width.
     const idle = Object.assign(document.createElement('span'), { className: 'label-idle' });
-    idle.append(reviewIcon(true), 'All in ', name(targetName(kind)));
+    idle.append(reviewIcon(true), 'All in list'); // the list's name in the tooltip (2026-11-27, as Add all's)
     const hover = Object.assign(document.createElement('span'), { className: 'label-hover', textContent: '− Remove all' });
     els.wordlistAddAll.replaceChildren(idle, hover);
   } else {
-    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to ', name(targetName(kind))); // "…to Cards" until 2026-10-20
+    // "Add all to list", the name in its tooltip (2026-11-27, the user's call, so Select into fits beside
+    // it); "Add all to Food words" till then, "…to Cards" until 2026-10-20.
+    els.wordlistAddAll.replaceChildren(reviewIcon(), 'Add all to list');
   }
   els.wordlistAddAll.title = own ? `Add ${kindNoun(kind)} to '${targetName(kind)}'` : allIn ? `Remove all from '${targetName(kind)}'` : `Add all to '${targetName(kind)}'`;
   // A topic's Select into (2026-11-27): while some of its words aren't in your list.
   els.wordlistSelect.hidden = isList || allIn || state.listCards.length === 0;
   if (!els.wordlistSelect.hidden) {
-    els.wordlistSelect.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_SELECT), 'Select into ', name(targetName(kind)));
+    els.wordlistSelect.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_SELECT), 'Select into list');
     els.wordlistSelect.title = `Go through them one by one, adding the ones you want to '${targetName(kind)}'`;
   }
 }

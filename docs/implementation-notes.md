@@ -2833,6 +2833,12 @@ should also have the 'Select into xxx' button which opens a dialog like in vocab
   On a phone Add all and Read all keep their row as before and Select into has the row under them,
   across (a grid; in halves beside Add all, "Add all to Food words" overran its button); on a wide
   screen it sits between them in the bar.
+- **"…to list", not the name** (the same evening, the user's call: "'Add all to list' instead of 'Add
+  all to some list name' - same for 'Select into list'. Then the buttons should fit next to each
+  other - so switch the position of 'Read all' and 'Select into list'"): **Add all to list**, **Select
+  into list** and, with all in, **All in list**; the list's name is in each tooltip. On a phone the two
+  share the row in halves (179 each at 390) and Read all goes across under them; with Select into
+  hidden, Add all and Read all share one row as before. A wide screen's bar: the three in a row.
 - **The dialog** (`openSelectInto` → `openSort(of, queue, { intoTarget: true })`): Vocabulary's One by
   one: "Add to 'Food words'? 1 of 24", **Change** (your lists of the kind; a pick makes it your list,
   so Add all and the bookmarks follow, as there), No and Add, the swipe, Undo, keys. Its queue: the
