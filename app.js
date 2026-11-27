@@ -166,6 +166,8 @@ const els = {
   updateBar: document.getElementById('update-bar'),
   toast: document.getElementById('toast'),
   updateReload: document.getElementById('update-reload'),
+  updateHelp: document.getElementById('update-help'),
+  updateCheck: document.getElementById('update-check'),
   homeLink: document.getElementById('home-link'),
   homeCards: document.querySelectorAll('.home-card'),
   review: document.getElementById('review'),
@@ -11008,6 +11010,7 @@ window.addEventListener('appinstalled', () => {
 });
 
 function registerServiceWorker() {
+  renderUpdateRow(); // Settings → App → Updates: its line, with or without a worker
   if (!('serviceWorker' in navigator)) return; // also absent over plain http on a LAN address
   // The app opens from the saved copy; sw.js checks for a new version in the background and
   // says so when it has stored one with new code or looks, and a reload then shows it. New cards
@@ -11016,7 +11019,77 @@ function registerServiceWorker() {
     if (e.data?.type === 'update-ready') els.updateBar.hidden = false;
   });
   els.updateReload.addEventListener('click', () => location.reload());
+  els.updateCheck.addEventListener('click', checkForUpdate);
   navigator.serviceWorker.register('sw.js').catch((e) => console.warn('Service worker failed:', e));
+}
+
+// Settings → App → Updates (2026-11-27, the user's request: a push could take a long time to reach the
+// phone, even after restarting the app). The line says which version this is (the saved app.js's
+// date: the server's Last-Modified, a deploy's time on GitHub Pages); Check for updates asks the
+// server now. A new sw.js installs and takes over by itself (registration.update); otherwise the
+// worker compares the files and stores a new set at once (sw.js 'check-update'). Either way the
+// button then says Restart now, which reloads into it.
+let updateReady = false;
+async function appVersionText() {
+  try {
+    for (const key of await caches.keys()) {
+      if (!key.startsWith('learnthai-shell-')) continue;
+      const res = await (await caches.open(key)).match(new URL('app.js', location.href).href, { ignoreSearch: true });
+      const stamp = res && Date.parse(res.headers.get('last-modified') || '');
+      if (stamp) return `This version is from ${new Date(stamp).toLocaleString(undefined, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}.`;
+    }
+  } catch { /* no saved copy to read */ }
+  return '';
+}
+
+async function renderUpdateRow(message = '') {
+  if (!('serviceWorker' in navigator)) {
+    els.updateHelp.textContent = "Updates come when the page is loaded: there's no saved copy here.";
+    els.updateCheck.hidden = true;
+    return;
+  }
+  els.updateHelp.textContent = [message, await appVersionText()].filter(Boolean).join(' ');
+  els.updateCheck.textContent = updateReady ? 'Restart now' : 'Check for updates';
+}
+
+async function checkForUpdate() {
+  if (updateReady) {
+    location.reload();
+    return;
+  }
+  els.updateCheck.disabled = true;
+  els.updateHelp.textContent = 'Checking…';
+  let status = 'offline';
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    const swBefore = reg?.active?.scriptURL && reg.active;
+    await reg?.update(); // a new sw.js: it installs, stores the new files and takes over
+    if (reg?.installing || reg?.waiting) {
+      await new Promise((resolve) => {
+        navigator.serviceWorker.addEventListener('controllerchange', resolve, { once: true });
+        setTimeout(resolve, 20000);
+      });
+      status = 'updated';
+    } else if (navigator.serviceWorker.controller) {
+      status = await new Promise((resolve) => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => resolve(e.data?.status || 'offline');
+        navigator.serviceWorker.controller.postMessage({ type: 'check-update' }, [channel.port2]);
+        setTimeout(() => resolve('offline'), 30000);
+      });
+    }
+    if (swBefore && reg.active && reg.active !== swBefore) status = 'updated';
+  } catch {
+    status = 'offline';
+  }
+  updateReady = status === 'updated';
+  if (updateReady) els.updateBar.hidden = true; // the button says it
+  els.updateCheck.disabled = false;
+  await renderUpdateRow({
+    current: "You have the latest version.",
+    updated: 'A new version is downloaded: restart to use it.',
+    offline: "Couldn't reach the server. Check the connection and try again.",
+  }[status]);
 }
 
 function isInstalled() {

@@ -2823,6 +2823,33 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Settings → App → Updates: Check for updates (2026-11-27)
+
+The user's request: "sometimes when I push, it takes long time for my phone to detect there is an
+upgrade available, even when I restart the app. Is it possible to add a button to the settings page
+to check for new version / install new version?"
+- **Why it's slow:** sw.js looks for a new version only on a navigation (`refreshShell`), and a
+  home-screen app on an iPhone often resumes rather than relaunches, so there's none. When it does
+  look, a new set is stored only once it has looked the same for SETTLE_MS (a minute, for GitHub
+  Pages' publish), across launches if the phone stops the worker; then the bar, then a reload.
+- **The row** (`#update-help`, `#update-check`; `renderUpdateRow`, `checkForUpdate`): "This version
+  is from 27 Nov, 23:24." (the saved app.js's Last-Modified: on GitHub Pages, the deploy's time) and
+  **Check for updates**. It says Checking…, then "You have the latest version.", "A new version is
+  downloaded: restart to use it." (the button then **Restart now**, a reload; the new-version bar is
+  hidden, the button says it) or "Couldn't reach the server. Check the connection and try again."
+- **How:** `registration.update()` first: a new sw.js installs (its install stores the files) and
+  takes over (`controllerchange`). Otherwise a 'check-update' message to the worker, which fetches
+  the shell as refreshShell does and, if any file's version differs, stores the set at once, without
+  the settle wait (the user has just pushed and is waiting for it), replying on a MessageChannel. A
+  check in the middle of a publish could store a mix; the next launch's refreshShell then sees the
+  difference and stores the settled set. Without a service worker the row says updates come with
+  the page.
+- Checked headless (scratch `update_probe.py`, `offline2.py`) against the local server at 390 × 664:
+  the version line; Check → "You have the latest version."; app.js touched (a new Last-Modified) →
+  "A new version is downloaded…", Restart now → reloaded, then the latest again; on a second server
+  stopped mid-test (the page from the saved copy) → "Couldn't reach the server…"; no script errors.
+  (Chromium's offline emulation doesn't reach the worker's fetches, so the server was stopped.)
+
 ## Home in the menu's order (2026-11-27)
 
 The user's call: "Make order of items in the home page the same as the app menu". The cards were

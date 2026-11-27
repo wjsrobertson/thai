@@ -160,6 +160,39 @@ function sameBytes(a, b) {
   return true;
 }
 
+// Settings → App → Check for updates (2026-11-27, the user's request: after a push "it takes a long
+// time for my phone to detect there is an upgrade available, even when I restart the app"; a
+// home-screen app often resumes rather than relaunches, so refreshShell may not run, and when it does
+// it waits SETTLE_MS for the publish to finish). Asked for, it looks now and stores a new version at
+// once, without the wait: the user has just pushed and is waiting for it. Replies on the port with
+// { status: 'current' | 'updated' | 'offline' }.
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'check-update') return;
+  const port = event.ports[0];
+  event.waitUntil((async () => {
+    let status = 'offline';
+    try {
+      const cache = await caches.open(SHELL_CACHE);
+      const fresh = await Promise.all(SHELL.map(async (path) => {
+        const url = shellUrl(path);
+        const res = await fetch(url, { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`${res.status} ${url}`);
+        return { path, url, res, old: await cache.match(url) };
+      }));
+      if (fresh.every((f) => f.old && versionOf(f.old) === versionOf(f.res))) {
+        for (const f of fresh) f.res.body?.cancel().catch(() => {});
+        status = 'current';
+      } else {
+        await store(cache, fresh);
+        status = 'updated';
+      }
+    } catch {
+      // offline, or a file missing: keep the current version
+    }
+    port?.postMessage({ status });
+  })());
+});
+
 async function tellPages() {
   for (const client of await self.clients.matchAll({ type: 'window' })) client.postMessage({ type: 'update-ready' });
 }
