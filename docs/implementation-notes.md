@@ -1557,9 +1557,10 @@ user asked:
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
-- **The phone's bar:** Alphabet, Words, Phrases, Stories, More; More's list Home, Dictionary, Time,
-  Vocabulary and Settings, Settings last (10-22; More had Time and Settings from 10-21, Home on the
-  bar; Vocabulary from 11-14; Phrases and Stories tabs, Dictionary and Time in More, 11-22).
+- **The phone's bar:** Words, Phrases, Stories, Vocabulary, More; More's list Home, Alphabet,
+  Dictionary, Time and Settings, Settings last (10-22; More had Time and Settings from 10-21, Home on
+  the bar; Vocabulary from 11-14; Phrases and Stories tabs, Dictionary and Time in More, 11-22;
+  Alphabet into More and Vocabulary onto the bar, 11-27).
 - And no script errors, no sideways scroll.
 A new request of the kind gets a check here.
 
