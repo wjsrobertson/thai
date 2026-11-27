@@ -1778,8 +1778,14 @@ function pickScope(id) {
     startVocabRun(id);
     return;
   }
-  // Add words (pickerFor 'add'): the List page shows where they come from, its 🔁 adding to the
-  // list (state.addingTo). Picked plainly, a list becomes where 🔁 adds.
+  if (state.pickerFor === 'add') { // a list's Add words: One by one over the list (sortIntoList)
+    const to = state.addTo;
+    closeDeckPicker();
+    sortIntoList(to, id);
+    return;
+  }
+  // Add words (pickerFor 'add') showed where they came from on the List page, its 🔁 adding to the
+  // list (state.addingTo), till 2026-11-27 (sortIntoList). Picked plainly, a list becomes where 🔁 adds.
   state.addingTo = state.pickerFor === 'add' ? state.addTo : null;
   if (state.pickerFor !== 'add' && id.startsWith('list:')) setTarget(id.slice(5));
   if (state.pickerFor !== 'add' && id.startsWith('stories:')) setStoryTarget(id.slice(8)); // where a story's bookmark saves
@@ -5904,8 +5910,10 @@ async function deleteList(id) {
   toast(`Deleted '${list.name}'`);
 }
 
-// The List page's Add words: the picker, to choose a topic or another list to add from. Its words'
-// 🔁 then add to this list, and a bar over the page says so, with Done to come back (renderWordlist).
+// The List page's Add words: the picker, to choose a topic or another list to add from, then One by
+// one over this list (sortIntoList). Till 2026-11-27 the choice showed on the List page, its words'
+// 🔁 adding to this list, with a bar over the page saying so and Done to come back (renderWordlist;
+// doneAdding and the bar stay for a word search's hit, showWordInTopic).
 function openAddWords(id) {
   setTarget(id);
   if (state.view !== 'wordlist') setView('wordlist');
@@ -9310,9 +9318,31 @@ function wordSortQueue(src, known = knownMap()) {
   return queue;
 }
 
-function openSort(of, queue) {
+// A list's Add words (2026-11-27, the user's request: "after you select a topic or my phrases/words
+// list you should have the same 'select' wizard used by the vocabulary section… you can't change the
+// list the words are being selected into. Once the wizard is closed, the user is dropped back at
+// their list"): One by one over the topic's or list's cards not in the list yet, in its order, each
+// Add putting it in this list (`listId`: no Change). The list stays on the page under it. Its answers
+// aren't Vocabulary's sorted choices (wordChoices, phraseChoices), so they hide nothing there.
+function sortIntoList(listId, scopeId) {
+  const list = listById(listId);
+  const scope = resolveScope(scopeId);
+  if (!list || !scope) return;
+  const kind = listKind(list);
+  const have = new Set(list.words);
+  const queue = scope.cards.filter((c) => keyKind(cardKey(c)) === kind && !have.has(cardKey(c)))
+    .map((card) => ({ card, deck: scope.deckOf.get(cardKey(card)) }));
+  if (!queue.length) {
+    toast(`All of '${scope.name}' is in '${list.name}' already`);
+    return;
+  }
+  openSort(kind, queue, { listId });
+}
+
+function openSort(of, queue, { listId = null } = {}) {
   if (!queue.length) return;
-  phraseSort = { of, queue, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  phraseSort = { of, queue, listId, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  els.psChange.hidden = !!listId; // into that list, and no other
   renderPhraseSortTitle();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
@@ -9325,10 +9355,15 @@ function openSort(of, queue) {
 function closePhraseSort() {
   if (!phraseSort) return;
   const { lastFocus } = phraseSort;
+  const intoList = phraseSort.listId;
   phraseSort = null;
   els.phraseSort.hidden = true;
   setModalOpen(!!document.querySelector('.modal:not([hidden])'));
   if (state.view === 'vocab') renderVocab(); // what was gone through leaves the list
+  if (intoList && state.view === 'wordlist') { // back at the list, with what was added
+    freshListCards();
+    renderWordlist();
+  }
   if (lastFocus?.isConnected) lastFocus.focus({ preventScroll: true });
 }
 
@@ -9338,7 +9373,7 @@ function renderPhraseSort({ say = true } = {}) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   els.phraseSortCount.textContent = p ? `${fmtCount(ps.i + 1)} of ${fmtCount(ps.queue.length)}` : '';
   const last = ps.history[ps.history.length - 1];
-  els.psLastText.textContent = last ? `${last.p.card.thai} ${sortChoices(ps.of)[cardKey(last.p.card)] ? '✓ Added' : '✗ Not added'}` : '';
+  els.psLastText.textContent = last ? `${last.p.card.thai} ${last.yes ? '✓ Added' : '✗ Not added'}` : '';
   els.psUndo.classList.toggle('off', !last);
   els.psAnswers.classList.toggle('off', !p);
   els.psCard.style.transform = '';
@@ -9376,10 +9411,20 @@ function answerPhraseSort(yes) {
   const p = ps?.queue[ps.i];
   if (!p) return;
   const key = cardKey(p.card);
+  if (ps.listId) { // a list's Add words: into it, no choices kept
+    ps.history.push({ p, yes, wasIn: false, listId: ps.listId });
+    if (yes) {
+      changeList(ps.listId, (l) => { if (!l.words.includes(key)) l.words.push(key); });
+      ps.added += 1;
+    }
+    ps.i += 1;
+    renderPhraseSort();
+    return;
+  }
   const store = loadStore();
   const choices = (store[SORT_CHOICES[ps.of]] ||= {});
   const was = targetList(ps.of);
-  ps.history.push({ p, prev: choices[key], wasIn: !!was?.words.includes(key) });
+  ps.history.push({ p, yes, prev: choices[key], wasIn: !!was?.words.includes(key) });
   choices[key] = yes ? 1 : 0;
   saveStore(store);
   if (yes) { // in the list now, not at the end
@@ -9397,6 +9442,15 @@ function undoPhraseSort() {
   const last = ps?.history.pop();
   if (!last) return;
   const key = cardKey(last.p.card);
+  if (ps.listId) {
+    if (last.yes) {
+      changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
+      ps.added -= 1;
+    }
+    ps.i -= 1;
+    renderPhraseSort();
+    return;
+  }
   const store = loadStore();
   const choices = (store[SORT_CHOICES[ps.of]] ||= {});
   if (choices[key] && !last.wasIn) { // out of the list it went into, though another's chosen since
@@ -9475,7 +9529,8 @@ function bindPhraseSortSwipe() {
 // list is your phrase list (targetList): Change makes another that (setTarget), so Add all and a
 // bookmark go there too. With none yet, My phrases, made by the first Add.
 function renderPhraseSortTitle() {
-  els.phraseSortTitle.textContent = `Add to '${targetName(phraseSort?.of || 'phrases')}'?`;
+  const into = phraseSort?.listId && listById(phraseSort.listId);
+  els.phraseSortTitle.textContent = `Add to '${into ? into.name : targetName(phraseSort?.of || 'phrases')}'?`;
 }
 
 function handlePhraseSortKey(e) {

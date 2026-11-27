@@ -2748,6 +2748,32 @@ space), which also left out 968 word-topic cards (สีแดง, สวัส�
   phrase dialog; "red" 110 matches with สีแดง; สวัสดีครับ found; English L "457 words · 15 phrases"
   with "long time no see"; no sideways scroll, no script errors.
 
+## A list's Add words goes One by one (2026-11-27)
+
+The user's request: "when in My Phrases or My words and you click 'Add words' or 'Add phrases', after
+you select a topic or my phrases/words list you should have the same 'select' wizard used by the
+vocabulary section. The dialog should differ very slightly in that you can't change the list the
+words are being selected into. Once the wizard is closed, the user is dropped back at their list".
+- **The way:** Add words (or the empty Cards' Add words) opens the picker as before (`openAddWords`,
+  pickerFor 'add'); a topic or list picked there now opens One by one's dialog (`sortIntoList` →
+  `openSort(kind, queue, { listId })`) over the list's own page, rather than showing the topic on the
+  List page with its 🔁 adding and the "Adding words to" bar.
+- **Its queue:** the choice's cards of the list's kind not in the list yet, in the choice's order,
+  each with its topic over it (`scope.deckOf`). None left: a toast, "All of 'Greetings & Politeness'
+  is in 'Food words' already", and the picker closes.
+- **The dialog** is Vocabulary's ("Add to 'Food words'? 1 of 25", the card, No and Add, the swipe,
+  Undo, keys, the end's Done) without **Change** (`#ps-change` hidden): each Add goes into that list
+  at once (`changeList`), Undo takes it out. It doesn't touch `wordChoices` or `phraseChoices`, so
+  nothing said here hides a word or phrase in Vocabulary. The last answer's ✓ Added / ✗ Not added now
+  comes from the answer itself (`history[].yes`), in both uses.
+- **Closed** (✕, Esc, Done): the list's page, its new words in it (`freshListCards`), at its top.
+- The old way's code stays for a word search's hit in that picker (`showWordInTopic` still opens the
+  topic with the bar and Done, `doneAdding`).
+- Checked headless (scratch `addsort_probe.py`) at 390 × 664 and 1280 × 800, a word list "Food words"
+  and a phrase list "Chat phrases": Add words → Greetings & Politeness → "Add to 'Food words'? 1 of
+  25", no Change; Add, No, Add, Undo (1 in the list); ✕ → the list with สวัสดี, no bar; the same for
+  phrases from Catching Up & Good Wishes (1 of 11); no choices saved; no script errors.
+
 ## Vocabulary tidied: a row a list (2026-11-22)
 
 The user's call: "Vocabulary section needs to be cleaned up it is unweildy. Any suggestions"; seven
