@@ -2823,6 +2823,16 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Home in the menu's order (2026-11-27)
+
+The user's call: "Make order of items in the home page the same as the app menu". The cards were
+Alphabet, Words, Phrases | Stories, Dictionary | Time, Vocabulary; now the tab bar's Words, Phrases,
+Stories, Vocabulary, then More's Alphabet, Dictionary and Time: **Words** (across), **Phrases |
+Stories**, **Vocabulary** (across), **Alphabet** (across), **Dictionary | Time**; one column on a
+phone. Nothing depended on the order (no :nth-child or the like). Measured headless (scratch
+`home_order.py`) at 390 × 664 and 1280 × 800; the Vocabulary card still opens Vocabulary; no script
+errors.
+
 ## Home's Words card in one sentence (2026-11-27)
 
 The user's call: "on home page, change Words description to one sentence". Its two rows (List · Every

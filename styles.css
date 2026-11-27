@@ -3012,7 +3012,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   touch-action: manipulation;
 }
 .home-card:hover { border-color: var(--accent); }
-.home-card-wide { grid-column: 1 / -1; } /* the Alphabet's and Words', across both columns */
+.home-card-wide { grid-column: 1 / -1; } /* Words', Vocabulary's and the Alphabet's, across both columns */
 /* The Dictionary and Time side by side under them (without Time, while it was behind dev features,
    the Dictionary went across both). */
 .home-card-title { display: flex; align-items: center; gap: 12px; font-size: calc(22px * var(--fs, 1)); font-weight: 700; }

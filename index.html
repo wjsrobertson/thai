@@ -197,12 +197,8 @@
            call, 2026-10-21; Words was first, and the Alphabet and Dictionary side by side under it), then
            the Dictionary beside Time, or across both without it (styles.css); a card is a title and its
            text, or rows of a label and what it does (spans, since a button may only hold phrasing content). -->
-      <button type="button" class="home-card home-card-wide" data-go="alphabet">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg>Alphabet</span>
-        <span class="home-card-text">
-          <span>Consonants, vowels and tones, with flashcards and writing practice.</span>
-        </span>
-      </button>
+      <!-- In the app menu's order (2026-11-27, the user's call): the bar's Words, Phrases, Stories,
+           Vocabulary, then More's Alphabet, Dictionary and Time. Phrases and Stories side by side. -->
       <button type="button" class="home-card home-card-wide" data-go="words">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h12M9 12h12M9 18h12M4 6h.01M4 12h.01M4 18h.01" /></svg>Words</span>
         <!-- One sentence, as the other cards (2026-11-27, the user's call; it had List and Flashcards rows). -->
@@ -210,7 +206,6 @@
           <span>Words by topic, to study with flashcards and save to lists of your own.</span>
         </span>
       </button>
-      <!-- Phrases and Stories (2026-11-22, sections of their own), side by side under Words. -->
       <button type="button" class="home-card" data-go="phrases">
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.5a8.5 8.5 0 0 1-12.75 7.36L3.5 20.5l.5-6.1A8.5 8.5 0 1 1 20.5 11.5z" /><path d="M8.5 10h7M8.5 13.5h4.5" /></svg>Phrases</span>
         <span class="home-card-text">
@@ -221,6 +216,19 @@
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" /></svg>Stories</span>
         <span class="home-card-text">
           <span>Short stories to read and hear, by topic, and your own lists of them.</span>
+        </span>
+      </button>
+      <!-- Vocabulary (2026-11-14): how many words you know (renderHomeVocab fills its line). -->
+      <button type="button" class="home-card home-card-wide" data-go="vocab">
+        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" /><path d="m8 12.2 2.8 2.8L16.2 9" /></svg>Vocabulary</span>
+        <span class="home-card-text">
+          <span id="home-vocab-text">Go through the most used words and mark the ones you know.</span>
+        </span>
+      </button>
+      <button type="button" class="home-card home-card-wide" data-go="alphabet">
+        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V10a5 5 0 0 1 10 0v10M7 11.5c-1.4-.2-2.3-1.2-2-2.6" /></svg>Alphabet</span>
+        <span class="home-card-text">
+          <span>Consonants, vowels and tones, with flashcards and writing practice.</span>
         </span>
       </button>
       <button type="button" class="home-card" data-go="dictionary">
@@ -234,13 +242,6 @@
         <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></svg>Time</span>
         <span class="home-card-text">
           <span>Telling the time in Thai, the everyday way, with a quiz.</span>
-        </span>
-      </button>
-      <!-- Vocabulary (2026-11-14): how many words you know (renderHomeVocab fills its line). -->
-      <button type="button" class="home-card home-card-wide" data-go="vocab">
-        <span class="home-card-title"><svg class="page-icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="3.5" /><path d="m8 12.2 2.8 2.8L16.2 9" /></svg>Vocabulary</span>
-        <span class="home-card-text">
-          <span id="home-vocab-text">Go through the most used words and mark the ones you know.</span>
         </span>
       </button>
     </section>
