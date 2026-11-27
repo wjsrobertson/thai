@@ -2823,6 +2823,36 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Move items: One by one out of a list into another (2026-11-27)
+
+The user's request: "a [Move items] button next to [Delete list] - it opens a wizard very similar to
+the selector wizard - with a slight behaviour difference in that it is for moving items in the list
+to another list… instead of 'add to...' at the top of the wizard it says 'Move to ...'. as well as
+adding to the other list, it removes from the current one. Done as you go".
+- **The button:** **Move items** after Delete list, on a word or phrase list's List page
+  (`#list-move`) and a story list's (`storyListActions`); not on an empty list. 112 × 44 at 390,
+  the row Rename · Delete list · Move items fitting one line.
+- **The dialog** (`openMoveItems` → `openSort(of, queue, { move: { kind, from, to } })`): One by one's
+  over the list's items in the order its page shows (a word list's newest first, or Settings → List's
+  order; a story list's newest saved first). "Move to 'Travel'? 1 of 3", **Change**, the card, **No**
+  and **Move** (the green button's label), the swipe, keys; the last answer "สวัสดีครับ ✗ Kept" or
+  "✓ Moved".
+- **Where to:** your list of the kind (the target) if it isn't this one, else your first other.
+  Change lists the others (`openListChooser`'s new `exclude`) and ＋ New list; a pick is for this
+  dialog only (the target's left alone). With no other list, "Move stories to a new list" asks a name
+  first (`askListName`), and Cancel opens nothing.
+- **As you go:** Move takes the item out of this list and puts it at the end of the other (unless
+  it's there already) at once (`kind.change`, through WORD_LISTS, PHRASE_LISTS or STORY_LISTS); Undo
+  puts it back where it was in this list and out of the other, unless it was in that one before.
+  Closing midway keeps what's been moved. The last answer goes back to the list with a toast ("✓ 2
+  words moved to 'Other'", or "Nothing moved"), the page redrawn without them.
+- Checked headless (scratch `move_probe.py`) at 390 × 664 and 1280 × 800: Food words (3) with Travel
+  and Other: "Move to 'Travel'? 1 of 3"; Move, No (Food words 2, Travel 1), two Undos (3 back in their
+  order, Travel 0); Change: Travel ✓, Other, ＋ New list, not Food words; Other picked, then Move, No,
+  Move → Food words 1, Other 2, the toast, the page 1 row, the target unchanged; My stories with no
+  other story list: the name asked ("Favourites"), Move → moved, the toast, the list empty and its Move
+  items gone; no script errors.
+
 ## Vocabulary tidied: a row a list (2026-11-22)
 
 The user's call: "Vocabulary section needs to be cleaned up it is unweildy. Any suggestions"; seven

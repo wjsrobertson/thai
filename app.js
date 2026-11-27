@@ -138,6 +138,7 @@ const els = {
   listActions: document.getElementById('list-actions'), // a list's Rename and Delete, on the List page
   listRename: document.getElementById('list-rename'),
   listDelete: document.getElementById('list-delete'),
+  listMove: document.getElementById('list-move'),
   confirmInput: document.getElementById('confirm-input'),
   confirmChange: document.getElementById('confirm-change'), // an add's Change (confirmDialog's `change`)
   wordlistAddAll: document.getElementById('wordlist-add-all'),
@@ -4641,6 +4642,7 @@ function renderWordlist() {
     document.getElementById('adding-noun').textContent = kindNoun(listKind(adding)); // "Adding phrases to" (2026-11-22)
   }
   els.listActions.hidden = !isList; // Rename and Delete
+  els.listMove.hidden = !isList || !deck.cards.length; // Move items, with something to move
 
   // In list order (the headings sorted the table until 2026-10-12), a search's matches, a page at a time.
   wordsFor(deck.id);
@@ -5804,7 +5806,7 @@ function openMoveWords(keys, what, fromId, kind = WORD_LISTS) {
 // The same dialog to choose a list, not move anything (2026-11-26, One by one's Change): `title`
 // ("Add phrases to"), your lists of `kind` with `current` ticked, ＋ New list; a tap closes it and
 // calls `pick(id)`. Without "Add new … there too": choosing is the point.
-function openListChooser({ title, kind, current, pick, noNew = false }) {
+function openListChooser({ title, kind, current, pick, noNew = false, exclude = null }) {
   state.moving = { lastFocus: document.activeElement };
   els.moveTitle.textContent = title;
   els.moveDefault.checked = false;
@@ -5813,7 +5815,7 @@ function openListChooser({ title, kind, current, pick, noNew = false }) {
     closeMoveWords();
     pick(id);
   };
-  const rows = kind.lists().map((l) => {
+  const rows = kind.lists().filter((l) => l.id !== exclude).map((l) => { // exclude: Move items' own list
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'move-row';
@@ -6722,7 +6724,8 @@ function storyAddButton(scope) {
 function storyListActions(scope) {
   const box = popEl('div', 'list-actions');
   const id = scope.id.slice(8);
-  for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete list', deleteStoryList, 'ghost danger']]) {
+  const moves = savedStories(storyListById(id) || { stories: [] }).length ? [['Move items', (x) => openMoveItems('stories', x), 'ghost']] : [];
+  for (const [label, fn, cls] of [['Rename', renameStoryList, 'ghost'], ['Delete list', deleteStoryList, 'ghost danger'], ...moves]) {
     const b = popEl('button', cls, label);
     b.type = 'button';
     b.addEventListener('click', () => fn(id));
@@ -9414,13 +9417,42 @@ function sortStoriesIntoList(listId, scopeId) {
   openSort('stories', queue, { listId });
 }
 
+// Move items (2026-11-27, the user's request: "a [Move items] button next to [Delete list] - it opens a
+// wizard very similar to the selector wizard… for moving items in the list to another list… instead
+// of 'add to...' at the top of the wizard it says 'Move to ...'. as well as adding to the other list,
+// it removes from the current one. Done as you go"): One by one over a word, phrase or story list's
+// items, in the order its page shows them. Move takes one out of this list and puts it in the other
+// at once; Undo puts it back where it was. The other list: your list of the kind (the target) if it
+// isn't this one, else your first other; Change picks another (not this one: `exclude`), for this
+// dialog only; with no other list, a new one is named first. The last answer goes back to the list.
+const listKindsOf = (of) => (of === 'stories' ? STORY_LISTS : LIST_KINDS[of]);
+async function openMoveItems(of, fromId) {
+  const kind = listKindsOf(of);
+  const from = kind.lists().find((l) => l.id === fromId);
+  if (!from) return;
+  const queue = of === 'stories' ? savedStories(from).map((story) => ({ story }))
+    : (resolveScope(listScopeId(fromId))?.cards || []).map((card) => ({ card, deck: resolveScope(listScopeId(fromId)).deckOf.get(cardKey(card)) }));
+  if (!queue.length) return;
+  const others = kind.lists().filter((l) => l.id !== fromId);
+  const target = of === 'stories' ? storyTarget() : targetList(of);
+  let to = target && target.id !== fromId ? target.id : others[0]?.id;
+  if (!to) { // nowhere to move to yet: a new list, named first
+    const name = await askListName(`Move ${of} to a new list`, '', 'Make list');
+    if (!name) return;
+    to = kind.create(name, { target: false }).id;
+  }
+  openSort(of, queue, { move: { kind, from: fromId, to } });
+}
+
 // What One by one says for an item: a card's Thai, or a story's first line.
 const sortSay = (p) => (p.story ? sentenceText(p.story.passage[0].th) : cardSay(p.card));
 
-function openSort(of, queue, { listId = null } = {}) {
+function openSort(of, queue, { listId = null, move = null } = {}) {
   if (!queue.length) return;
-  phraseSort = { of, queue, listId, i: 0, added: 0, history: [], lastFocus: document.activeElement };
+  phraseSort = { of, queue, listId, move, i: 0, added: 0, history: [], lastFocus: document.activeElement };
   els.psChange.hidden = !!listId; // into that list, and no other
+  els.psYes.textContent = move ? 'Move' : 'Add';
+  els.psYes.title = move ? 'Move (→)' : 'Add (→)';
   renderPhraseSortTitle();
   const rows = PHONE_LAYOUT.matches ? [...document.querySelectorAll('.section-bar, .vocab-top')].map((e) => e.getBoundingClientRect()).filter((r) => r.height) : [];
   els.phraseSort.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
@@ -9433,7 +9465,7 @@ function openSort(of, queue, { listId = null } = {}) {
 function closePhraseSort() {
   if (!phraseSort) return;
   const { lastFocus } = phraseSort;
-  const intoList = phraseSort.listId;
+  const intoList = phraseSort.listId || phraseSort.move?.from;
   phraseSort = null;
   els.phraseSort.hidden = true;
   setModalOpen(!!document.querySelector('.modal:not([hidden])'));
@@ -9452,7 +9484,8 @@ function renderPhraseSort({ say = true } = {}) {
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   els.phraseSortCount.textContent = p ? `${fmtCount(ps.i + 1)} of ${fmtCount(ps.queue.length)}` : '';
   const last = ps.history[ps.history.length - 1];
-  els.psLastText.textContent = last ? `${last.p.story ? `“${last.p.story.name}”` : last.p.card.thai} ${last.yes ? '✓ Added' : '✗ Not added'}` : '';
+  const [yesText, noText] = ps.move ? ['✓ Moved', '✗ Kept'] : ['✓ Added', '✗ Not added'];
+  els.psLastText.textContent = last ? `${last.p.story ? `“${last.p.story.name}”` : last.p.card.thai} ${last.yes ? yesText : noText}` : '';
   els.psUndo.classList.toggle('off', !last);
   els.psAnswers.classList.toggle('off', !p);
   els.psCard.style.transform = '';
@@ -9502,6 +9535,28 @@ function answerPhraseSort(yes) {
   const p = ps?.queue[ps.i];
   if (!p) return;
   const key = p.story ? p.story.id : cardKey(p.card);
+  if (ps.move) { // Move items: out of this list, into the other, now
+    const { kind, from, to } = ps.move;
+    const fromList = kind.lists().find((l) => l.id === from);
+    const toList = kind.lists().find((l) => l.id === to);
+    ps.history.push({ p, yes, to, at: fromList?.[kind.key].indexOf(key) ?? -1, wasInTo: !!toList?.[kind.key].includes(key) });
+    if (yes) {
+      kind.change(from, (l) => { l[kind.key] = l[kind.key].filter((k) => k !== key); });
+      kind.change(to, (l) => { if (!l[kind.key].includes(key)) l[kind.key].push(key); });
+      ps.added += 1;
+    }
+    ps.i += 1;
+    if (ps.i >= ps.queue.length) { // the last one: back to the list (as Add words)
+      const { added } = ps;
+      const into = kind.lists().find((l) => l.id === to)?.name || '';
+      closePhraseSort();
+      const what = `${fmtCount(added)} ${added === 1 ? kind.one : kind.many}`;
+      toast(added ? `✓ ${what} moved to '${into}'` : `Nothing moved`, added ? { tone: 'good' } : {});
+      return;
+    }
+    renderPhraseSort();
+    return;
+  }
   if (ps.listId) { // a list's Add words: into it, no choices kept
     ps.history.push({ p, yes, wasIn: false, listId: ps.listId });
     if (yes) {
@@ -9544,6 +9599,20 @@ function undoPhraseSort() {
   const last = ps?.history.pop();
   if (!last) return;
   const key = last.p.story ? last.p.story.id : cardKey(last.p.card);
+  if (ps.move) { // back where it was in this list; out of the other unless it was there before
+    if (last.yes) {
+      const { kind, from } = ps.move;
+      if (!last.wasInTo) kind.change(last.to, (l) => { l[kind.key] = l[kind.key].filter((k) => k !== key); });
+      kind.change(from, (l) => {
+        if (l[kind.key].includes(key)) return;
+        l[kind.key].splice(last.at < 0 ? l[kind.key].length : Math.min(last.at, l[kind.key].length), 0, key);
+      });
+      ps.added -= 1;
+    }
+    ps.i -= 1;
+    renderPhraseSort();
+    return;
+  }
   if (ps.listId) {
     if (last.yes && last.p.story) changeStoryList(last.listId, (l) => { l.stories = l.stories.filter((k) => k !== key); });
     else if (last.yes) changeList(last.listId, (l) => { l.words = l.words.filter((k) => k !== key); });
@@ -9620,10 +9689,18 @@ function bindPhraseSortSwipe() {
   els.psNo.addEventListener('click', () => answerPhraseSort(false));
   els.psYes.addEventListener('click', () => answerPhraseSort(true));
   els.psUndo.addEventListener('click', undoPhraseSort);
-  els.psChange.addEventListener('click', () => openListChooser({
-    title: `Add ${phraseSort.of} to`, kind: LIST_KINDS[phraseSort.of], current: targetList(phraseSort.of)?.id,
-    pick: (id) => { setTarget(id); renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); },
-  }));
+  els.psChange.addEventListener('click', () => {
+    const { move, of } = phraseSort;
+    if (move) { // Move items: where the rest go, for this dialog only (no list of its own here)
+      openListChooser({ title: `Move ${of} to`, kind: move.kind, current: move.to, exclude: move.from,
+        pick: (id) => { move.to = id; renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); } });
+      return;
+    }
+    openListChooser({
+      title: `Add ${of} to`, kind: LIST_KINDS[of], current: targetList(of)?.id,
+      pick: (id) => { setTarget(id); renderPhraseSortTitle(); els.psChange.focus({ preventScroll: true }); },
+    });
+  });
   els.phraseSort.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closePhraseSort));
 }
 
@@ -9632,6 +9709,11 @@ function bindPhraseSortSwipe() {
 // list is your phrase list (targetList): Change makes another that (setTarget), so Add all and a
 // bookmark go there too. With none yet, My phrases, made by the first Add.
 function renderPhraseSortTitle() {
+  const move = phraseSort?.move;
+  if (move) {
+    els.phraseSortTitle.textContent = `Move to '${move.kind.lists().find((l) => l.id === move.to)?.name || ''}'?`;
+    return;
+  }
   const into = phraseSort?.listId && (phraseSort.of === 'stories' ? storyListById : listById)(phraseSort.listId);
   els.phraseSortTitle.textContent = `Add to '${into ? into.name : targetName(phraseSort?.of || 'phrases')}'?`;
 }
@@ -10219,6 +10301,10 @@ function bindEvents() {
   // A word or phrase list's (its id after "list:"); a story list's are on Read (storyListActions).
   els.listRename.addEventListener('click', () => renameList(currentScope()?.id.slice(5)));
   els.listDelete.addEventListener('click', () => deleteList(currentScope()?.id.slice(5)));
+  els.listMove.addEventListener('click', () => {
+    const scope = currentScope();
+    if (scope?.kind === 'list') openMoveItems(scopeKind(scope), scope.id.slice(5));
+  });
   els.deckPicker.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeDeckPicker();
   });
