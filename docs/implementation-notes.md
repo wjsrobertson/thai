@@ -2850,6 +2850,10 @@ buttons when browsing a topic".
   Change as Vocabulary's (a pick makes it your story list); the last answer back to the topic with a
   toast.
 - **Read all:** every story here in turn, in the dialog, as a story list's; ■ Stop while it runs.
+- **Read all's icon** (the user spotted it, the same evening): a list's and a Stories topic's Read all
+  had a speaker with one wave, drawn apart (`ICON_READ`, gone); now the speaker the bar's Read all has
+  (`speakerIcon`, two waves, its mute ✕ when muted) via `readAllIcon`. Measured: the same four paths,
+  18 px, stroke 1.8, in Stories' and Words' buttons.
 - **Shared with words:** confirmDialog's Change and One by one's Change now take story lists too
   (`listKindsOf`, `ofTarget`, `ofTargetName`, `ofSetTarget`, `ofCount`: "18 stories", not
   "18 storys").

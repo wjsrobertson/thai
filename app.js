@@ -1898,7 +1898,6 @@ const ICON_RENAME = 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4';
 // Move items' and Remove items' icons (2026-11-27, the user's call), as in index.html's #list-move and
 // #list-remove: an arrow to a line, and a minus in a circle.
 const ICON_MOVE = 'M3 12h13M11 7l5 5-5 5M20 5v14';
-const ICON_READ = 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7';
 const ICON_REMOVE = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8';
 const ICON_DELETE = 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6';
 function listRowTools(row, name, rename, del) {
@@ -6214,6 +6213,14 @@ function spellIcon() {
 // place when muted (applyMute). index.html has the same SVG inline.
 const SPEAKER_PATHS = ['M11 5 6 9H3v6h3l5 4z', 'M15.5 8.5a5 5 0 0 1 0 7', 'M18.5 5.5a9.5 9.5 0 0 1 0 13', 'M16 9l6 6M22 9l-6 6'];
 
+// Read all's icon in a list's or a Stories topic's buttons: the speaker the bar's Read all has (two
+// waves; it had one, drawn apart, till the user spotted it, 2026-11-27), sized as its neighbours'.
+function readAllIcon() {
+  const svg = speakerIcon();
+  svg.classList.add('list-action-icon');
+  return svg;
+}
+
 function speakerIcon() {
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('class', 'speaker-icon');
@@ -6749,7 +6756,7 @@ function storyTopicActions(stories) {
         openSort('stories', stories.filter((d) => !now.has(d.id)).map((story) => ({ story })), { intoTarget: true });
       }));
   }
-  const all = button('Read all', lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_READ), 'Read every story here, one after another', () => {
+  const all = button('Read all', readAllIcon(), 'Read every story here, one after another', () => {
     if (storyRunOn() && state.storyReading.all) stopReadStories();
     else readStories(all, { ids, idx: 0, line: -1, all: true });
   }, 'story-read-all');
@@ -6810,7 +6817,7 @@ function paintStoryReadAll(root = document) {
   root.querySelectorAll('.story-read-all').forEach((b) => {
     b.classList.toggle('playing', on);
     if (on) b.textContent = '■ Stop';
-    else b.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_READ), 'Read all');
+    else b.replaceChildren(readAllIcon(), 'Read all');
   });
 }
 
@@ -6823,7 +6830,7 @@ function storyListActions(scope, stories) {
   const box = popEl('div', 'list-actions');
   const button = (label, icon, fn, cls = '') => {
     const b = popEl('button', `ghost ${cls}`.trim());
-    b.append(lineIcon('page-icon list-action-icon', '0 0 24 24', icon), label);
+    b.append(typeof icon === 'string' ? lineIcon('page-icon list-action-icon', '0 0 24 24', icon) : icon, label);
     b.type = 'button';
     b.addEventListener('click', fn);
     return b;
@@ -6833,7 +6840,7 @@ function storyListActions(scope, stories) {
     openDeckPicker({ addTo: id, stories: true });
   }, 'story-add'));
   if (stories.length) {
-    const all = button('Read all', ICON_READ, () => {
+    const all = button('Read all', readAllIcon(), () => {
       if (storyRunOn() && state.storyReading.all) stopReadStories();
       else readStories(all, { ids: stories.map((d) => d.id), idx: 0, line: -1, all: true });
     }, 'story-read-all');
@@ -8131,7 +8138,7 @@ function paintReadAloud(on) {
   for (const btn of [els.readAloud, els.listReadAll]) {
     btn.classList.toggle('playing', on);
     if (on) btn.textContent = '■ Stop';
-    else btn.replaceChildren(btn === els.listReadAll ? lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_READ) : speakerIcon(), 'Read all');
+    else btn.replaceChildren(btn === els.listReadAll ? readAllIcon() : speakerIcon(), 'Read all');
   }
 }
 
