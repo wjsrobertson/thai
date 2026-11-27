@@ -2833,6 +2833,12 @@ into icons and displayed inline in the list under 'My Words/Stories/Phrases' tab
   The bin's right edge is ＋ New list's (8 in from the tree's). They open the same dialogs as before
   (`renameList`, `deleteList`, `renameStoryList`, `deleteStoryList`) over the picker, which stays open
   and is drawn again. Not in Add words' or Vocabulary's pickers, which are for picking.
+- **No count under the name** (the same evening, from the user's screenshot: the icons "look a bit
+  cramped and misshapen when a selected row is next to it… remove the '11 words' row. let's see what
+  that looks like first"): a list's row on those tabs is its name alone (description '', and
+  `.deck-row-desc:empty` hidden), 44 tall as its icons (`padding-block: 0`), 8 to the pencil, 4
+  between the icons, 8 between rows. The selected row's accent box is now the icons' height.
+  Measured at 390 × 664 and 1280 × 800: the row, pencil and bin all 44 tall at the same top.
 - **The list's page:** Rename and Delete are gone (`#list-rename`, `#list-delete` and their wiring;
   a story list's from `storyListActions`); Move items stays under the name, and the row's hidden on
   an empty list. The "Delete" relabel above lasted an hour.

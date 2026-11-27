@@ -1852,7 +1852,8 @@ function renderListsPane(kind) {
   const rows = lists.map((l) => {
     const id = listScopeId(l.id);
     const scope = resolveScope(id);
-    const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
+    // No "11 words" under the name (2026-11-27, the user's call, with the row's Rename and Delete icons).
+    const row = pickerDeckRow({ id, name: l.name, description: '', cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
     return listRowTools(row, l.name, () => renameList(l.id), () => deleteList(l.id));
   });
@@ -1917,7 +1918,8 @@ function renderStoryListsPane() {
   const rows = lists.map((l) => {
     const id = storiesScopeId(l.id);
     const scope = resolveScope(id);
-    const row = pickerDeckRow({ id, name: l.name, description: scope.description, cards: scope.cards }, { progress: false });
+    // No "11 words" under the name (2026-11-27, the user's call, with the row's Rename and Delete icons).
+    const row = pickerDeckRow({ id, name: l.name, description: '', cards: scope.cards }, { progress: false });
     row.classList.add('list-row');
     return listRowTools(row, l.name, () => renameStoryList(l.id), () => deleteStoryList(l.id));
   });
