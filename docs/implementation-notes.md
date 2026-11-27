@@ -2823,6 +2823,15 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Grey bookmarks (2026-11-27)
+
+The user's call: "The luminous green bookmarks are rather gharish. Can you change them to just be
+plain filled in grey when they are selected?" A word's or phrase's bookmark in its list
+(`.row-review.added`: the List page, word search hits, the word and phrase dialogs) and a story's
+when saved (`.story-save.saved`) are filled in `--muted`, the colour of the outline, not `--good`.
+The dot for "in another of your lists" (`.elsewhere::after`) stays green. Checked headless at 390 ×
+664 on a phrase list's page and a story list's: the bookmarks filled grey; no script errors.
+
 ## Remove items (2026-11-27)
 
 The user's request: "on the actual List page - can we add a [Remove items] button and wizard? buttons
