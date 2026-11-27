@@ -2823,6 +2823,29 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## A list's name first, its buttons in one grid (2026-11-27)
+
+The user's screenshot: "the buttons are messy and the title should come first" (a word list's Add
+words and Read all in the bar, the name, then Move items and Remove items, each its own width).
+- **Now:** on one of your lists (words, phrases or stories) the name comes first, then four buttons
+  the same width, each with its icon: **Add words** (a plus), **Read all** (a speaker), **Move items**,
+  **Remove items**; two to a row on a phone (179 wide at 390), one row on a wide screen (154 each,
+  the grid at most 640). An empty list has Add alone (across on a phone, 160 on a wide screen).
+- **Word and phrase lists:** `#list-add` and `#list-read-all` join `#list-actions`; the bar's
+  `#wordlist-add-all` and `#read-aloud` are hidden on a list, and their empty row with them
+  (`.wordlist-bar-right:not(:has(> button:not([hidden])))`), so the name sits where the bar's row
+  was. They stay a topic's ("Add all to …", Read all). Read all paints both (`paintReadAloud`). A list
+  that isn't your list of the kind used to show "Add all to <that list>" in the bar; it now has Add
+  words into itself, as your list of the kind did (Move items covers putting its words elsewhere).
+- **Story lists:** the same (`storyListHead`: the name, then `storyListActions`'s grid); the row of
+  Add stories and Read all (`storyListBar`, `storyAddButton`, `.story-list-bar`) is gone.
+- `.list-actions .ghost` sets a display, so `[hidden]` is restated after it.
+- Measured headless (scratch `grid_head_probe.py`) at 390 × 664: a word list and a story list alike,
+  the name at 76, the buttons at 115 and 167, the table or first story at 224 and 223; a topic's bar
+  buttons unchanged; Read all → ■ Stop and back, for words and stories; Add words → its picker; the
+  empty lists Add alone. At 1280 × 800 the same order (a word list's name is lower, under the List |
+  Cards switch); no sideways scroll, no script errors.
+
 ## Grey bookmarks (2026-11-27)
 
 The user's call: "The luminous green bookmarks are rather gharish. Can you change them to just be

@@ -2044,8 +2044,15 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .adding-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .adding-bar .ghost { flex: none; min-height: 44px; padding: 8px 16px; }
 /* A list's Rename and Delete, under its name. */
-.list-actions { display: flex; gap: 8px; margin: 0 0 12px; }
-.list-actions .ghost { min-height: 44px; padding: 8px 14px; }
+/* A list's buttons under its name (2026-11-27, the user's call: "the buttons are messy and the
+   title should come first"): Add, Read all, Move items, Remove items, the same width, in one row on a
+   wide screen and two to a row on a phone (mobile.css); an empty list's Add alone. */
+.list-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; max-width: 640px; margin: 0 0 12px; }
+.list-actions.only-add { grid-template-columns: minmax(0, 160px); }
+.list-actions .ghost { display: inline-flex; align-items: center; justify-content: center; min-width: 0; min-height: 44px; padding: 8px 10px; white-space: nowrap; font-size: 16px; }
+.list-actions[hidden], .list-actions > .ghost[hidden] { display: none; } /* after the display above */
+/* On a list the bar's Add all and Read all are hidden (they're under its name): no empty row of them. */
+.wordlist-bar-right:not(:has(> button:not([hidden]))) { display: none; }
 /* Move items' and Remove items' icons, left of the words as Read all's speaker (2026-11-27). */
 .list-actions .list-action-icon { width: 18px; height: 18px; margin-right: 0.4em; vertical-align: -0.2em; }
 .ghost.danger { color: var(--again); }
@@ -2124,11 +2131,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Taken out of the list shown: faded until it's next drawn, its bookmark as it is (storyListsChanged). */
 .reading-entry.unsaved .reading-item-main { opacity: .4; }
 /* A story list's Rename and Delete, under its stories on Read (storyListActions). */
-/* A story list's Add stories, across the top of its stories (2026-11-27), as tall as a word list's. */
-/* With Read all beside it (2026-11-27), as a word list's Add words and Read all: Add takes the room. */
-.story-list-bar { display: flex; gap: 8px; margin: 0 0 12px; }
-.story-add { flex: 1 1 auto; min-width: 0; min-height: 44px; padding: 8px 14px; font-size: 16px; }
-.story-list-bar .story-read-all { flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 0; /* the icon's own margin, as Words' */ min-height: 44px; margin-left: 0; padding: 8px 14px; font-size: 16px; }
 /* Show more under the stories (pagedStories). */
 .reading-more { display: block; width: 100%; min-height: 44px; margin: 4px 0 12px; font-size: 16px; }
 .wordlist-more { margin-top: 12px; } /* the List page's (renderWordlist), under the table */

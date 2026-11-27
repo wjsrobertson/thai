@@ -137,7 +137,10 @@ const els = {
   addingDone: document.getElementById('adding-done'),
   listActions: document.getElementById('list-actions'), // a list's Rename and Delete, on the List page
   listMove: document.getElementById('list-move'),
+  listAdd: document.getElementById('list-add'),
+  listReadAll: document.getElementById('list-read-all'),
   listRemove: document.getElementById('list-remove'),
+  readAloud: document.getElementById('read-aloud'),
   confirmInput: document.getElementById('confirm-input'),
   confirmChange: document.getElementById('confirm-change'), // an add's Change (confirmDialog's `change`)
   wordlistAddAll: document.getElementById('wordlist-add-all'),
@@ -1894,6 +1897,8 @@ const ICON_RENAME = 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4';
 // Move items' and Remove items' icons (2026-11-27, the user's call), as in index.html's #list-move and
 // #list-remove: an arrow to a line, and a minus in a circle.
 const ICON_MOVE = 'M3 12h13M11 7l5 5-5 5M20 5v14';
+const ICON_ADD = 'M12 5v14M5 12h14';
+const ICON_READ = 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7';
 const ICON_REMOVE = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8';
 const ICON_DELETE = 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6';
 function listRowTools(row, name, rename, del) {
@@ -4674,8 +4679,13 @@ function renderWordlist() {
     els.addingName.textContent = adding.name;
     document.getElementById('adding-noun').textContent = kindNoun(listKind(adding)); // "Adding phrases to" (2026-11-22)
   }
-  // Move items, with something to move (Rename and Delete went into the picker's rows, 2026-11-27).
-  els.listActions.hidden = !isList || !deck.cards.length;
+  // One of your lists: its buttons under its name (2026-11-27): Add words always; Read all, Move items
+  // and Remove items with something in it. The bar's Add all and Read all are a topic's.
+  els.listActions.hidden = !isList;
+  const has = isList && deck.cards.length > 0;
+  for (const b of [els.listReadAll, els.listMove, els.listRemove]) b.hidden = !has;
+  els.listActions.classList.toggle('only-add', !has);
+  if (isList) els.listAdd.querySelector('.list-add-label').textContent = `Add ${kindNoun(scopeKind(deck))}`;
 
   // In list order (the headings sorted the table until 2026-10-12), a search's matches, a page at a time.
   wordsFor(deck.id);
@@ -4736,7 +4746,8 @@ function renderWordlist() {
   const name = (text) => Object.assign(document.createElement('span'), { className: 'add-all-name', textContent: text });
   const allIn = !own && state.listCards.length > 0 && state.listCards.every((c) => words.has(c.key));
   els.wordlistAddAll.classList.toggle('all-in', allIn);
-  els.wordlistAddAll.hidden = !own && state.listCards.length === 0; // an empty story list: nothing to add
+  els.wordlistAddAll.hidden = isList || state.listCards.length === 0; // a list's is under its name (els.listAdd)
+  els.readAloud.hidden = isList;
   if (own) {
     els.wordlistAddAll.replaceChildren(`＋ Add ${kindNoun(kind)}`);
   } else if (allIn) {
@@ -6703,32 +6714,12 @@ function renderReadingList() {
 // A story list's top, laid out as a word list's List page (2026-11-27, the user's call: "the same on
 // Stories as Words and Phrases"): Add stories and Read all, the list's name, then Rename and Delete
 // list (which till then sat under its stories).
+// The name first, then its buttons in one grid, as a word list's (the user's call, the same evening:
+// "the buttons are messy and the title should come first").
 function storyListHead(scope, stories) {
   const name = popEl('div', 'wordlist-deck-name');
   name.append(popEl('span', 'wordlist-title', scope.name));
-  return [storyListBar(scope, stories), name, storyListActions(scope)].filter(Boolean);
-}
-
-// A story list's row over its stories: Add stories, and Read all (2026-11-27, the user's call: "a
-// 'Read all' button as well to match the Words and Phrases pages"; Stories' Read all, every choice's,
-// went on 2026-11-22). Read all reads the list's stories in turn, in the dialog, as Read does one
-// (readStories with every id); pressed again, ■ Stop. Not on an empty list.
-function storyListBar(scope, stories) {
-  const bar = popEl('div', 'story-list-bar');
-  bar.append(storyAddButton(scope));
-  if (stories.length) {
-    const all = popEl('button', 'ghost read-aloud story-read-all');
-    all.type = 'button';
-    all.title = 'Read every story in the list, one after another';
-    all.addEventListener('click', () => {
-      const run = state.storyReading;
-      if (storyRunOn() && run.all) stopReadStories();
-      else readStories(all, { ids: stories.map((d) => d.id), idx: 0, line: -1, all: true });
-    });
-    bar.append(all);
-  }
-  paintStoryReadAll(bar);
-  return bar;
+  return [name, storyListActions(scope, stories)];
 }
 
 function paintStoryReadAll(root = document) {
@@ -6736,36 +6727,37 @@ function paintStoryReadAll(root = document) {
   root.querySelectorAll('.story-read-all').forEach((b) => {
     b.classList.toggle('playing', on);
     if (on) b.textContent = '■ Stop';
-    else b.replaceChildren(speakerIcon(), 'Read all');
+    else b.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_READ), 'Read all');
   });
 }
 
-// A story list's ＋ Add stories, over its stories (2026-11-27, the user's call: as a word list's Add
-// words): the picker, Stories by topic or another story list, then One by one (sortStoriesIntoList).
-function storyAddButton(scope) {
-  const b = popEl('button', 'ghost story-add', '＋ Add stories');
-  b.type = 'button';
-  b.addEventListener('click', () => {
-    const id = scope.id.slice(8);
-    setStoryTarget(id);
-    openDeckPicker({ addTo: id, stories: true });
-  });
-  return b;
-}
 
-// A story list's Move items, under its name (storyListHead), as a word list's (.list-actions); none on
-// an empty list. Its Rename and Delete went into the picker's My Stories rows (listRowTools, 2026-11-27).
-function storyListActions(scope) {
+// A story list's buttons under its name (storyListHead), as a word list's (.list-actions): Add stories,
+// then with stories in it Read all, Move items and Remove items. Its Rename and Delete went into the
+// picker's My Stories rows (listRowTools, 2026-11-27).
+function storyListActions(scope, stories) {
   const id = scope.id.slice(8);
-  if (!savedStories(storyListById(id) || { stories: [] }).length) return null;
   const box = popEl('div', 'list-actions');
-  for (const [label, fn, icon] of [['Move items', openMoveItems, ICON_MOVE], ['Remove items', openRemoveItems, ICON_REMOVE]]) {
-    const b = popEl('button', 'ghost');
+  const button = (label, icon, fn, cls = '') => {
+    const b = popEl('button', `ghost ${cls}`.trim());
     b.append(lineIcon('page-icon list-action-icon', '0 0 24 24', icon), label);
     b.type = 'button';
-    b.addEventListener('click', () => fn('stories', id));
-    box.append(b);
-  }
+    b.addEventListener('click', fn);
+    return b;
+  };
+  box.append(button('Add stories', ICON_ADD, () => {
+    setStoryTarget(id);
+    openDeckPicker({ addTo: id, stories: true });
+  }, 'story-add'));
+  if (stories.length) {
+    const all = button('Read all', ICON_READ, () => {
+      if (storyRunOn() && state.storyReading.all) stopReadStories();
+      else readStories(all, { ids: stories.map((d) => d.id), idx: 0, line: -1, all: true });
+    }, 'story-read-all');
+    all.title = 'Read every story in the list, one after another';
+    box.append(all, button('Move items', ICON_MOVE, () => openMoveItems('stories', id)), button('Remove items', ICON_REMOVE, () => openRemoveItems('stories', id)));
+  } else box.classList.add('only-add');
+  paintStoryReadAll(box);
   return box;
 }
 
@@ -6996,7 +6988,7 @@ async function readStories(btn, from = null) {
   const ids = from?.ids ?? (state.readingId ? [state.readingId] : []);
   if (!ids.length) return;
   const run = state.storyReading;
-  run.all = from ? (from.all ?? run.all) : false; // a story list's Read all (storyListBar)
+  run.all = from ? (from.all ?? run.all) : false; // a story list's Read all (storyListActions)
   run.paused = null;
   run.active = true;
   run.btn = btn;
@@ -8007,11 +7999,7 @@ async function startReadAloud() {
 
   state.reading.active = true;
   const token = ++state.reading.token; // invalidates earlier runs
-  const btn = document.getElementById('read-aloud');
-  if (btn) {
-    btn.classList.add('playing');
-    btn.innerHTML = '■ Stop';
-  }
+  paintReadAloud(true);
 
   try {
     for (const card of rows) {
@@ -8051,12 +8039,17 @@ function stopReadAloud() {
   state.reading.token++; // any awaiting iteration will bail
   state.reading.currentKey = null;
   stopAudio();
-  const btn = document.getElementById('read-aloud');
-  if (btn) {
-    btn.classList.remove('playing');
-    btn.replaceChildren(speakerIcon(), 'Read all');
-  }
+  paintReadAloud(false);
   renderWordlist();
+}
+
+// The bar's Read all (a topic's) and a list's (under its name, 2026-11-27): ■ Stop while it reads.
+function paintReadAloud(on) {
+  for (const btn of [els.readAloud, els.listReadAll]) {
+    btn.classList.toggle('playing', on);
+    if (on) btn.textContent = '■ Stop';
+    else btn.replaceChildren(btn === els.listReadAll ? lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_READ) : speakerIcon(), 'Read all');
+  }
 }
 
 function toggleReadAloud() {
@@ -10393,6 +10386,11 @@ function bindEvents() {
     const scope = currentScope();
     if (scope?.kind === 'list') openMoveItems(scopeKind(scope), scope.id.slice(5));
   });
+  els.listAdd.addEventListener('click', () => {
+    const scope = currentScope();
+    if (scope?.kind === 'list') openAddWords(scope.id.slice(5));
+  });
+  els.listReadAll.addEventListener('click', toggleReadAloud);
   els.listRemove.addEventListener('click', () => {
     const scope = currentScope();
     if (scope?.kind === 'list') openRemoveItems(scopeKind(scope), scope.id.slice(5));
