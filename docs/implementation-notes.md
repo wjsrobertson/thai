@@ -2797,6 +2797,18 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   at once (`changeStoryList`), Undo takes it out; no Change. The last answer closes it, with a toast
   ("✓ 9 stories added to 'My stories'"), back on the list (`renderReadingList`). None to go
   through: a toast ("All of … is in … already", or "No stories for … yet").
+- **Read all beside it** (the same day, the user's call: "a 'Read all' button as well to match the
+  Words and Phrases pages"; Stories' Read all, for any choice, went on 2026-11-22): on a story list
+  with stories, Add stories and **Read all** share the row (`storyListBar`), on a phone as a word
+  list's do (253 and 105 wide, 44 tall, 16 px: measured against Words' at 390). Read all reads the
+  list's stories in turn in the story dialog, as Read reads one (`readStories` with every id;
+  `storyReading.all` marks such a run, kept over a pause); while it runs it's **■ Stop**
+  (`paintStoryReadAll`, from `markStoryButtons`), and the dialog's Read pauses and carries on as
+  before; closing the dialog ends it. Settings → Reading's Loop goes back to the list's first. Not on
+  an empty list. Checked headless (scratch `readall_probe.py`) at 390 × 664 and 1280 × 800: the
+  row's sizes; Read all → the first story open, Read ❚❚ Pause, the button ■ Stop; closing → Read all;
+  Stop → Read all; an empty list with Add stories alone (366 wide); no script errors. (Headless
+  plays no sound, so going on to the next story wasn't watched: that's the old Read all's loop.)
 - Checked headless (scratch `addstories_probe.py`) at 390 × 664 and 1280 × 800: an empty My stories
   (the button 366 × 44 at 390); the picker's title and line, My Stories listing only Isan; Greetings
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;

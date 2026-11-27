@@ -6659,10 +6659,41 @@ function renderReadingList() {
       });
       empty.append(wider);
     }
-    els.readingList.replaceChildren(...(mine ? [storyAddButton(scope)] : []), empty, ...(mine ? [storyListActions(scope)] : []));
+    els.readingList.replaceChildren(...(mine ? [storyListBar(scope, [])] : []), empty, ...(mine ? [storyListActions(scope)] : []));
     return;
   }
-  els.readingList.replaceChildren(...(mine ? [storyAddButton(scope)] : []), ...pagedStories(stories), ...(mine ? [storyListActions(scope)] : []));
+  els.readingList.replaceChildren(...(mine ? [storyListBar(scope, stories)] : []), ...pagedStories(stories), ...(mine ? [storyListActions(scope)] : []));
+}
+
+// A story list's row over its stories: Add stories, and Read all (2026-11-27, the user's call: "a
+// 'Read all' button as well to match the Words and Phrases pages"; Stories' Read all, every choice's,
+// went on 2026-11-22). Read all reads the list's stories in turn, in the dialog, as Read does one
+// (readStories with every id); pressed again, ■ Stop. Not on an empty list.
+function storyListBar(scope, stories) {
+  const bar = popEl('div', 'story-list-bar');
+  bar.append(storyAddButton(scope));
+  if (stories.length) {
+    const all = popEl('button', 'ghost read-aloud story-read-all');
+    all.type = 'button';
+    all.title = 'Read every story in the list, one after another';
+    all.addEventListener('click', () => {
+      const run = state.storyReading;
+      if (storyRunOn() && run.all) stopReadStories();
+      else readStories(all, { ids: stories.map((d) => d.id), idx: 0, line: -1, all: true });
+    });
+    bar.append(all);
+  }
+  paintStoryReadAll(bar);
+  return bar;
+}
+
+function paintStoryReadAll(root = document) {
+  const on = storyRunOn() && state.storyReading.all;
+  root.querySelectorAll('.story-read-all').forEach((b) => {
+    b.classList.toggle('playing', on);
+    if (on) b.textContent = '■ Stop';
+    else b.replaceChildren(speakerIcon(), 'Read all');
+  });
 }
 
 // A story list's ＋ Add stories, over its stories (2026-11-27, the user's call: as a word list's Add
@@ -6919,6 +6950,7 @@ async function readStories(btn, from = null) {
   const ids = from?.ids ?? (state.readingId ? [state.readingId] : []);
   if (!ids.length) return;
   const run = state.storyReading;
+  run.all = from ? (from.all ?? run.all) : false; // a story list's Read all (storyListBar)
   run.paused = null;
   run.active = true;
   run.btn = btn;
@@ -6980,7 +7012,7 @@ async function readStories(btn, from = null) {
 function pauseReadStories() {
   const run = state.storyReading;
   if (!run.active) return;
-  run.paused = { btn: run.btn, ...run.at };
+  run.paused = { btn: run.btn, all: run.all, ...run.at };
   run.active = false;
   run.token++; // the run waiting on the sentence bails out
   stopAudio();
@@ -6997,6 +7029,7 @@ function stopReadStories() {
   els.wordModalEn.classList.remove('now-playing');
   run.btn = null;
   run.at = null;
+  run.all = false;
   markStoryButtons();
 }
 
@@ -7011,6 +7044,7 @@ function markStoryButtons() {
   else if (paused) b.textContent = '▶ Paused';
   else b.replaceChildren(speakerIcon(), 'Read');
   b.title = paused ? 'Paused: press to carry on' : playing ? 'Pause' : 'Play the story, line by line';
+  paintStoryReadAll();
 }
 
 // Transliteration and English under each line, and spaces between the Thai words: off to start (the

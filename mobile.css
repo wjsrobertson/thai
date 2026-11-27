@@ -111,6 +111,8 @@ html.kb .tabs { display: none; }
    it stays on one line: 2026-10-08. At 320px the text is a little smaller as well. */
 .wordlist-bar-right > #wordlist-add-all { flex: 1 1 auto; white-space: nowrap; }
 .wordlist-bar-right > #read-aloud { flex: 0 0 auto; }
+/* A story list's Read all as wide as a word list's (2026-11-27): its own width, not .read-aloud's 130. */
+.story-list-bar .story-read-all { min-width: 0; padding: 8px 10px; }
 @media (max-width: 340px) { .wordlist-bar-right > button { font-size: 13px; padding: 8px 8px; } }
 
 /* ---------- the section's top row, pinned ---------- */
