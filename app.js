@@ -1898,8 +1898,6 @@ const ICON_RENAME = 'M4 20h4L19 9l-4-4L4 16zM14 6l4 4';
 // Move items' and Remove items' icons (2026-11-27, the user's call), as in index.html's #list-move and
 // #list-remove: an arrow to a line, and a minus in a circle.
 const ICON_MOVE = 'M3 12h13M11 7l5 5-5 5M20 5v14';
-const ICON_ADD = 'M12 5v14M5 12h14';
-const ICON_SELECT = 'M7 4h10a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM9 12l2 2 4-4'; // a card ticked
 const ICON_READ = 'M11 5 6 9H3v6h3l5 4zM15.5 8.5a5 5 0 0 1 0 7';
 const ICON_REMOVE = 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8';
 const ICON_DELETE = 'M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6';
@@ -4766,7 +4764,7 @@ function renderWordlist() {
   // A topic's Select into (2026-11-27): while some of its words aren't in your list.
   els.wordlistSelect.hidden = isList || allIn || state.listCards.length === 0;
   if (!els.wordlistSelect.hidden) {
-    els.wordlistSelect.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', ICON_SELECT), 'Select into list');
+    els.wordlistSelect.replaceChildren(lineIcon('page-icon list-action-icon', '0 0 24 24', PAGE_ICONS.mylist), 'Select into list'); // the bookmark, as Add all's (2026-11-27)
     els.wordlistSelect.title = `Go through them one by one, adding the ones you want to '${targetName(kind)}'`;
   }
 }
@@ -6754,7 +6752,7 @@ function storyListActions(scope, stories) {
     b.addEventListener('click', fn);
     return b;
   };
-  box.append(button('Add stories', ICON_ADD, () => {
+  box.append(button('Add stories', PAGE_ICONS.mylist, () => { // the bookmark (2026-11-27, the user's call)
     setStoryTarget(id);
     openDeckPicker({ addTo: id, stories: true });
   }, 'story-add'));
@@ -9226,13 +9224,14 @@ function renderVocabPhrases() {
   const cards = mergeProgressIntoCards(list.map((p) => p.card));
   const unsorted = list.filter((p) => !(cardKey(p.card) in choices)); // not those shown as sorted
   els.vocabPhraseAdd.hidden = !unsorted.length;
-  els.vocabPhraseAdd.replaceChildren(reviewIcon(), `Add all to ${targetName('phrases')}`);
+  els.vocabPhraseAdd.replaceChildren(reviewIcon(), 'Add all to list'); // the list's name in the tooltip (2026-11-27, as the words')
+  els.vocabPhraseAdd.title = `Add them all to ${targetName('phrases')}`;
   els.vocabPhraseAdd.onclick = () => addAllVocabPhrases(unsorted.map((p) => cardKey(p.card)));
   // One by one: those not in your list, nor gone through (openPhraseSort).
   const toSort = phraseSortQueue(list).length;
   els.vocabPhraseSort.hidden = !toSort;
   // "Sort into My phrases · 64", with the bookmark, as Add all's (the user's calls, 2026-11-26; it was "One by one").
-  els.vocabPhraseSort.replaceChildren(reviewIcon(), `Sort into ${targetName('phrases')}`); // without its count (the user's call, the same day)
+  els.vocabPhraseSort.replaceChildren(reviewIcon(), 'Select into list'); // "Sort into My phrases" till 2026-11-27 (the user's call)
   els.vocabPhraseSort.title = `Go through the ${plural(toSort, 'phrase')} not in ${targetName('phrases')} one at a time, adding the ones you want`;
   // The ones gone through: hidden, unless shown (they're then marked Added or Not added).
   const done = sets[kind].filter((p) => cardKey(p.card) in choices).length;
@@ -10061,11 +10060,11 @@ function vocabActions(id, src, p, known = knownMap(), { pass = null, removable =
     } else {
       if (wordSortQueue(src, known).length) {
         const sort = vocabButton('', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)));
-        sort.replaceChildren(reviewIcon(), 'Sort one by one');
+        sort.replaceChildren(reviewIcon(), 'Select into list'); // "Sort one by one" till 2026-11-27 (the user's call), as a topic's
         grid.append(sort);
       }
       const add = vocabButton('', `Add the ${plural(n, 'word')} you didn't know to ${name}`, () => addUnknownWords(src, keys));
-      add.replaceChildren(reviewIcon(), `Add all (${fmtCount(n)})`);
+      add.replaceChildren(reviewIcon(), 'Add all to list'); // "Add all (4)" till 2026-11-27; the count's in the tooltip and the confirm
       grid.append(add);
     }
   }

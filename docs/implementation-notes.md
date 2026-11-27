@@ -2823,6 +2823,23 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Select into list and Add all to list everywhere, with bookmarks (2026-11-27)
+
+The user's call: "On the vocabulary page - change 'Sort one by one' to say 'Select into list' and 'Add
+all (5)' to say 'Add all to list'. keep the bookmark icons. On other sections, change 'Add
+Phrases/Words/Stories' and 'add all to list' and 'select into list' buttons to also use bookmark
+icons".
+- **Vocabulary:** a list's "Words you didn't know → Food words" pair is **Select into list** and
+  **Add all to list** (the count's in the tooltip and the confirm). The phrases' panel the same: its
+  "Sort into My phrases" and "Add all to My phrases" are **Select into list** and **Add all to list**,
+  the list's name in their tooltips (the user named the words' pair; the phrases' two are the same
+  buttons, so they match).
+- **Icons:** a list's **Add words / phrases / stories** and a topic's **Select into list** have the
+  bookmark (`PAGE_ICONS.mylist`), as Add all to list has; the plus and the ticked card are gone.
+- Checked headless (scratch `vocab_labels.py`) at 390 × 664 and 1280 × 800: Top 100 words' grid
+  (Didn't know · 7, All · 20, Select into list, Add all to list, 164 wide at 390, one line); the
+  phrases' two; a word list's and a story list's Add with the bookmark; no script errors.
+
 ## A topic's Select into (2026-11-27)
 
 The user's request: "When browsing a topic in Words or Phrases - we have 'Add all to xxx' button. We
