@@ -6821,7 +6821,9 @@ function renderReadingList() {
   const actions = mine ? [] : [storyTopicActions(stories)];
   const inBar = !PHONE_LAYOUT.matches;
   els.readingBarRight.replaceChildren(...(inBar ? actions : []));
-  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : inBar ? [] : actions), ...pagedStories(stories));
+  // The topic's name under its buttons, as Words' topics (2026-11-28, the user's call: "stories does
+  // not list the topic title - I think it should, although it doesn't need the tagline").
+  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : [...(inBar ? [] : actions), storyTitle(scope)]), ...pagedStories(stories));
 }
 
 // A topic's stories (2026-11-27, the user's call: "Stories section should have the Add all to list,
@@ -6846,13 +6848,13 @@ function storyTopicActions(stories) {
   };
   const mark = (filled = false) => lineIcon('page-icon list-action-icon' + (filled ? ' filled' : ''), '0 0 24 24', PAGE_ICONS.mylist);
   if (!out.length) {
-    box.append(button('All in list', mark(true), `Remove them all from '${target.name}'`, () => removeTopicStories(ids)));
+    box.append(button('All in list', mark(true), `Remove them all from '${target.name}'`, () => removeTopicStories(ids), 'story-add-all'));
   } else {
-    box.append(button('Add all to list', mark(), `Add all to '${ofTargetName('stories')}'`, () => addTopicStories(ids)),
-      button('Select into list', mark(), `Go through them one by one, adding the ones you want to '${ofTargetName('stories')}'`, () => {
-        const now = new Set(storyTarget()?.stories || []);
-        openSort('stories', stories.filter((d) => !now.has(d.id)).map((story) => ({ story })), { intoTarget: true });
-      }));
+    // Select into first, then Add all (2026-11-28, the user's call), as everywhere in the app.
+    box.append(button('Select into list', mark(), `Go through them one by one, adding the ones you want to '${ofTargetName('stories')}'`, () => {
+      const now = new Set(storyTarget()?.stories || []);
+      openSort('stories', stories.filter((d) => !now.has(d.id)).map((story) => ({ story })), { intoTarget: true });
+    }, 'story-select'), button('Add all to list', mark(), `Add all to '${ofTargetName('stories')}'`, () => addTopicStories(ids), 'story-add-all'));
   }
   const all = button('Read all', readAllIcon(), 'Read every story here, one after another', () => {
     if (storyRunOn() && state.storyReading.all) stopReadStories();
@@ -6904,10 +6906,15 @@ async function removeTopicStories(ids) {
 // list (which till then sat under its stories).
 // The name first, then its buttons in one grid, as a word list's (the user's call, the same evening:
 // "the buttons are messy and the title should come first").
+// The buttons first, then the name, since 2026-11-28 (the user's call: "the list title should come after
+// the add/move/remove/read all buttons - this is more similar to how topics are displayed").
 function storyListHead(scope, stories) {
+  return [storyListActions(scope, stories), storyTitle(scope)];
+}
+function storyTitle(scope) {
   const name = popEl('div', 'wordlist-deck-name');
   name.append(popEl('span', 'wordlist-title', scope.name));
-  return [name, storyListActions(scope, stories)];
+  return name;
 }
 
 function paintStoryReadAll(root = document) {

@@ -3009,6 +3009,30 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Lists' buttons over their name, Select into first, the other-list dot grey (2026-11-28)
+
+The user's calls, together:
+- "When viewing a user list in My Words, My Phrases or My Stories, the list title should come after
+  the add/move/remove/read all buttons - this is more similar to how topics are displayed. also
+  currently stories does not list the topic title - I think it should, although it doesn't need the
+  tagline": a word or phrase list's `#list-actions` is now before `#wordlist-deck-name` in index.html;
+  a story list's head is its buttons then its name (storyListHead); a Stories topic shows its name
+  (storyTitle, the same `.wordlist-deck-name` / `.wordlist-title`, no description) under its buttons on
+  a phone, at the head of the list on a wider screen, where the buttons are in the bar.
+- "throughout the app pages 'select into list' button should come before 'add all to list'": Words'
+  and Phrases' bar (`#wordlist-select` before `#wordlist-add-all`) and a Stories topic's
+  (storyTopicActions; its Add all is `.story-add-all` now, which the bar's bigger-bookmark rule names,
+  as it was the first child). Vocabulary's panel and phrases page had it that way already.
+- "the luminous green dot you can see on an item in a list when it is saved in a list which is not
+  the current selection list should not be luminous green - please change it to be just normal grey,
+  same as the bookmark icon": `.row-review.elsewhere::after` and `.story-save.elsewhere::after` are
+  `--muted`, the bookmark's colour.
+Checked headless (scratch `listhead.py`, `listhead2.py`, `storytopic.py`) at 390 × 844 and 1280 × 800:
+My words' and My stories' buttons at 76 and their name at 184 on a phone (213 / 269, 153 / 209 wide);
+Words' bar and a Stories topic's: Select into list | Add all to list | Read all; the Stories topic's
+name under its buttons on a phone, over the stories wide; both dots rgb(147, 160, 179), --muted; no
+script errors.
+
 ## 70 more idioms and proverbs (2026-11-28)
 
 The user's call: "I think we should have more idioms - they are really interesting and a great

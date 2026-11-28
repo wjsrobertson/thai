@@ -328,9 +328,10 @@
         <button type="button" role="radio" class="seg-btn" data-order="type" aria-checked="false">Type</button> <!-- 2026-10-19: Recognition, the answer typed in Thai -->
       </div>
       <div class="wordlist-only wordlist-bar-right">
-        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z" /></svg>Add all</button>
-        <!-- A topic's Select into: One by one into your list (2026-11-27, openSelectInto). -->
+        <!-- A topic's Select into: One by one into your list (2026-11-27, openSelectInto). Before
+             Add all since 2026-11-28 (the user's call), as everywhere in the app. -->
         <button type="button" id="wordlist-select" class="ghost wordlist-select" hidden></button>
+        <button type="button" id="wordlist-add-all" class="ghost wordlist-add-all"><svg class="review-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4.5L6 21z" /></svg>Add all</button>
         <button type="button" id="read-aloud" class="ghost read-aloud" title="Play through every word in the list"><svg class="speaker-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z" /><path class="wave wave1" d="M15.5 8.5a5 5 0 0 1 0 7" /><path class="wave wave2" d="M18.5 5.5a9.5 9.5 0 0 1 0 13" /><path class="mute-x" d="M16 9l6 6M22 9l-6 6" /></svg>Read all</button>
       </div>
       <!-- A Stories topic's Add all to list, Select into list and Read all on a wider screen, where Words'
@@ -1086,8 +1087,9 @@
     </section>
 
     <section class="wordlist" id="wordlist-section" hidden>
-      <div class="wordlist-deck-name" id="wordlist-deck-name"></div>
-      <!-- One of your lists, under its name (2026-11-27, the user's call: "the title should come first"):
+      <!-- One of your lists, over its name (2026-11-28, the user's call: "the list title should come after
+           the add/move/remove/read all buttons - this is more similar to how topics are displayed"; under
+           it from 2026-11-27, "the title should come first"):
            Add words, Read all, Move items, Remove items, two to a row on a phone. The bar's Add all and
            Read all are a topic's. Its Rename and Delete are on its row in the picker. -->
       <div class="list-actions" id="list-actions" hidden>
@@ -1096,6 +1098,7 @@
         <button type="button" class="ghost" id="list-move"><svg class="page-icon list-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h13M11 7l5 5-5 5M20 5v14" /></svg>Move items</button> <!-- One by one into another list (openMoveItems, 2026-11-27) -->
         <button type="button" class="ghost" id="list-remove"><svg class="page-icon list-action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8" /></svg>Remove items</button> <!-- One by one out of the list (openRemoveItems, 2026-11-27) -->
       </div>
+      <div class="wordlist-deck-name" id="wordlist-deck-name"></div>
       <div class="wordlist-about" id="wordlist-about" hidden></div>
       <!-- A topic's tiles to tap and hear, under its text: its `board` in decks.json (renderLetterBoard;
            2026-10-12, the user's requests). -->
