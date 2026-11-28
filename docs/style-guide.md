@@ -22,8 +22,8 @@ The standards it leans on:
   (Cards, Write) must fit at 664.
 - **The phone layout** is `mobile.css`, loaded at 600 wide and under (`<link media>`); `app.js`'s
   `PHONE_LAYOUT` matches it. Desktop is `styles.css` alone, every page's column the same,
-  `--page-width` (1000), so moving between pages doesn't shift it (since 2026-11-28; Stories was
-  760, Vocabulary and Time 560). Within it the Alphabet's Write keeps to 440.
+  `--page-width` (1000), so moving between pages doesn't shift it (since 2026-11-28, Home's too; Stories
+  and Home were 760, Vocabulary and Time 560). Within it the Alphabet's Write keeps to 440.
 - **Safe areas:** the page draws under the notch and home indicator (`viewport-fit=cover`) and keeps
   clear with `env(safe-area-inset-*)`: the body's sides and top, the tab bar's foot. Anything fixed
   to the screen's foot sits on `calc(var(--tabbar-h) + env(safe-area-inset-bottom))`.

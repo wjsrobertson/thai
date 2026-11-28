@@ -2408,7 +2408,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
 - **One page width** (2026-11-28, the user's call: "On web it is a bit jarring navigating from Words
   -> Phrases -> Stories -> Vocabulary as Stories and Vocab have narrower pages"): `--page-width`
   (1000, on `:root`) for Words' and Phrases' list (`.wordlist`), Stories (`.reading`, 760 till then),
-  Vocabulary (`.vocab`, 560), Time (`.time`, 560), Dictionary and Alphabet. A run's card and its No /
+  Vocabulary (`.vocab`, 560), Time (`.time`, 560), Dictionary and Alphabet; then Home (`.home`, 760;
+  the user's call, the same day). A run's card and its No /
   Yes, and Time's grids, stretch to it. Checked headless (scratch `wide.py`) at 1280 × 800: all seven
   at 133–1133; no script errors. The phone layout is unchanged (each was full width there already).
 - **50 at a time by topic too** (2026-11-28, the user's call: "only load the first 50 then have a

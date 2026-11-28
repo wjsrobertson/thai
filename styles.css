@@ -3024,7 +3024,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Topics, Flashcards (Review was a third until 2026-10-08) */
   gap: 16px;
-  max-width: 760px;
+  max-width: var(--page-width); /* 760 till 2026-11-28 (the user's call: as every page) */
   margin: 24px auto 0;
 }
 .home-card {
