@@ -2671,6 +2671,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   border: 1px solid var(--accent);
   border-radius: 14px;
 }
+/* A swipe down closes it, right goes back (bindDialogSwipe, 2026-11-28): it follows the finger, and
+   eases back if let go short. */
+@media (prefers-reduced-motion: no-preference) { .modal-panel.word-panel { transition: transform .16s ease-out; } }
+.modal-panel.word-panel.dragging { transition: none; }
 .word-head { gap: 10px; padding: 12px 12px 10px 20px; font-size: calc(17px * var(--fs, 1)); }
 .word-head .pop-text { flex: 1; min-width: 0; line-height: 1.35; }
 .word-modal .word-body { flex: 0 1 auto; padding: 0 20px 14px; font-size: calc(16px * var(--fs, 1)); line-height: 1.4; } /* beats mobile.css's .modal-body */

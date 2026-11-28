@@ -2406,6 +2406,15 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Swipe the dialog down to close, right to go back** (2026-11-28, the user's pick): the word
+  dialog (a word's, phrase's, story's or Vocabulary list's) on a touch screen (`bindDialogSwipe`,
+  touch events, as the body's pan-y would cancel a pointer's drag down). Down closes it when it's
+  scrolled to its top (scrolled down, the drag scrolls); right goes back while ‹ shows. It follows
+  the finger and acts past 80 px (DIALOG_SWIPE), or eases back. Not from the screen's left 24 px,
+  where Safari's own back swipe starts. Checked headless (scratch `dlgswipe.py`, touch emulation) at
+  390 × 844 and 520 tall: a phrase, one of its words, 40 px right nothing, 150 right → back to the
+  phrase, left nothing, 50 down nothing, 160 down → closed; a story scrolled 120 → a drag down
+  scrolls it, at its top → closed; no script errors.
 - **Swipe Time's clock** (2026-11-28, the user's pick): on Explore a drag across the clock moves the
   time 5 minutes each 30 px (`bindTimeSwipe`, TIME_SWIPE), left later and right earlier (as Cards'
   left is next), the hands following as it goes, the time said once on letting go; a drag up or down

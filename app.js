@@ -7281,6 +7281,58 @@ function popBack() {
   (els.wordModalBack.hidden ? els.wordModalClose : els.wordModalBack).focus({ preventScroll: true });
 }
 
+// The word dialog (a word's, a phrase's, a story's, a Vocabulary list's) swipes on a touch screen
+// (2026-11-28, the user's pick): down to close, when it's scrolled to its top (else it scrolls); right
+// to go back, while ‹ shows. It follows the finger, then closes or goes back past DIALOG_SWIPE px, or
+// springs back short of it. Not from the screen's left edge: Safari's own back swipe starts there.
+// Touch events, not pointer ones: the body scrolls (pan-y), so a pointer's drag down is cancelled.
+const DIALOG_SWIPE = 80;
+function bindDialogSwipe() {
+  const panel = els.wordModal.querySelector('.modal-panel');
+  let g = null;
+  panel.addEventListener('touchstart', (e) => {
+    g = null;
+    if (e.touches.length !== 1 || !wordPop) return;
+    const t = e.touches[0];
+    if (t.clientX < 24) return;
+    g = { x: t.clientX, y: t.clientY, mode: null, d: 0, top: els.wordModalBody.scrollTop <= 0 };
+  }, { passive: true });
+  panel.addEventListener('touchmove', (e) => {
+    if (!g) return;
+    const t = e.touches[0];
+    const dx = t.clientX - g.x;
+    const dy = t.clientY - g.y;
+    if (!g.mode) {
+      if (Math.hypot(dx, dy) < 10) return;
+      if (Math.abs(dy) > Math.abs(dx)) g.mode = dy > 0 && g.top ? 'down' : 'none';
+      else g.mode = dx > 0 && wordPop?.back.length ? 'back' : 'none';
+      if (g.mode !== 'none') panel.classList.add('dragging');
+    }
+    if (g.mode === 'none') return;
+    e.preventDefault();
+    g.d = Math.max(0, g.mode === 'down' ? dy : dx);
+    panel.style.transform = g.mode === 'down' ? `translateY(${g.d}px)` : `translateX(${g.d}px)`;
+  }, { passive: false });
+  const end = () => {
+    if (!g) return;
+    const { mode, d } = g;
+    g = null;
+    if (!mode || mode === 'none') return;
+    swallowClickUntil = performance.now() + 300; // not a tap on what was under the finger
+    const go = d >= DIALOG_SWIPE;
+    if (go) panel.style.transform = ''; // closed or the one before shown, in place
+    panel.classList.remove('dragging');
+    if (!go) {
+      panel.style.transform = ''; // eases back (.modal-panel's transition)
+      return;
+    }
+    if (mode === 'down') hideWordPop();
+    else popBack();
+  };
+  panel.addEventListener('touchend', end);
+  panel.addEventListener('touchcancel', end);
+}
+
 // A dialog says what it opens on, but not when ‹ comes back to it.
 function popSay(say) {
   if (!popReturning) speak(say);
@@ -11053,6 +11105,7 @@ function bindEvents() {
   els.toast.addEventListener('focusout', () => holdToast(false));
   els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
   els.wordModalBack.addEventListener('click', popBack);
+  bindDialogSwipe();
 
   // Recall's card swipes once turned over (2026-11-28, the user's call): right Easy, left Very Hard,
   // as Vocabulary's Yes and No; Hard stays a button. Before the turn it doesn't move.
