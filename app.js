@@ -10501,8 +10501,9 @@ function vocabSourceRow(id, known, at) {
   main.type = 'button';
   main.setAttribute('aria-haspopup', 'dialog');
   const top = el('span', 'vocab-row-top');
-  top.append(el('span', 'vocab-row-name', title), el('span', 'vocab-row-count', `${fmtCount(band.yes)}/${fmtCount(band.total)}`),
-    el('span', 'vocab-row-chevron', '›'));
+  // No "21/100" beside the name (the user's call, 2026-11-28): the bar shows how far, and the name
+  // gets the room. The dialog still has the counts.
+  top.append(el('span', 'vocab-row-name', title), el('span', 'vocab-row-chevron', '›'));
   top.lastChild.setAttribute('aria-hidden', 'true');
   main.append(top, vocabBar(band));
   if (info.pass) main.append(vocabPassLine(info));

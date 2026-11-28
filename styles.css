@@ -2323,7 +2323,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 }
 .vocab-row-top { display: flex; align-items: baseline; gap: 10px; }
 .vocab-row-name { flex: 1 1 auto; min-width: 0; color: var(--ink); font-size: calc(16px * var(--fs, 1)); font-weight: 600; }
-.vocab-row-count { flex: none; color: var(--ink); font-size: calc(14px * var(--fs, 1)); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .vocab-row-chevron { flex: none; margin-left: -4px; color: var(--muted); font-size: 1.4em; line-height: 1; } /* a story row's › */
 .vocab-row-sub { color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
 /* A list's dialog (showVocabPop): its bands, Start / Continue / See across it, then the actions. */

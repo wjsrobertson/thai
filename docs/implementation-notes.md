@@ -2406,6 +2406,9 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **No count on a list's card** (2026-11-28, the user's call: "remove the 21/100 for each item - it
+  uses space better given to the title and it isn't that useful"): a card's top line is the name and
+  the ›; the bar under it shows how far, and the dialog's bands keep the numbers.
 - **First run: a title, the steps as tabs, Back / Next pinned** (2026-11-28, the user's call, after
   trying it: "1. have some kind of title to let the user know that this is setup 2. be much more
   clear how many stages and what they are (maybe tabs at the top). 3. the next and back buttons
