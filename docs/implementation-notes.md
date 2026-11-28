@@ -3009,6 +3009,27 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Home's lines one shape (2026-11-28)
+
+The user's call: "review each of the sentences on the home page to see if the section sentence can be
+improved. They should be consistent and simple". They were three shapes (a description, an
+instruction for Vocabulary, a fragment with no full stop for the Dictionary) and some ran long. Now
+each is what's there, then what you do with it, with a full stop:
+- Words: "Words by topic, with flashcards and your own lists." (was "…to study with flashcards and
+  save to lists of your own.")
+- Phrases: "Everyday phrases and sayings, with flashcards and your own lists." (was "…each with its
+  words one by one.")
+- Stories: "Short stories to read and listen to, with your own lists." (was "…to read and hear, by
+  topic, and your own lists of them.")
+- Vocabulary: "The most used words, to mark the ones you know."; with some known, "You know 53 words.
+  Mark more, most used first." (renderHomeVocab; was "Go through…")
+- Alphabet: unchanged, "Consonants, vowels and tones, with flashcards and writing practice."
+- Dictionary: "Every word and phrase, to search in Thai, English or transliteration." (was "Browse or
+  search in Thai, English or transliteration", no full stop)
+- Time: "Telling the time in Thai, with a quiz." (", the everyday way," dropped)
+Checked headless (scratch `home.py`) at 390 × 844 (Larger and Largest text) and 1280 × 800: two lines
+a card on a phone at Larger, the Alphabet's three at Largest; no script errors.
+
 ## The list pages' title centred (2026-11-28)
 
 The user's call: "can you center the title on the lists pages. only the title, not description etc.":

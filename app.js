@@ -9526,8 +9526,8 @@ function renderHomeVocab() {
   if (!state.decks.length) return;
   const { words } = vocabTotals();
   els.homeVocabText.textContent = words
-    ? `You know ${plural(words, 'word')}. Go through more, most used first.`
-    : 'Go through the most used words and mark the ones you know.';
+    ? `You know ${plural(words, 'word')}. Mark more, most used first.`
+    : 'The most used words, to mark the ones you know.'; // as the other Home lines (2026-11-28)
 }
 
 function renderVocab() {
