@@ -2071,7 +2071,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .ghost.danger { color: var(--again); }
 /* Add all to the list 🔁 adds to: a long name ends in … (the button stays one line). */
 .add-all-name { display: inline-block; max-width: 9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
-.wordlist-title { display: block; font-size: calc(22px * var(--fs, 1)); font-weight: 600; }
+.wordlist-title { display: block; font-size: calc(22px * var(--fs, 1)); font-weight: 600; text-align: center; } /* centred, its description not (2026-11-28, the user's call) */
 .wordlist-desc { display: block; margin-top: 4px; font-size: calc(17px * var(--fs, 1)); line-height: 1.45; }
 /* Tap-to-play Thai in notes and topic paragraphs (appendNoteText). */
 .say {

@@ -3009,6 +3009,15 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## The list pages' title centred (2026-11-28)
+
+The user's call: "can you center the title on the lists pages. only the title, not description etc.":
+`.wordlist-title` is `text-align: center`, so a topic's or list's name on Words' and Phrases' List
+page, and on Stories (a topic's or a story list's), is centred over the page; the description under it
+(`.wordlist-desc`), the `about` text and everything else stay left. Checked headless (scratch
+`centre.py`) at 390 × 844 and 1280 × 800: the title's gaps left and right equal (57 / 57, 362 / 362)
+on Words and Stories, the description starting at the left; no script errors.
+
 ## Lists' buttons over their name, Select into first, the other-list dot grey (2026-11-28)
 
 The user's calls, together:
