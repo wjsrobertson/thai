@@ -2289,7 +2289,12 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-sources { display: flex; flex-direction: column; overflow: hidden; }
 .vocab-row + .vocab-row, .vocab-add { border-top: 1px solid var(--border); }
 /* A row: the name over its bar (a button opening the rest, where there's a rest), Start or Continue. */
-.vocab-row-line { display: flex; align-items: center; gap: 12px; padding: 8px 12px 8px 14px; }
+.vocab-row-line { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; } /* 8 above and below till 2026-11-28: the closed rows looked cramped (the user's call) */
+/* The open row on the raised panel colour, so it reads as one block apart from the closed rows under
+   it (2026-11-28, the user's call: they "don't look like they are separate from the expanded … section");
+   its bars keep the panel colour inside, so they don't sink into it. */
+.vocab-row.open { background: var(--panel-2); }
+.vocab-row.open .vocab-bar { background: var(--panel); }
 .vocab-row-main {
   display: flex;
   flex: 1 1 auto;
@@ -2511,8 +2516,9 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-again { min-height: 44px; padding: 8px 12px; color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; } /* ink, not the ghost's muted (2026-11-28) */
 .vocab-again, .vocab-go { display: inline-flex; align-items: center; justify-content: center; }
 .vocab-icon { flex: none; width: 18px; height: 18px; }
-/* The row's Start / Continue / See: its main action, in the accent (2026-11-28). */
-.vocab-go { color: var(--accent); border-color: var(--accent); }
+/* The open row's Start / Continue / See in the accent, its main action; the closed rows' plain (2026-11-28,
+   the user's call: three accent buttons in a column "looks weird"). */
+.vocab-row.open .vocab-go, .ps-card .vocab-go { color: var(--accent); border-color: var(--accent); }
 .vocab-go .vocab-icon { width: 16px; height: 16px; }
 .vocab-end { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; width: 100%; }
 .vocab-end[hidden] { display: none; }

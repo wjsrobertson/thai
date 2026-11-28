@@ -2393,6 +2393,15 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   same day): "9 words you didn't know" (the confirm still names the list).
   Checked headless (scratch `vpanel.py`) at 390 × 844, Dark and Light, Larger and Largest text: one
   line per button, no overflow.
+- **The open row apart, the others roomier** (2026-11-28, the user's screenshot: the rows under an
+  open one "look a bit cramped… don't look like they are separate from the expanded top 100 words
+  section. Also the 3 highlighted continue buttons looks weird - perhaps only have it highlighted when
+  the list is expanded"): the open row is on `--panel-2` (`.vocab-row.open`), its bars on `--panel`
+  inside it so they don't sink in; each row's line has 12 above and below (8 till then); Start /
+  Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
+  On `--panel-2` the outlines stay ≥ 3:1 (Charcoal's 3.00 the least) and muted text ≥ 4.5:1 (Night's
+  5.0), the Light accent 4.54. Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
+  Most used open over two topics.
 - **＋ New list under an add's Change** (2026-11-28, the user's call: "I should have the option in
   the list selecter to create a new list. This is true for all 'Add all to list' and 'select into
   list' buttons in the app"): every Add all asks through `confirmDialog({ change })`, whose lists
