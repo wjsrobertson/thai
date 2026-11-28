@@ -4,7 +4,8 @@
 
 html { -webkit-text-size-adjust: 100%; }
 * { -webkit-tap-highlight-color: transparent; }
-button, .card { touch-action: manipulation; } /* no double-tap zoom, no tap delay */
+button { touch-action: manipulation; } /* no double-tap zoom, no tap delay */
+.card { touch-action: pan-y pinch-zoom; } /* nor on the card, whose swipe across is its own (bindCardSwipe, 2026-11-28) */
 
 /* iOS Safari zooms the page into any focused input smaller than 16px. */
 #deck-picker-search,

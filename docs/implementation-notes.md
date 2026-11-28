@@ -2823,6 +2823,27 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Flashcards: a swipe for ‹ and › (2026-11-28)
+
+The user's request: "in the flashcards section of Words, Phrases, Stories, please add swipe
+functionality to navigate to next and previous (where appropriate). swiping on a card should work the
+same as left nav or right nav buttons". Stories has no Flashcards page (Read only since 2026-11-22),
+so it's Words' and Phrases', and the Alphabet's, which is the same card.
+- **The swipe** (`bindCardSwipe`, `CARD_SWIPE` 60 px): left on the card is › (`goNext`), right is ‹
+  (`goPrev`), only while they show and work: Browse and Recall, not Recognition or Type (they hide ‹
+  ›, and goNext/goPrev refuse there too), nor a single card. The card follows the finger (or the
+  mouse) across; let go past 60 px and the next card eases in from that side (48 px, .16 s), short of
+  it, it eases back. A drag more up than across scrolls; the click after a swipe is swallowed
+  (`swallowClickUntil`), so it doesn't turn the card. Reduced motion: no slide.
+- **touch-action** on the card is `pan-y pinch-zoom` (mobile.css had `manipulation` for buttons and
+  the card): the browser keeps vertical scrolling and pinch, and leaves across to the page; still no
+  double-tap zoom or tap delay. `.card.swiping` turns off the transition and text selection.
+- Checked headless (scratch `swipe_probe.py`, `swipe_probe2.py`) with touch at 390 × 664 and the
+  mouse at 1280 × 800, Greetings & Politeness in Browse: left 1 → 2 → 3, right → 2; a 30 px drag and a
+  vertical drag left it; a tap on the card's corner turns it and again back (a tap on the Thai says
+  the syllable, as before); a swipe on the turned card goes on, the next card front up; Recognition:
+  a swipe does nothing; no script errors.
+
 ## Settings → App → Updates: Check for updates (2026-11-27)
 
 The user's request: "sometimes when I push, it takes long time for my phone to detect there is an

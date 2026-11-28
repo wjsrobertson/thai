@@ -9866,6 +9866,67 @@ function undoPhraseSort() {
 // A swipe: the card follows the finger across (a vertical drag scrolls, touch-action: pan-y), tinted
 // green to the right, red to the left; let go past PS_SWIPE and it goes that way and answers, else it
 // springs back. A tap that doesn't move is a tap (its play button, a lit word).
+// Flashcards' swipe (2026-11-28, the user's request: "swiping on a card should work the same as left
+// nav or right nav buttons"): a swipe left on the card is ›, right is ‹ (goNext, goPrev), only while
+// they show and work (Browse and Recall, not Recognition or Type; not with one card). The card
+// follows the finger across; let go past CARD_SWIPE and the next card slides in from that side,
+// short of it springs back. A drag more up than across is left to scroll (touch-action: pan-y), and
+// the click after a swipe is swallowed, so it doesn't also turn the card. A shortcut beside the
+// buttons (style guide §2), as One by one's swipe.
+const CARD_SWIPE = 60; // px across that decides it
+function bindCardSwipe() {
+  const card = els.card;
+  let from = null;
+  let dx = 0;
+  const still = matchMedia('(prefers-reduced-motion: reduce)');
+  const canGo = () => !answeringMode() && state.queue.length > 1 && !!els.nextBtn.getClientRects().length && !els.nextBtn.disabled;
+  card.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || !e.isPrimary || !canGo()) return;
+    from = { x: e.clientX, y: e.clientY, id: e.pointerId, across: false };
+    dx = 0;
+  });
+  card.addEventListener('pointermove', (e) => {
+    if (!from || e.pointerId !== from.id) return;
+    dx = e.clientX - from.x;
+    if (!from.across) {
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(e.clientY - from.y) > Math.abs(dx)) { from = null; return; } // a scroll
+      from.across = true;
+      card.setPointerCapture(e.pointerId);
+      card.classList.add('swiping');
+    }
+    card.style.transform = `translateX(${dx}px)`;
+  });
+  const end = (e) => {
+    if (!from || e.pointerId !== from.id) return;
+    const across = from.across;
+    from = null;
+    if (!across) return;
+    swallowClickUntil = performance.now() + 300; // not a turn of the card
+    card.classList.remove('swiping');
+    if (Math.abs(dx) < CARD_SWIPE || e.type === 'pointercancel' || !canGo()) {
+      card.style.transform = ''; // springs back (.card's transition)
+      return;
+    }
+    const next = dx < 0;
+    if (next) goNext();
+    else goPrev();
+    if (still.matches) {
+      card.style.transform = '';
+      return;
+    }
+    // The new card comes in from the side the finger left from.
+    card.classList.add('swiping');
+    card.style.transform = `translateX(${next ? 48 : -48}px)`;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      card.classList.remove('swiping');
+      card.style.transform = '';
+    }));
+  };
+  card.addEventListener('pointerup', end);
+  card.addEventListener('pointercancel', end);
+}
+
 function bindPhraseSortSwipe() {
   const card = els.psCard;
   let from = null;
@@ -10434,6 +10495,7 @@ function bindVocab() {
     renderVocabPhrases();
   });
   bindPhraseSortSwipe();
+  bindCardSwipe();
   els.vocabPhraseMore.addEventListener('click', () => {
     state.vocabPhraseShown += VOCAB_PHRASE_PAGE;
     renderVocabPhrases();

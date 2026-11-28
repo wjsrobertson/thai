@@ -1293,6 +1293,10 @@ body { display: flex; flex-direction: column; }
   position: relative;
   outline: none;
 }
+/* A swipe across it (bindCardSwipe, 2026-11-28): it follows the finger, and eases back or in after. */
+.card { touch-action: pan-y pinch-zoom; }
+@media (prefers-reduced-motion: no-preference) { .card { transition: transform .16s ease-out; } }
+.card.swiping { transition: none; user-select: none; -webkit-user-select: none; }
 /* The card can be focused (Space flips it): show it when that's by keyboard (2026-10-13). */
 .card:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
 
