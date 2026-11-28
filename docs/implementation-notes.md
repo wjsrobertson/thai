@@ -2381,8 +2381,9 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   most words the same faded gray. all buttons should have icons here too"; offered ideas, the user
   said try it): Most used's bands show the one the row's named by (`vocabBand(…, current)`,
   `.vocab-band.current`) in ink and semibold, the others' names and counts muted (the counts were all
-  ink). Each pair's heading is semibold with a hairline above it, the first too on a list's panel
-  (between the bars and the actions; not at a run's end). The panel's buttons were in ink, not the
+  ink). Each pair's heading is semibold; a hairline above each at first (the first too on a list's
+  panel), till the user had the one between the two pairs taken out the same day, leaving only the
+  dialog's, between Continue and the actions. The panel's buttons were in ink, not the
   ghost's grey, till the user asked for the grey back later that day. Every button has an icon (`VOCAB_ICONS`, `vocabIcon`, 18 px): Didn't know a circled
   arrow round with a cross, All the same without the cross, Select into list and Add all to list
   the bookmark, as elsewhere in the app (the user's call, the same day; a card stack and a

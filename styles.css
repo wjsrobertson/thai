@@ -2505,9 +2505,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Under a list's bars and at a run's end (vocabActions, 2026-11-26): equal buttons two to a row, each
    pair under a small muted heading that spans both; Remove from this page across both, set apart. */
 .vocab-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
-/* Each pair's heading semibold, a hairline above all but the first, so the groups read apart from
-   the bars and each other (2026-11-28, the user's call). */
-.vocab-actions-head { grid-column: 1 / -1; margin: 6px 0 -2px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; overflow-wrap: anywhere; }
+/* Each pair's heading semibold (2026-11-28, the user's call). A hairline above each at first; the one
+   between Go through again and the words you didn't know went the same day (the user's call), so only
+   the dialog's, between Continue and the actions, is left. */
+.vocab-actions-head { grid-column: 1 / -1; margin: 6px 0 -2px; padding-top: 8px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; overflow-wrap: anywhere; }
 .vocab-actions-head:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
 .vocab-pop .vocab-actions-head:first-child { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--border); } /* a list's dialog: the actions apart from Continue too */
 .vocab-actions-note { grid-column: 1 / -1; margin: 0; color: var(--ink); font-size: calc(15px * var(--fs, 1)); }
