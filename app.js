@@ -8969,7 +8969,7 @@ function wait(ms) {
 // Explore: a clock, set by ‹ › (5 minutes) or by the band (on the hour), and the Thai for its time
 // under it, the everyday way (an Everyday | Official switch went 2026-10-23, the user's call). The
 // clock only shows the time: dragging its hands went 2026-10-25 (the user's call: only the band and
-// ‹ › set it). The band is the day's 24 hours in the six-hour clock's four quarters, the day's hours
+// ‹ › set it); a drag across it steps the time since 2026-11-28 (bindTimeSwipe, the user's pick). The band is the day's 24 hours in the six-hour clock's four quarters, the day's hours
 // grey and the night's blue, with the count its Thai uses (บ่าย 1–3, เย็น 4–6, ทุ่ม 1–5); the
 // clock's rim shows day and night for the half of the day it's in. A change says the time, whatever
 // Cards' auto-play (its A): the user set it, so wants to hear it (the user's call, 2026-10-22; a tap
