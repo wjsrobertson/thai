@@ -2388,7 +2388,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   had Add all's bookmark), Add all a bookmark with a plus, Remove from vocabulary a circled minus,
   Stop going through again a square, New words and the row's Start / Continue a solid play, See an
   eye. Start / Continue / See are in the accent (text and outline), as the row's main action. The
-  words' heading carries the count Add all's label lost: "9 words you didn't know → My words".
+  words' heading carries the count Add all's label lost, and no longer the list's name (the user's call, the
+  same day): "9 words you didn't know" (the confirm still names the list).
   Checked headless (scratch `vpanel.py`) at 390 × 844, Dark and Light, Larger and Largest text: one
   line per button, no overflow.
 - **Remove from vocabulary** (the user's wording, the same evening): the button, its confirm ("Remove

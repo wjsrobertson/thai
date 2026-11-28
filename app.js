@@ -10234,7 +10234,7 @@ function vocabActions(id, src, p, known = knownMap(), { pass = null, removable =
     const name = targetName('words');
     const have = targetWords('words');
     const n = keys.filter((k) => !have.has(k)).length;
-    head(`${plural(n || keys.length, 'word')} you didn't know → ${name}`); // the count Add all's label lost (2026-11-28)
+    head(`${plural(n || keys.length, 'word')} you didn't know`); // the count Add all's label lost; the list's name dropped (2026-11-28, the user's call: the buttons say "list", the confirm names it)
     if (!n) {
       grid.append(el('p', 'vocab-actions-note', keys.length === 1 ? `It's in ${name}` : `All ${fmtCount(keys.length)} are in ${name}`));
     } else {
