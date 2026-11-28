@@ -2283,21 +2283,16 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-home, .vocab-run, .vocab-phrases { display: flex; flex-direction: column; gap: 14px; }
 .vocab-home[hidden], .vocab-run[hidden], .vocab-phrases[hidden], .vocab-phrase-link[hidden] { display: none; }
 /* The page: "You know 18 words", a line of plain text (2026-11-26, the user's call; the count was 48 px
-   over two lines till then), Phrases from your known vocabulary, then a panel of a row a list. */
+   over two lines till then), Phrases from your known vocabulary, ＋ Another topic or list, then a card a list (2026-11-28). */
 .vocab-total { margin: 0; color: var(--ink); font-size: calc(16px * var(--fs, 1)); font-variant-numeric: tabular-nums; }
-:is(.vocab-sources, .vocab-phrase-link) { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
-.vocab-sources { display: flex; flex-direction: column; overflow: hidden; }
-.vocab-row + .vocab-row, .vocab-add { border-top: 1px solid var(--border); }
-/* A row: the name over its bar (a button opening the rest, where there's a rest), Start or Continue. */
-.vocab-row-line { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; } /* 8 above and below till 2026-11-28: the closed rows looked cramped (the user's call) */
-/* The open row a card of its own inside the panel, outlined in the accent, so it reads apart from the
-   closed rows (2026-11-28, the user's call: they "don't look like they are separate from the expanded
-   … section"; a raised --panel-2 background first, which "makes the section look bad"). Its own
-   outline replaces the hairlines on either side. */
-.vocab-row.open { margin: 4px; border: 1px solid color-mix(in srgb, var(--accent) 70%, var(--panel)); border-radius: 10px; }
-.vocab-row.open + .vocab-row, .vocab-row.open + .vocab-add { border-top: 0; }
-.vocab-row.open .vocab-row-line { padding: 7px 7px 7px 9px; } /* less the 4 px inset and 1 px outline, so its contents stay where a closed row's are */
-.vocab-row.open .vocab-row-more { padding: 2px 9px 9px; }
+.vocab-phrase-link { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+/* A card a list, as Stories' rows are (2026-11-28, the user's call; it was one panel of rows, the
+   open one's bands and buttons under it): 8 apart, the accent outline on hover and while its dialog
+   is open (.on, popAnchor), as a story's row has. */
+.vocab-sources { display: flex; flex-direction: column; gap: 8px; }
+.vocab-row { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
+.vocab-row:has(.vocab-row-main.on) { border-color: var(--accent); }
+@media (hover: hover) { .vocab-row:has(.vocab-row-main:hover) { border-color: var(--accent); } }
 .vocab-row-main {
   display: flex;
   flex: 1 1 auto;
@@ -2313,18 +2308,20 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   color: inherit;
   font: inherit;
   text-align: left;
+  cursor: pointer;
 }
 .vocab-row-top { display: flex; align-items: baseline; gap: 10px; }
 .vocab-row-name { flex: 1 1 auto; min-width: 0; color: var(--ink); font-size: calc(16px * var(--fs, 1)); font-weight: 600; }
-.vocab-row-caret { display: inline-block; width: 1.1em; color: var(--muted); font-size: .8em; } /* ▸, or ▾ open */
-@media (hover: hover) { button.vocab-row-main:hover .vocab-row-caret { color: var(--accent); } }
 .vocab-row-count { flex: none; color: var(--ink); font-size: calc(14px * var(--fs, 1)); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.vocab-row-chevron { flex: none; margin-left: -4px; color: var(--muted); font-size: 1.4em; line-height: 1; } /* a story row's › */
 .vocab-row-sub { color: var(--muted); font-size: calc(13px * var(--fs, 1)); }
-.vocab-row-more { display: flex; flex-direction: column; gap: 10px; padding: 2px 14px 14px; }
-.vocab-row-more[hidden] { display: none; }
-/* ＋ Another topic or list: the panel's last row. */
-.vocab-add { width: 100%; min-height: 52px; padding: 0 14px; background: none; border-right: 0; border-bottom: 0; border-left: 0; border-radius: 0; color: var(--accent); font-size: 16px; text-align: left; }
-@media (hover: hover) { .vocab-add:hover { background: var(--panel-2); } }
+/* A list's dialog (showVocabPop): its bands, Start / Continue / See across it, then the actions. */
+.vocab-pop { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; }
+.vocab-pop .vocab-go { width: 100%; margin-top: 6px; }
+/* ＋ Another topic or list: a card of its own under the phrases, above the lists (2026-11-28; it was
+   the lists' panel's last row). */
+.vocab-add { width: 100%; min-height: 52px; padding: 0 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; color: var(--accent); font-size: 16px; text-align: left; }
+@media (hover: hover) { .vocab-add:hover { border-color: var(--accent); } }
 :is(.vocab-go, .vocab-done, .vocab-undo) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
 .vocab-go { flex: none; min-width: 92px; }
 /* A band: its name, the bar (known, then not known, then the rest to go) and known/total. */
@@ -2512,16 +2509,16 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    the bars and each other (2026-11-28, the user's call). */
 .vocab-actions-head { grid-column: 1 / -1; margin: 6px 0 -2px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; overflow-wrap: anywhere; }
 .vocab-actions-head:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
-.vocab-row-more .vocab-actions-head:first-child { margin-top: 2px; padding-top: 12px; border-top: 1px solid var(--border); } /* a list's panel: the actions apart from the bars too */
+.vocab-pop .vocab-actions-head:first-child { margin-top: 6px; padding-top: 12px; border-top: 1px solid var(--border); } /* a list's dialog: the actions apart from Continue too */
 .vocab-actions-note { grid-column: 1 / -1; margin: 0; color: var(--ink); font-size: calc(15px * var(--fs, 1)); }
 .vocab-actions .vocab-again { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 6px; white-space: nowrap; } /* one line in 162 (a run's end at 390) */
 .vocab-actions .vocab-actions-wide { grid-column: 1 / -1; margin-top: 8px; }
 .vocab-again { min-height: 44px; padding: 8px 12px; color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; } /* ink, not the ghost's muted (2026-11-28) */
 .vocab-again, .vocab-go { display: inline-flex; align-items: center; justify-content: center; }
 .vocab-icon { flex: none; width: 18px; height: 18px; }
-/* The open row's Start / Continue / See in the accent, its main action; the closed rows' plain (2026-11-28,
-   the user's call: three accent buttons in a column "looks weird"). */
-.vocab-row.open .vocab-go, .ps-card .vocab-go { color: var(--accent); border-color: var(--accent); }
+/* Start / Continue / See in the accent in a list's dialog, its main action; on the page's cards plain
+   (2026-11-28, the user's call: three accent buttons in a column "looks weird"). */
+.vocab-pop .vocab-go, .ps-card .vocab-go { color: var(--accent); border-color: var(--accent); }
 .vocab-go .vocab-icon { width: 16px; height: 16px; }
 .vocab-end { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; width: 100%; }
 .vocab-end[hidden] { display: none; }

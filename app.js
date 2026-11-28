@@ -358,7 +358,6 @@ const state = {
   addingTo: null,           // the list the List page's 🔁 are adding to from another topic or list (renderWordlist)
   vocabRun: null,           // Vocabulary's run while one is open: { id, src, history, thai, card } (startVocabRun)
   vocabPhrases: null,       // Phrases from your words while its list shows: 'known' | 'short' (renderVocabPhrases)
-  vocabOpen: null,          // the Vocabulary page's row open to its bands, Again and Remove (vocabSourceRow)
   vocabPhraseShown: 50,     // and how many of it show (VOCAB_PHRASE_PAGE more with each Show more), shortest first
   vocabPhraseOpen: new Set(), // by topic: the categories ('c:' + name) and topics ('t:' + id) open
   vocabPhraseShowDone: false, // the phrases gone through one by one shown too (store.phraseChoices)
@@ -7232,6 +7231,7 @@ function applyReaderToggles() {
 // tones. Until 2026-10-11 it was a pop-up under the word; the user wanted more room, for the tones
 // above all. Tapping outside it, ✕ or Escape closes it.
 let popAnchor = null; // the word or cell it's for (lit: .on)
+let vocabPopId = null; // the list a Vocabulary dialog shows (showVocabPop)
 let wordPop = null;   // while it's open: { lastFocus, here, back } (popEnter)
 
 // The dialog's ‹ (2026-11-22, the user's call: a phrase opens its words, a word its letters, and each
@@ -7243,6 +7243,7 @@ let popReturning = false; // while ‹ shows the one before again: it isn't said
 function popEnter(open) {
   window.CSS?.highlights?.delete(HOVER_HIGHLIGHT); // a phrase's lit word (showPhrasePop)
   els.wordModal.classList.remove('story'); // a story's dialog (showStoryPop) sets it again
+  vocabPopId = null; // a list's (showVocabPop) sets it again
   els.wordModalEn.classList.remove('now-playing'); // its title, while Read says it
   if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, back: [] };
   else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop });
@@ -7352,6 +7353,7 @@ function hideWordPop() {
   if (storyRunOn()) stopReadStories(); // a story's Read ends with its dialog (2026-11-22)
   state.readingId = null;
   els.wordModal.classList.remove('story');
+  vocabPopId = null;
   const { lastFocus } = wordPop;
   wordPop = null;
   els.wordModal.hidden = true;
@@ -9228,8 +9230,9 @@ function renderVocabHome() {
   els.vocabTotal.textContent = `You know ${plural(t.words, 'word')}`; // words only, not phrases (the user's call, the same day)
   const at = knownAtMap();
   const rows = [VOCAB_MOST_USED, ...vocabRecent()].map((id) => vocabSourceRow(id, known, at)).filter(Boolean);
-  els.vocabSources.replaceChildren(...rows, els.vocabChoose);
+  els.vocabSources.replaceChildren(...rows);
   renderPhrasePanel(known);
+  if (vocabPopId && wordPop) showVocabPop(vocabPopId, els.vocabSources.querySelector(`.vocab-row[data-id="${CSS.escape(vocabPopId)}"] .vocab-row-main`), { refresh: true });
 }
 
 // ---------- Phrases from your words (2026-11-22) ----------
@@ -10113,12 +10116,13 @@ function setVocabPass(id, pass) {
   setPreferences({ vocabPasses: passes });
 }
 
-// A list's row: its name (Most used's the band you're in, the first not all answered), a bar of it (known, not
-// known, the rest to go), known/total, and Start, Continue or See; going through it again, how many
-// are left. Its name opens the rest under it, one row at a time (state.vocabOpen): Most used's bands,
-// Again (Didn't know · 30, All · 182) or Stop going through again, and Remove from this page for one
-// gone through lately (its answers kept: they're the words').
-function vocabSourceRow(id, known, at) {
+// A list's row, a card of its own as a story's is (2026-11-28, the user's call: "more like the stories
+// section… each item in a separated list. when we click on one it pops up a dialog box with the full
+// thing"; it was a row of one panel opening the rest under it, state.vocabOpen): its name (Most used's
+// the band you're in, the first not all answered), known/total and a ›, a bar of it (known, not known,
+// the rest to go), and Start, Continue or See, plain; going through it again, how many are left. A tap
+// on the rest opens its dialog (showVocabPop).
+function vocabRowInfo(id, known, at) {
   const src = vocabSource(id);
   if (!src || !src.words.length) return null; // Most used before its list has come, or a list since deleted or emptied
   const p = vocabProgress(src.words, known);
@@ -10128,64 +10132,79 @@ function vocabSourceRow(id, known, at) {
     setVocabPass(id, null);
     pass = null;
   }
-  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const sizes = id === VOCAB_MOST_USED ? [...VOCAB_BANDS.filter((n) => n < src.words.length), src.words.length] : [src.words.length];
-  const bandName = (n) => (n === src.words.length ? `All ${fmtCount(n)}` : `Top ${fmtCount(n)}`);
   const n = sizes.find((m) => vocabProgress(src.words.slice(0, m), known).answered < m) ?? sizes[sizes.length - 1];
   const band = n === src.words.length ? p : vocabProgress(src.words.slice(0, n), known);
-
-  const more = [];
-  // The band the row is named by stands out (ink, semibold), the rest muted (2026-11-28, the user's
-  // call: "most words the same faded gray" looked untidy).
-  if (sizes.length > 1) more.push(...sizes.map((m) => vocabBand(bandName(m), vocabProgress(src.words.slice(0, m), known), m === n)));
-  const actions = vocabActions(id, src, p, known, { pass, removable: id !== VOCAB_MOST_USED });
-  if (actions) more.push(actions);
-
-  const open = state.vocabOpen === id;
-  const row = el('div', `vocab-row${open ? ' open' : ''}`);
-  row.dataset.id = id;
-  const line = el('div', 'vocab-row-line');
-  const main = el(more.length ? 'button' : 'div', 'vocab-row-main');
-  const top = el('span', 'vocab-row-top');
-  const name = el('span', 'vocab-row-name');
-  if (more.length) name.append(el('span', 'vocab-row-caret', open ? '▾' : '▸'));
   // Most used by its band, "Top 500 words" ("Most used words · Top 500" wrapped on a phone).
-  name.append(sizes.length > 1 && n < src.words.length ? `Top ${fmtCount(n)} words` : src.name);
-  top.append(name, el('span', 'vocab-row-count', `${fmtCount(band.yes)}/${fmtCount(band.total)}`));
-  main.append(top, vocabBar(band));
-  if (pass) main.append(el('span', 'vocab-row-sub', `Again: ${fmtCount(left)} of ${fmtCount(pass.total)} to go`)); // which (Didn't know or All) wrapped on a phone
-  const details = el('div', 'vocab-row-more');
-  details.id = `vocab-more-${id.replace(/[^\w-]/g, '_')}`;
-  details.hidden = !open;
-  details.append(...more);
-  if (more.length) {
-    main.type = 'button';
-    main.setAttribute('aria-expanded', String(open));
-    main.setAttribute('aria-controls', details.id);
-    main.addEventListener('click', () => toggleVocabRow(id));
-  }
+  const title = sizes.length > 1 && n < src.words.length ? `Top ${fmtCount(n)} words` : src.name;
   const goText = pass ? 'Continue' : p.answered === p.total ? 'See' : p.answered ? 'Continue' : 'Start';
-  const go = el('button', 'ghost vocab-go');
+  return { src, p, pass, left, sizes, n, band, title, goText };
+}
+
+function vocabGoButton(id, { src, goText }) {
+  const go = Object.assign(document.createElement('button'), { type: 'button', className: 'ghost vocab-go' });
   go.append(vocabIcon(goText === 'See' ? 'see' : 'play'), goText);
-  go.type = 'button';
   go.setAttribute('aria-label', `${goText}: ${src.name}`);
   go.addEventListener('click', () => startVocabRun(id));
-  line.append(main, go);
-  row.append(line, ...(more.length ? [details] : []));
+  return go;
+}
+
+const vocabPassLine = ({ pass, left }) => Object.assign(document.createElement('span'), { className: 'vocab-row-sub', textContent: `Again: ${fmtCount(left)} of ${fmtCount(pass.total)} to go` }); // which (Didn't know or All) wrapped on a phone
+
+function vocabSourceRow(id, known, at) {
+  const info = vocabRowInfo(id, known, at);
+  if (!info) return null;
+  const { band, title } = info;
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  const row = el('div', 'vocab-row');
+  row.dataset.id = id;
+  const main = el('button', 'vocab-row-main');
+  main.type = 'button';
+  main.setAttribute('aria-haspopup', 'dialog');
+  const top = el('span', 'vocab-row-top');
+  top.append(el('span', 'vocab-row-name', title), el('span', 'vocab-row-count', `${fmtCount(band.yes)}/${fmtCount(band.total)}`),
+    el('span', 'vocab-row-chevron', '›'));
+  top.lastChild.setAttribute('aria-hidden', 'true');
+  main.append(top, vocabBar(band));
+  if (info.pass) main.append(vocabPassLine(info));
+  main.addEventListener('click', () => showVocabPop(id, main));
+  row.append(main, vocabGoButton(id, info));
   return row;
 }
 
-function toggleVocabRow(id) {
-  state.vocabOpen = state.vocabOpen === id ? null : id;
-  for (const r of els.vocabSources.querySelectorAll('.vocab-row')) {
-    const on = r.dataset.id === state.vocabOpen;
-    r.classList.toggle('open', on);
-    const more = r.querySelector('.vocab-row-more');
-    if (!more) continue;
-    more.hidden = !on;
-    r.querySelector('.vocab-row-caret').textContent = on ? '▾' : '▸';
-    r.querySelector('.vocab-row-main').setAttribute('aria-expanded', String(on));
+// A list's dialog (the story dialog's, popEnter): its name, every band (Most used's five, the one the
+// row's named by lit; a topic's one, "All 44"), the pass's line, Start / Continue / See across it in
+// the accent, then Again, the words you didn't know and Remove (vocabActions). Drawn again after each
+// change while it's open (renderVocabHome); Start and the Again buttons close it (startVocabRun).
+function showVocabPop(id, anchor, { refresh = false } = {}) {
+  const known = knownMap();
+  const info = vocabRowInfo(id, known, knownAtMap());
+  if (!info) {
+    hideWordPop();
+    return;
   }
+  const { src, p, pass, sizes, n } = info;
+  if (!refresh) popEnter(() => showVocabPop(id, anchor));
+  vocabPopId = id;
+  popAnchor?.classList.remove('on');
+  popAnchor = anchor;
+  anchor?.classList.add('on');
+  els.wordModalTr.textContent = '';
+  els.wordModalEn.textContent = info.title;
+  const box = Object.assign(document.createElement('div'), { className: 'vocab-pop' });
+  const bandName = (m) => (m === src.words.length ? `All ${fmtCount(m)}` : `Top ${fmtCount(m)}`);
+  // The band the row is named by stands out (ink, semibold), the rest muted (2026-11-28, the user's
+  // call: "most words the same faded gray" looked untidy).
+  box.append(...sizes.map((m) => vocabBand(bandName(m), vocabProgress(src.words.slice(0, m), known), m === n)));
+  if (pass) box.append(vocabPassLine(info));
+  box.append(vocabGoButton(id, info));
+  const actions = vocabActions(id, src, p, known, { pass, removable: id !== VOCAB_MOST_USED });
+  if (actions) box.append(actions);
+  els.wordModalBody.replaceChildren(box);
+  if (refresh) return;
+  showWordModal();
+  els.wordModalBody.scrollTop = 0;
+  els.wordModalClose.focus({ preventScroll: true });
 }
 
 // Off the page (it comes back when gone through again): its answers stay, as they're the words'. It
@@ -10199,7 +10218,7 @@ async function removeVocabSource(id, name) {
   if (!ok) return;
   setPreferences({ vocabRecent: (getPreferences().vocabRecent || []).filter((x) => x !== id) });
   setVocabPass(id, null);
-  if (state.vocabOpen === id) state.vocabOpen = null;
+  if (vocabPopId === id) hideWordPop();
   renderVocabHome();
   toast(`Removed '${name}' from vocabulary. Your answers are kept.`);
 }
@@ -10335,6 +10354,7 @@ function vocabBand(label, { yes, answered, total }, current = false) {
 // mode: null carries on (a pass if one is under way, else new words); 'new' ends a pass for new words;
 // 'unknown' or 'all' begins a pass.
 async function startVocabRun(id, mode = null) {
+  if (vocabPopId) hideWordPop(); // from its dialog (showVocabPop)
   if (id === VOCAB_MOST_USED && !vocabFreq) await loadVocabFreq();
   const src = vocabSource(id);
   if (!src) {

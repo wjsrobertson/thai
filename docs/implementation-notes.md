@@ -2404,6 +2404,23 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **A card a list, its dialog with the rest** (2026-11-28, the user's call, after the open row tried a
+  raised background and then an accent outline: "nah that is messy too… I think this needs to look
+  more like the stories section. We see each item in a separated list. when we click on one it pops
+  up a dialog box with the full thing. We can move the '+ Another topic or list' to the top of the
+  page for now, just under the phrases bit"): the page's lists are cards 8 apart, as Stories' rows are
+  (`.vocab-row`: its name, known/total and a ›, its bar, and a plain Start / Continue / See; the
+  accent outline on hover and while its dialog is open). The rest of the card opens its dialog
+  (`showVocabPop`, in the story dialog: `popEnter`, `showWordModal`): its name, every band (the one
+  it's named by in ink and semibold; a topic's one, "All 44"), the pass's line, Start / Continue /
+  See across it in the accent, then `vocabActions` (Again, the words you didn't know, Remove). The
+  open row (`state.vocabOpen`, `toggleVocabRow`, `.vocab-row-more`) is gone. The dialog is drawn
+  again after each change (`renderVocabHome`, `{ refresh }`, so Back's history isn't added to); Start
+  and the Again buttons close it (`startVocabRun`), as Remove does once confirmed. ＋ Another topic or
+  list is a card of its own under the phrases (index.html), not the lists' panel's foot. Checked
+  headless (scratch `vpop.py`) at 390 × 844, Dark and Light: the page, Most used's dialog, Add all
+  (the dialog stays, "All 9 are in My words"), Continue (the dialog shut, the run on), a topic's
+  dialog, Remove (shut, its card gone); no script errors.
 - **＋ New list under an add's Change** (2026-11-28, the user's call: "I should have the option in
   the list selecter to create a new list. This is true for all 'Add all to list' and 'select into
   list' buttons in the app"): every Add all asks through `confirmDialog({ change })`, whose lists
