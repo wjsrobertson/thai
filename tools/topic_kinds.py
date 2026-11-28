@@ -26,7 +26,8 @@ BUILT_TOPICS = {'time-telling-day', 'time-telling-night', 'time-telling-minutes'
                 'grammar-patterns-make-let-get', 'grammar-patterns-linking'}
 # Idioms and proverbs: a card of several words is a saying; one word is one of the sayings' words.
 IDIOM_TOPICS = {'cul-idioms', 'cul-idioms-idioms-proverbs-people-behaviour', 'cul-idioms-work-effort-luck',
-                'cul-idioms-talk-relationships', 'south-idioms'}
+                'cul-idioms-talk-relationships', 'south-idioms',
+                'cul-idioms-animals', 'cul-idioms-caution-effort', 'cul-idioms-talk-character'}  # 2026-11-28
 
 # Reviewed by hand (2026-11-14). A Thai, or a "thai::english" key where the Thai has other senses.
 WORDS = {w.replace('_', ' ') for w in '''ราตรีสวัสดิ์ เรื่อย_ๆ ขอให้ สู้_ๆ เอา สวัสดิ์ ไม่ดี กี่โมง เที่ยง โมง นาฬิกา สิบสี่ พุทธศักราช คริสต์ศักราช

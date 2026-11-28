@@ -3009,6 +3009,36 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## 70 more idioms and proverbs (2026-11-28)
+
+The user's call: "I think we should have more idioms - they are really interesting and a great
+motivation to learn. stuff like 'measure twice, cut once' - 'dog eat dog' - 'every man for himself'
+etc. how many do we have currently and can we add a load more?" There were 70 (four Idioms &
+Proverbs topics) and 9 Southern. Now 140 and 9: three new topics of phrases in Culture & Values →
+Language & Literature, after Talk & Relationships:
+- **Animals** (25): ปลาใหญ่กินปลาเล็ก (dog eat dog), เสือนอนกิน, ฆ่าช้างเอางา, ช้างตายทั้งตัวเอาใบบัวปิด,
+  แมวไม่อยู่ หนูร่าเริง, กระต่ายตื่นตูม, วัวลืมตีน, หมาหวงก้าง, คางคกขึ้นวอ, ยิงปืนนัดเดียวได้นกสองตัว…
+- **Caution, Effort & Money** (24): กันไว้ดีกว่าแก้ (the nearest to measure twice, cut once; the note
+  says so), ได้คืบจะเอาศอก, เข็นครกขึ้นภูเขา, ฝนทั่งให้เป็นเข็ม, ไฟไหม้ฟาง, ตำข้าวสารกรอกหม้อ, ตัดไฟแต่ต้นลม,
+  ได้อย่างเสียอย่าง…
+- **Talk & Character** (21): ฆ้องปากแตก, พูดไปสองไพเบี้ย นิ่งเสียตำลึงทอง, ไปไหนมาสามวาสองศอก, น้ำกลิ้งบนใบบอน,
+  หน้าเนื้อใจเสือ, ขิงก็รา ข่าก็แรง, คบคนให้ดูหน้า ซื้อผ้าให้ดูเนื้อ, รักพี่เสียดายน้อง…
+"Every man for himself" was in already (มือใครยาวสาวได้สาวเอา, People & Behaviour). Only sayings
+in their usual, school-list wording (docs/thai-writing.md, "Sayings in their usual words"), none a
+duplicate of one in the app; English gives the meaning (an English idiom where there's a match), the
+note the literal image, as the other four topics. Each has its words; 34 words were new, in **Words in
+Animals & Caution** (25) and **Words in Talk & Character** (8), and เนื้อ "deer (old word)" in Words in
+Wisdom & People, since Talk & Character's has เนื้อ "texture (of cloth, wood)" and a topic can't hold
+the same Thai twice. A few senses were added for a saying's meaning: กัน "to guard against",
+ปิด "to cover (up)", ความ "a case, a matter".
+Built by **tools/add_idioms.py** from **tools/specs/idioms-2026-11-28.json** (the sayings, the new
+words with translit, and the sense a bare Thai takes): it resolves each word to a card that exists
+(the sayings' word topics first, never Thai Script's spelling cards, which it had picked at first),
+makes the rest, joins the words' translits for the saying's, and reports each sense it chose. The
+new topic ids are in tools/topic_kinds.py's IDIOM_TOPICS. audit_decks (0 errors), stories.py check,
+spelling.mjs run. **Not yet recorded:** gen_audio.py needs edge-tts, which isn't installed here (not
+installed without asking); until then the new cards play with the browser's Thai voice.
+
 ## Phrases from your words: no drill fill-ins (2026-11-28)
 
 The user's call: "some of the phrases in the phrase suggester in vocabulary are pretty poor - e.g. 1

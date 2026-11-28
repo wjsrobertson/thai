@@ -1,0 +1,1053 @@
+{
+ "after": "cul-idioms-talk-relationships",
+ "words_after": "idiom-words-work-talk",
+ "topics": [
+  {
+   "id": "cul-idioms-animals",
+   "category": "Culture & Values",
+   "group": "Language & Literature",
+   "name": "Idioms & Proverbs: Animals",
+   "description": "Elephants, tigers, crocodiles, dogs and fish: sayings with an animal in them. English gives the meaning; the note gives the literal image.",
+   "cards": [
+    {
+     "thai": "ปลาใหญ่กินปลาเล็ก",
+     "english": "dog eat dog / the strong prey on the weak",
+     "note": "Lit. \"big fish eat small fish\".",
+     "words": [
+      "ปลา",
+      "ใหญ่",
+      "กิน",
+      "ปลา",
+      "เล็ก"
+     ]
+    },
+    {
+     "thai": "เสือนอนกิน",
+     "english": "to profit without lifting a finger",
+     "note": "Lit. \"a tiger that eats lying down\".",
+     "words": [
+      "เสือ",
+      "นอน",
+      "กิน"
+     ]
+    },
+    {
+     "thai": "ฆ่าช้างเอางา",
+     "english": "to destroy something great for a small gain",
+     "note": "Lit. \"kill an elephant for its tusks\".",
+     "words": [
+      "ฆ่า",
+      "ช้าง",
+      "เอา",
+      "งา"
+     ]
+    },
+    {
+     "thai": "ช้างตายทั้งตัวเอาใบบัวปิด",
+     "english": "to try to hide what can't be hidden",
+     "note": "Lit. \"cover a whole dead elephant with a lotus leaf\".",
+     "words": [
+      "ช้าง",
+      "ตาย",
+      "ทั้ง",
+      "ตัว",
+      "เอา",
+      "ใบ",
+      "บัว",
+      "ปิด::to cover (up)"
+     ]
+    },
+    {
+     "thai": "แมวไม่อยู่ หนูร่าเริง",
+     "english": "when the cat's away, the mice will play",
+     "note": "Lit. \"the cat's not in, the mice are merry\".",
+     "words": [
+      "แมว",
+      "ไม่",
+      "อยู่",
+      "หนู",
+      "ร่าเริง"
+     ]
+    },
+    {
+     "thai": "กระต่ายตื่นตูม",
+     "english": "to panic over nothing",
+     "note": "Lit. \"a hare startled by a thud\": in the Jataka tale, a fruit falls and the hare runs off crying that the world is ending.",
+     "words": [
+      "กระต่าย",
+      "ตื่น",
+      "ตูม"
+     ]
+    },
+    {
+     "thai": "วัวลืมตีน",
+     "english": "to forget where you came from (once doing well)",
+     "note": "Lit. \"a cow forgetting its feet\".",
+     "words": [
+      "วัว",
+      "ลืม",
+      "ตีน"
+     ]
+    },
+    {
+     "thai": "หมากัดอย่ากัดตอบ",
+     "english": "don't stoop to their level",
+     "note": "Lit. \"if a dog bites you, don't bite it back\".",
+     "words": [
+      "หมา",
+      "กัด",
+      "อย่า",
+      "กัด",
+      "ตอบ"
+     ]
+    },
+    {
+     "thai": "จระเข้ขวางคลอง",
+     "english": "someone who stands in everyone's way",
+     "note": "Lit. \"a crocodile lying across the canal\".",
+     "words": [
+      "จระเข้",
+      "ขวาง",
+      "คลอง"
+     ]
+    },
+    {
+     "thai": "ลิงหลอกเจ้า",
+     "english": "to behave only while the boss is watching",
+     "note": "Lit. \"a monkey fooling its owner\".",
+     "words": [
+      "ลิง",
+      "หลอก",
+      "เจ้า"
+     ]
+    },
+    {
+     "thai": "กิ้งก่าได้ทอง",
+     "english": "to get above yourself after a little luck",
+     "note": "Lit. \"a lizard given gold\": in the tale it puffed itself up and stopped bowing to the king.",
+     "words": [
+      "กิ้งก่า",
+      "ได้",
+      "ทอง"
+     ]
+    },
+    {
+     "thai": "หมาหวงก้าง",
+     "english": "a dog in the manger",
+     "note": "Lit. \"a dog guarding a fish bone\": it can't eat it, but won't let anyone else.",
+     "words": [
+      "หมา",
+      "หวง",
+      "ก้าง"
+     ]
+    },
+    {
+     "thai": "คางคกขึ้นวอ",
+     "english": "an upstart who forgets himself",
+     "note": "Lit. \"a toad carried in a palanquin\".",
+     "words": [
+      "คางคก",
+      "ขึ้น",
+      "วอ"
+     ]
+    },
+    {
+     "thai": "ปลาข้องเดียวกัน",
+     "english": "all of the same (bad) lot / birds of a feather",
+     "note": "Lit. \"fish from the same creel\".",
+     "words": [
+      "ปลา",
+      "ข้อง",
+      "เดียว",
+      "กัน"
+     ]
+    },
+    {
+     "thai": "ม้าตีนต้น",
+     "english": "someone who starts fast and soon runs out of steam",
+     "note": "Lit. \"a horse quick off the mark\".",
+     "words": [
+      "ม้า",
+      "ตีน",
+      "ต้น"
+     ]
+    },
+    {
+     "thai": "ชี้โพรงให้กระรอก",
+     "english": "to put ideas in a troublemaker's head",
+     "note": "Lit. \"point out the hollow to the squirrel\".",
+     "words": [
+      "ชี้",
+      "โพรง",
+      "ให้",
+      "กระรอก"
+     ]
+    },
+    {
+     "thai": "สอนจระเข้ให้ว่ายน้ำ",
+     "english": "to teach a rogue new tricks",
+     "note": "Lit. \"teach a crocodile to swim\".",
+     "words": [
+      "สอน",
+      "จระเข้",
+      "ให้",
+      "ว่าย",
+      "น้ำ"
+     ]
+    },
+    {
+     "thai": "ตาบอดคลำช้าง",
+     "english": "to judge the whole from one small part",
+     "note": "Lit. \"the blind feeling an elephant\".",
+     "words": [
+      "ตา",
+      "บอด",
+      "คลำ",
+      "ช้าง"
+     ]
+    },
+    {
+     "thai": "ดูช้างให้ดูหาง ดูนางให้ดูแม่",
+     "english": "to know a girl, look at her mother",
+     "note": "Lit. \"to judge an elephant, look at its tail; to judge a girl, look at her mother\".",
+     "words": [
+      "ดู",
+      "ช้าง",
+      "ให้",
+      "ดู",
+      "หาง",
+      "ดู",
+      "นาง",
+      "ให้",
+      "ดู",
+      "แม่"
+     ]
+    },
+    {
+     "thai": "ขว้างงูไม่พ้นคอ",
+     "english": "trouble you throw off lands back on you",
+     "note": "Lit. \"throw a snake and it ends up round your own neck\".",
+     "words": [
+      "ขว้าง",
+      "งู",
+      "ไม่",
+      "พ้น",
+      "คอ"
+     ]
+    },
+    {
+     "thai": "ยิงปืนนัดเดียวได้นกสองตัว",
+     "english": "to kill two birds with one stone",
+     "note": "Lit. \"fire the gun once and get two birds\".",
+     "words": [
+      "ยิง",
+      "ปืน",
+      "นัด",
+      "เดียว",
+      "ได้",
+      "นก",
+      "สอง",
+      "ตัว"
+     ]
+    },
+    {
+     "thai": "น้ำมาปลากินมด น้ำลดมดกินปลา",
+     "english": "the tables always turn",
+     "note": "Lit. \"when the water rises fish eat ants; when it falls ants eat fish\".",
+     "words": [
+      "น้ำ",
+      "มา",
+      "ปลา",
+      "กิน",
+      "มด",
+      "น้ำ",
+      "ลด",
+      "มด",
+      "กิน",
+      "ปลา"
+     ]
+    },
+    {
+     "thai": "ตีปลาหน้าไซ",
+     "english": "to spoil someone's success at the last moment",
+     "note": "Lit. \"beat the fish away at the mouth of the trap\".",
+     "words": [
+      "ตี",
+      "ปลา",
+      "หน้า",
+      "ไซ"
+     ]
+    },
+    {
+     "thai": "ม้าดีดกะโหลก",
+     "english": "clumsy and ill-mannered (said of a woman)",
+     "note": "Lit. \"a horse kicking a coconut shell\".",
+     "words": [
+      "ม้า",
+      "ดีด",
+      "กะโหลก"
+     ]
+    },
+    {
+     "thai": "ไก่แก่แม่ปลาช่อน",
+     "english": "a wily, worldly-wise woman",
+     "note": "Lit. \"an old hen, a mother snakehead fish\".",
+     "words": [
+      "ไก่",
+      "แก่",
+      "แม่",
+      "ปลาช่อน"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cul-idioms-caution-effort",
+   "category": "Culture & Values",
+   "group": "Language & Literature",
+   "name": "Idioms & Proverbs: Caution, Effort & Money",
+   "description": "Look before you leap, keep at it, live within your means. English gives the meaning; the note gives the literal image.",
+   "cards": [
+    {
+     "thai": "กันไว้ดีกว่าแก้",
+     "english": "better safe than sorry / prevention is better than cure",
+     "note": "Lit. \"guarding beats fixing\". The nearest to \"measure twice, cut once\".",
+     "words": [
+      "กัน::to guard against, prevent",
+      "ไว้",
+      "ดี",
+      "กว่า",
+      "แก้"
+     ]
+    },
+    {
+     "thai": "อย่าไว้ใจทาง อย่าวางใจคน",
+     "english": "don't take anything on trust",
+     "note": "Lit. \"don't trust the road, don't rely on people\".",
+     "words": [
+      "อย่า",
+      "ไว้ใจ",
+      "ทาง",
+      "อย่า",
+      "วางใจ",
+      "คน"
+     ]
+    },
+    {
+     "thai": "นกน้อยทำรังแต่พอตัว",
+     "english": "to live within your means",
+     "note": "Lit. \"a little bird builds a nest just its size\".",
+     "words": [
+      "นก",
+      "น้อย",
+      "ทำ",
+      "รัง",
+      "แต่",
+      "พอ",
+      "ตัว"
+     ]
+    },
+    {
+     "thai": "ได้คืบจะเอาศอก",
+     "english": "give them an inch and they'll take a mile",
+     "note": "Lit. \"given a hand's span, they want a forearm\".",
+     "words": [
+      "ได้",
+      "คืบ",
+      "จะ",
+      "เอา",
+      "ศอก"
+     ]
+    },
+    {
+     "thai": "เข็นครกขึ้นภูเขา",
+     "english": "an uphill task",
+     "note": "Lit. \"push a stone mortar up a mountain\".",
+     "words": [
+      "เข็น",
+      "ครก",
+      "ขึ้น",
+      "ภูเขา"
+     ]
+    },
+    {
+     "thai": "ฝนทั่งให้เป็นเข็ม",
+     "english": "keep at it and you'll get there",
+     "note": "Lit. \"grind an anvil down to a needle\".",
+     "words": [
+      "ฝน",
+      "ทั่ง",
+      "ให้",
+      "เป็น",
+      "เข็ม"
+     ]
+    },
+    {
+     "thai": "ไฟไหม้ฟาง",
+     "english": "keen at first, then it fizzles out",
+     "note": "Lit. \"fire in straw\": a big blaze, soon out.",
+     "words": [
+      "ไฟ",
+      "ไหม้",
+      "ฟาง"
+     ]
+    },
+    {
+     "thai": "ตำข้าวสารกรอกหม้อ",
+     "english": "to live hand to mouth",
+     "note": "Lit. \"pound just enough rice to fill the pot\".",
+     "words": [
+      "ตำ",
+      "ข้าวสาร",
+      "กรอก",
+      "หม้อ"
+     ]
+    },
+    {
+     "thai": "หาเช้ากินค่ำ",
+     "english": "to live day to day, earning just enough",
+     "note": "Lit. \"earn in the morning, eat in the evening\".",
+     "words": [
+      "หา",
+      "เช้า",
+      "กิน",
+      "ค่ำ"
+     ]
+    },
+    {
+     "thai": "ทำนาบนหลังคน",
+     "english": "to get rich off other people's backs",
+     "note": "Lit. \"farm rice on people's backs\".",
+     "words": [
+      "ทำนา",
+      "บน",
+      "หลัง",
+      "คน"
+     ]
+    },
+    {
+     "thai": "ผีซ้ำด้ำพลอย",
+     "english": "when it rains, it pours",
+     "note": "Lit. \"the ghost strikes again and the house spirit joins in\".",
+     "words": [
+      "ผี",
+      "ซ้ำ",
+      "ด้ำ",
+      "พลอย"
+     ]
+    },
+    {
+     "thai": "ไม้ซีกงัดไม้ซุง",
+     "english": "the small can't take on the mighty",
+     "note": "Lit. \"a sliver of wood trying to lever up a log\".",
+     "words": [
+      "ไม้::tree (old word); stick",
+      "ซีก",
+      "งัด",
+      "ไม้ซุง"
+     ]
+    },
+    {
+     "thai": "น้ำเชี่ยวอย่าขวางเรือ",
+     "english": "don't stand against a strong tide",
+     "note": "Lit. \"in a swift current, don't turn your boat across it\".",
+     "words": [
+      "น้ำ",
+      "เชี่ยว",
+      "อย่า",
+      "ขวาง",
+      "เรือ"
+     ]
+    },
+    {
+     "thai": "ใกล้เกลือกินด่าง",
+     "english": "to overlook what's good right next to you",
+     "note": "Lit. \"near the salt, but eating lye\".",
+     "words": [
+      "ใกล้",
+      "เกลือ",
+      "กิน",
+      "ด่าง"
+     ]
+    },
+    {
+     "thai": "รู้ไว้ใช่ว่า ใส่บ่าแบกหาบ",
+     "english": "knowing more is never a burden",
+     "note": "Lit. \"what you know isn't a load you carry on your shoulder\".",
+     "words": [
+      "รู้",
+      "ไว้",
+      "ใช่ว่า",
+      "ใส่",
+      "บ่า",
+      "แบก",
+      "หาบ"
+     ]
+    },
+    {
+     "thai": "ความรู้ท่วมหัว เอาตัวไม่รอด",
+     "english": "book-smart but no use when it counts",
+     "note": "Lit. \"knowledge over your head, yet you can't save yourself\".",
+     "words": [
+      "ความรู้",
+      "ท่วม",
+      "หัว",
+      "เอา",
+      "ตัว",
+      "ไม่",
+      "รอด"
+     ]
+    },
+    {
+     "thai": "อาบน้ำร้อนมาก่อน",
+     "english": "I've been around longer than you",
+     "note": "Lit. \"I bathed in hot water before you\": said by an elder whose advice comes from experience.",
+     "words": [
+      "อาบน้ำ",
+      "ร้อน",
+      "มา",
+      "ก่อน"
+     ]
+    },
+    {
+     "thai": "ไม้อ่อนดัดง่าย ไม้แก่ดัดยาก",
+     "english": "teach them while they're young",
+     "note": "Lit. \"young wood bends easily, old wood hardly\".",
+     "words": [
+      "ไม้",
+      "อ่อน",
+      "ดัด",
+      "ง่าย",
+      "ไม้",
+      "แก่",
+      "ดัด",
+      "ยาก"
+     ]
+    },
+    {
+     "thai": "เกาไม่ถูกที่คัน",
+     "english": "to miss the real problem",
+     "note": "Lit. \"scratch where it doesn't itch\".",
+     "words": [
+      "เกา",
+      "ไม่",
+      "ถูก",
+      "ที่",
+      "คัน"
+     ]
+    },
+    {
+     "thai": "น้ำลดตอผุด",
+     "english": "once the cover is gone, the truth shows",
+     "note": "Lit. \"when the water drops, the stumps appear\".",
+     "words": [
+      "น้ำ",
+      "ลด",
+      "ตอ",
+      "ผุด"
+     ]
+    },
+    {
+     "thai": "หนีร้อนมาพึ่งเย็น",
+     "english": "to come seeking refuge",
+     "note": "Lit. \"flee the heat to shelter in the cool\".",
+     "words": [
+      "หนี",
+      "ร้อน",
+      "มา",
+      "พึ่ง",
+      "เย็น"
+     ]
+    },
+    {
+     "thai": "ตัดไฟแต่ต้นลม",
+     "english": "to nip it in the bud",
+     "note": "Lit. \"cut off the fire where the wind starts\".",
+     "words": [
+      "ตัด",
+      "ไฟ",
+      "แต่",
+      "ต้น",
+      "ลม"
+     ]
+    },
+    {
+     "thai": "ตาดีได้ ตาร้ายเสีย",
+     "english": "it's a gamble: you win or you lose",
+     "note": "Lit. \"a good turn, you win; a bad turn, you lose\".",
+     "words": [
+      "ตา",
+      "ดี",
+      "ได้",
+      "ตา",
+      "ร้าย",
+      "เสีย"
+     ]
+    },
+    {
+     "thai": "ได้อย่างเสียอย่าง",
+     "english": "you can't have it all",
+     "note": "Lit. \"gain one thing, lose another\".",
+     "words": [
+      "ได้",
+      "อย่าง",
+      "เสีย",
+      "อย่าง"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "cul-idioms-talk-character",
+   "category": "Culture & Values",
+   "group": "Language & Literature",
+   "name": "Idioms & Proverbs: Talk & Character",
+   "description": "Blabbermouths, fence-sitters, stubborn pairs and choosing your friends. English gives the meaning; the note gives the literal image.",
+   "cards": [
+    {
+     "thai": "ฆ้องปากแตก",
+     "english": "a blabbermouth who can't keep a secret",
+     "note": "Lit. \"a gong with a cracked rim\".",
+     "words": [
+      "ฆ้อง",
+      "ปาก",
+      "แตก"
+     ]
+    },
+    {
+     "thai": "พูดไปสองไพเบี้ย นิ่งเสียตำลึงทอง",
+     "english": "speech is silver, silence is golden",
+     "note": "Lit. \"speak and it's worth two cowries; keep quiet and it's a tael of gold\".",
+     "words": [
+      "พูด",
+      "ไป",
+      "สอง",
+      "ไพ",
+      "เบี้ย",
+      "นิ่ง",
+      "เสีย",
+      "ตำลึง",
+      "ทอง"
+     ]
+    },
+    {
+     "thai": "ไปไหนมาสามวาสองศอก",
+     "english": "an answer that has nothing to do with the question",
+     "note": "Lit. \"where have you been? — three wa and two cubits\".",
+     "words": [
+      "ไป",
+      "ไหน",
+      "มา",
+      "สาม",
+      "วา",
+      "สอง",
+      "ศอก"
+     ]
+    },
+    {
+     "thai": "น้ำกลิ้งบนใบบอน",
+     "english": "fickle, never committing to anything",
+     "note": "Lit. \"water rolling on a taro leaf\".",
+     "words": [
+      "น้ำ",
+      "กลิ้ง",
+      "บน",
+      "ใบ",
+      "บอน"
+     ]
+    },
+    {
+     "thai": "ทองไม่รู้ร้อน",
+     "english": "unmoved, couldn't care less",
+     "note": "Lit. \"gold that doesn't feel the heat\".",
+     "words": [
+      "ทอง",
+      "ไม่",
+      "รู้",
+      "ร้อน"
+     ]
+    },
+    {
+     "thai": "หน้าเนื้อใจเสือ",
+     "english": "a wolf in sheep's clothing",
+     "note": "Lit. \"a deer's face, a tiger's heart\".",
+     "words": [
+      "หน้า",
+      "เนื้อ::deer (old word)",
+      "ใจ",
+      "เสือ"
+     ]
+    },
+    {
+     "thai": "มะกอกสามตะกร้าปาไม่ถูก",
+     "english": "too slippery to pin down",
+     "note": "Lit. \"throw three baskets of hog plums and not one hits him\".",
+     "words": [
+      "มะกอก",
+      "สาม",
+      "ตะกร้า",
+      "ปา",
+      "ไม่",
+      "ถูก"
+     ]
+    },
+    {
+     "thai": "เกลียดตัวกินไข่ เกลียดปลาไหลกินน้ำแกง",
+     "english": "to scorn someone but still take what they give",
+     "note": "Lit. \"hate the hen but eat its eggs; hate the eel but drink its curry\".",
+     "words": [
+      "เกลียด",
+      "ตัว",
+      "กิน",
+      "ไข่",
+      "เกลียด",
+      "ปลาไหล",
+      "กิน",
+      "น้ำแกง"
+     ]
+    },
+    {
+     "thai": "ขิงก็รา ข่าก็แรง",
+     "english": "both as stubborn as each other",
+     "note": "Lit. \"the ginger is sharp and the galangal is strong\".",
+     "words": [
+      "ขิง",
+      "ก็",
+      "รา",
+      "ข่า",
+      "ก็",
+      "แรง"
+     ]
+    },
+    {
+     "thai": "ช้างเท้าหน้า",
+     "english": "the one who leads (traditionally, the husband)",
+     "note": "Lit. \"the elephant's front feet\": the wife is ช้างเท้าหลัง, the back feet.",
+     "words": [
+      "ช้าง",
+      "เท้า",
+      "หน้า"
+     ]
+    },
+    {
+     "thai": "คนล้มอย่าข้าม",
+     "english": "don't write off someone who's down",
+     "note": "Lit. \"don't step over a fallen man\": he may rise again.",
+     "words": [
+      "คน",
+      "ล้ม",
+      "อย่า",
+      "ข้าม"
+     ]
+    },
+    {
+     "thai": "ต่อความยาว สาวความยืด",
+     "english": "to drag a quarrel out",
+     "note": "Lit. \"lengthen the matter, pull it out longer\".",
+     "words": [
+      "ต่อ",
+      "ความ::a case, a matter (in dispute)",
+      "ยาว",
+      "สาว::to pull in, hand over hand",
+      "ความ::a case, a matter (in dispute)",
+      "ยืด"
+     ]
+    },
+    {
+     "thai": "เอาไม้สั้นไปรันขี้",
+     "english": "to tangle with a lowlife and come off worse",
+     "note": "Lit. \"poke dung with a short stick\".",
+     "words": [
+      "เอา",
+      "ไม้::tree (old word); stick",
+      "สั้น",
+      "ไป",
+      "รัน",
+      "ขี้"
+     ]
+    },
+    {
+     "thai": "คบคนให้ดูหน้า ซื้อผ้าให้ดูเนื้อ",
+     "english": "choose your friends with care",
+     "note": "Lit. \"look at a face before you befriend; look at the weave before you buy cloth\".",
+     "words": [
+      "คบ",
+      "คน",
+      "ให้",
+      "ดู",
+      "หน้า",
+      "ซื้อ",
+      "ผ้า",
+      "ให้",
+      "ดู",
+      "เนื้อ::texture (of cloth, wood)"
+     ]
+    },
+    {
+     "thai": "ข้าวแดงแกงร้อน",
+     "english": "a debt of gratitude to someone who fed and kept you",
+     "note": "Lit. \"red rice and hot curry\".",
+     "words": [
+      "ข้าว",
+      "แดง",
+      "แกง",
+      "ร้อน"
+     ]
+    },
+    {
+     "thai": "ปลูกเรือนตามใจผู้อยู่ ผูกอู่ตามใจผู้นอน",
+     "english": "do it the way the person it's for wants",
+     "note": "Lit. \"build the house to suit who'll live in it; hang the cradle to suit who'll sleep in it\".",
+     "words": [
+      "ปลูก",
+      "เรือน",
+      "ตาม",
+      "ใจ",
+      "ผู้",
+      "อยู่",
+      "ผูก",
+      "อู่",
+      "ตาม",
+      "ใจ",
+      "ผู้",
+      "นอน"
+     ]
+    },
+    {
+     "thai": "หมาหยอกไก่",
+     "english": "to flirt by teasing",
+     "note": "Lit. \"a dog teasing a hen\".",
+     "words": [
+      "หมา",
+      "หยอก",
+      "ไก่"
+     ]
+    },
+    {
+     "thai": "เห็นกงจักรเป็นดอกบัว",
+     "english": "to mistake something bad for something good",
+     "note": "Lit. \"see a spinning blade as a lotus flower\".",
+     "words": [
+      "เห็น",
+      "กงจักร",
+      "เป็น",
+      "ดอกบัว"
+     ]
+    },
+    {
+     "thai": "รักพี่เสียดายน้อง",
+     "english": "torn between two choices",
+     "note": "Lit. \"love the elder sister, can't bear to lose the younger\".",
+     "words": [
+      "รัก",
+      "พี่",
+      "เสียดาย",
+      "น้อง"
+     ]
+    },
+    {
+     "thai": "เข้าตามตรอก ออกตามประตู",
+     "english": "to do things the proper way (asking her parents first)",
+     "note": "Lit. \"come in by the lane, leave by the gate\".",
+     "words": [
+      "เข้า",
+      "ตาม",
+      "ตรอก",
+      "ออก",
+      "ตาม",
+      "ประตู"
+     ]
+    },
+    {
+     "thai": "ฝากเนื้อไว้กับเสือ",
+     "english": "to trust the wrong person with something",
+     "note": "Lit. \"leave meat with a tiger\".",
+     "words": [
+      "ฝาก",
+      "เนื้อ",
+      "ไว้",
+      "กับ",
+      "เสือ"
+     ]
+    }
+   ]
+  }
+ ],
+ "new_words": {
+  "บัว": [
+   "bua",
+   "lotus"
+  ],
+  "ตูม": [
+   "tuum",
+   "thud, boom (a sound)"
+  ],
+  "ก้าง": [
+   "gâang",
+   "fish bone"
+  ],
+  "วอ": [
+   "wɔɔ",
+   "palanquin, sedan chair"
+  ],
+  "ข้อง": [
+   "khɔ̂ng",
+   "fish creel (a wicker basket for the catch)"
+  ],
+  "บอด": [
+   "bɔ̀ɔt",
+   "blind"
+  ],
+  "กะโหลก": [
+   "gà-lòok",
+   "skull; half a coconut shell"
+  ],
+  "วางใจ": [
+   "waang-jai",
+   "to trust, rely on"
+  ],
+  "คืบ": [
+   "khʉ̂ʉp",
+   "a hand's span (thumb to little finger)"
+  ],
+  "ทั่ง": [
+   "thâng",
+   "anvil"
+  ],
+  "ด้ำ": [
+   "dâm",
+   "a family's guardian spirit (old word)"
+  ],
+  "ซีก": [
+   "sîik",
+   "half, a split piece"
+  ],
+  "ไม้ซุง": [
+   "máai-sung",
+   "a log (a whole trunk)"
+  ],
+  "เชี่ยว": [
+   "chîao",
+   "swift (of a current)"
+  ],
+  "ใช่ว่า": [
+   "châi-wâa",
+   "it's not as if …"
+  ],
+  "หาบ": [
+   "hàap",
+   "to carry on a shoulder pole"
+  ],
+  "ดัด": [
+   "dàt",
+   "to bend into shape"
+  ],
+  "ตอ": [
+   "tɔɔ",
+   "tree stump"
+  ],
+  "ฆ้อง": [
+   "khɔ́ng",
+   "gong"
+  ],
+  "ไพ": [
+   "phai",
+   "pai (an old coin, 1/32 baht)"
+  ],
+  "เบี้ย": [
+   "bîa",
+   "cowrie shell (old money)"
+  ],
+  "ตำลึง": [
+   "tam-lʉng",
+   "tael (an old unit, four baht)"
+  ],
+  "บอน": [
+   "bɔɔn",
+   "elephant-ear taro"
+  ],
+  "มะกอก": [
+   "má-gɔ̀ɔk",
+   "hog plum (Thai olive)"
+  ],
+  "น้ำแกง": [
+   "náam-gɛɛng",
+   "curry broth"
+  ],
+  "รา": [
+   "raa",
+   "sharp, hot (of ginger; old word)"
+  ],
+  "รัน": [
+   "ran",
+   "to poke, prod"
+  ],
+  "กงจักร": [
+   "gong-jàk",
+   "bladed discus (a weapon of the gods)"
+  ],
+  "ตรอก": [
+   "trɔ̀ɔk",
+   "alley, narrow lane"
+  ],
+  "เนื้อ::deer (old word)": [
+   "nʉ́a",
+   "deer (old word)"
+  ],
+  "เนื้อ::texture (of cloth, wood)": [
+   "nʉ́a",
+   "texture (of cloth, wood)"
+  ],
+  "ปิด::to cover (up)": [
+   "pìt",
+   "to cover (up)"
+  ],
+  "กัน::to guard against, prevent": [
+   "gan",
+   "to guard against, prevent"
+  ],
+  "ความ::a case, a matter (in dispute)": [
+   "khwaam",
+   "a case, a matter (in dispute)"
+  ]
+ },
+ "word_topics": [
+  {
+   "id": "idiom-words-animals-caution",
+   "name": "Idioms & Proverbs: Words in Animals & Caution",
+   "description": "The words inside the sayings: toads, palanquins, anvils and logs."
+  },
+  {
+   "id": "idiom-words-talk-character",
+   "name": "Idioms & Proverbs: Words in Talk & Character",
+   "description": "The words inside the sayings: gongs, cowries, taro leaves and alleys."
+  }
+ ],
+ "senses": {
+  "ขิง": "ginger",
+  "ขี้": "droppings, dung",
+  "คัน": "itchy",
+  "ต้น": "trunk, base (of a tree)",
+  "ตัว": "body / self / (classifier for animals)",
+  "ตา": "eye / grandpa (mother's side) / turn",
+  "ตาม": "to follow / according to",
+  "ถูก": "correct / cheap / (passive) get …ed",
+  "ที่": "that / which / at / place",
+  "นก": "bird",
+  "นาง": "she / Mrs. / (rude) that woman",
+  "ใบ": "leaf / sheet",
+  "ประตู": "door",
+  "เป็น": "to be (a…) / can (a skill)",
+  "พลอย": "gemstone; to go along with",
+  "แรง": "strong / force",
+  "ล้ม": "to fall over",
+  "สาว": "young woman / girl; young (of a woman)",
+  "หนู": "mouse, rat",
+  "หมา": "dog (casual)",
+  "ให้": "to give / let / for",
+  "เจ้า": "you (archaic) / owner / lord",
+  "เย็น": "cool / cold (refreshing)",
+  "ข้าม": "to cross",
+  "ไข่": "egg"
+ }
+}
