@@ -194,13 +194,21 @@
          in place of its cards till it's done: three steps, text size, theme and voice, each put on as
          it's picked (renderSetup). -->
     <section class="setup home-only" id="setup-section" hidden aria-labelledby="setup-title">
+      <!-- A title saying it's setting up, then the three steps as tabs, the one shown lit (2026-11-28, the
+           user's call: "some kind of title… much more clear how many stages and what they are"). -->
+      <div class="setup-intro">
+        <h2 class="setup-page-title">Set up Learn Thai</h2>
+        <p class="setup-intro-text">Three quick choices before you start.</p>
+      </div>
+      <div class="segmented setup-tabs" id="setup-tabs" role="group" aria-label="Setup steps"></div>
       <div class="setup-head">
-        <p class="setup-step" id="setup-step"></p>
-        <h2 class="setup-title" id="setup-title" tabindex="-1"></h2>
+        <h3 class="setup-title" id="setup-title" tabindex="-1"></h3>
         <p class="setup-help" id="setup-help"></p>
       </div>
       <div class="setup-body" id="setup-body"></div>
       <p class="setup-later">You can change these any time in Settings.</p>
+      <!-- Pinned to the foot of the screen (over the tab bar on a phone), so Back and Next stay put from
+           step to step (the user's call, the same day: they moved with each step's height). -->
       <div class="setup-nav">
         <button type="button" class="ghost setup-back" id="setup-back">Back</button>
         <button type="button" class="setup-next" id="setup-next">Next</button>

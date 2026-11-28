@@ -469,6 +469,7 @@ html.modal-open body { overflow: clip; }
 /* Home: the three cards stack */
 .home { grid-template-columns: 1fr; gap: 12px; margin-top: 4px; }
 .setup { margin-top: 4px; }
+.setup-nav { padding: 10px 12px; } /* the page's gutters */
 .home-card { padding: 20px 18px 18px; gap: 16px; }
 .home-card-text { gap: 22px; }
 

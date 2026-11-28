@@ -3039,11 +3039,18 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* ---------- first run (renderSetup, 2026-11-28) ----------
    Home's three steps in place of its cards: a heading, the choices as radio rows (the one picked
    outlined in the accent, its dot filled), a sample word on the first two, then Back and Next. */
-.setup { display: flex; flex-direction: column; gap: 14px; max-width: var(--page-width); margin: 24px auto 0; }
+.setup { display: flex; flex-direction: column; gap: 14px; max-width: var(--page-width); margin: 24px auto 0; padding-bottom: 84px; } /* room for the pinned Back / Next */
+.setup-intro { display: flex; flex-direction: column; gap: 4px; }
+.setup-page-title { margin: 0; color: var(--ink); font-size: calc(24px * var(--fs, 1)); font-weight: 700; }
+.setup-intro-text { margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
+/* The steps: a switch across the page, each its number in a circle and its name. */
+.setup-tabs { display: flex; }
+.setup-tab { display: inline-flex; flex: 1 1 0; align-items: center; justify-content: center; gap: 8px; min-width: 0; min-height: 44px; padding: 4px 6px; font-size: calc(15px * var(--fs, 1)); white-space: nowrap; }
+.setup-tab-n { display: inline-grid; flex: none; place-items: center; width: 1.5em; height: 1.5em; border: 1.5px solid currentColor; border-radius: 50%; font-size: .85em; font-variant-numeric: tabular-nums; }
+.setup-tab[aria-current="step"] .setup-tab-n { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .setup[hidden], .home[hidden] { display: none; }
 .setup-head { display: flex; flex-direction: column; gap: 4px; }
-.setup-step { margin: 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-.setup-title { margin: 0; color: var(--ink); font-size: calc(22px * var(--fs, 1)); font-weight: 600; outline: none; }
+.setup-title { margin: 4px 0 0; color: var(--ink); font-size: calc(19px * var(--fs, 1)); font-weight: 600; outline: none; }
 .setup-help { margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); line-height: 1.45; }
 .setup-body { display: flex; flex-direction: column; gap: 14px; }
 .setup-choices { display: flex; flex-direction: column; gap: 8px; }
@@ -3064,10 +3071,14 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .setup-play { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; font-size: 16px; }
 .setup-play .speaker-icon { width: 20px; height: 20px; }
 .setup-later { margin: 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
-.setup-nav { display: flex; align-items: center; gap: 12px; }
+/* Back and Next pinned to the screen's foot, over the tab bar on a phone, in the page's column, so
+   they're in one place on every step (2026-11-28). */
+.setup-nav { position: fixed; z-index: 5; left: 0; right: 0; bottom: calc(var(--tabbar-h, 0px) + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 12px; padding: 12px max(16px, calc((100% - var(--page-width)) / 2)); background: var(--bg); border-top: 1px solid var(--border); }
+.setup[hidden] .setup-nav { display: none; }
 .setup-back { min-height: 48px; padding: 8px 20px; font-size: 16px; }
 .setup-back[hidden] { display: none; }
-.setup-next { min-height: 48px; margin-left: auto; padding: 8px 32px; background: var(--accent); border: 1px solid var(--accent); border-radius: 10px; color: var(--on-accent); font-size: 17px; font-weight: 600; }
+.setup-nav > button { min-height: 48px; } /* both, at one height */
+.setup-next { min-width: 120px; margin-left: auto; padding: 8px 32px; background: var(--accent); border: 1px solid var(--accent); border-radius: 10px; color: var(--on-accent); font-size: 17px; font-weight: 600; }
 
 /* ---------- home page ---------- */
 .home {

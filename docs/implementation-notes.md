@@ -2406,6 +2406,19 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **First run: a title, the steps as tabs, Back / Next pinned** (2026-11-28, the user's call, after
+  trying it: "1. have some kind of title to let the user know that this is setup 2. be much more
+  clear how many stages and what they are (maybe tabs at the top). 3. the next and back buttons
+  should not jump around in y location from page to page"): **Set up Learn Thai**, "Three quick
+  choices before you start.", then a switch of the three steps (`.setup-tabs`: a number in a circle
+  and the name, the one shown lit and its number filled, `aria-current="step"`; any can be tapped)
+  over the step's own heading (19, in place of "Welcome · step n of 3"). Back and Next are fixed to
+  the screen's foot (`.setup-nav`: over the tab bar on a phone, in the page's column on a wide
+  screen, a hairline above), both 48 tall and Next / Start 120 wide, so they're at one place on
+  every step; the page keeps 84 px clear under its content. Checked headless (scratch `setup2.py`,
+  `setup3.py`) at 390 × 844, 390 × 664 and 1280 × 800: Next at (258, 730) on all three steps at 844,
+  (258, 550) at 664, (1013, 740) wide, Back at x 12 / 133; the tabs fit at Largest, no sideways
+  scroll; no script errors.
 - **First run: text size, theme and voice** (2026-11-28, the user's request: on a first visit, or
   after Start over, a wizard on Home, "they can change them live and see the results. recorded
   sounds do not start downloading immediately though, perhaps one sample… prompted to check if their

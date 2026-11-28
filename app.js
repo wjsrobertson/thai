@@ -109,7 +109,7 @@ const els = {
   homeVocabText: document.getElementById('home-vocab-text'),
   homeSection: document.getElementById('home-section'),
   setupSection: document.getElementById('setup-section'), // the first run's steps (renderSetup)
-  setupStep: document.getElementById('setup-step'),
+  setupTabs: document.getElementById('setup-tabs'),
   setupTitle: document.getElementById('setup-title'),
   setupHelp: document.getElementById('setup-help'),
   setupBody: document.getElementById('setup-body'),
@@ -8355,6 +8355,7 @@ async function startOver() {
 // done. A store already in use when this came in counts as done (noteFirstRun), so only a new install
 // or Start over (which keeps only the audio prefs) sees it.
 const SETUP_STEPS = ['textSize', 'theme', 'voice'];
+const SETUP_NAMES = { textSize: 'Text size', theme: 'Theme', voice: 'Voice' };
 const SETUP_SAY = 'สวัสดีครับ';
 const setupPending = () => getPreferences().setupDone === false;
 
@@ -8377,8 +8378,18 @@ function renderSetup() {
   const i = Math.min(state.setupStep || 0, SETUP_STEPS.length - 1);
   const step = SETUP_STEPS[i];
   const s = getSettings();
-  els.setupStep.textContent = `Welcome · step ${i + 1} of ${SETUP_STEPS.length}`;
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  // The steps as tabs, numbered, the one shown lit; any can be gone to (each has a choice already).
+  els.setupTabs.replaceChildren(...SETUP_STEPS.map((name, k) => {
+    const b = el('button', 'seg-btn setup-tab');
+    b.type = 'button';
+    b.append(el('span', 'setup-tab-n', String(k + 1)), SETUP_NAMES[name]);
+    b.setAttribute('aria-checked', String(k === i)); // lit as a switch's choice (.seg-btn)
+    if (k === i) b.setAttribute('aria-current', 'step');
+    b.setAttribute('aria-label', `Step ${k + 1} of ${SETUP_STEPS.length}: ${SETUP_NAMES[name]}`);
+    b.addEventListener('click', () => stepSetup(k - i));
+    return b;
+  }));
   const choices = (options, current, pick) => {
     const box = el('div', 'setup-choices');
     box.setAttribute('role', 'radiogroup');
@@ -8403,7 +8414,7 @@ function renderSetup() {
   };
   const optionsOf = (select) => [...select.options].map((o) => ({ value: o.value, name: o.textContent.replace(/ \(default\)$/, '') }));
   if (step === 'textSize') {
-    els.setupTitle.textContent = 'Text size';
+    els.setupTitle.textContent = SETUP_NAMES.textSize;
     els.setupHelp.textContent = 'Pick the size that reads comfortably. The page changes as you tap.';
     els.setupBody.replaceChildren(choices(optionsOf(els.setTextSize), String(s.textSize), (v) => {
       setSettings({ textSize: Number(v) });
@@ -8411,7 +8422,7 @@ function renderSetup() {
       renderSetup();
     }), sample());
   } else if (step === 'theme') {
-    els.setupTitle.textContent = 'Theme';
+    els.setupTitle.textContent = SETUP_NAMES.theme;
     els.setupHelp.textContent = 'The colours. The page changes as you tap.';
     els.setupBody.replaceChildren(choices(optionsOf(els.setTheme), s.theme, (v) => {
       setSettings({ theme: v });
@@ -8419,7 +8430,7 @@ function renderSetup() {
       renderSetup();
     }), sample());
   } else {
-    els.setupTitle.textContent = 'Voice';
+    els.setupTitle.textContent = SETUP_NAMES.voice;
     els.setupHelp.textContent = 'How the Thai is spoken. Tap one to hear it.';
     const thai = !!thaiVoice;
     els.setupBody.replaceChildren(choices([
