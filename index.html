@@ -150,20 +150,6 @@
     </div>
   </div>
 
-  <!-- A tapped word (showWordPop in app.js): a story's word, or a Topics row's Thai. -->
-  <div id="word-modal" class="modal word-modal" hidden role="dialog" aria-modal="true" aria-labelledby="word-modal-en">
-    <div class="modal-backdrop" data-close></div>
-    <div class="modal-panel word-panel" role="document">
-      <div class="modal-head word-head">
-        <!-- ‹ goes back to what the dialog showed before (a phrase, from one of its words; 2026-11-22). -->
-        <button type="button" class="modal-back" id="word-modal-back" hidden aria-label="Back" title="Back"><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg></button>
-        <div class="pop-text"><span class="pop-tr" id="word-modal-tr"></span><span class="pop-en" id="word-modal-en"></span></div>
-        <button type="button" class="modal-close" id="word-modal-close" data-close aria-label="Close">✕</button>
-      </div>
-      <div class="modal-body word-body" id="word-modal-body" tabindex="-1"></div>
-    </div>
-  </div>
-
   <!-- Vocabulary's phrases one at a time (openPhraseSort): add each to your phrase list, or not. Laid out
        as the word dialog is (a card on a wide screen, the room between the bars on a phone). -->
   <div id="phrase-sort" class="modal word-modal phrase-sort" hidden role="dialog" aria-modal="true" aria-labelledby="phrase-sort-title">
@@ -186,6 +172,21 @@
           <button type="button" class="grade grade-easy" id="ps-yes" title="Add (→)">Add</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- A tapped word (showWordPop in app.js): a story's word, or a Topics row's Thai.
+       After One by one, so a word opened from its card (2026-11-28) is over it. -->
+  <div id="word-modal" class="modal word-modal" hidden role="dialog" aria-modal="true" aria-labelledby="word-modal-en">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel word-panel" role="document">
+      <div class="modal-head word-head">
+        <!-- ‹ goes back to what the dialog showed before (a phrase, from one of its words; 2026-11-22). -->
+        <button type="button" class="modal-back" id="word-modal-back" hidden aria-label="Back" title="Back"><svg class="back-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 5.5 8 12l6.5 6.5" /></svg></button>
+        <div class="pop-text"><span class="pop-tr" id="word-modal-tr"></span><span class="pop-en" id="word-modal-en"></span></div>
+        <button type="button" class="modal-close" id="word-modal-close" data-close aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body word-body" id="word-modal-body" tabindex="-1"></div>
     </div>
   </div>
 

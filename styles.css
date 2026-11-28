@@ -2426,7 +2426,10 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .ps-card .ps-story-th { margin-top: 10px; color: var(--ink); font-size: calc(24px * var(--fs, 1)); line-height: 1.6; overflow-wrap: anywhere; }
 .ps-card .ps-missing { margin-top: 4px; color: var(--muted); font-size: calc(15px * var(--fs, 1)); }
 .ps-card .pop-actions { justify-content: center; margin-top: 6px; }
-.ps-card .vp-missing { cursor: inherit; }
+/* Its words open the word dialog (2026-11-28): dotted underline as .say; the new word keeps its own. */
+.ps-word { cursor: pointer; border-radius: 4px; text-decoration: underline dotted; text-decoration-color: color-mix(in srgb, currentColor 55%, transparent); text-underline-offset: 0.3em; }
+.ps-word.vp-missing { text-decoration: underline; text-decoration-color: currentColor; }
+.ps-word:hover, .ps-word:focus-visible { color: var(--accent); outline: none; }
 .ps-card .vocab-go { margin-top: 10px; }
 /* Its rows stacked at every width, as a phone's List rows are (mobile.css): Thai, transliteration and
    English down the left, the buttons on the right. In Vocabulary's 560 column the table's columns left

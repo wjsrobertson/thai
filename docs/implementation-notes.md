@@ -3009,6 +3009,24 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## One by one: its words open the word dialog (2026-11-28)
+
+The user's call: "in the select into wizards (and similar wizards) - it should be possible to
+click/tap words and have the word dialog open. closing the dialog would take you back to the wizard.
+for the 'one word short' phrase select into wizard - the New word: xxx should have the xxx clickable
+as well". Every Select into / Add words / Move / Remove run is One by one (`#phrase-sort`,
+renderPhraseSort). On its card a phrase's Thai is its words (phraseSpans; Vocabulary's phrases bring
+theirs, a topic's from phraseWords), each a `.ps-word` that opens that word's dialog; a word's Thai is
+one; the missing word keeps its accent underline and opens too, as does the Thai in **New word: …**.
+They're dotted underlined (as `.say`), the accent on hover and focus, Enter / Space from the keyboard;
+the rest of the card still plays it. The word dialog is now after One by one in index.html, so it's
+over it (both `.modal`, the same z-index), and One by one's keys (←, →, Escape) stand aside while a
+word is open, so Escape closes the word, not the run. A close (✕, the backdrop, Escape, a swipe down)
+leaves One by one as it was, on the same card. Stories' cards (a title and a first line) have no
+words to tap yet. Checked headless (scratch `pswords.py`) at 390 × 844, One word short: ผมไม่เข้าใจ
+as three words, ผม opens over the run (elementFromPoint: the word dialog), ✕, Escape and the backdrop
+each back on "1 of 61"; a tap elsewhere on the card doesn't open anything; no script errors.
+
 ## Closing a word opened from a story goes back to the story (2026-11-28)
 
 The user's report: "when you have a story open and you click on a word… When you close the word

@@ -10083,15 +10083,37 @@ function renderPhraseSort({ say = true } = {}) {
     if (say) speak(first);
     return;
   }
+  // Its words open the word dialog over this one, closing back to it (2026-11-28, the user's call: "it
+  // should be possible to click/tap words and have the word dialog open"): a phrase's each word, a
+  // word's the whole of it, and One word short's new word in its line too.
+  const tapWord = (w, text, cls = 'ps-word') => {
+    const span = el('span', cls, text);
+    span.lang = 'th';
+    span.tabIndex = 0;
+    span.setAttribute('role', 'button');
+    span.title = `Open ${w.thai}`;
+    const open = (e) => {
+      e.preventDefault();
+      e.stopPropagation(); // not the card's play
+      showWordPop(span, w);
+    };
+    span.addEventListener('click', open);
+    span.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') open(e); });
+    return span;
+  };
   const thai = el('p', 'ps-thai');
   thai.lang = 'th';
-  if (p.missing) appendPhraseParts(thai, p.card.thai, p.words, (w, text) => (w.thai === p.missing ? el('span', 'vp-missing', text) : text));
-  else thai.textContent = p.card.thai;
+  const words = p.words || (isPhraseCard(p.card) ? phraseWords(p.card) : null);
+  if (words?.length && phraseSpans(p.card.thai, words)) {
+    appendPhraseParts(thai, p.card.thai, words, (w, text) => tapWord(w, text, w.thai === p.missing ? 'ps-word vp-missing' : 'ps-word'));
+  } else thai.append(tapWord(p.card, p.card.thai));
   const play = playButton(cardSay(p.card), `Play ${p.card.thai} (P)`);
   const parts = [el('p', 'ps-topic', p.deck?.name || ''), thai, el('p', 'ps-tr', p.card.translit), el('p', 'ps-en', p.card.english)];
   if (p.missing) {
     const w = p.words.find((x) => x.thai === p.missing);
-    parts.push(el('p', 'ps-missing', `New word: ${w.thai} ${w.english}`));
+    const line = el('p', 'ps-missing', 'New word: ');
+    line.append(tapWord(w, w.thai), ` ${w.english}`);
+    parts.push(line);
   }
   parts.push(play);
   els.psCard.replaceChildren(...parts);
@@ -10400,7 +10422,7 @@ function bindPhraseSortSwipe() {
   const card = els.psCard;
   bindYesNoSwipe(card, { can: () => !!phraseSort?.queue[phraseSort.i], alive: () => !!phraseSort, answer: answerPhraseSort });
   card.addEventListener('click', (e) => {
-    if (e.target.closest('button, .vp-missing')) return;
+    if (e.target.closest('button, .ps-word')) return; // a word opens its dialog
     const p = phraseSort?.queue[phraseSort.i];
     if (p) speak(sortSay(p)); // the card: play it
   });
@@ -11394,7 +11416,7 @@ function bindEvents() {
       }
       return;
     }
-    if (phraseSort) { // Vocabulary's One by one
+    if (phraseSort && !wordPop) { // Vocabulary's One by one (a word opened over it: the word's keys)
       handlePhraseSortKey(e);
       return;
     }
