@@ -6252,6 +6252,21 @@ const PAGE_ICONS = {
 // Adding to a list: a bookmark (2026-11-22, the user's call: the story bookmark "for letter/words/
 // phrases too, everything instead of the (=) icon which looks more like reload"; it was Home's 🔁 as
 // two arrows). `filled` when the word's in the list (it was a ✓), as a saved story's is.
+// The vocabulary panel's buttons each have an icon (2026-11-28, the user's call: "all buttons should have
+// icons here too"): go through again (an arrow round, with a cross for the ones you didn't know),
+// one at a time (Flashcards' stack), add all (a bookmark with a plus), take off the page (a circled
+// minus), stop (a square), and the row's Start / Continue (play) or See (an eye).
+const VOCAB_ICONS = {
+  unknown: 'M3 12a9 9 0 1 0 2.64-6.36L3 8.3M3 3v5.3h5.3M9.8 9.8l4.4 4.4M14.2 9.8l-4.4 4.4',
+  all: 'M3 12a9 9 0 1 0 2.64-6.36L3 8.3M3 3v5.3h5.3',
+  sort: PAGE_ICONS.flashcards,
+  addAll: 'M6 3h12v18l-6-4.5L6 21zM12 7v6M9 10h6',
+  remove: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8',
+  stop: 'M7 7h10v10H7z',
+  play: 'M8 5v14l11-7z',
+  see: 'M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12zM12 9.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6z',
+};
+const vocabIcon = (name) => lineIcon(`review-icon vocab-icon${name === 'play' ? ' filled' : ''}`, '0 0 24 24', VOCAB_ICONS[name]); // play solid, as a media control's
 const reviewIcon = (filled = false) => lineIcon('review-icon' + (filled ? ' filled' : ''), '0 0 24 24', PAGE_ICONS.mylist);
 
 // A toast: a short message at the bottom of the screen that fades out after `ms`. A new one
@@ -10101,7 +10116,9 @@ function vocabSourceRow(id, known, at) {
   const band = n === src.words.length ? p : vocabProgress(src.words.slice(0, n), known);
 
   const more = [];
-  if (sizes.length > 1) more.push(...sizes.map((m) => vocabBand(bandName(m), vocabProgress(src.words.slice(0, m), known))));
+  // The band the row is named by stands out (ink, semibold), the rest muted (2026-11-28, the user's
+  // call: "most words the same faded gray" looked untidy).
+  if (sizes.length > 1) more.push(...sizes.map((m) => vocabBand(bandName(m), vocabProgress(src.words.slice(0, m), known), m === n)));
   const actions = vocabActions(id, src, p, known, { pass, removable: id !== VOCAB_MOST_USED });
   if (actions) more.push(actions);
 
@@ -10128,9 +10145,11 @@ function vocabSourceRow(id, known, at) {
     main.setAttribute('aria-controls', details.id);
     main.addEventListener('click', () => toggleVocabRow(id));
   }
-  const go = el('button', 'ghost vocab-go', pass ? 'Continue' : p.answered === p.total ? 'See' : p.answered ? 'Continue' : 'Start');
+  const goText = pass ? 'Continue' : p.answered === p.total ? 'See' : p.answered ? 'Continue' : 'Start';
+  const go = el('button', 'ghost vocab-go');
+  go.append(vocabIcon(goText === 'See' ? 'see' : 'play'), goText);
   go.type = 'button';
-  go.setAttribute('aria-label', `${go.textContent}: ${src.name}`);
+  go.setAttribute('aria-label', `${goText}: ${src.name}`);
   go.addEventListener('click', () => startVocabRun(id));
   line.append(main, go);
   row.append(line, ...(more.length ? [details] : []));
@@ -10166,11 +10185,12 @@ async function removeVocabSource(id, name) {
   toast(`Removed '${name}' from vocabulary. Your answers are kept.`);
 }
 
-function vocabButton(text, label, onClick) {
+function vocabButton(text, label, onClick, icon = '') {
   const b = document.createElement('button');
   b.type = 'button';
   b.className = 'ghost vocab-again';
-  b.textContent = text;
+  if (icon) b.append(vocabIcon(icon), text);
+  else b.textContent = text;
   b.setAttribute('aria-label', label);
   b.addEventListener('click', onClick);
   return b;
@@ -10201,12 +10221,12 @@ function vocabActions(id, src, p, known = knownMap(), { pass = null, removable =
     grid.append(vocabButton('Stop going through again', `Stop going through ${src.name} again`, () => {
       setVocabPass(id, null);
       renderVocab();
-    }));
+    }, 'stop'));
   } else if (p.answered) {
     head('Go through again');
     const no = p.answered - p.yes;
-    if (no) grid.append(vocabButton(`Didn't know · ${fmtCount(no)}`, `Go through the ${plural(no, 'word')} in ${src.name} you didn't know again`, () => startVocabRun(id, 'unknown')));
-    grid.append(vocabButton(`All · ${fmtCount(p.answered)}`, `Go through all ${plural(p.answered, 'word')} you've answered in ${src.name} again`, () => startVocabRun(id, 'all')));
+    if (no) grid.append(vocabButton(`Didn't know · ${fmtCount(no)}`, `Go through the ${plural(no, 'word')} in ${src.name} you didn't know again`, () => startVocabRun(id, 'unknown'), 'unknown'));
+    grid.append(vocabButton(`All · ${fmtCount(p.answered)}`, `Go through all ${plural(p.answered, 'word')} you've answered in ${src.name} again`, () => startVocabRun(id, 'all'), 'all'));
   }
   const keys = [...new Set(src.words.filter((w) => known[w] === 0).map((w) => src.shown(w)?.card).filter(Boolean)
     .map(cardKey).filter((k) => keyKind(k) === 'words'))];
@@ -10214,22 +10234,22 @@ function vocabActions(id, src, p, known = knownMap(), { pass = null, removable =
     const name = targetName('words');
     const have = targetWords('words');
     const n = keys.filter((k) => !have.has(k)).length;
-    head(`Words you didn't know → ${name}`);
+    head(`${plural(n || keys.length, 'word')} you didn't know → ${name}`); // the count Add all's label lost (2026-11-28)
     if (!n) {
       grid.append(el('p', 'vocab-actions-note', keys.length === 1 ? `It's in ${name}` : `All ${fmtCount(keys.length)} are in ${name}`));
     } else {
       if (wordSortQueue(src, known).length) {
-        const sort = vocabButton('', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)));
-        sort.replaceChildren(reviewIcon(), 'Select into list'); // "Sort one by one" till 2026-11-27 (the user's call), as a topic's
+        // "Sort one by one" till 2026-11-27 (the user's call), as a topic's; the bookmark Add all has till 2026-11-28
+        const sort = vocabButton('Select into list', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)), 'sort');
         grid.append(sort);
       }
-      const add = vocabButton('', `Add the ${plural(n, 'word')} you didn't know to ${name}`, () => addUnknownWords(src, keys));
-      add.replaceChildren(reviewIcon(), 'Add all to list'); // "Add all (4)" till 2026-11-27; the count's in the tooltip and the confirm
+      // "Add all (4)" till 2026-11-27; the count's in the heading, the tooltip and the confirm
+      const add = vocabButton('Add all to list', `Add the ${plural(n, 'word')} you didn't know to ${name}`, () => addUnknownWords(src, keys), 'addAll');
       grid.append(add);
     }
   }
   if (removable) {
-    const b = vocabButton('Remove from vocabulary', `Remove ${src.name} from vocabulary`, () => removeVocabSource(id, src.name));
+    const b = vocabButton('Remove from vocabulary', `Remove ${src.name} from vocabulary`, () => removeVocabSource(id, src.name), 'remove');
     b.classList.add('vocab-actions-wide');
     grid.append(b);
   }
@@ -10275,9 +10295,9 @@ function vocabBar({ yes, answered, total }) {
   return bar;
 }
 
-function vocabBand(label, { yes, answered, total }) {
+function vocabBand(label, { yes, answered, total }, current = false) {
   const row = document.createElement('div');
-  row.className = 'vocab-band';
+  row.className = `vocab-band${current ? ' current' : ''}`;
   row.setAttribute('role', 'img');
   row.setAttribute('aria-label', `${label}: ${fmtCount(yes)} known, ${fmtCount(answered - yes)} not, ${fmtCount(total - answered)} to go`);
   const name = document.createElement('span');
@@ -10379,7 +10399,7 @@ function renderVocabRun({ say = true } = {}) {
     els.vocabEn.replaceChildren();
     const fresh = p.total - p.answered;
     els.vocabEnd.replaceChildren(
-      ...(fresh ? [vocabButton(`New words · ${fmtCount(fresh)}`, `Carry on with the ${plural(fresh, 'word')} not answered yet`, () => startVocabRun(run.id, 'new'))] : []),
+      ...(fresh ? [vocabButton(`New words · ${fmtCount(fresh)}`, `Carry on with the ${plural(fresh, 'word')} not answered yet`, () => startVocabRun(run.id, 'new'), 'play')] : []),
       ...[vocabActions(run.id, run.src, p, known)].filter(Boolean),
     );
     return;

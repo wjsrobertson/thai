@@ -2322,10 +2322,13 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* A band: its name, the bar (known, then not known, then the rest to go) and known/total. */
 .vocab-band { display: grid; grid-template-columns: 5.6em 1fr 5.6em; align-items: center; gap: 10px; font-size: calc(14px * var(--fs, 1)); }
 .vocab-band-name { color: var(--muted); white-space: nowrap; }
+/* The band the row's named by in ink and semibold, the others muted (2026-11-28, the user's call). */
+.vocab-band.current .vocab-band-name { color: var(--ink); font-weight: 600; }
 .vocab-bar { display: flex; height: 8px; overflow: hidden; background: var(--panel-2); border: 1px solid var(--border); border-radius: 4px; }
 .vocab-bar-yes { background: var(--good); }
 .vocab-bar-no { background: color-mix(in srgb, var(--again) 55%, var(--panel-2)); }
-.vocab-band-count { color: var(--ink); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.vocab-band-count { color: var(--muted); text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.vocab-band.current .vocab-band-count { color: var(--ink); font-weight: 600; }
 /* Phrases from your words (2026-11-22): the page's row under the count, its two counts, opening a
    list in place of the page: Every word known | One word short, a line on it, Add all, List's rows. In a
    phrase one word short, the word to learn is in the accent, underlined (a tap opens it). */
@@ -2497,12 +2500,20 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Under a list's bars and at a run's end (vocabActions, 2026-11-26): equal buttons two to a row, each
    pair under a small muted heading that spans both; Remove from this page across both, set apart. */
 .vocab-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; }
-.vocab-actions-head { grid-column: 1 / -1; margin: 6px 0 -2px; color: var(--muted); font-size: calc(14px * var(--fs, 1)); overflow-wrap: anywhere; }
-.vocab-actions-head:first-child { margin-top: 0; }
+/* Each pair's heading semibold, a hairline above all but the first, so the groups read apart from
+   the bars and each other (2026-11-28, the user's call). */
+.vocab-actions-head { grid-column: 1 / -1; margin: 6px 0 -2px; padding-top: 12px; border-top: 1px solid var(--border); color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-weight: 600; overflow-wrap: anywhere; }
+.vocab-actions-head:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.vocab-row-more .vocab-actions-head:first-child { margin-top: 2px; padding-top: 12px; border-top: 1px solid var(--border); } /* a list's panel: the actions apart from the bars too */
 .vocab-actions-note { grid-column: 1 / -1; margin: 0; color: var(--ink); font-size: calc(15px * var(--fs, 1)); }
 .vocab-actions .vocab-again { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 6px; white-space: nowrap; } /* one line in 162 (a run's end at 390) */
 .vocab-actions .vocab-actions-wide { grid-column: 1 / -1; margin-top: 8px; }
-.vocab-again { min-height: 44px; padding: 8px 12px; font-size: 15px; font-variant-numeric: tabular-nums; }
+.vocab-again { min-height: 44px; padding: 8px 12px; color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; } /* ink, not the ghost's muted (2026-11-28) */
+.vocab-again, .vocab-go { display: inline-flex; align-items: center; justify-content: center; }
+.vocab-icon { flex: none; width: 18px; height: 18px; }
+/* The row's Start / Continue / See: its main action, in the accent (2026-11-28). */
+.vocab-go { color: var(--accent); border-color: var(--accent); }
+.vocab-go .vocab-icon { width: 16px; height: 16px; }
 .vocab-end { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 14px; width: 100%; }
 .vocab-end[hidden] { display: none; }
 .vocab-card.done .vocab-tr { color: var(--ink); font-style: normal; } /* the end's "You know 11 of them." */

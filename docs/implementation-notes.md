@@ -2377,6 +2377,20 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   the page, 261 on a wide screen, all 44 tall. Checked headless (scratch `grid_probe.py`) at 390 ×
   664 and 1280 × 800: Most used's grid, a topic's with Remove, the note after Add all, a run's end; no
   sideways scroll, no script errors.
+- **Tidier, with icons** (2026-11-28, the user's screenshot: "the highlighting is a bit untidy with
+  most words the same faded gray. all buttons should have icons here too"; offered ideas, the user
+  said try it): Most used's bands show the one the row's named by (`vocabBand(…, current)`,
+  `.vocab-band.current`) in ink and semibold, the others' names and counts muted (the counts were all
+  ink). Each pair's heading is semibold with a hairline above it, the first too on a list's panel
+  (between the bars and the actions; not at a run's end). The panel's buttons are in ink, not the
+  ghost's muted. Every button has an icon (`VOCAB_ICONS`, `vocabIcon`, 18 px): Didn't know a circled
+  arrow round with a cross, All the same without the cross, Select into list Flashcards' stack (it
+  had Add all's bookmark), Add all a bookmark with a plus, Remove from vocabulary a circled minus,
+  Stop going through again a square, New words and the row's Start / Continue a solid play, See an
+  eye. Start / Continue / See are in the accent (text and outline), as the row's main action. The
+  words' heading carries the count Add all's label lost: "9 words you didn't know → My words".
+  Checked headless (scratch `vpanel.py`) at 390 × 844, Dark and Light, Larger and Largest text: one
+  line per button, no overflow.
 - **Remove from vocabulary** (the user's wording, the same evening): the button, its confirm ("Remove
   'Greetings & Politeness' from vocabulary?") and its toast, for "Remove from this page".
 - **Phrases from your known vocabulary, not clickable at 0** (the user's call, the same evening: "if
