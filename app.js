@@ -5857,8 +5857,9 @@ function openMoveWords(keys, what, fromId, kind = WORD_LISTS) {
 
 // The same dialog to choose a list, not move anything (2026-11-26, One by one's Change): `title`
 // ("Add phrases to"), your lists of `kind` with `current` ticked, ＋ New list; a tap closes it and
-// calls `pick(id)`. Without "Add new … there too": choosing is the point.
-function openListChooser({ title, kind, current, pick, noNew = false, exclude = null }) {
+// calls `pick(id)`. Without "Add new … there too": choosing is the point. `newName`, if given, asks a
+// new list's name in its place (the confirm dialog's Change, whose own dialog askListName reuses).
+function openListChooser({ title, kind, current, pick, newName = null, exclude = null }) {
   state.moving = { lastFocus: document.activeElement };
   els.moveTitle.textContent = title;
   els.moveDefault.checked = false;
@@ -5888,10 +5889,10 @@ function openListChooser({ title, kind, current, pick, noNew = false, exclude = 
   add.textContent = '＋ New list';
   add.addEventListener('click', async () => {
     closeMoveWords();
-    const name = await askListName('New list', '', 'Make list');
+    const name = await (newName || (() => askListName('New list', '', 'Make list')))();
     if (name) pick(kind.create(name, { target: false }).id);
   });
-  els.moveLists.replaceChildren(...rows, ...(noNew ? [] : [add])); // noNew: over the confirm dialog, which asks a new list's name
+  els.moveLists.replaceChildren(...rows, add);
   els.moveModal.hidden = false;
   setModalOpen(true);
   (els.moveLists.querySelector('[aria-current]') || els.moveLists.firstChild).focus();
@@ -6330,24 +6331,45 @@ function holdToast(held) {
 // lists dialog (openListChooser) to pick another, which becomes your list of that kind (setTarget), and
 // the dialog's title, message and button are made again by text() (the user's call, 2026-11-26: Add
 // all's "Add to 'xxx'?" "should have the 'change' button to allow selecting a different list"). The
-// caller works out what to add once confirmed, from the list then chosen. No ＋ New list there: its
-// name is asked in this same dialog.
+// caller works out what to add once confirmed, from the list then chosen. With ＋ New list too (the
+// user's call, 2026-11-28: "I should have the option in the list selecter to create a new list"; it
+// was left out till then): its name is asked in this same dialog (askListName), so this one steps
+// aside (its promise kept, Don't ask again's tick too), then comes back with the new list chosen.
 function confirmDialog({ title, message = '', confirmLabel = 'OK', cancelLabel = 'Cancel', setting = null, danger = false, input = null, change = null }) {
   if (setting && getSettings()[setting] === false) return Promise.resolve(true);
   if (state.confirm) closeConfirm(false);
-  els.confirmInput.hidden = !input;
-  els.confirmInput.value = input?.value || '';
-  els.confirmInput.placeholder = input?.placeholder || '';
   const paint = (t) => {
     els.confirmTitle.textContent = t.title;
     els.confirmMessage.textContent = t.message || '';
     els.confirmMessage.hidden = !t.message;
     els.confirmOk.textContent = t.confirmLabel || 'OK';
   };
-  paint(change ? change.text() : { title, message, confirmLabel });
-  els.confirmChange.hidden = !change;
-  els.confirmChange.onclick = !change ? null : () => openListChooser({
-    title: `Add ${change.kind === 'stories' ? 'stories' : kindNoun(change.kind)} to`, kind: listKindsOf(change.kind), current: ofTarget(change.kind)?.id, noNew: true,
+  const show = () => {
+    els.confirmInput.hidden = !input;
+    els.confirmInput.value = input?.value || '';
+    els.confirmInput.placeholder = input?.placeholder || '';
+    paint(change ? change.text() : { title, message, confirmLabel });
+    els.confirmChange.hidden = !change;
+    els.confirmChange.onclick = change && openChange;
+    els.confirmOk.classList.toggle('danger', danger);
+    els.confirmCancel.textContent = cancelLabel;
+    els.confirmDontAskRow.hidden = !setting;
+    els.confirmModal.hidden = false;
+    setModalOpen(true);
+  };
+  const newName = async () => { // this dialog aside while askListName has it
+    const held = state.confirm;
+    const dontAsk = els.confirmDontAsk.checked;
+    state.confirm = null;
+    const name = await askListName('New list', '', 'Make list');
+    state.confirm = held;
+    show();
+    els.confirmDontAsk.checked = dontAsk;
+    if (!name) els.confirmChange.focus({ preventScroll: true });
+    return name;
+  };
+  const openChange = () => openListChooser({
+    title: `Add ${change.kind === 'stories' ? 'stories' : kindNoun(change.kind)} to`, kind: listKindsOf(change.kind), current: ofTarget(change.kind)?.id, newName,
     pick: (id) => {
       ofSetTarget(change.kind, id);
       paint(change.text());
@@ -6357,12 +6379,8 @@ function confirmDialog({ title, message = '', confirmLabel = 'OK', cancelLabel =
       els.confirmChange.focus({ preventScroll: true });
     },
   });
-  els.confirmOk.classList.toggle('danger', danger);
-  els.confirmCancel.textContent = cancelLabel;
-  els.confirmDontAskRow.hidden = !setting;
+  show();
   els.confirmDontAsk.checked = false;
-  els.confirmModal.hidden = false;
-  setModalOpen(true);
   return new Promise((resolve) => {
     state.confirm = { resolve, setting, lastFocus: document.activeElement };
     (input ? els.confirmInput : danger ? els.confirmCancel : els.confirmOk).focus();

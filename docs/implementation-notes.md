@@ -2349,8 +2349,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   are made again (text()); the page under it is redrawn too, so its buttons name the new list even if
   you then Cancel. Each caller works out what to add once confirmed, from the list then chosen. Used
   by all three adds that ask: Vocabulary's Add unknown into My words, the phrases' Add all, and the
-  List page's Add all. Over a confirm the lists dialog has no ＋ New list (a new list's name is asked
-  in the same confirm dialog, which can't be open twice); Esc closes it first (the key handler checks
+  List page's Add all. Over a confirm the lists dialog had no ＋ New list till 2026-11-28 (a new list's
+  name is asked in the same confirm dialog, which can't be open twice; see the next note); Esc closes it first (the key handler checks
   `state.moving && state.confirm` before the confirm). Checked headless (scratch
   `confchange_probe.py`) at 390 × 664 and 1280 × 800: each of the three, Change → the lists, Esc
   closing only them, a pick → the new title and message, the focus back on Change; adds into the
@@ -2393,6 +2393,16 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   same day): "9 words you didn't know" (the confirm still names the list).
   Checked headless (scratch `vpanel.py`) at 390 × 844, Dark and Light, Larger and Largest text: one
   line per button, no overflow.
+- **＋ New list under an add's Change** (2026-11-28, the user's call: "I should have the option in
+  the list selecter to create a new list. This is true for all 'Add all to list' and 'select into
+  list' buttons in the app"): every Add all asks through `confirmDialog({ change })`, whose lists
+  dialog now has ＋ New list too (`openListChooser`'s `newName`, in place of `noNew`). Its name is
+  asked in the confirm dialog itself (askListName), so the add's confirm steps aside: its state held
+  (the promise, Don't ask again's tick), then shown again (`show()`) with the new list chosen ("Add to
+  'Food words'?", "Add 9"); a cancelled name brings it back unchanged, the focus on Change. Select
+  into list's Change (One by one) had ＋ New list already. Checked headless (scratch `newlist.py`) at
+  390 × 844, Vocabulary's Add all: cancel the name → the confirm back, then closes; make "Food words"
+  → its 9 words added; One by one's Change still offers it; no script errors.
 - **Remove from vocabulary** (the user's wording, the same evening): the button, its confirm ("Remove
   'Greetings & Politeness' from vocabulary?") and its toast, for "Remove from this page".
 - **Phrases from your known vocabulary, not clickable at 0** (the user's call, the same evening: "if
