@@ -355,6 +355,8 @@ const state = {
   storyReading: { active: false, token: 0, btn: null, at: null, paused: null },
   relearn: new Map(),       // Recognition: card key -> relearning step (requeueRecognition)
   carry: [],                // Recognition: comebacks past the end of the pass, for the next one
+  trail: [],                // Recognition and Type: the cards before, to swipe back to (streamBack)
+  ahead: [],                // and those come back past, to retrace going on
   modeSnap: { practice: null, test: null, type: null }, // Browse's, Recognition's and Type's places while in another mode (snapMode)
   answerSeq: 0,             // Recognition and Type: bumped to cancel a pending move to the next card
   learnAnswers: new Map(),  // cardKey -> { pickedText, isCorrect, seedSeen }, or Type's { typed, right, note, at }, for this session
@@ -1431,6 +1433,8 @@ const RELEARN_GAPS = { 1: [2, 4], 2: [6, 9] };
 function resetRecognition() {
   state.relearn = new Map();
   state.carry = [];
+  state.trail = [];
+  state.ahead = [];
   state.answerSeq += 1;
 }
 
@@ -1450,7 +1454,36 @@ function requeueRecognition(c, isCorrect) {
 }
 
 // Recognition's next card: on through the pass, then straight into the next one.
+// Recognition's and Type's way back (2026-11-28, the user's call: swipe right to go back as left goes
+// on): each card left is kept with its answer, if any (state.trail); a swipe right shows it again as
+// it was, an answered one still answered, so it can't be graded twice; going on from there retraces
+// the cards come back past (state.ahead) before the stream moves on. Each entry holds the queue it was
+// in, since a new pass makes a new one. A fresh stream (resetRecognition) starts both empty.
+const TRAIL_MAX = 50;
+function streamPlace() {
+  const key = state.queue[state.pos] != null ? state.cards[state.queue[state.pos]]?.key : null;
+  return { queue: state.queue, pos: state.pos, answer: key != null ? state.learnAnswers.get(key) || null : null, key };
+}
+function toStreamPlace(p) {
+  state.queue = p.queue;
+  state.pos = p.pos;
+  state.learnAnswers = p.answer ? new Map([[p.key, p.answer]]) : new Map();
+  renderCard();
+}
+function streamBack() {
+  if (!state.trail.length) return false;
+  state.ahead.push(streamPlace());
+  toStreamPlace(state.trail.pop());
+  return true;
+}
+
 function advance() {
+  state.trail.push(streamPlace());
+  if (state.trail.length > TRAIL_MAX) state.trail.shift();
+  if (state.ahead.length) {
+    toStreamPlace(state.ahead.pop());
+    return;
+  }
   state.learnAnswers = new Map(); // a card that comes round again starts unanswered
   state.pos += 1;
   if (state.pos >= state.queue.length) {
@@ -3941,7 +3974,7 @@ function showLetterPop(anchor, c) {
 // in; one starts afresh on its first visit, in its saved mode and direction (the Alphabet's own,
 // prefs.alphaOrderMode, alphaDirection; the three sections share prefs.orderMode, direction), on the
 // section's choice (state.currentDeckId: setView swaps it in first).
-const ENGINE_STATE = ['cards', 'listCards', 'flashScopeId', 'queue', 'pos', 'showingBack', 'orderMode', 'direction', 'relearn', 'carry', 'modeSnap', 'learnAnswers', 'review', 'reviewOnlySig'];
+const ENGINE_STATE = ['cards', 'listCards', 'flashScopeId', 'queue', 'pos', 'showingBack', 'orderMode', 'direction', 'relearn', 'carry', 'trail', 'ahead', 'modeSnap', 'learnAnswers', 'review', 'reviewOnlySig'];
 const sectionEngines = {};
 function useSection(section) {
   if (state.section === section) return;
@@ -3957,7 +3990,7 @@ function useSection(section) {
     Object.assign(state, {
       orderMode: ORDER_MODES.includes(mode) ? mode : 'practice',
       direction: ['th-en', 'en-th', 'listen'].includes(dir) ? dir : 'th-en',
-      cards: [], queue: [], pos: 0, showingBack: false, flashScopeId: null, relearn: new Map(), carry: [],
+      cards: [], queue: [], pos: 0, showingBack: false, flashScopeId: null, relearn: new Map(), carry: [], trail: [], ahead: [],
       modeSnap: { practice: null, test: null, type: null }, learnAnswers: new Map(), review: null, reviewOnlySig: '',
     });
   }
@@ -4530,7 +4563,7 @@ function restoreMode(mode) {
     return;
   }
   state.learnAnswers = new Map();
-  Object.assign(state, { queue: snap.queue, pos: snap.pos, relearn: snap.relearn, carry: snap.carry, reviewOnlySig: snap.sig });
+  Object.assign(state, { queue: snap.queue, pos: snap.pos, relearn: snap.relearn, carry: snap.carry, reviewOnlySig: snap.sig, trail: [], ahead: [] });
   // An answered Recognition card was saved when answered: carry on to the next one.
   if ((mode === 'test' || mode === 'type') && snap.answered) advance();
   else renderCard();
@@ -10237,8 +10270,8 @@ function bindCardSwipe() {
   let dx = 0;
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   // Recognition and Type swipe too (2026-11-28, the user's pick): left skips the card, unanswered,
-  // to the next (advance, as an answer does; it comes round again in its pass); right springs back, a
-  // stream having no card before.
+  // to the next (advance, as an answer does; it comes round again in its pass); right goes back to the
+  // card before as it was left (streamBack, the same day), or springs back at the stream's start.
   const canGo = () => state.queue.length > 1 && (answeringMode() || (!!els.nextBtn.getClientRects().length && !els.nextBtn.disabled));
   card.addEventListener('pointerdown', (e) => {
     if (e.button !== 0 || !e.isPrimary || !canGo()) return;
@@ -10270,12 +10303,13 @@ function bindCardSwipe() {
     }
     const next = dx < 0;
     if (answeringMode()) {
-      if (!next) {
+      if (!next && !state.trail.length) {
         card.style.transform = '';
         return;
       }
       state.answerSeq += 1; // cancels a pending move on after an answer
-      advance();
+      if (next) advance();
+      else streamBack();
     } else if (next) goNext();
     else goPrev();
     if (still.matches) {

@@ -3042,6 +3042,16 @@ so it's Words' and Phrases', and the Alphabet's, which is the same card.
   vertical drag left it; a tap on the card's corner turns it and again back (a tap on the Thai says
   the syllable, as before); a swipe on the turned card goes on, the next card front up; Recognition:
   a swipe does nothing; no script errors.
+- **Back in Recognition and Type** (2026-11-28, the user's call: "we should be able to swipe left to
+  navigate back in the same way we can navigate right to navigate forward"; a swipe left already
+  skipped on): a swipe right shows the card before as it was left (`state.trail`, the last 50, each
+  with the queue it was in and its answer): an answered card comes back answered, flipped, its pick
+  or typing marked, so it can't be graded twice; a skipped one comes back to answer. Going on from
+  there (a swipe left, an answer's pause, Next) retraces the cards come back past (`state.ahead`)
+  before the stream moves on. A fresh stream, a mode left and come back to, or the first card: a swipe
+  right springs back. Checked headless (scratch `backswipe.py`) at 390 × 844 with the pause made long:
+  Recognition and Type, answer, left, left, right, right shows the answered card still answered, one
+  grade saved; left three times reaches a new card; no script errors.
 
 ## Settings → App → Updates: Check for updates (2026-11-27)
 
