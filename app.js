@@ -303,8 +303,8 @@ const DEFAULT_SETTINGS = {
   vocabPhraseOrder: 'topic',      // Vocabulary's Phrases from your words: 'topic' | 'shortest' (Settings → Vocabulary)
   topicWordGaps: false,           // the Topics page: spaces between a phrase's words (Settings → List)
   devFeatures: false,             // pages still being tried out (Settings → App; applyDevFeatures): none now
-  readStoryTitles: true,          // a story's Read says its English title first (Settings → Reading)
-  readStoriesLoop: true,          // a story's Read starts again when it finishes (Settings → Reading)
+  readStoryTitles: true,          // a story's Read says its English title first (Settings → Stories)
+  readStoriesLoop: true,          // a story's Read starts again when it finishes (Settings → Stories)
   writeCheck: 'normal',           // Write → From memory: how sure the model must be, 'lenient' | 'normal' | 'strict' (WRITE_CHECK)
 };
 
@@ -7208,7 +7208,7 @@ async function readStories(btn, from = null) {
           }
         }
         // Its title first, in English (the user's request, 2026-10-12), the title lit meanwhile.
-        // Settings → Reading → Say the title turns it off.
+        // Settings → Stories → Say the title turns it off.
         if (line < 0 && getSettings().readStoryTitles !== false) {
           run.at = { ids, idx, line: -1 };
           els.wordModalEn.classList.add('now-playing');
@@ -7229,7 +7229,7 @@ async function readStories(btn, from = null) {
           await wait(STORY_LINE_PAUSE);
         }
       }
-      // Settings → Reading → Loop (the user's request, 2026-10-12): the story from the start again.
+      // Settings → Stories → Loop (the user's request, 2026-10-12): the story from the start again.
       if (token !== run.token || getSettings().readStoriesLoop === false) break;
       await wait(STORY_PAUSE);
       idx = 0;

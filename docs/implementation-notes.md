@@ -3009,6 +3009,20 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Settings' wording up to date (2026-11-28)
+
+The user asked "Are all the settings still relevant in the settings section?"; every one still does
+something but App → Dev features (no page uses its `dev` class now: kept for now, the user's call),
+and five were worded for how the app used to be. Changed ("just the five wording points please"):
+- The headings **Cards** → **Flashcards** and **Reading** → **Stories**, as the pages are named.
+- List → Your lists' words: "…here and in Flashcards" (was Cards).
+- List → Confirm Add all / Remove all: "every item shown" (was word: they ask on Phrases, Stories and
+  Vocabulary too).
+- Vocabulary: **Phrases from your words** (was "…from your known vocabulary"), as the page has it.
+- Display → Text size: "Text across the app." (was "Cards, word lists, the topic picker and settings.").
+Checked headless (scratch `sett.py`): the headings read Display | Audio | Writing | List | Flashcards |
+Stories | Vocabulary | App | Reset, the new lines there; no script errors.
+
 ## Home's lines one shape (2026-11-28)
 
 The user's call: "review each of the sentences on the home page to see if the section sentence can be
