@@ -8831,6 +8831,44 @@ function stepTime(minutes) {
   setTime(Math.floor(at / 60), at % 60, { say: true });
 }
 
+// Explore's clock swipes (2026-11-28, the user's pick): a drag across moves the time 5 minutes for
+// each TIME_SWIPE px, left later and right earlier (as Cards' left is next), the hands following as it
+// goes; the time's said once, on letting go. A drag up or down scrolls, as on the cards.
+const TIME_SWIPE = 30;
+function bindTimeSwipe() {
+  const clock = els.timeClock;
+  let from = null;
+  clock.addEventListener('pointerdown', (e) => {
+    if (e.button !== 0 || !e.isPrimary) return;
+    from = { x: e.clientX, y: e.clientY, id: e.pointerId, across: false, steps: 0 };
+  });
+  clock.addEventListener('pointermove', (e) => {
+    if (!from || e.pointerId !== from.id) return;
+    const dx = e.clientX - from.x;
+    if (!from.across) {
+      if (Math.abs(dx) < 8) return;
+      if (Math.abs(e.clientY - from.y) > Math.abs(dx)) { from = null; return; } // a scroll
+      from.across = true;
+      clock.setPointerCapture(e.pointerId);
+    }
+    const steps = Math.trunc(-dx / TIME_SWIPE);
+    if (steps === from.steps) return;
+    const at = (state.time.h * 60 + state.time.m + (steps - from.steps) * 5 + 1440) % 1440;
+    from.steps = steps;
+    setTime(Math.floor(at / 60), at % 60);
+  });
+  const end = (e) => {
+    if (!from || e.pointerId !== from.id) return;
+    const { across, steps } = from;
+    from = null;
+    if (!across) return;
+    swallowClickUntil = performance.now() + 300;
+    if (steps) speak(timePhrase(state.time.h, state.time.m).th);
+  };
+  clock.addEventListener('pointerup', end);
+  clock.addEventListener('pointercancel', end);
+}
+
 function renderTime() {
   if (!clockParts) clockParts = drawClock(els.timeClock);
   const { h, m } = state.time;
@@ -10862,6 +10900,7 @@ function bindEvents() {
   });
 
   // Time's clock (renderTime).
+  bindTimeSwipe();
   els.timePrev.addEventListener('click', () => stepTime(-5));
   els.timeNext.addEventListener('click', () => stepTime(5));
   els.timePageButtons.forEach((b) => b.addEventListener('click', () => {

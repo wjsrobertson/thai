@@ -2406,6 +2406,12 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Swipe Time's clock** (2026-11-28, the user's pick): on Explore a drag across the clock moves the
+  time 5 minutes each 30 px (`bindTimeSwipe`, TIME_SWIPE), left later and right earlier (as Cards'
+  left is next), the hands following as it goes, the time said once on letting go; a drag up or down
+  scrolls. The ‹ › and arrow keys are as they were; the Quiz's clock doesn't move. Checked headless
+  (scratch `timeswipe.py`) at 390 × 844: 95 px left 2:45 → 3 pm, 65 px right → 2:50, 20 px nothing;
+  no script errors.
 - **Swipe in Recall** (2026-11-28, the user's pick from a list of places to swipe): once the card's
   turned over, right is Easy, left Very Hard (`bindYesNoSwipe` on `#review-card`, `gradeCurrent(3 or
   1)`); Hard stays a button. Before the turn it doesn't move (a drag there ends in a tap, which turns

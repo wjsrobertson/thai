@@ -2584,6 +2584,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .time-clock-row { display: flex; align-items: center; justify-content: center; gap: 14px; }
 /* It only shows the time: its hands aren't dragged (2026-10-25, the user's call). */
 .time-clock { width: min(220px, 52vw); aspect-ratio: 1; flex: none; overflow: visible; }
+#time-clock { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; } /* Explore's: a drag across moves the time (bindTimeSwipe); not the Quiz's */
 .clock-face { fill: var(--panel); stroke: var(--border); stroke-width: 1.5; }
 .clock-rim { fill: none; stroke: var(--period, var(--border)); stroke-width: 7; opacity: var(--period-rim, .3); }
 .clock-rim.on { stroke: var(--accent); opacity: 1; }
