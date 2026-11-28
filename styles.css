@@ -2290,11 +2290,14 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-row + .vocab-row, .vocab-add { border-top: 1px solid var(--border); }
 /* A row: the name over its bar (a button opening the rest, where there's a rest), Start or Continue. */
 .vocab-row-line { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 14px; } /* 8 above and below till 2026-11-28: the closed rows looked cramped (the user's call) */
-/* The open row on the raised panel colour, so it reads as one block apart from the closed rows under
-   it (2026-11-28, the user's call: they "don't look like they are separate from the expanded … section");
-   its bars keep the panel colour inside, so they don't sink into it. */
-.vocab-row.open { background: var(--panel-2); }
-.vocab-row.open .vocab-bar { background: var(--panel); }
+/* The open row a card of its own inside the panel, outlined in the accent, so it reads apart from the
+   closed rows (2026-11-28, the user's call: they "don't look like they are separate from the expanded
+   … section"; a raised --panel-2 background first, which "makes the section look bad"). Its own
+   outline replaces the hairlines on either side. */
+.vocab-row.open { margin: 4px; border: 1px solid color-mix(in srgb, var(--accent) 70%, var(--panel)); border-radius: 10px; }
+.vocab-row.open + .vocab-row, .vocab-row.open + .vocab-add { border-top: 0; }
+.vocab-row.open .vocab-row-line { padding: 7px 7px 7px 9px; } /* less the 4 px inset and 1 px outline, so its contents stay where a closed row's are */
+.vocab-row.open .vocab-row-more { padding: 2px 9px 9px; }
 .vocab-row-main {
   display: flex;
   flex: 1 1 auto;

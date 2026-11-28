@@ -2396,11 +2396,13 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
 - **The open row apart, the others roomier** (2026-11-28, the user's screenshot: the rows under an
   open one "look a bit cramped… don't look like they are separate from the expanded top 100 words
   section. Also the 3 highlighted continue buttons looks weird - perhaps only have it highlighted when
-  the list is expanded"): the open row is on `--panel-2` (`.vocab-row.open`), its bars on `--panel`
-  inside it so they don't sink in; each row's line has 12 above and below (8 till then); Start /
+  the list is expanded"): the open row is a card of its own inside the panel (`.vocab-row.open`: 4 px
+  in, a 1 px outline of the accent at 70 %, rounded 10, the hairlines either side dropped, its padding
+  less by those 5 px so its contents line up with a closed row's). It was on the raised `--panel-2` at
+  first, which the user didn't like ("makes the section look bad… Maybe try a highlighted border
+  instead?"). Each row's line has 12 above and below (8 till then); Start /
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
-  On `--panel-2` the outlines stay ≥ 3:1 (Charcoal's 3.00 the least) and muted text ≥ 4.5:1 (Night's
-  5.0), the Light accent 4.54. Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
+  Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
 - **＋ New list under an add's Change** (2026-11-28, the user's call: "I should have the option in
   the list selecter to create a new list. This is true for all 'Add all to list' and 'select into
