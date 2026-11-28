@@ -9391,8 +9391,12 @@ function renderVocabPhrases() {
     }
     return tr;
   };
-  if (byTopic) rows.push(...vocabPhraseTree(list, phraseRow));
-  else list.slice(0, state.vocabPhraseShown).forEach((p, i) => rows.push(phraseRow(p, i)));
+  let left = 0; // phrases not shown yet: Show 50 more
+  if (byTopic) {
+    const tree = vocabPhraseTree(list, phraseRow, state.vocabPhraseShown);
+    rows.push(...tree.rows);
+    left = tree.left;
+  } else list.slice(0, state.vocabPhraseShown).forEach((p, i) => rows.push(phraseRow(p, i)));
   // Expand all / Collapse all (2026-11-28, the user's call): every category and topic in the tree
   // open, or none; Collapse all once they all are. Only by topic, with something to open.
   const treeKeys = byTopic ? vocabPhraseTreeKeys(list) : [];
@@ -9402,6 +9406,7 @@ function renderVocabPhrases() {
   els.vocabPhraseExpand.setAttribute('aria-label', `${allOpen ? 'Collapse' : 'Expand'} all topics`);
   els.vocabPhraseExpand.onclick = () => {
     for (const k of treeKeys) state.vocabPhraseOpen[allOpen ? 'delete' : 'add'](k);
+    state.vocabPhraseShown = VOCAB_PHRASE_PAGE; // the first 50 again
     renderVocabPhrases();
   };
   // Empty: a line, unless what's left is sorted (the user's call, 2026-11-26: "None left: you've
@@ -9415,7 +9420,7 @@ function renderVocabPhrases() {
   els.vocabPhraseRows.replaceChildren(...rows);
   els.vocabPhraseRows.closest('table').hidden = !rows.length; // no empty box
   els.vocabPhraseRows.closest('table').classList.toggle('show-spaces', !!getSettings().topicWordGaps); // Word gaps, as on List
-  const left = byTopic ? 0 : list.length - state.vocabPhraseShown; // by topic, an open topic shows whole
+  if (!byTopic) left = list.length - state.vocabPhraseShown;
   els.vocabPhraseMore.hidden = left <= 0;
   els.vocabPhraseMore.textContent = `Show ${Math.min(left, VOCAB_PHRASE_PAGE)} more · ${fmtCount(left)} left`;
 }
@@ -9426,7 +9431,10 @@ function renderVocabPhrases() {
 // (without its groups: a category here has five topics at most). All closed at first; what's open
 // stays so while Vocabulary's open (state.vocabPhraseOpen), across All known | One word short, so a
 // phrase moving over on I know this word doesn't close anything. `row(p, i)` is a phrase's row.
-function vocabPhraseTree(list, row) {
+// At most `limit` phrases (2026-11-28, the user's call: "only load the first 50 then have a button that
+// loads 50 more at the bottom", as Stories' has; an open topic showed whole till then): past it nothing
+// more, heads included, so Show 50 more follows on where the tree stops. `left`: the open phrases not shown.
+function vocabPhraseTree(list, row, limit = Infinity) {
   const cats = new Map(); // category -> Map(deck -> [[p, i]])
   list.forEach((p, i) => {
     const cat = p.deck.category || 'Uncategorized';
@@ -9458,16 +9466,36 @@ function vocabPhraseTree(list, row) {
     return tr;
   };
   const out = [];
+  let shown = 0;
+  let left = 0;
+  let cut = -1; // where the first phrase not shown would have gone
   for (const [cat, decks] of cats) {
     const n = [...decks.values()].reduce((sum, ps) => sum + ps.length, 0);
+    const catAt = out.length;
     out.push(head(`c:${cat}`, cat, n, 'cat'));
     if (!open.has(`c:${cat}`)) continue;
+    let catShown = 0;
     for (const [deck, ps] of decks) {
+      const topicAt = out.length;
       out.push(head(`t:${deck.id}`, deck.name, ps.length, 'topic'));
-      if (open.has(`t:${deck.id}`)) for (const [p, i] of ps) out.push(row(p, i));
+      if (!open.has(`t:${deck.id}`)) continue;
+      let topicShown = 0;
+      for (const [p, i] of ps) {
+        if (shown < limit) {
+          out.push(row(p, i));
+          shown += 1;
+          topicShown += 1;
+          catShown += 1;
+        } else {
+          if (cut < 0) cut = catShown ? (topicShown ? out.length : topicAt) : catAt; // no head left with nothing under it
+          left += 1;
+        }
+      }
     }
   }
-  return out;
+  // With phrases past the limit, the tree stops there (the heads after it too); with none, every
+  // closed head after the last phrase stays.
+  return { rows: left ? out.slice(0, cut) : out, left };
 }
 
 // The tree's keys, as vocabPhraseTree makes them: each category's and each topic's.

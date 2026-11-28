@@ -2405,6 +2405,15 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **50 at a time by topic too** (2026-11-28, the user's call: "only load the first 50 then have a
+  button that loads 50 more at the bottom (other sections have buttons like these - e.g. stories)"):
+  the tree shows at most `state.vocabPhraseShown` phrases (`vocabPhraseTree(list, row, limit)`), then
+  stops (the heads after it too, and a head with nothing shown under it), and Show 50 more · 104 left
+  (`#vocab-phrase-more`, as shortest-first had) follows on. With no open phrase past the limit,
+  every closed head stays. Expand all / Collapse all and the two kinds start at 50 again; opening a
+  single category or topic doesn't. An open topic showed whole till then. Checked headless (scratch
+  `vphr.py`) at 390 × 844: One word short, Expand all → 50 and "Show 50 more · 104 left" → 100 →
+  154 (the button gone) → Collapse all → the 15 heads; no script errors.
 - **Expand all / Collapse all on Phrases from your known vocabulary** (2026-11-28, the user's call:
   "it should have an expand all button somewhere sensible (not at the same place as select into list
   and add all to list)"): plain text with a double chevron at the tree's right, on a line of its own
