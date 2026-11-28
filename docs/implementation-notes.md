@@ -2406,6 +2406,16 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Vocabulary's head tidied** (2026-11-28, the user's screenshot: "the top of the vocabulary section
+  is a bit weird"; offered three ideas, the user took two): "You know 52 words" is the page's heading
+  (22, semibold, as a topic's name on Words), with a compact **＋ Add** at its right (`.vocab-head`;
+  accent text, 44 tall, "Add another topic or list" for its label and tooltip), in place of the
+  "＋ Another topic or list" card; Remove's confirm says "＋ Add". The phrases card is **Phrases from
+  your words**, "16 ready · 107 one word short" (two lines at 390, not four; it was "Phrases from
+  your known vocabulary", "16 with all words known · 107 with one word short", the user's wording
+  of 2026-11-26), and the phrases page's title the same (it ran out at 390). Checked headless (scratch
+  `vhead.py`) at 390 × 844, Dark and Light, Larger and Largest text: one row, the card two lines;
+  ＋ Add opens the picker; no script errors.
 - **Swipe to skip in Recognition and Type** (2026-11-28, the user's pick, though offered as not
   recommended: a swipe only skips): Cards' swipe (`bindCardSwipe`) works there too: left skips the
   card unanswered to the next (`advance`, as an answer does, cancelling a pending move on; it comes

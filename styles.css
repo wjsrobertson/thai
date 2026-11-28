@@ -2291,8 +2291,11 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-home, .vocab-run, .vocab-phrases { display: flex; flex-direction: column; gap: 14px; }
 .vocab-home[hidden], .vocab-run[hidden], .vocab-phrases[hidden], .vocab-phrase-link[hidden] { display: none; }
 /* The page: "You know 18 words", a line of plain text (2026-11-26, the user's call; the count was 48 px
-   over two lines till then), Phrases from your known vocabulary, ＋ Another topic or list, then a card a list (2026-11-28). */
-.vocab-total { margin: 0; color: var(--ink); font-size: calc(16px * var(--fs, 1)); font-variant-numeric: tabular-nums; }
+   over two lines till then), ＋ Add beside it, Phrases from your words, then a card a list (2026-11-28). */
+.vocab-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+/* The page's heading, as a topic's name on Words (.wordlist-title), and ＋ Add at its right (2026-11-28). */
+.vocab-total { margin: 0; color: var(--ink); font-size: calc(22px * var(--fs, 1)); font-weight: 600; font-variant-numeric: tabular-nums; }
+.vocab-add { flex: none; min-height: 44px; padding: 6px 14px; color: var(--accent); font-size: 16px; }
 .vocab-phrase-link { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
 /* A card a list, as Stories' rows are (2026-11-28, the user's call; it was one panel of rows, the
    open one's bands and buttons under it): 8 apart, the accent outline on hover and while its dialog
@@ -2326,10 +2329,6 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* A list's dialog (showVocabPop): its bands, Start / Continue / See across it, then the actions. */
 .vocab-pop { display: flex; flex-direction: column; gap: 10px; padding-top: 14px; }
 .vocab-pop .vocab-go { width: 100%; margin-top: 6px; }
-/* ＋ Another topic or list: a card of its own under the phrases, above the lists (2026-11-28; it was
-   the lists' panel's last row). */
-.vocab-add { width: 100%; min-height: 52px; padding: 0 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; color: var(--accent); font-size: 16px; text-align: left; }
-@media (hover: hover) { .vocab-add:hover { border-color: var(--accent); } }
 :is(.vocab-go, .vocab-done, .vocab-undo) { min-height: 44px; padding: 8px 16px; font-size: 16px; }
 .vocab-go { flex: none; min-width: 92px; }
 /* A band: its name, the bar (known, then not known, then the rest to go) and known/total. */

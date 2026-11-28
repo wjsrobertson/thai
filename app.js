@@ -9386,10 +9386,11 @@ function renderPhrasePanel(known) {
   const n = (k) => vocabPhraseList(k, sets).length; // not gone through one by one
   const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
   const text = el('span', 'vocab-phrase-text');
-  // "Phrases from your known vocabulary", "all words known" (the user's wording, 2026-11-26; it was
-  // "Phrases from your words", "all known").
-  text.append(el('span', 'vocab-phrase-title', 'Phrases from your known vocabulary'),
-    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} with all words known · ${fmtCount(n('short'))} with one word short`));
+  // "Phrases from your words", "16 ready · 107 one word short" (the user's pick, 2026-11-28: two lines
+  // on a phone, not four). "Phrases from your known vocabulary", "16 with all words known · 107 with
+  // one word short" from 2026-11-26 (the user's wording; "Phrases from your words", "all known" before).
+  text.append(el('span', 'vocab-phrase-title', 'Phrases from your words'),
+    el('span', 'vocab-phrase-sub', `${fmtCount(n('known'))} ready · ${fmtCount(n('short'))} one word short`));
   // With none in either (all sorted), it says so but doesn't open: no ›, disabled (the user's call,
   // 2026-11-26: "if there are 0 then this should not even be clickable").
   const none = !n('known') && !n('short');
@@ -10386,7 +10387,7 @@ function showVocabPop(id, anchor, { refresh = false } = {}) {
 async function removeVocabSource(id, name) {
   const ok = await confirmDialog({
     title: `Remove '${name}' from vocabulary?`,
-    message: 'Your answers are kept, and it comes back if you go through it again (＋ Another topic or list).',
+    message: 'Your answers are kept, and it comes back if you go through it again (＋ Add).',
     confirmLabel: 'Remove',
   });
   if (!ok) return;
