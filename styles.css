@@ -2294,7 +2294,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
    over two lines till then), ＋ Add beside it, Phrases from your words, then a card a list (2026-11-28). */
 .vocab-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 /* The page's heading, as a topic's name on Words (.wordlist-title), and ＋ Add at its right (2026-11-28). */
-.vocab-total { margin: 0; color: var(--ink); font-size: calc(22px * var(--fs, 1)); font-weight: 600; font-variant-numeric: tabular-nums; }
+.vocab-total { margin: 0; color: var(--ink); font-size: calc(19px * var(--fs, 1)); font-weight: 600; font-variant-numeric: tabular-nums; }
 .vocab-add { flex: none; min-height: 44px; padding: 6px 14px; color: var(--accent); font-size: 16px; }
 .vocab-phrase-link { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; }
 /* A card a list, as Stories' rows are (2026-11-28, the user's call; it was one panel of rows, the

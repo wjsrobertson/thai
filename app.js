@@ -10387,7 +10387,7 @@ function showVocabPop(id, anchor, { refresh = false } = {}) {
 async function removeVocabSource(id, name) {
   const ok = await confirmDialog({
     title: `Remove '${name}' from vocabulary?`,
-    message: 'Your answers are kept, and it comes back if you go through it again (＋ Add).',
+    message: 'Your answers are kept, and it comes back if you go through it again (＋ Add list).',
     confirmLabel: 'Remove',
   });
   if (!ok) return;

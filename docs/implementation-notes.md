@@ -2413,7 +2413,8 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   "＋ Another topic or list" card; Remove's confirm says "＋ Add". The phrases card is **Phrases from
   your words**, "16 ready · 107 one word short" (two lines at 390, not four; it was "Phrases from
   your known vocabulary", "16 with all words known · 107 with one word short", the user's wording
-  of 2026-11-26), and the phrases page's title the same (it ran out at 390). Checked headless (scratch
+  of 2026-11-26), and the phrases page's title the same (it ran out at 390). Later that day (the
+  user's call) the heading went to 19 (from 22) and the button to **＋ Add list**. Checked headless (scratch
   `vhead.py`) at 390 × 844, Dark and Light, Larger and Largest text: one row, the card two lines;
   ＋ Add opens the picker; no script errors.
 - **Swipe to skip in Recognition and Type** (2026-11-28, the user's pick, though offered as not
