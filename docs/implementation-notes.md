@@ -2406,6 +2406,16 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Swipe Yes / No in a Vocabulary run** (2026-11-28, the user's call: "when navigating through the
+  list of words, we should allow swiping for yes / no actions"): the card swipes as One by one's
+  does: right Yes, left No, following the finger and tilting, green or red past 80 px (PS_SWIPE),
+  then off that way and answered (`answerVocab`); short of it, it springs back; a vertical drag
+  still scrolls (touch-action: pan-y); reduced motion answers without the flight. One by one's swipe
+  is now `bindYesNoSwipe(card, { can, answer, alive })`, used by both; `renderVocabRun` puts the
+  card back for the next word. The No / Yes buttons and keys are as they were. Checked headless
+  (scratch `vswipe.py`, `psswipe.py`) at 390 × 844 with mouse drags: right → Yes and the next word,
+  left → No, a 40 px drag nothing (back in place), Undo; One by one's left and right still record
+  No and Yes; no script errors.
 - **A Stories topic's buttons where Words' are on a wider screen** (2026-11-28, the user's call: "the
   Add all to list, select into list and read all buttons appear in a different location to Words And
   Phrases. Words and Phrases is correct"): they were under the topic button, at the head of the list,

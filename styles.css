@@ -2404,11 +2404,14 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   cursor: grab;
 }
 .ps-card.ps-end { cursor: default; }
-.ps-card.ps-yes { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--panel)); }
-.ps-card.ps-no { border-color: var(--again); background: color-mix(in srgb, var(--again) 14%, var(--panel)); }
+:is(.ps-card, .vocab-card).ps-yes { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--panel)); }
+:is(.ps-card, .vocab-card).ps-no { border-color: var(--again); background: color-mix(in srgb, var(--again) 14%, var(--panel)); }
 @media (prefers-reduced-motion: no-preference) {
-  .ps-card.ps-going { transition: transform .18s ease-in; }
+  :is(.ps-card, .vocab-card).ps-going { transition: transform .18s ease-in; }
 }
+/* Vocabulary's card swipes too (2026-11-28, bindYesNoSwipe): right Yes, left No, as One by one's. */
+.vocab-card { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+.vocab-card.done { cursor: default; }
 .ps-card p { margin: 0; }
 .ps-topic { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
 .ps-thai { color: var(--ink); font-size: calc(40px * var(--fs, 1)); line-height: 1.6; overflow-wrap: anywhere; }

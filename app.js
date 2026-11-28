@@ -10018,13 +10018,17 @@ function bindCardSwipe() {
   card.addEventListener('pointercancel', end);
 }
 
-function bindPhraseSortSwipe() {
-  const card = els.psCard;
+// A card swiped right for Yes, left for No: it follows the finger, tilting, lit green or red past
+// PS_SWIPE, then flies off that way and `answer(yes)` (at once with reduced motion); short of it, it
+// springs back. Only while `can()`; `alive()` once it's off (the dialog or run may have closed).
+// One by one's first; Vocabulary's run's too (2026-11-28, the user's call: "we should allow swiping
+// for yes / no actions"). Whoever draws the next card clears the transform and classes.
+function bindYesNoSwipe(card, { can, answer, alive = can }) {
   let from = null;
   let dx = 0;
   const still = matchMedia('(prefers-reduced-motion: reduce)');
   card.addEventListener('pointerdown', (e) => {
-    if (!phraseSort?.queue[phraseSort.i] || e.button !== 0) return;
+    if (!can() || e.button !== 0) return;
     from = { x: e.clientX, y: e.clientY, id: e.pointerId, across: false };
     dx = 0;
   });
@@ -10053,13 +10057,18 @@ function bindPhraseSortSwipe() {
       return;
     }
     const yes = dx > 0;
-    if (still.matches) return answerPhraseSort(yes);
+    if (still.matches) return answer(yes);
     card.classList.add('ps-going');
     card.style.transform = `translateX(${yes ? '120%' : '-120%'}) rotate(${yes ? 12 : -12}deg)`;
-    setTimeout(() => { if (phraseSort) answerPhraseSort(yes); }, 180);
+    setTimeout(() => { if (alive()) answer(yes); }, 180);
   };
   card.addEventListener('pointerup', end);
   card.addEventListener('pointercancel', end);
+}
+
+function bindPhraseSortSwipe() {
+  const card = els.psCard;
+  bindYesNoSwipe(card, { can: () => !!phraseSort?.queue[phraseSort.i], alive: () => !!phraseSort, answer: answerPhraseSort });
   card.addEventListener('click', (e) => {
     if (e.target.closest('button, .vp-missing')) return;
     const p = phraseSort?.queue[phraseSort.i];
@@ -10477,6 +10486,8 @@ function renderVocabRun({ say = true } = {}) {
   els.vocabNo.disabled = els.vocabYes.disabled = !run.card;
   els.vocabEnd.hidden = !!run.card;
   els.vocabCard.classList.toggle('done', !run.card);
+  els.vocabCard.classList.remove('ps-yes', 'ps-no', 'ps-going'); // a swiped card back in place for the next (bindYesNoSwipe)
+  els.vocabCard.style.transform = '';
   els.vocabPlay.hidden = !run.card;
   if (!run.card) { // the end of the list, or of a pass
     if (pass) {
@@ -10613,6 +10624,7 @@ function bindVocab() {
     state.vocabPhraseShown += VOCAB_PHRASE_PAGE;
     renderVocabPhrases();
   });
+  bindYesNoSwipe(els.vocabCard, { can: () => !!state.vocabRun?.card, answer: answerVocab });
   els.vocabNo.addEventListener('click', () => answerVocab(false));
   els.vocabYes.addEventListener('click', () => answerVocab(true));
   els.vocabUndo.addEventListener('click', undoVocab);
