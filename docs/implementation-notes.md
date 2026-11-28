@@ -1553,7 +1553,8 @@ user asked:
   in a row of its own above the topic button, the three centred alike at one height; the topic
   button in one place on every page, scrolling or not; each page's name beside its icon at 16 px;
   the switches 16 px under the top bar (10-18); Cards' 🔀 centred under the card, Browse fitting
-  without a scroll (10-21).
+  without a scroll (10-21); a Stories topic's Add all to list, Select into list and Read all where
+  Words' are, as wide, level with the topic button (11-28).
 - **A field's keyboard up:** the tab bar hidden, and back when it goes (the Dictionary's search,
   10-19).
 - **The new-version bar:** one line, Reload 44 tall, the page's width, 12 over the tab bar (10-19).
@@ -2405,6 +2406,17 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **A Stories topic's buttons where Words' are on a wider screen** (2026-11-28, the user's call: "the
+  Add all to list, select into list and read all buttons appear in a different location to Words And
+  Phrases. Words and Phrases is correct"): they were under the topic button, at the head of the list,
+  44 tall; above 600 wide `renderReadingList` now puts `storyTopicActions` in the bar
+  (`#reading-bar-right`, beside `.wordlist-bar-right`), at the bar's button size (15 px, 6 / 10
+  padding; Read all at least 130, Add all's bookmark Words' 1.05em), so they're at Words' x and
+  widths to the pixel, level with the topic button. A phone keeps them at the list's head (where they
+  already matched Words'); the layout's change moves them (`PHONE_LAYOUT`'s listener). A new check in
+  `web_checks` (What lines up). Checked headless (scratch `bar.py`, `bar2.py`) at 1280 and 900 wide:
+  Words 737 / 878 / 1029, widths 129 / 139 / 130, and Stories the same; Read all plays, Add all asks
+  then turns to All in list; at 390 they're in the list, none in the bar; no script errors.
 - **One page width** (2026-11-28, the user's call: "On web it is a bit jarring navigating from Words
   -> Phrases -> Stories -> Vocabulary as Stories and Vocab have narrower pages"): `--page-width`
   (1000, on `:root`) for Words' and Phrases' list (`.wordlist`), Stories (`.reading`, 760 till then),

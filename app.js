@@ -237,6 +237,7 @@ const els = {
   readingSection: document.getElementById('reading-section'),
   readingLibrary: document.getElementById('reading-library'),
   readingList: document.getElementById('reading-list'),
+  readingBarRight: document.getElementById('reading-bar-right'), // a topic's buttons on a wider screen
   readingRead: document.getElementById('reading-read'),
   moveDefaultLabel: document.getElementById('move-default-label'),
   wordlistSearch: document.getElementById('wordlist-search'),
@@ -6757,9 +6758,15 @@ function renderReadingList() {
       empty.append(wider);
     }
     els.readingList.replaceChildren(...(mine ? storyListHead(scope, []) : []), empty);
+    els.readingBarRight.replaceChildren();
     return;
   }
-  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : [storyTopicActions(stories)]), ...pagedStories(stories));
+  // A topic's buttons: in the bar, right of the topic button, as Words' are, on a wider screen; at
+  // the head of the list on a phone (2026-11-28).
+  const actions = mine ? [] : [storyTopicActions(stories)];
+  const inBar = !PHONE_LAYOUT.matches;
+  els.readingBarRight.replaceChildren(...(inBar ? actions : []));
+  els.readingList.replaceChildren(...(mine ? storyListHead(scope, stories) : inBar ? [] : actions), ...pagedStories(stories));
 }
 
 // A topic's stories (2026-11-27, the user's call: "Stories section should have the Add all to list,
@@ -10729,7 +10736,11 @@ function bindEvents() {
   els.moreMenu.addEventListener('click', (e) => {
     if (e.target.dataset.close !== undefined) closeMore();
   });
-  PHONE_LAYOUT.addEventListener('change', () => { closeMore(); markMore(); }); // More's rows differ (moreRows)
+  PHONE_LAYOUT.addEventListener('change', () => {
+    closeMore();
+    markMore(); // More's rows differ (moreRows)
+    if (state.view === 'reading') renderReadingList(); // a topic's buttons move between the bar and the list
+  });
   // On a phone the pinned top rows take the page's colour once it scrolls under them (mobile.css);
   // Settings scrolls in its own box, under its search.
   const markScrolled = () => document.documentElement.classList.toggle('scrolled', window.scrollY > 0);

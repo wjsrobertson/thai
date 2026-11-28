@@ -2009,6 +2009,13 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
   align-items: center;
   gap: 12px;
 }
+/* A Stories topic's buttons in the bar, as Words' (2026-11-28): the bar's ghost buttons' size, not a
+   list's (.list-actions, 44 tall), in a row at the right. */
+.reading-bar-right:empty { display: none; }
+.reading-bar-right .list-actions { display: flex; align-items: center; gap: 12px; max-width: none; margin: 0; }
+.reading-bar-right .list-actions .ghost { min-height: 0; padding: 6px 10px; font-size: 15px; }
+.reading-bar-right .list-actions .story-read-all { min-width: 130px; } /* as Words' Read all (.read-aloud) */
+.reading-bar-right .list-actions > .ghost:first-child .list-action-icon { width: 1.05em; height: 1.05em; } /* Add all's (or All in list's) bookmark the size of Words' (.review-icon); Select into's stays 18, as Words' does */
 
 .wordlist {
   max-width: var(--page-width);

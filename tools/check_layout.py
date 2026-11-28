@@ -130,6 +130,17 @@ def web_checks(ws, size):
     over = js(ws, 'document.documentElement.scrollHeight - innerHeight')
     C("Web: Cards' 🔀 under the card, centred on it, and Browse fits without scrolling (10-21)",
       card and rd and near(centre(rd), centre(card)) and rd['t'] >= card['b'] and over <= 0, f"card {fmt(card)}, 🔀 {fmt(rd)}, {over} px over")
+    # A topic's Add all to list, Select into list and Read all where Words' are on Stories too, each
+    # the same place across from the topic button and the same size (2026-11-28, the user's call).
+    rects = "JSON.stringify([...document.querySelectorAll(%s)].filter(e => e.offsetWidth).map(e => { const r = e.getBoundingClientRect(); return { l: r.left, t: r.top, w: r.width, h: r.height, b: r.bottom }; }))"
+    scopes = {'words': 'greetings', 'stories': 'greetings'}
+    open_page(ws, 'words', studyPage='wordlist', currentDeckId='greetings', scopes=scopes)
+    wb, wk = json.loads(js(ws, rects % json.dumps('.wordlist-bar-right > button'))), R(ws, '#deck-button')
+    open_page(ws, 'stories', currentDeckId='greetings', scopes=scopes)
+    sb, sk = json.loads(js(ws, rects % json.dumps('.reading-bar-right button'))), R(ws, '#deck-button')
+    C("Web: a Stories topic's Add all, Select into and Read all where Words' are, as wide, across from the topic button",
+      wk and sk and len(wb) == len(sb) == 3 and all(near(a['l'], b['l']) and near(a['w'], b['w']) and near(a['t'] - wk['t'], b['t'] - sk['t'], 1.5) for a, b in zip(wb, sb)),
+      f"Words {[fmt(r) for r in wb]} / Stories {[fmt(r) for r in sb]}")
     errs = json.loads(js(ws, 'JSON.stringify(window.__errs || [])'))
     C('No script errors', not errs, '; '.join(errs)[:200])
     C('No sideways scroll', js(ws, 'document.documentElement.scrollWidth') <= W, f"{js(ws, 'document.documentElement.scrollWidth')} wide")
