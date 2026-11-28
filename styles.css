@@ -2513,7 +2513,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-actions-note { grid-column: 1 / -1; margin: 0; color: var(--ink); font-size: calc(15px * var(--fs, 1)); }
 .vocab-actions .vocab-again { display: inline-flex; align-items: center; justify-content: center; min-width: 0; padding: 8px 6px; white-space: nowrap; } /* one line in 162 (a run's end at 390) */
 .vocab-actions .vocab-actions-wide { grid-column: 1 / -1; margin-top: 8px; }
-.vocab-again { min-height: 44px; padding: 8px 12px; color: var(--ink); font-size: 15px; font-variant-numeric: tabular-nums; } /* ink, not the ghost's muted (2026-11-28) */
+.vocab-again { min-height: 44px; padding: 8px 12px; font-size: 15px; font-variant-numeric: tabular-nums; } /* the ghost's grey (ink for a while on 2026-11-28; the user's call to change back) */
 .vocab-again, .vocab-go { display: inline-flex; align-items: center; justify-content: center; }
 .vocab-icon { flex: none; width: 18px; height: 18px; }
 /* Start / Continue / See in the accent in a list's dialog, its main action; on the page's cards plain
