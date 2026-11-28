@@ -6682,6 +6682,15 @@ function gradeCurrent(g) {
   const r = state.review;
   if (!r || !r.revealed || r.answered) return;
   r.answered = true;
+  // A swiped card (bindYesNoSwipe) back in place at once, not eased back from off the side.
+  const card = els.reviewCard;
+  if (card.style.transform) {
+    card.classList.add('swiping');
+    card.classList.remove('ps-yes', 'ps-no', 'ps-going');
+    card.style.transform = '';
+    void card.offsetWidth;
+    card.classList.remove('swiping');
+  }
   recordGrade(g);
   nextEntry();
 }
@@ -10040,6 +10049,7 @@ function bindYesNoSwipe(card, { can, answer, alive = can }) {
       if (Math.abs(e.clientY - from.y) > Math.abs(dx)) { from = null; return; } // a scroll
       from.across = true;
       card.setPointerCapture(e.pointerId);
+      card.classList.add('swiping'); // no easing while it follows the finger (Cards' .card has one)
     }
     card.style.transform = `translateX(${dx}px) rotate(${dx / 30}deg)`;
     card.classList.toggle('ps-yes', dx > PS_SWIPE);
@@ -10051,7 +10061,8 @@ function bindYesNoSwipe(card, { can, answer, alive = can }) {
     from = null;
     if (!across) return;
     swallowClickUntil = performance.now() + 300; // not a tap on what was under the finger
-    if (Math.abs(dx) < PS_SWIPE || e.type === 'pointercancel') {
+    card.classList.remove('swiping');
+    if (Math.abs(dx) < PS_SWIPE || e.type === 'pointercancel' || !can()) {
       card.classList.remove('ps-yes', 'ps-no');
       card.style.transform = '';
       return;
@@ -11004,6 +11015,9 @@ function bindEvents() {
   els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
   els.wordModalBack.addEventListener('click', popBack);
 
+  // Recall's card swipes once turned over (2026-11-28, the user's call): right Easy, left Very Hard,
+  // as Vocabulary's Yes and No; Hard stays a button. Before the turn it doesn't move.
+  bindYesNoSwipe(els.reviewCard, { can: () => !!state.review?.revealed && !state.review.answered, alive: () => !!state.review, answer: (yes) => gradeCurrent(yes ? 3 : 1) });
   // ⟳ turns the card: to the answer first, then either way (as a tap on the card does).
   els.reviewCard.querySelectorAll('.review-flip').forEach((btn) => btn.addEventListener('click', () => {
     const r = state.review;

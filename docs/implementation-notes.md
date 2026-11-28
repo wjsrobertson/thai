@@ -2406,6 +2406,17 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Swipe in Recall** (2026-11-28, the user's pick from a list of places to swipe): once the card's
+  turned over, right is Easy, left Very Hard (`bindYesNoSwipe` on `#review-card`, `gradeCurrent(3 or
+  1)`); Hard stays a button. Before the turn it doesn't move (a drag there ends in a tap, which turns
+  it, as before). It lights on its faces, which have the background; `gradeCurrent` puts a swiped
+  card back at once (not eased back from off the side). `bindYesNoSwipe` now adds `.swiping` while
+  it follows the finger (no easing, as Cards' `.card` has one). **Fixed on the way:** a card moved
+  by a swipe, Recall's or Browse's (bindCardSwipe), flattened its turn, so a turned card showed both
+  faces, one mirrored; `.card` is now `transform-style: preserve-3d`. Checked headless (scratch
+  `recswipe.py`, `browseswipe.py`) at 390 × 844 with mouse drags: turned, right → graded and the
+  next word, left the same, a short drag nothing; a turned Browse card mid-swipe shows its back
+  only; no script errors.
 - **Swipe Yes / No in a Vocabulary run** (2026-11-28, the user's call: "when navigating through the
   list of words, we should allow swiping for yes / no actions"): the card swipes as One by one's
   does: right Yes, left No, following the finger and tilting, green or red past 80 px (PS_SWIPE),

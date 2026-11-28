@@ -1295,7 +1295,7 @@ body { display: flex; flex-direction: column; }
   outline: none;
 }
 /* A swipe across it (bindCardSwipe, 2026-11-28): it follows the finger, and eases back or in after. */
-.card { touch-action: pan-y pinch-zoom; }
+.card { touch-action: pan-y pinch-zoom; transform-style: preserve-3d; } /* preserve-3d: moved by a swipe, a turned card keeps its turn (flattened, both faces showed, one mirrored; 2026-11-28) */
 @media (prefers-reduced-motion: no-preference) { .card { transition: transform .16s ease-out; } }
 .card.swiping { transition: none; user-select: none; -webkit-user-select: none; }
 /* The card can be focused (Space flips it): show it when that's by keyboard (2026-10-13). */
@@ -2412,6 +2412,9 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Vocabulary's card swipes too (2026-11-28, bindYesNoSwipe): right Yes, left No, as One by one's. */
 .vocab-card { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
 .vocab-card.done { cursor: default; }
+/* Recall's card lights on its faces, which have the background (2026-11-28): right Easy, left Very Hard. */
+.review-card.ps-yes .face { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--panel)); }
+.review-card.ps-no .face { border-color: var(--again); background: color-mix(in srgb, var(--again) 14%, var(--panel)); }
 .ps-card p { margin: 0; }
 .ps-topic { color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
 .ps-thai { color: var(--ink); font-size: calc(40px * var(--fs, 1)); line-height: 1.6; overflow-wrap: anywhere; }
