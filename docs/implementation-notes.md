@@ -2406,6 +2406,13 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Swipe to skip in Recognition and Type** (2026-11-28, the user's pick, though offered as not
+  recommended: a swipe only skips): Cards' swipe (`bindCardSwipe`) works there too: left skips the
+  card unanswered to the next (`advance`, as an answer does, cancelling a pending move on; it comes
+  round again in its pass); right springs back, a stream having no card before. Browse is as it
+  was. Checked headless (scratch `skipswipe.py`) at 390 × 844: Recognition and Type 140 px left →
+  the next card, 140 right and 30 left nothing; Browse left → 2 / 25, right → 1 / 25; no script
+  errors.
 - **Swipe the dialog down to close, right to go back** (2026-11-28, the user's pick): the word
   dialog (a word's, phrase's, story's or Vocabulary list's) on a touch screen (`bindDialogSwipe`,
   touch events, as the body's pan-y would cancel a pointer's drag down). Down closes it when it's

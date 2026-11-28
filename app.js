@@ -10069,7 +10069,10 @@ function bindCardSwipe() {
   let from = null;
   let dx = 0;
   const still = matchMedia('(prefers-reduced-motion: reduce)');
-  const canGo = () => !answeringMode() && state.queue.length > 1 && !!els.nextBtn.getClientRects().length && !els.nextBtn.disabled;
+  // Recognition and Type swipe too (2026-11-28, the user's pick): left skips the card, unanswered,
+  // to the next (advance, as an answer does; it comes round again in its pass); right springs back, a
+  // stream having no card before.
+  const canGo = () => state.queue.length > 1 && (answeringMode() || (!!els.nextBtn.getClientRects().length && !els.nextBtn.disabled));
   card.addEventListener('pointerdown', (e) => {
     if (e.button !== 0 || !e.isPrimary || !canGo()) return;
     from = { x: e.clientX, y: e.clientY, id: e.pointerId, across: false };
@@ -10099,7 +10102,14 @@ function bindCardSwipe() {
       return;
     }
     const next = dx < 0;
-    if (next) goNext();
+    if (answeringMode()) {
+      if (!next) {
+        card.style.transform = '';
+        return;
+      }
+      state.answerSeq += 1; // cancels a pending move on after an answer
+      advance();
+    } else if (next) goNext();
     else goPrev();
     if (still.matches) {
       card.style.transform = '';
