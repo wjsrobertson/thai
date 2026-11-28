@@ -11,7 +11,7 @@
    "cards": [
     {
      "thai": "ปลาใหญ่กินปลาเล็ก",
-     "english": "dog eat dog / the strong prey on the weak",
+     "english": "the strong prey on the weak",
      "note": "Lit. \"big fish eat small fish\".",
      "words": [
       "ปลา",
@@ -72,7 +72,7 @@
     {
      "thai": "กระต่ายตื่นตูม",
      "english": "to panic over nothing",
-     "note": "Lit. \"a hare startled by a thud\": in the Jataka tale, a fruit falls and the hare runs off crying that the world is ending.",
+     "note": "Lit. \"a hare startled by a thud\": in the Jataka tale, a bael fruit falls on a palm leaf and the hare runs off crying that the earth is caving in.",
      "words": [
       "กระต่าย",
       "ตื่น",
@@ -113,8 +113,8 @@
     },
     {
      "thai": "ลิงหลอกเจ้า",
-     "english": "to behave only while the boss is watching",
-     "note": "Lit. \"a monkey fooling its owner\".",
+     "english": "to be polite to someone's face and mock them behind their back",
+     "note": "Lit. \"a monkey teasing its master\".",
      "words": [
       "ลิง",
       "หลอก",
@@ -153,7 +153,7 @@
     },
     {
      "thai": "ปลาข้องเดียวกัน",
-     "english": "all of the same (bad) lot / birds of a feather",
+     "english": "all of the same lot / birds of a feather",
      "note": "Lit. \"fish from the same creel\".",
      "words": [
       "ปลา",
@@ -185,7 +185,7 @@
     },
     {
      "thai": "สอนจระเข้ให้ว่ายน้ำ",
-     "english": "to teach a rogue new tricks",
+     "english": "to teach an expert what they already know",
      "note": "Lit. \"teach a crocodile to swim\".",
      "words": [
       "สอน",
@@ -269,7 +269,7 @@
     },
     {
      "thai": "ตีปลาหน้าไซ",
-     "english": "to spoil someone's success at the last moment",
+     "english": "to spoil something that's going well for someone",
      "note": "Lit. \"beat the fish away at the mouth of the trap\".",
      "words": [
       "ตี",
@@ -280,7 +280,7 @@
     },
     {
      "thai": "ม้าดีดกะโหลก",
-     "english": "clumsy and ill-mannered (said of a woman)",
+     "english": "gawky and unladylike (said of a woman)",
      "note": "Lit. \"a horse kicking a coconut shell\".",
      "words": [
       "ม้า",
@@ -290,7 +290,7 @@
     },
     {
      "thai": "ไก่แก่แม่ปลาช่อน",
-     "english": "a wily, worldly-wise woman",
+     "english": "a wily, brazen older woman",
      "note": "Lit. \"an old hen, a mother snakehead fish\".",
      "words": [
       "ไก่",
@@ -428,7 +428,7 @@
     {
      "thai": "ผีซ้ำด้ำพลอย",
      "english": "when it rains, it pours",
-     "note": "Lit. \"the ghost strikes again and the house spirit joins in\".",
+     "note": "Lit. \"the ghosts pile on and even the house spirit joins in\".",
      "words": [
       "ผี",
       "ซ้ำ",
@@ -449,7 +449,7 @@
     },
     {
      "thai": "น้ำเชี่ยวอย่าขวางเรือ",
-     "english": "don't stand against a strong tide",
+     "english": "don't cross the powerful (or someone in a temper)",
      "note": "Lit. \"in a swift current, don't turn your boat across it\".",
      "words": [
       "น้ำ",
@@ -471,7 +471,7 @@
      ]
     },
     {
-     "thai": "รู้ไว้ใช่ว่า ใส่บ่าแบกหาบ",
+     "thai": "รู้ไว้ใช่ว่า ใส่บ่าแบกหาม",
      "english": "knowing more is never a burden",
      "note": "Lit. \"what you know isn't a load you carry on your shoulder\".",
      "words": [
@@ -481,7 +481,7 @@
       "ใส่",
       "บ่า",
       "แบก",
-      "หาบ"
+      "หาม"
      ]
     },
     {
@@ -538,7 +538,7 @@
     },
     {
      "thai": "น้ำลดตอผุด",
-     "english": "once the cover is gone, the truth shows",
+     "english": "when power goes, past misdeeds come to light",
      "note": "Lit. \"when the water drops, the stumps appear\".",
      "words": [
       "น้ำ",
@@ -569,19 +569,6 @@
       "แต่",
       "ต้น",
       "ลม"
-     ]
-    },
-    {
-     "thai": "ตาดีได้ ตาร้ายเสีย",
-     "english": "it's a gamble: you win or you lose",
-     "note": "Lit. \"a good turn, you win; a bad turn, you lose\".",
-     "words": [
-      "ตา",
-      "ดี",
-      "ได้",
-      "ตา",
-      "ร้าย",
-      "เสีย"
      ]
     },
     {
@@ -617,7 +604,7 @@
     {
      "thai": "พูดไปสองไพเบี้ย นิ่งเสียตำลึงทอง",
      "english": "speech is silver, silence is golden",
-     "note": "Lit. \"speak and it's worth two cowries; keep quiet and it's a tael of gold\".",
+     "note": "Lit. \"speak and it's worth two pai in cowries; keep quiet and it's a tael of gold\".",
      "words": [
       "พูด",
       "ไป",
@@ -708,8 +695,8 @@
     },
     {
      "thai": "ขิงก็รา ข่าก็แรง",
-     "english": "both as stubborn as each other",
-     "note": "Lit. \"the ginger is sharp and the galangal is strong\".",
+     "english": "neither will give an inch (both hot-headed)",
+     "note": "Lit. \"the ginger is … and the galangal is strong\": what รา meant here is no longer clear.",
      "words": [
       "ขิง",
       "ก็",
@@ -731,8 +718,8 @@
     },
     {
      "thai": "คนล้มอย่าข้าม",
-     "english": "don't write off someone who's down",
-     "note": "Lit. \"don't step over a fallen man\": he may rise again.",
+     "english": "don't kick someone when they're down",
+     "note": "Lit. \"don't step over a fallen man\".",
      "words": [
       "คน",
       "ล้ม",
@@ -742,22 +729,23 @@
     },
     {
      "thai": "ต่อความยาว สาวความยืด",
-     "english": "to drag a quarrel out",
-     "note": "Lit. \"lengthen the matter, pull it out longer\".",
+     "english": "to drag a matter out",
+     "note": "Lit. \"lengthen the matter, stretch it out\".",
      "words": [
       "ต่อ",
-      "ความ::a case, a matter (in dispute)",
+      "ความ::a matter, an affair",
       "ยาว",
       "สาว::to pull in, hand over hand",
-      "ความ::a case, a matter (in dispute)",
+      "ความ::a matter, an affair",
       "ยืด"
      ]
     },
     {
-     "thai": "เอาไม้สั้นไปรันขี้",
-     "english": "to tangle with a lowlife and come off worse",
-     "note": "Lit. \"poke dung with a short stick\".",
+     "thai": "อย่าเอาไม้สั้นไปรันขี้",
+     "english": "don't tangle with a lowlife (you'll only get dirty)",
+     "note": "Lit. \"don't beat dung with a short stick\".",
      "words": [
+      "อย่า",
       "เอา",
       "ไม้::tree (old word); stick",
       "สั้น",
@@ -934,10 +922,6 @@
    "châi-wâa",
    "it's not as if …"
   ],
-  "หาบ": [
-   "hàap",
-   "to carry on a shoulder pole"
-  ],
   "ดัด": [
    "dàt",
    "to bend into shape"
@@ -976,11 +960,11 @@
   ],
   "รา": [
    "raa",
-   "sharp, hot (of ginger; old word)"
+   "(an old word in the ginger saying; its meaning is lost)"
   ],
   "รัน": [
    "ran",
-   "to poke, prod"
+   "to strike, beat (old word)"
   ],
   "กงจักร": [
    "gong-jàk",
@@ -1006,9 +990,13 @@
    "gan",
    "to guard against, prevent"
   ],
-  "ความ::a case, a matter (in dispute)": [
+  "ความ::a matter, an affair": [
    "khwaam",
-   "a case, a matter (in dispute)"
+   "a matter, an affair"
+  ],
+  "หาม": [
+   "hǎam",
+   "to carry between two people (on a pole)"
   ]
  },
  "word_topics": [

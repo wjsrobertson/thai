@@ -3038,11 +3038,11 @@ script errors.
 The user's call: "I think we should have more idioms - they are really interesting and a great
 motivation to learn. stuff like 'measure twice, cut once' - 'dog eat dog' - 'every man for himself'
 etc. how many do we have currently and can we add a load more?" There were 70 (four Idioms &
-Proverbs topics) and 9 Southern. Now 140 and 9: three new topics of phrases in Culture & Values →
+Proverbs topics) and 9 Southern. Now 139 and 9: three new topics of phrases in Culture & Values →
 Language & Literature, after Talk & Relationships:
-- **Animals** (25): ปลาใหญ่กินปลาเล็ก (dog eat dog), เสือนอนกิน, ฆ่าช้างเอางา, ช้างตายทั้งตัวเอาใบบัวปิด,
+- **Animals** (25): ปลาใหญ่กินปลาเล็ก (the strong prey on the weak), เสือนอนกิน, ฆ่าช้างเอางา, ช้างตายทั้งตัวเอาใบบัวปิด,
   แมวไม่อยู่ หนูร่าเริง, กระต่ายตื่นตูม, วัวลืมตีน, หมาหวงก้าง, คางคกขึ้นวอ, ยิงปืนนัดเดียวได้นกสองตัว…
-- **Caution, Effort & Money** (24): กันไว้ดีกว่าแก้ (the nearest to measure twice, cut once; the note
+- **Caution, Effort & Money** (23): กันไว้ดีกว่าแก้ (the nearest to measure twice, cut once; the note
   says so), ได้คืบจะเอาศอก, เข็นครกขึ้นภูเขา, ฝนทั่งให้เป็นเข็ม, ไฟไหม้ฟาง, ตำข้าวสารกรอกหม้อ, ตัดไฟแต่ต้นลม,
   ได้อย่างเสียอย่าง…
 - **Talk & Character** (21): ฆ้องปากแตก, พูดไปสองไพเบี้ย นิ่งเสียตำลึงทอง, ไปไหนมาสามวาสองศอก, น้ำกลิ้งบนใบบอน,
@@ -3054,14 +3054,27 @@ note the literal image, as the other four topics. Each has its words; 34 words w
 Animals & Caution** (25) and **Words in Talk & Character** (8), and เนื้อ "deer (old word)" in Words in
 Wisdom & People, since Talk & Character's has เนื้อ "texture (of cloth, wood)" and a topic can't hold
 the same Thai twice. A few senses were added for a saying's meaning: กัน "to guard against",
-ปิด "to cover (up)", ความ "a case, a matter".
+ปิด "to cover (up)", ความ "a matter, an affair".
 Built by **tools/add_idioms.py** from **tools/specs/idioms-2026-11-28.json** (the sayings, the new
 words with translit, and the sense a bare Thai takes): it resolves each word to a card that exists
 (the sayings' word topics first, never Thai Script's spelling cards, which it had picked at first),
 makes the rest, joins the words' translits for the saying's, and reports each sense it chose. The
 new topic ids are in tools/topic_kinds.py's IDIOM_TOPICS. audit_decks (0 errors), stories.py check,
-spelling.mjs run. **Not yet recorded:** gen_audio.py needs edge-tts, which isn't installed here (not
-installed without asking); until then the new cards play with the browser's Thai voice.
+spelling.mjs run.
+**Checked on the web** (the user's call: "search the web for these idioms please"): three agents, a
+topic each, searched every saying's exact Thai and meaning, mostly against Thai Wiktionary (which
+follows the Royal Institute's dictionary), trueplookpanya's and Wongnai's idiom lists and gotoknow;
+dictionary.orst.go.th and Longdo couldn't be fetched. Fixed from it: สอนจระเข้ให้ว่ายน้ำ means teaching an
+expert what they already know (it had "teach a rogue new tricks"); **อย่า**เอาไม้สั้นไปรันขี้ (the usual
+form; รัน "to strike"); รู้ไว้ใช่ว่า ใส่บ่าแบก**หาม** (หาบ before); ตาดีได้ ตาร้ายเสีย dropped (no source);
+narrower or truer meanings for ปลาใหญ่กินปลาเล็ก (not "dog eat dog", which is everyone against everyone),
+ลิงหลอกเจ้า (mocking behind their back), ตีปลาหน้าไซ, ม้าดีดกะโหลก, ไก่แก่แม่ปลาช่อน, น้ำลดตอผุด (when power
+goes, misdeeds surface), น้ำเชี่ยวอย่าขวางเรือ, ขิงก็รา ข่าก็แรง (neither gives an inch; what รา meant is
+lost, and its card says so), ต่อความยาว สาวความยืด, คนล้มอย่าข้าม; notes for กระต่ายตื่นตูม (a bael fruit on
+a palm leaf), ผีซ้ำด้ำพลอย, พูดไปสองไพเบี้ย… (two pai in cowries). Found in no source but standard and
+kept: หน้าเนื้อใจเสือ, ฝากเนื้อไว้กับเสือ, ช้างเท้าหน้า, รักพี่เสียดายน้อง, คบคนให้ดูหน้า…, ไปไหนมาสามวาสองศอก,
+ม้าตีนต้น. The topics were rebuilt from the corrected spec. Recorded with gen_audio.py (edge-tts,
+installed that day for Python 3.14 into ~/.local with the old 3.12 pip, the user's OK): 226 clips.
 
 ## Phrases from your words: no drill fill-ins (2026-11-28)
 
