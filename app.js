@@ -2703,7 +2703,7 @@ function openPop(anchor, tr, en, parts, open) {
   anchor?.classList.add('on');
   els.wordModalTr.textContent = tr;
   els.wordModalEn.textContent = en;
-  popEnter(open);
+  popEnter(open, { home: true }); // a vowel's, a mark's, the tone table
   els.wordModalBody.replaceChildren(...parts);
   showWordModal();
   els.wordModalBody.scrollTop = 0;
@@ -3962,7 +3962,7 @@ function showLetterPop(anchor, c) {
     });
     parts.push(all);
   }
-  popEnter(() => showLetterPop(anchor, c));
+  popEnter(() => showLetterPop(anchor, c), { home: true });
   els.wordModalBody.replaceChildren(...parts);
   showWordModal();
   els.wordModalBody.scrollTop = 0;
@@ -7051,7 +7051,7 @@ function showStoryPop(anchor, d, { word = null } = {}) {
   anchor?.classList.add('on');
   els.wordModalTr.textContent = '';
   els.wordModalEn.textContent = d.name;
-  popEnter(() => showStoryPop(anchor, d));
+  popEnter(() => showStoryPop(anchor, d), { home: true });
   state.readingId = d.id;
   loadWordTimings();
   renderReader(d);
@@ -7303,15 +7303,17 @@ let wordPop = null;   // while it's open: { lastFocus, here, back } (popEnter)
 // the one left, with how far down it was, and ‹ (or Backspace) goes back to it; closing forgets them.
 let popReturning = false; // while ‹ shows the one before again: it isn't said again (popSay)
 
-function popEnter(open) {
+// `home`: a page a close comes back to (closeWordPop): a story, a phrase, a letter, a vowel, a tone
+// mark, the tone table; a word isn't one.
+function popEnter(open, { home = false } = {}) {
   window.CSS?.highlights?.delete(HOVER_HIGHLIGHT); // a phrase's lit word (showPhrasePop)
-  const fromStory = els.wordModal.classList.contains('story');
   els.wordModal.classList.remove('story'); // a story's dialog (showStoryPop) sets it again
   vocabPopId = null; // a list's (showVocabPop) sets it again
   els.wordModalEn.classList.remove('now-playing'); // its title, while Read says it
-  if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, back: [] };
-  else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop, story: fromStory });
+  if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, hereHome: false, back: [] };
+  else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop, home: wordPop.hereHome });
   wordPop.here = open;
+  wordPop.hereHome = home;
   els.wordModalBack.hidden = !wordPop.back.length;
 }
 
@@ -7464,8 +7466,10 @@ function showWordModal() {
 // The user closing the dialog (✕, the backdrop, Escape, a swipe down): a word or phrase opened from
 // a story goes back to the story, not out to the stories list under it (2026-11-28, the user's call:
 // "When you close the word dialog, the app should drop you back in the story"); then a close shuts it.
+// The same day (the user's call) a phrase's, a letter's, a vowel's, a mark's and the tone table's too:
+// the latest such page in the stack (popEnter's `home`), however deep.
 function closeWordPop() {
-  const at = wordPop ? wordPop.back.findLastIndex((b) => b.story) : -1;
+  const at = wordPop ? wordPop.back.findLastIndex((b) => b.home) : -1;
   if (at < 0) {
     hideWordPop();
     return;
@@ -7573,7 +7577,7 @@ function showPhrasePop(anchor, card) {
   if (context) parts.push(context);
   const topics = topicsSection(card, key);
   if (topics) parts.push(topics);
-  popEnter(() => showPhrasePop(anchor, card));
+  popEnter(() => showPhrasePop(anchor, card), { home: true });
   els.wordModalBody.replaceChildren(...parts);
   showWordModal();
   els.wordModalBody.scrollTop = 0;

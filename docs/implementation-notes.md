@@ -3022,6 +3022,13 @@ itself or with none under. Closes the app does itself (a tab, Open in topic) sti
 (`hideWordPop`). Checked headless (scratch `storyclose.py`) at 390 × 844: story → word → ✕, Escape and
 the backdrop each show the story again, ‹ hidden; ✕ on the story closes; no script errors.
 
+The same day (the user's call, after asking "are there any more cases like this?"): a phrase's dialog,
+a letter's, a vowel's, a tone mark's and the tone table are such pages too (popEnter's `{ home: true }`,
+the back entry's `home`, which replaced `story`): a word opened from one, ✕ is back on it. A word
+isn't: word → word → ✕ still closes, ‹ being the way back along a chain of words. Checked headless
+(scratch `homeclose.py`): phrase → word → ✕ the phrase, ✕ closed; letter ก → a word → Escape the
+letter, ✕ closed; the story case as before; no script errors.
+
 ## Recall: Hard and Easy (2026-11-28)
 
 The user's call: "change the options to only have 2 - Hard and Easy... swiping left is hard, right is
