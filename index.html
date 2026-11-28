@@ -464,11 +464,12 @@
           </div>
         </div>
         <div class="review-grades" id="review-grades" hidden>
-          <button type="button" class="grade grade-again" data-grade="1">Very Hard</button> <!-- "Again" until 2026-10-08 -->
-          <button type="button" class="grade grade-hard" data-grade="2">Hard</button>
-          <!-- Three grades since 2026-10-07: "Easy" schedules as FSRS Good (3), the normal remembered
-               answer; FSRS Easy (4) would push a new word out to about 16 days. -->
-          <button type="button" class="grade grade-easy" data-grade="3">Easy</button>
+          <!-- Two grades since 2026-11-28 (the user's call; Very Hard, Hard, Easy before, "Again" for
+               Very Hard until 2026-10-08), as the swipe: left Hard, right Easy. Hard is FSRS Again (1),
+               so a word you couldn't bring back is a lapse and comes round soon; Easy is FSRS Good (3),
+               the normal remembered answer (FSRS Easy, 4, would push a new word out about 16 days). -->
+          <button type="button" class="grade grade-again" data-grade="1" title="Hard (←)">Hard</button>
+          <button type="button" class="grade grade-easy" data-grade="3" title="Easy (→)">Easy</button>
         </div>
       </div>
 
@@ -727,25 +728,25 @@
         </div>
         <p class="setting-list-head">Scheduling</p>
         <div class="setting-list">
-          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits again very hard delay interval minutes come back">
+          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits again hard very hard delay interval minutes come back">
             <label class="setting-row">
-              <span class="setting-label">Very Hard: wait (minutes)</span>
+              <span class="setting-label">Hard: wait (minutes)</span>
               <input type="number" min="1" max="1440" step="1" id="setting-wait-again" />
-              <span class="setting-help">For a word marked Very Hard, or wrong in Recognition or Type.</span>
+              <span class="setting-help">For a word marked Hard in Recall, or wrong in Recognition or Type.</span>
             </label>
           </div>
-          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits hard delay interval days first new word">
+          <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits hard recognised delay interval days first new word">
             <label class="setting-row">
-              <span class="setting-label">Hard: first wait (days)</span>
+              <span class="setting-label">Recognised: first wait (days)</span> <!-- "Hard" till 2026-11-28, when Recall's Hard became a miss -->
               <input type="number" min="1" max="60" step="1" id="setting-wait-hard" />
-              <span class="setting-help">A right answer in Recognition counts as Hard, as does one typed in Listen.</span>
+              <span class="setting-help">For a right answer in Recognition, or one typed in Listen.</span>
             </label>
           </div>
           <div class="setting-group" data-search="flashcards scheduling schedule recognition test recall review wait waits easy delay interval days first new word">
             <label class="setting-row">
               <span class="setting-label">Easy: first wait (days)</span>
               <input type="number" min="1" max="60" step="1" id="setting-wait-easy" />
-              <span class="setting-help">A word typed right in English → Thai counts as Easy. First waits are for a new word. Each right answer after makes the wait longer.</span>
+              <span class="setting-help">For a word marked Easy in Recall, or typed right in English → Thai. First waits are for a new word. Each right answer after makes the wait longer.</span>
             </label>
           </div>
           <div class="setting-group" data-search="flashcards scheduling desired retention fsrs intervals remember percent recognition test recall review">

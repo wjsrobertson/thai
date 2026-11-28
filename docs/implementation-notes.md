@@ -3009,6 +3009,19 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Recall: Hard and Easy (2026-11-28)
+
+The user's call: "change the options to only have 2 - Hard and Easy... swiping left is hard, right is
+easy". Recall's grades were Very Hard / Hard / Easy (FSRS Again / Hard / Good); now two buttons, half
+the row each: **Hard** (red edge, FSRS Again, 1) and **Easy** (green, FSRS Good, 3), as the swipe
+left and right. Hard is the miss rather than FSRS Hard, so a word you couldn't bring back comes round
+a few cards later and is counted as forgotten; with only two grades, one has to be the miss, or a
+forgotten word's wait would keep growing. Keys: ← or 1 Hard, → or 2 Easy, Enter Easy.
+Settings → Scheduling: "Very Hard: wait (minutes)" is **Hard: wait**; FSRS Hard's first wait, now
+only for a right answer in Recognition or one typed in Listen, is **Recognised: first wait (days)**,
+so two settings aren't both called Hard. Checked headless (scratch `rec2.py`) at 390 × 844: the two
+buttons 179 wide each, ←, the Easy button and a left swipe each move on, no script errors.
+
 ## Flashcards: a swipe for ‹ and › (2026-11-28)
 
 The user's request: "in the flashcards section of Words, Phrases, Stories, please add swipe

@@ -1396,8 +1396,8 @@ function renderAutoBadges() {
   });
 }
 
-// Recognition answers ('good' or 'again') update the same items as Recall: right counts as Hard,
-// wrong as Very Hard (gradeItem, mode 'mc').
+// Recognition answers ('good' or 'again') update the same items as Recall: right counts as FSRS
+// Hard (gradeItem's mode 'mc'), wrong as FSRS Again (1: Recall's Hard since 2026-11-28).
 function saveDeckRating(c, rating) {
   const deckId = flashScope()?.deckOf.get(c.key)?.id || state.currentDeckId; // the card's own topic
   const it = gradeItem(c.key, state.direction, rating === 'again' ? 1 : 3, { mode: 'mc', deckId });
@@ -5344,7 +5344,7 @@ function handleLearnPick(btn, isCorrect) {
 //   box empty, is a miss; Next, once answered, moves on without the pause;
 // - then on as Recognition goes: its pauses (a right answer with a note gets the longer one, to
 //   read it), and a miss back a few cards later (requeueRecognition).
-// Progress (the user's call): English → Thai is a recall (right is Easy, wrong Very Hard), Listen
+// Progress (the user's call): English → Thai is a recall (right is Easy, wrong Hard: FSRS 3 and 1), Listen
 // as Recognition counts it (right is Hard: spelling what you hear isn't knowing its meaning),
 // Thai → English nothing, since copying a word says nothing of what it means.
 const TYPE_PLACEHOLDER = { 'th-en': 'Type the Thai', 'en-th': 'Type it in Thai', listen: 'Type what you hear' };
@@ -6715,8 +6715,10 @@ function handleReviewKey(e) {
       e.preventDefault();
       revealAnswer();
     }
-  } else if (['1', '2', '3'].includes(e.key)) { // Again, Hard, Easy
-    gradeCurrent(Number(e.key));
+  } else if (e.key === '1' || e.key === 'ArrowLeft') { // Hard (FSRS Again), as a swipe left
+    gradeCurrent(1);
+  } else if (e.key === '2' || e.key === 'ArrowRight') { // Easy (FSRS Good), as a swipe right
+    gradeCurrent(3);
   } else if (enter) {
     e.preventDefault();
     gradeCurrent(3); // Easy (FSRS Good)
@@ -11285,8 +11287,8 @@ function bindEvents() {
   els.wordModalBack.addEventListener('click', popBack);
   bindDialogSwipe();
 
-  // Recall's card swipes once turned over (2026-11-28, the user's call): right Easy, left Very Hard,
-  // as Vocabulary's Yes and No; Hard stays a button. Before the turn it doesn't move.
+  // Recall's card swipes once turned over (2026-11-28, the user's call): right Easy, left Hard (FSRS
+  // Again), as Vocabulary's Yes and No, and the only two grades since the same day. Before the turn it doesn't move.
   bindYesNoSwipe(els.reviewCard, { can: () => !!state.review?.revealed && !state.review.answered, alive: () => !!state.review, answer: (yes) => gradeCurrent(yes ? 3 : 1) });
   // ⟳ turns the card: to the answer first, then either way (as a tap on the card does).
   els.reviewCard.querySelectorAll('.review-flip').forEach((btn) => btn.addEventListener('click', () => {

@@ -2410,7 +2410,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 /* Vocabulary's card swipes too (2026-11-28, bindYesNoSwipe): right Yes, left No, as One by one's. */
 .vocab-card { touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
 .vocab-card.done { cursor: default; }
-/* Recall's card lights on its faces, which have the background (2026-11-28): right Easy, left Very Hard. */
+/* Recall's card lights on its faces, which have the background (2026-11-28): right Easy, left Hard. */
 .review-card.ps-yes .face { border-color: var(--good); background: color-mix(in srgb, var(--good) 14%, var(--panel)); }
 .review-card.ps-no .face { border-color: var(--again); background: color-mix(in srgb, var(--again) 14%, var(--panel)); }
 .ps-card p { margin: 0; }
@@ -3013,7 +3013,7 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .review-card .flip-btn.reveal:hover { filter: brightness(1.08); }
 /* The grades are the size of Test mode's answer buttons (.learn-pill, in .learn-pills), three
    across like them (2026-10-08, the user's request). mobile.css matches the phone's pills. */
-.review-grades { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.review-grades { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; } /* Hard, Easy (three till 2026-11-28) */
 .review-grades[hidden] { display: none; }
 .grade {
   display: flex;
