@@ -3036,6 +3036,39 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .grade-easy { border-color: var(--good); } /* green: Easy schedules as FSRS Good (blue until 2026-10-08) */
 @media (hover: hover) { .grade:hover { background: var(--panel-2); } } /* not on phones: see .learn-pill:hover */
 
+/* ---------- first run (renderSetup, 2026-11-28) ----------
+   Home's three steps in place of its cards: a heading, the choices as radio rows (the one picked
+   outlined in the accent, its dot filled), a sample word on the first two, then Back and Next. */
+.setup { display: flex; flex-direction: column; gap: 14px; max-width: var(--page-width); margin: 24px auto 0; }
+.setup[hidden], .home[hidden] { display: none; }
+.setup-head { display: flex; flex-direction: column; gap: 4px; }
+.setup-step { margin: 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.setup-title { margin: 0; color: var(--ink); font-size: calc(22px * var(--fs, 1)); font-weight: 600; outline: none; }
+.setup-help { margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); line-height: 1.45; }
+.setup-body { display: flex; flex-direction: column; gap: 14px; }
+.setup-choices { display: flex; flex-direction: column; gap: 8px; }
+.setup-choice { display: flex; align-items: flex-start; gap: 14px; width: 100%; min-height: 52px; padding: 12px 14px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; color: var(--ink); font-size: calc(16px * var(--fs, 1)); text-align: left; }
+.setup-choice[aria-checked="true"] { border-color: var(--accent); }
+@media (hover: hover) { .setup-choice:hover { border-color: var(--accent); } }
+.setup-choice-mark { flex: none; width: 20px; height: 20px; margin-top: 1px; border: 2px solid var(--control-border); border-radius: 50%; }
+.setup-choice[aria-checked="true"] .setup-choice-mark { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 4px var(--panel); }
+.setup-choice-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.setup-choice-name { font-weight: 600; }
+.setup-choice-help { color: var(--muted); font-size: calc(14px * var(--fs, 1)); line-height: 1.45; }
+.setup-sample { padding: 18px 16px; background: var(--panel); border: 1px solid var(--border); border-radius: 12px; text-align: center; }
+.setup-sample p { margin: 0; }
+.setup-sample-th { color: var(--ink); font-size: calc(40px * var(--fs, 1)); line-height: 1.5; }
+.setup-sample-tr { color: var(--accent); font-size: calc(18px * var(--fs, 1)); font-style: italic; }
+.setup-sample-en { color: var(--ink); font-size: calc(18px * var(--fs, 1)); }
+.setup-plays { display: flex; flex-wrap: wrap; gap: 8px; }
+.setup-play { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; font-size: 16px; }
+.setup-play .speaker-icon { width: 20px; height: 20px; }
+.setup-later { margin: 0; color: var(--muted); font-size: calc(14px * var(--fs, 1)); }
+.setup-nav { display: flex; align-items: center; gap: 12px; }
+.setup-back { min-height: 48px; padding: 8px 20px; font-size: 16px; }
+.setup-back[hidden] { display: none; }
+.setup-next { min-height: 48px; margin-left: auto; padding: 8px 32px; background: var(--accent); border: 1px solid var(--accent); border-radius: 10px; color: var(--on-accent); font-size: 17px; font-weight: 600; }
+
 /* ---------- home page ---------- */
 .home {
   display: grid;

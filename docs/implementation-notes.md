@@ -2406,6 +2406,30 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **First run: text size, theme and voice** (2026-11-28, the user's request: on a first visit, or
+  after Start over, a wizard on Home, "they can change them live and see the results. recorded
+  sounds do not start downloading immediately though, perhaps one sample… prompted to check if their
+  browser handles Thai text to speech ok and be told the tradeoff of space usage… notified they can
+  change later in settings"). Home shows `#setup-section` in place of its cards while
+  `prefs.setupDone === false` (`renderSetup`, from `setView`): Welcome · step n of 3, then **Text
+  size** (Settings' five, from its select), **Theme** (Settings' five, darkest first) and **Voice**
+  (Recorded, recommended, with its space: each clip downloads the first time it plays and stays, a
+  few MB a topic, up to about 350 MB for everything (`setupAllMb`, Download all's estimate); or the
+  browser's voice: nothing to download, but Thai often poor, and "This browser has no Thai voice"
+  when there's none (`thaiVoice`, redrawn on voiceschanged)). Each choice is saved and put on as it's
+  tapped (applyTextSize, applyTheme), so the page is the preview, with a sample word card on the
+  first two; on Voice a tap plays สวัสดีครับ in that voice, and Play a recording / Play the browser's
+  Thai play either (`previewVoice`, whatever's set). "You can change these any time in Settings."
+  under each; Back, Next, then Start, which sets `setupDone`, preloads the topic's audio and toasts
+  the same. Nothing downloads meanwhile: `preloadDeckAudio` and `preloadVocabAudio` wait on
+  `setupPending()`. The tabs still go elsewhere; Home shows the steps till Start. **Who sees it**
+  (`noteFirstRun`, first in init): a store with nothing in it but Start over's audio prefs (a new
+  install, or Start over) gets `setupDone: false`; one already in use, true, so nobody using the app
+  sees it unasked. Checked headless (scratch `setup.py`, `startover.py`) at 390 × 844: a fresh store
+  → the steps, Home's cards hidden, no clips fetched; Largest → --fs 1.3; Light → data-theme light;
+  Voice: one clip fetched (สวัสดีครับ's) for Recorded, none for the browser's; Start → Home's cards,
+  the toast, then the topic's 85 clips; the settings saved; a reload, and a store in use, no steps;
+  Start over → the steps again; no script errors.
 - **Vocabulary's head tidied** (2026-11-28, the user's screenshot: "the top of the vocabulary section
   is a bit weird"; offered three ideas, the user took two): "You know 52 words" is the page's heading
   (22, semibold, as a topic's name on Words), with a compact **＋ Add** at its right (`.vocab-head`;

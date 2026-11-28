@@ -190,6 +190,22 @@
   </div>
 
   <main class="stage" data-view="home" data-section="words">
+    <!-- First run (2026-11-28, the user's call): on a first visit, or after Start over, Home shows this
+         in place of its cards till it's done: three steps, text size, theme and voice, each put on as
+         it's picked (renderSetup). -->
+    <section class="setup home-only" id="setup-section" hidden aria-labelledby="setup-title">
+      <div class="setup-head">
+        <p class="setup-step" id="setup-step"></p>
+        <h2 class="setup-title" id="setup-title" tabindex="-1"></h2>
+        <p class="setup-help" id="setup-help"></p>
+      </div>
+      <div class="setup-body" id="setup-body"></div>
+      <p class="setup-later">You can change these any time in Settings.</p>
+      <div class="setup-nav">
+        <button type="button" class="ghost setup-back" id="setup-back">Back</button>
+        <button type="button" class="setup-next" id="setup-next">Next</button>
+      </div>
+    </section>
     <section class="home home-only" id="home-section">
       <!-- The three sections, as the tab bar has them (2026-10-14, the user's call: the home page went to
            Words, Alphabet and Dictionary, not to the pages inside them). Each card opens its section where

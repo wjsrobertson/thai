@@ -107,6 +107,14 @@ const els = {
   vocabNo: document.getElementById('vocab-no'),
   vocabYes: document.getElementById('vocab-yes'),
   homeVocabText: document.getElementById('home-vocab-text'),
+  homeSection: document.getElementById('home-section'),
+  setupSection: document.getElementById('setup-section'), // the first run's steps (renderSetup)
+  setupStep: document.getElementById('setup-step'),
+  setupTitle: document.getElementById('setup-title'),
+  setupHelp: document.getElementById('setup-help'),
+  setupBody: document.getElementById('setup-body'),
+  setupBack: document.getElementById('setup-back'),
+  setupNext: document.getElementById('setup-next'),
   resetVocab: document.getElementById('reset-vocab'),
   timeClock: document.getElementById('time-clock'),
   timePrev: document.getElementById('time-prev'),
@@ -4145,7 +4153,10 @@ function setView(view, { section = state.kind } = {}) {
   if (view === 'time') renderTimeSection();
   els.vocabSection.hidden = view !== 'vocab';
   if (view === 'vocab') renderVocab();
-  if (view === 'home') renderHomeVocab();
+  if (view === 'home') {
+    renderHomeVocab();
+    renderSetup();
+  }
   if (view === 'reading') renderReading();
   else hideWordPop();
   if (view !== 'wordlist' && state.reading.active) stopReadAloud();
@@ -8329,6 +8340,147 @@ async function startOver() {
   location.reload();
 }
 
+// ---------- First run (2026-11-28) ----------
+// The user's call: "when the user first visits, or is reset with start over a wizard should be
+// displayed when the user navigates to the home page. It makes the user select three options - they
+// can change them live and see the results. recorded sounds do not start downloading immediately
+// though, perhaps one sample for the user to hear. They should be prompted to check if their browser
+// handles Thai text to speech ok and be told the tradeoff of space usage if they choose the other
+// option… User should be notified they can change later in settings."
+// Home shows three steps in place of its cards (renderSetup): text size, theme, voice. Each choice
+// is saved and put on as it's tapped, so the page itself is the preview (and a sample word, on the
+// first two). The voice step plays one recording, or the browser's Thai, when a choice is tapped or
+// its Play pressed; nothing else downloads till it's done (preloadDeckAudio waits on setupPending).
+// The tabs still go elsewhere; Home shows the steps again till Start. prefs.setupDone: true once
+// done. A store already in use when this came in counts as done (noteFirstRun), so only a new install
+// or Start over (which keeps only the audio prefs) sees it.
+const SETUP_STEPS = ['textSize', 'theme', 'voice'];
+const SETUP_SAY = 'สวัสดีครับ';
+const setupPending = () => getPreferences().setupDone === false;
+
+function noteFirstRun() {
+  const store = loadStore();
+  const prefs = store.prefs || {};
+  if ('setupDone' in prefs) return;
+  const has = (x) => (Array.isArray(x) ? x.length : x && typeof x === 'object' ? Object.keys(x).length : !!x);
+  const used = Object.keys(prefs).some((k) => !AUDIO_PREFS.includes(k))
+    || Object.keys(store.settings || {}).some((k) => k !== 'offlineAudio')
+    || Object.entries(store).some(([k, v]) => !['prefs', 'settings'].includes(k) && has(v));
+  setPreferences({ setupDone: used });
+}
+
+function renderSetup() {
+  const on = setupPending();
+  els.setupSection.hidden = !on;
+  els.homeSection.hidden = on;
+  if (!on) return;
+  const i = Math.min(state.setupStep || 0, SETUP_STEPS.length - 1);
+  const step = SETUP_STEPS[i];
+  const s = getSettings();
+  els.setupStep.textContent = `Welcome · step ${i + 1} of ${SETUP_STEPS.length}`;
+  const el = (tag, className, textContent = '') => Object.assign(document.createElement(tag), { className, textContent });
+  const choices = (options, current, pick) => {
+    const box = el('div', 'setup-choices');
+    box.setAttribute('role', 'radiogroup');
+    box.setAttribute('aria-labelledby', 'setup-title');
+    for (const o of options) {
+      const b = el('button', 'setup-choice');
+      b.type = 'button';
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(o.value === current));
+      b.append(el('span', 'setup-choice-mark'), Object.assign(el('span', 'setup-choice-text'), {}));
+      b.lastChild.append(el('span', 'setup-choice-name', o.name), ...(o.help ? [el('span', 'setup-choice-help', o.help)] : []));
+      b.addEventListener('click', () => pick(o.value));
+      box.append(b);
+    }
+    return box;
+  };
+  // A word as a card shows it: the Thai, its transliteration and the English, at the page's sizes.
+  const sample = () => {
+    const box = el('div', 'setup-sample');
+    box.append(Object.assign(el('p', 'setup-sample-th', 'สวัสดีครับ'), { lang: 'th' }), el('p', 'setup-sample-tr', 'sà-wàt-dii khráp'), el('p', 'setup-sample-en', 'hello (male speaker)'));
+    return box;
+  };
+  const optionsOf = (select) => [...select.options].map((o) => ({ value: o.value, name: o.textContent.replace(/ \(default\)$/, '') }));
+  if (step === 'textSize') {
+    els.setupTitle.textContent = 'Text size';
+    els.setupHelp.textContent = 'Pick the size that reads comfortably. The page changes as you tap.';
+    els.setupBody.replaceChildren(choices(optionsOf(els.setTextSize), String(s.textSize), (v) => {
+      setSettings({ textSize: Number(v) });
+      applyTextSize();
+      renderSetup();
+    }), sample());
+  } else if (step === 'theme') {
+    els.setupTitle.textContent = 'Theme';
+    els.setupHelp.textContent = 'The colours. The page changes as you tap.';
+    els.setupBody.replaceChildren(choices(optionsOf(els.setTheme), s.theme, (v) => {
+      setSettings({ theme: v });
+      applyTheme();
+      renderSetup();
+    }), sample());
+  } else {
+    els.setupTitle.textContent = 'Voice';
+    els.setupHelp.textContent = 'How the Thai is spoken. Tap one to hear it.';
+    const thai = !!thaiVoice;
+    els.setupBody.replaceChildren(choices([
+      { value: 'samples', name: 'Recorded (recommended)', help: `Natural voices, recorded for every word and story. Each clip downloads the first time it plays and stays on this device: a few MB for each topic you open, up to about ${fmtCount(setupAllMb())} MB if you use everything.` },
+      { value: 'browser', name: "Your browser's voice", help: `Nothing to download, but Thai from a browser is often poor: flat tones, odd words, or an English voice reading it. ${thai ? 'Tap to check it sounds right.' : 'This browser has no Thai voice, so you may hear nothing.'}` },
+    ], s.audioSource, (v) => {
+      setSettings({ audioSource: v });
+      renderSetup();
+      previewVoice(v);
+    }));
+    // Both, whichever is picked, so the two can be heard side by side.
+    const plays = el('div', 'setup-plays');
+    for (const [source, label] of [['samples', 'Play a recording'], ['browser', "Play the browser's Thai"]]) {
+      const play = el('button', 'ghost setup-play');
+      play.type = 'button';
+      play.append(speakerIcon(), label);
+      play.addEventListener('click', () => previewVoice(source));
+      plays.append(play);
+    }
+    els.setupBody.append(plays);
+  }
+  els.setupBack.hidden = i === 0;
+  els.setupNext.textContent = i === SETUP_STEPS.length - 1 ? 'Start' : 'Next';
+}
+
+// Every clip's size, as Settings → Audio's Download all estimates it, to the 50 MB.
+function setupAllMb() {
+  const clips = ['th', 'en', 'sp'].reduce((n, lang) => n + Object.keys(sampleFiles[lang] || {}).length, 0);
+  return Math.round((clips * AVG_CLIP_KB) / 1000 / 50) * 50;
+}
+
+// One clip of the voice picked, whatever's set: the recording (fetched alone) or the browser's Thai.
+function previewVoice(source) {
+  stopAudio();
+  const file = sampleFiles.th[SETUP_SAY];
+  if (source === 'samples' && file) playSample(`data/audio/${file}`, speedFor('th'));
+  else ttsAndWait(SETUP_SAY, 'th');
+}
+
+function stepSetup(by) {
+  const i = (state.setupStep || 0) + by;
+  if (i >= SETUP_STEPS.length) return finishSetup();
+  state.setupStep = Math.max(0, i);
+  renderSetup();
+  els.setupSection.scrollIntoView?.({ block: 'start' });
+  window.scrollTo(0, 0);
+  els.setupTitle.focus?.({ preventScroll: true });
+}
+
+function finishSetup() {
+  stopAudio();
+  state.setupStep = 0;
+  setPreferences({ setupDone: true });
+  renderSetup();
+  renderSettings();
+  window.scrollTo(0, 0);
+  const deck = currentScope();
+  if (deck) preloadDeckAudio(deck); // held back till now
+  toast('All set. You can change these any time in Settings.', { tone: 'good', ms: 4000 });
+}
+
 // ---------- TTS ----------
 
 let thaiVoice = null;
@@ -8375,6 +8527,7 @@ function cacheSample(url, blobUrl) {
 // lists spike, 2026-10-20; before, the words in Cards came first). Anything else is fetched when it's played.
 const PRELOAD_MAX = 80;
 function preloadDeckAudio(deck) {
+  if (setupPending()) return; // not while the first run's steps show: one clip to hear, no more (finishSetup preloads)
   if (getSettings().audioSource !== 'samples') {
     queuePageAudio([]);
     return;
@@ -10640,7 +10793,7 @@ function renderVocabRun({ say = true } = {}) {
 }
 
 function preloadVocabAudio(run, words, from, due) {
-  if (getSettings().audioSource !== 'samples') return;
+  if (setupPending() || getSettings().audioSource !== 'samples') return;
   const entries = [];
   for (let i = from; i < words.length && entries.length < VOCAB_PRELOAD; i++) {
     if (!due(words[i])) continue;
@@ -11042,6 +11195,8 @@ function bindEvents() {
 
 
   els.homeLink.addEventListener('click', () => setView('home'));
+  els.setupBack.addEventListener('click', () => stepSetup(-1));
+  els.setupNext.addEventListener('click', () => stepSetup(1));
   els.homeCards.forEach((card) => card.addEventListener('click', () => goTo(card.dataset.go))); // the Alphabet: its last page
 
   // The List page's Add all: every word shown into the target list, or, with all of them in, out of
@@ -11260,7 +11415,10 @@ function bindEvents() {
 
   if ('speechSynthesis' in window) {
     pickVoices();
-    window.speechSynthesis.onvoiceschanged = pickVoices;
+    window.speechSynthesis.onvoiceschanged = () => {
+      pickVoices();
+      if (state.view === 'home' && setupPending()) renderSetup(); // the voice step says whether there's a Thai voice
+    };
   }
 
   bindSettings();
@@ -11655,6 +11813,7 @@ async function loadBackup(file) {
 // ---------- boot ----------
 
 async function init() {
+  noteFirstRun(); // first: before anything else writes to the store
   migrateSettings(); // first, so a moved default (the text size, 2026-10-18) shows on this load
   applyTextSize(); // before anything renders, so the text never jumps size
   applyTheme();
