@@ -3009,6 +3009,35 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Phrases from your words: no drill fill-ins (2026-11-28)
+
+The user's call: "some of the phrases in the phrase suggester in vocabulary are pretty poor - e.g. 1
+o' clock, 2 o' clock. We should probably exclude ones like these as they are not really useful in the
+same way as 'happy new year' or an idiom is" (asked the best way: hand-marking, since a "has a
+number" rule misses quarter to six and two hours and catches welcome to 7-Eleven; then "draw up the
+list, I'm happy with a summary"). decks.json's `suggest: false`, on a phrase topic (its cards all out,
+`suggest: true` on one bringing it back) or on a card; `phraseSuggested` in vocabPhraseSets skips
+them, so they're in neither Ready nor One word short, nor One by one; everywhere else (Flashcards,
+the Dictionary, the topics) they're as before. A card in another topic too is suggested from there
+(what time shall we meet? is in Plans & Invitations). audit_decks.py checks the field (false on a
+topic of phrases, true / false on its cards); stories.py leaves it out of a story's copy of a card.
+77 of the 668 left out:
+- Whole topics, but for: Telling the Time: Day (at what time?), Night (all), Minutes (what time is it
+  now?, what time shall we meet?), How Long & How Long Ago (how long?, how many days?, many years,
+  have you been waiting long?, not long at all), Classifiers: This One, How Many & Each (a coffee,
+  please; another glass, please; how many people?; both of them; I'll take the red one).
+- Cards: Saying the Date's dates (the 21st, 21 October, Tuesday 21 October, the year 2569, on the 1st
+  of every month, from the 5th to the 10th, by the 30th); Small Talk: About You's specifics (three
+  years in Thailand, two children, I'm thirty, near Sukhumvit); Everyday Responses' "is not / not";
+  Sentence Patterns' examples (tomorrow I'll go to the sea, learning Thai for two years, mum had me go
+  shopping, I bought it for Mum, she was chosen as leader, I got to go to Japan, after eating …);
+  Business's "by Friday".
+The rule for new phrase topics: a pattern drilled by filling its slot (hours, dates, amounts, this /
+that + classifier) is `suggest: false`; set expressions, questions, replies, greetings and idioms
+aren't. Checked headless (scratch `sugg.py`) with the Day and Classifiers words known: 6 am, this book
+and two rooms not listed; at what time?, a coffee, please and I'll take the red one listed; no script
+errors.
+
 ## One by one: its words open the word dialog (2026-11-28)
 
 The user's call: "in the select into wizards (and similar wizards) - it should be possible to

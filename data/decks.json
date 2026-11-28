@@ -780,6 +780,7 @@
       "name": "Telling the Time: Day",
       "description": "Thai splits the day into blocks, each with its own word. 6–11 am: …โมงเช้า. 1–3 pm: บ่าย…โมง. 4–6 pm: …โมงเย็น. In speech เช้า is often dropped: แปดโมง = 8 am.",
       "phrases": true,
+      "suggest": false,
       "cards": [
         { "thai": "หกโมงเช้า", "translit": "hòk moong cháao", "english": "6 am", "note": "Lit. \"six o'clock, morning\".", "words": ["หก::6 — six", "โมง::o'clock (daytime hours)", "เช้า::morning"] },
         { "thai": "เจ็ดโมงเช้า", "translit": "jèt moong cháao", "english": "7 am", "words": ["เจ็ด::7 — seven", "โมง::o'clock (daytime hours)", "เช้า::morning"] },
@@ -793,7 +794,7 @@
         { "thai": "สี่โมงเย็น", "translit": "sìi moong yen", "english": "4 pm", "note": "Lit. \"four o'clock, evening\". Some say บ่ายสี่โมง.", "words": ["สี่::4 — four", "โมง::o'clock (daytime hours)", "เย็น::evening (4–6 pm) / cool"] },
         { "thai": "ห้าโมงเย็น", "translit": "hâa moong yen", "english": "5 pm", "words": ["ห้า::5 — five", "โมง::o'clock (daytime hours)", "เย็น::evening (4–6 pm) / cool"] },
         { "thai": "หกโมงเย็น", "translit": "hòk moong yen", "english": "6 pm", "note": "หกโมง alone is unclear: add เช้า or เย็น.", "words": ["หก::6 — six", "โมง::o'clock (daytime hours)", "เย็น::evening (4–6 pm) / cool"] },
-        { "thai": "ตอนกี่โมง", "translit": "tɔɔn gìi moong", "english": "at what time?", "words": ["ตอน::when / during / part", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)"] }
+        { "thai": "ตอนกี่โมง", "translit": "tɔɔn gìi moong", "english": "at what time?", "words": ["ตอน::when / during / part", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)"], "suggest": true }
       ]
     },
     {
@@ -803,6 +804,7 @@
       "name": "Telling the Time: Night",
       "description": "From 7 pm the hours are counted again with ทุ่ม: หนึ่งทุ่ม = 7 pm. After midnight they use ตี: ตีหนึ่ง = 1 am. Both come from the drum and gong once used to mark the hours.",
       "phrases": true,
+      "suggest": false,
       "cards": [
         { "thai": "หนึ่งทุ่ม", "translit": "nʉ̀ng thûm", "english": "7 pm", "note": "Often just ทุ่ม.", "words": ["หนึ่ง::1 — one", "ทุ่ม::o'clock (7–11 pm)"] },
         { "thai": "สองทุ่ม", "translit": "sɔ̌ɔng thûm", "english": "8 pm", "words": ["สอง::2 — two", "ทุ่ม::o'clock (7–11 pm)"] },
@@ -824,6 +826,7 @@
       "name": "Telling the Time: Minutes & 24-Hour",
       "description": "Minutes go after the hour, and ครึ่ง is half past. Tickets, timetables and the news use the 24-hour clock with นาฬิกา, written 14.00 น.",
       "phrases": true,
+      "suggest": false,
       "cards": [
         { "thai": "แปดโมงครึ่ง", "translit": "pɛ̀ɛt moong khrʉ̂ng", "english": "8:30 am", "note": "ครึ่ง (half) goes after the hour.", "words": ["แปด::8 — eight", "โมง::o'clock (daytime hours)", "ครึ่ง::half"] },
         { "thai": "บ่ายสามโมงครึ่ง", "translit": "bàai sǎam moong khrʉ̂ng", "english": "3:30 pm", "words": ["บ่าย::afternoon (1–4 pm)", "สาม::3 — three", "โมง::o'clock (daytime hours)", "ครึ่ง::half"] },
@@ -832,8 +835,8 @@
         { "thai": "อีกสิบห้านาทีหกโมง", "translit": "ìik sìp-hâa naa-thii hòk moong", "english": "quarter to six", "note": "Lit. \"15 more minutes, six o'clock\": the way to say \"to\".", "words": ["อีก::again / more / another", "สิบห้า::15 — fifteen", "นาที::minute", "หก::6 — six", "โมง::o'clock (daytime hours)"] },
         { "thai": "สองทุ่มตรง", "translit": "sɔ̌ɔng thûm trong", "english": "8 pm sharp", "note": "ตรง = exactly, on the dot.", "words": ["สอง::2 — two", "ทุ่ม::o'clock (7–11 pm)", "ตรง::straight / exactly / at"] },
         { "thai": "ประมาณบ่ายสอง", "translit": "prà-maan bàai sɔ̌ɔng", "english": "around 2 pm", "note": "ประมาณ = about.", "words": ["ประมาณ::about / approximately", "บ่าย::afternoon (1–4 pm)", "สอง::2 — two"] },
-        { "thai": "ตอนนี้กี่โมงแล้ว", "translit": "tɔɔn-níi gìi moong lɛ́ɛo", "english": "what time is it now?", "note": "แล้ว at the end: \"by now\".", "words": ["ตอนนี้::now", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)", "แล้ว::already / and then"] },
-        { "thai": "เจอกันกี่โมง", "translit": "jəə gan gìi moong", "english": "what time shall we meet?", "words": ["เจอ::to meet / find / run into", "กัน::together / each other", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)"] },
+        { "thai": "ตอนนี้กี่โมงแล้ว", "translit": "tɔɔn-níi gìi moong lɛ́ɛo", "english": "what time is it now?", "note": "แล้ว at the end: \"by now\".", "words": ["ตอนนี้::now", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)", "แล้ว::already / and then"], "suggest": true },
+        { "thai": "เจอกันกี่โมง", "translit": "jəə gan gìi moong", "english": "what time shall we meet?", "words": ["เจอ::to meet / find / run into", "กัน::together / each other", "กี่::how many (with counter)", "โมง::o'clock (daytime hours)"], "suggest": true },
         { "thai": "แปดนาฬิกา", "translit": "pɛ̀ɛt naa-lí-gaa", "english": "08:00 (24-hour clock)", "note": "Written 08.00 น.", "words": ["แปด::8 — eight", "นาฬิกา::clock / watch / o'clock"] },
         { "thai": "สิบสี่นาฬิกา", "translit": "sìp-sìi naa-lí-gaa", "english": "14:00 (24-hour clock)", "note": "Written 14.00 น.: บ่ายสองโมง in speech.", "words": ["สิบสี่::fourteen", "นาฬิกา::clock / watch / o'clock"] },
         { "thai": "สิบเก้านาฬิกาสามสิบนาที", "translit": "sìp-gâao naa-lí-gaa sǎam-sìp naa-thii", "english": "19:30 (24-hour clock)", "note": "Written 19.30 น.: ทุ่มครึ่ง in speech.", "words": ["สิบเก้า::19 — nineteen", "นาฬิกา::clock / watch / o'clock", "สามสิบ::30 — thirty", "นาที::minute"] },
@@ -850,15 +853,15 @@
       "cards": [
         { "thai": "วันนี้วันที่เท่าไหร่", "translit": "wan-níi wan-thîi thâo-rài", "english": "what's the date today?", "note": "Answer with the date: วันที่ยี่สิบเอ็ด. เท่าไร in writing.", "words": ["วันนี้::today", "วันที่::date / on the (Xth)", "เท่าไหร่::how much / how many"] },
         { "thai": "วันนี้วันอะไร", "translit": "wan-níi wan à-rai", "english": "what day is it today?", "note": "Answer with the day: วันอังคาร.", "words": ["วันนี้::today", "วัน::day", "อะไร::what"] },
-        { "thai": "วันที่ยี่สิบเอ็ด", "translit": "wan-thîi yîi-sìp-èt", "english": "the 21st", "note": "วันที่ before the number: วันที่หนึ่ง, the 1st.", "words": ["วันที่::date / on the (Xth)", "ยี่สิบเอ็ด::21 — twenty-one"] },
-        { "thai": "วันที่ยี่สิบเอ็ดตุลาคม", "translit": "wan-thîi yîi-sìp-èt tù-laa-khom", "english": "21 October", "note": "The day before the month.", "words": ["วันที่::date / on the (Xth)", "ยี่สิบเอ็ด::21 — twenty-one", "ตุลาคม::October"] },
-        { "thai": "วันอังคารที่ยี่สิบเอ็ดตุลาคม", "translit": "wan-ang-khaan thîi yîi-sìp-èt tù-laa-khom", "english": "Tuesday 21 October", "note": "The weekday first, then ที่ and the date.", "words": ["วันอังคาร::Tuesday", "ที่::-th (ordinal: the second, the third…)", "ยี่สิบเอ็ด::21 — twenty-one", "ตุลาคม::October"] },
-        { "thai": "ปีสองพันห้าร้อยหกสิบเก้า", "translit": "pii sɔ̌ɔng-phan hâa-rɔ́ɔi hòk-sìp-gâao", "english": "the year 2569 (2026)", "note": "Written พ.ศ. 2569: 2026 plus 543.", "words": ["ปี::year", "สองพันห้าร้อย::2,500 — two thousand five hundred", "หกสิบ::60 — sixty", "เก้า::9 — nine"] },
+        { "thai": "วันที่ยี่สิบเอ็ด", "translit": "wan-thîi yîi-sìp-èt", "english": "the 21st", "note": "วันที่ before the number: วันที่หนึ่ง, the 1st.", "words": ["วันที่::date / on the (Xth)", "ยี่สิบเอ็ด::21 — twenty-one"], "suggest": false },
+        { "thai": "วันที่ยี่สิบเอ็ดตุลาคม", "translit": "wan-thîi yîi-sìp-èt tù-laa-khom", "english": "21 October", "note": "The day before the month.", "words": ["วันที่::date / on the (Xth)", "ยี่สิบเอ็ด::21 — twenty-one", "ตุลาคม::October"], "suggest": false },
+        { "thai": "วันอังคารที่ยี่สิบเอ็ดตุลาคม", "translit": "wan-ang-khaan thîi yîi-sìp-èt tù-laa-khom", "english": "Tuesday 21 October", "note": "The weekday first, then ที่ and the date.", "words": ["วันอังคาร::Tuesday", "ที่::-th (ordinal: the second, the third…)", "ยี่สิบเอ็ด::21 — twenty-one", "ตุลาคม::October"], "suggest": false },
+        { "thai": "ปีสองพันห้าร้อยหกสิบเก้า", "translit": "pii sɔ̌ɔng-phan hâa-rɔ́ɔi hòk-sìp-gâao", "english": "the year 2569 (2026)", "note": "Written พ.ศ. 2569: 2026 plus 543.", "words": ["ปี::year", "สองพันห้าร้อย::2,500 — two thousand five hundred", "หกสิบ::60 — sixty", "เก้า::9 — nine"], "suggest": false },
         { "thai": "วันเกิดวันที่เท่าไหร่", "translit": "wan-gə̀ət wan-thîi thâo-rài", "english": "when's your birthday?", "note": "Lit. \"birthday, which date?\"", "words": ["วันเกิด::birthday", "วันที่::date / on the (Xth)", "เท่าไหร่::how much / how many"] },
         { "thai": "เกิดปีอะไร", "translit": "gə̀ət pii à-rai", "english": "what (animal) year were you born?", "note": "Answer: เกิดปีจอ = born in the Year of the Dog.", "words": ["เกิด::to be born / happen", "ปี::year", "อะไร::what"] },
-        { "thai": "ทุกวันที่หนึ่ง", "translit": "thúk wan-thîi nʉ̀ng", "english": "on the 1st of every month", "words": ["ทุก::every", "วันที่::date / on the (Xth)", "หนึ่ง::1 — one"] },
-        { "thai": "ตั้งแต่วันที่ห้าถึงวันที่สิบ", "translit": "tâng-tɛ̀ɛ wan-thîi hâa thʉ̌ng wan-thîi sìp", "english": "from the 5th to the 10th", "words": ["ตั้งแต่::since / from (a time)", "วันที่::date / on the (Xth)", "ห้า::5 — five", "ถึง::to / until / reaching", "วันที่::date / on the (Xth)", "สิบ::10 — ten"] },
-        { "thai": "ภายในวันที่สามสิบ", "translit": "phaai-nai wan-thîi sǎam-sìp", "english": "by the 30th", "note": "ภายใน = within: before it's over.", "words": ["ภายใน::within, inside", "วันที่::date / on the (Xth)", "สามสิบ::30 — thirty"] },
+        { "thai": "ทุกวันที่หนึ่ง", "translit": "thúk wan-thîi nʉ̀ng", "english": "on the 1st of every month", "words": ["ทุก::every", "วันที่::date / on the (Xth)", "หนึ่ง::1 — one"], "suggest": false },
+        { "thai": "ตั้งแต่วันที่ห้าถึงวันที่สิบ", "translit": "tâng-tɛ̀ɛ wan-thîi hâa thʉ̌ng wan-thîi sìp", "english": "from the 5th to the 10th", "words": ["ตั้งแต่::since / from (a time)", "วันที่::date / on the (Xth)", "ห้า::5 — five", "ถึง::to / until / reaching", "วันที่::date / on the (Xth)", "สิบ::10 — ten"], "suggest": false },
+        { "thai": "ภายในวันที่สามสิบ", "translit": "phaai-nai wan-thîi sǎam-sìp", "english": "by the 30th", "note": "ภายใน = within: before it's over.", "words": ["ภายใน::within, inside", "วันที่::date / on the (Xth)", "สามสิบ::30 — thirty"], "suggest": false },
         { "thai": "เดือนละครั้ง", "translit": "dʉan lá khráng", "english": "once a month", "note": "ละ = per: ปีละสองครั้ง, twice a year.", "words": ["เดือน::month", "ละ::per / each", "ครั้ง::(classifier) times / occurrences"] },
         { "thai": "เลื่อนไปวันศุกร์", "translit": "lʉ̂an pai wan-sùk", "english": "put it off to Friday", "note": "เลื่อน = to move a date, put off.", "words": ["เลื่อน::to postpone / move", "ไป::to go", "วันศุกร์::Friday"] }
       ]
@@ -870,8 +873,9 @@
       "name": "How Long & How Long Ago",
       "description": "ชั่วโมง is how long, โมง what time: สองชั่วโมง = two hours, บ่ายสองโมง = 2 pm. ก่อน or ที่แล้ว after a time makes it ago; อีก before it, from now.",
       "phrases": true,
+      "suggest": false,
       "cards": [
-        { "thai": "นานเท่าไหร่", "translit": "naan thâo-rài", "english": "how long?", "note": "Also นานแค่ไหน.", "words": ["นาน::for a long time", "เท่าไหร่::how much / how many"] },
+        { "thai": "นานเท่าไหร่", "translit": "naan thâo-rài", "english": "how long?", "note": "Also นานแค่ไหน.", "words": ["นาน::for a long time", "เท่าไหร่::how much / how many"], "suggest": true },
         { "thai": "ใช้เวลาประมาณสองชั่วโมง", "translit": "chái wee-laa prà-maan sɔ̌ɔng chûa-moong", "english": "it takes about two hours", "note": "ใช้เวลา = to take (time). ประมาณ = about.", "words": ["ใช้::to use", "เวลา::time / when", "ประมาณ::about / approximately", "สอง::2 — two", "ชั่วโมง::hour"] },
         { "thai": "สองชั่วโมง", "translit": "sɔ̌ɔng chûa-moong", "english": "two hours", "note": "ชั่วโมง for how long; โมง for what time.", "words": ["สอง::2 — two", "ชั่วโมง::hour"] },
         { "thai": "ครึ่งชั่วโมง", "translit": "khrʉ̂ng chûa-moong", "english": "half an hour", "words": ["ครึ่ง::half", "ชั่วโมง::hour"] },
@@ -881,11 +885,11 @@
         { "thai": "สามวันก่อน", "translit": "sǎam wan gɔ̀ɔn", "english": "three days ago", "note": "Also เมื่อสามวันก่อน.", "words": ["สาม::3 — three", "วัน::day", "ก่อน::before / first"] },
         { "thai": "สองปีที่แล้ว", "translit": "sɔ̌ɔng pii thîi-lɛ́ɛo", "english": "two years ago", "note": "As in อาทิตย์ที่แล้ว, last week.", "words": ["สอง::2 — two", "ปี::year", "ที่แล้ว::last, previous (week, year…)"] },
         { "thai": "อยู่ที่นี่มาสองปีแล้ว", "translit": "yùu thîi-nîi maa sɔ̌ɔng pii lɛ́ɛo", "english": "I've lived here for two years", "note": "มา…แล้ว: up to now, and still going.", "words": ["อยู่::to be at / stay / live", "ที่นี่::here", "มา::to come", "สอง::2 — two", "ปี::year", "แล้ว::already / and then"] },
-        { "thai": "กี่วัน", "translit": "gìi wan", "english": "how many days?", "words": ["กี่::how many (with counter)", "วัน::day"] },
-        { "thai": "หลายปี", "translit": "lǎai pii", "english": "many years; for years", "words": ["หลาย::many / several", "ปี::year"] },
+        { "thai": "กี่วัน", "translit": "gìi wan", "english": "how many days?", "words": ["กี่::how many (with counter)", "วัน::day"], "suggest": true },
+        { "thai": "หลายปี", "translit": "lǎai pii", "english": "many years; for years", "words": ["หลาย::many / several", "ปี::year"], "suggest": true },
         { "thai": "ภายในหนึ่งอาทิตย์", "translit": "phaai-nai nʉ̀ng aa-thít", "english": "within a week", "words": ["ภายใน::within, inside", "หนึ่ง::1 — one", "อาทิตย์::week / sun / Sunday"] },
-        { "thai": "รอนานไหม", "translit": "rɔɔ naan mǎi", "english": "have you been waiting long?", "note": "The answer: ไม่นานเลย, not long at all.", "words": ["รอ::to wait", "นาน::for a long time", "ไหม::yes/no question particle"] },
-        { "thai": "ไม่นานเลย", "translit": "mâi naan ləəi", "english": "not long at all", "words": ["ไม่::not / no", "นาน::for a long time", "เลย::at all / totally / so (then)"] }
+        { "thai": "รอนานไหม", "translit": "rɔɔ naan mǎi", "english": "have you been waiting long?", "note": "The answer: ไม่นานเลย, not long at all.", "words": ["รอ::to wait", "นาน::for a long time", "ไหม::yes/no question particle"], "suggest": true },
+        { "thai": "ไม่นานเลย", "translit": "mâi naan ləəi", "english": "not long at all", "words": ["ไม่::not / no", "นาน::for a long time", "เลย::at all / totally / so (then)"], "suggest": true }
       ]
     },
     {
@@ -1032,7 +1036,7 @@
       "cards": [
         { "thai": "มาจากอังกฤษ", "translit": "maa jàak ang-grìt", "english": "I'm from England", "note": "มาจาก + country: มาจากอเมริกา = from America.", "words": ["มา::to come", "จาก::from", "อังกฤษ::England, the UK"] },
         { "thai": "ทำงานเป็นครู", "translit": "tham-ngaan pen khruu", "english": "I work as a teacher", "note": "ทำงานเป็น + job.", "words": ["ทำงาน::to work", "เป็น::to be (identity / role)", "ครู::teacher / coach"] },
-        { "thai": "อยู่เมืองไทยมาสามปีแล้ว", "translit": "yùu mʉang-thai maa sǎam pii lɛ́ɛo", "english": "I've lived in Thailand for three years", "note": "มา + length of time + แล้ว = have … for.", "words": ["อยู่::to be at / stay / live", "เมืองไทย::Thailand", "มา::to come", "สาม::3 — three", "ปี::year", "แล้ว::already / and then"] },
+        { "thai": "อยู่เมืองไทยมาสามปีแล้ว", "translit": "yùu mʉang-thai maa sǎam pii lɛ́ɛo", "english": "I've lived in Thailand for three years", "note": "มา + length of time + แล้ว = have … for.", "words": ["อยู่::to be at / stay / live", "เมืองไทย::Thailand", "มา::to come", "สาม::3 — three", "ปี::year", "แล้ว::already / and then"], "suggest": false },
         { "thai": "มาเที่ยว", "translit": "maa thîao", "english": "I'm on holiday", "note": "Lit. \"came to travel\".", "words": ["มา::to come", "เที่ยว::to go out / travel for fun"] },
         { "thai": "มาทำงาน", "translit": "maa tham-ngaan", "english": "I'm here for work", "words": ["มา::to come", "ทำงาน::to work"] },
         { "thai": "กำลังเรียนภาษาไทย", "translit": "gam-lang rian phaa-sǎa-thai", "english": "I'm learning Thai", "words": ["กำลัง::currently / -ing (before verb)", "เรียน::to study / learn", "ภาษาไทย::Thai (subject)"] },
@@ -1040,10 +1044,10 @@
         { "thai": "ยังพูดไม่เก่ง", "translit": "yang phûut mâi gèng", "english": "I'm not very good at speaking yet", "words": ["ยัง::still / yet / not yet", "พูด::to speak / say", "ไม่::not / no", "เก่ง::good at / clever"] },
         { "thai": "แต่งงานแล้ว", "translit": "tɛ̀ng-ngaan lɛ́ɛo", "english": "I'm married", "words": ["แต่งงาน::to marry", "แล้ว::already / and then"] },
         { "thai": "ยังโสด", "translit": "yang sòot", "english": "I'm single", "note": "Lit. \"still single\".", "words": ["ยัง::still / yet / not yet", "โสด::single"] },
-        { "thai": "มีลูกสองคน", "translit": "mii lûuk sɔ̌ɔng khon", "english": "I have two children", "words": ["มี::to have / there is", "ลูก::child / kid (one's own)", "สอง::2 — two", "คน::person / people"] },
+        { "thai": "มีลูกสองคน", "translit": "mii lûuk sɔ̌ɔng khon", "english": "I have two children", "words": ["มี::to have / there is", "ลูก::child / kid (one's own)", "สอง::2 — two", "คน::person / people"], "suggest": false },
         { "thai": "ยังไม่มีลูก", "translit": "yang mâi mii lûuk", "english": "I don't have children (yet)", "words": ["ยัง::still / yet / not yet", "ไม่::not / no", "มี::to have / there is", "ลูก::child / kid (one's own)"] },
-        { "thai": "อายุสามสิบ", "translit": "aa-yú sǎam-sìp", "english": "I'm thirty", "note": "อายุ + number. ปี (years) is optional.", "words": ["อายุ::age", "สามสิบ::30 — thirty"] },
-        { "thai": "พักอยู่แถวสุขุมวิท", "translit": "phák yùu thɛ̌ɛo sù-khǔm-wít", "english": "I'm staying near Sukhumvit", "note": "แถว = around, in the area of.", "words": ["พัก::to rest / stay", "อยู่::to be at / stay / live", "แถว::around / in the area of", "สุขุมวิท::Sukhumvit"] },
+        { "thai": "อายุสามสิบ", "translit": "aa-yú sǎam-sìp", "english": "I'm thirty", "note": "อายุ + number. ปี (years) is optional.", "words": ["อายุ::age", "สามสิบ::30 — thirty"], "suggest": false },
+        { "thai": "พักอยู่แถวสุขุมวิท", "translit": "phák yùu thɛ̌ɛo sù-khǔm-wít", "english": "I'm staying near Sukhumvit", "note": "แถว = around, in the area of.", "words": ["พัก::to rest / stay", "อยู่::to be at / stay / live", "แถว::around / in the area of", "สุขุมวิท::Sukhumvit"], "suggest": false },
         { "thai": "ชอบเมืองไทยมาก", "translit": "chɔ̂ɔp mʉang-thai mâak", "english": "I really like Thailand", "words": ["ชอบ::to like", "เมืองไทย::Thailand", "มาก::very / a lot"] },
         { "thai": "กินเผ็ดได้นิดหน่อย", "translit": "gin phèt dâai nít-nɔ̀i", "english": "I can eat a little spicy food", "words": ["กิน::to eat", "เผ็ด::spicy", "ได้::can / get / did", "นิดหน่อย::a little bit"] }
       ]
@@ -1095,7 +1099,7 @@
         { "thai": "ยินดีด้วย", "translit": "yin-dii dûai", "english": "congratulations", "words": ["ยินดี::glad / pleased", "ด้วย::with (by means of)"] },
         { "thai": "ไม่ต้องห่วง", "translit": "mâi tɔ̂ng hùang", "english": "don't worry", "note": "What the doctor says.", "words": ["ไม่::not / no", "ต้อง::must / have to", "ห่วง::to worry about (someone)"] },
         { "thai": "เดินทางปลอดภัยนะ", "translit": "dəən-thaang plɔ̀ɔt-phai ná", "english": "have a safe trip", "words": ["เดินทาง::to travel", "ปลอดภัย::safe", "นะ::softener / \"you know?\""] },
-        { "thai": "ไม่ใช่", "translit": "mâi châi", "english": "is not / not", "words": ["ไม่::not / no", "ใช่::yes / that's right"] },
+        { "thai": "ไม่ใช่", "translit": "mâi châi", "english": "is not / not", "words": ["ไม่::not / no", "ใช่::yes / that's right"], "suggest": false },
         { "thai": "ไม่มีปัญหา", "translit": "mâi mii pan-hǎa", "english": "no problem", "words": ["ไม่::not / no", "มี::to have / there is", "ปัญหา::problem"] },
         { "thai": "อะไรก็ได้", "translit": "à-rai gɔ̂-dâai", "english": "anything's fine / whatever", "note": "Also ที่ไหนก็ได้ = anywhere, เมื่อไหร่ก็ได้ = any time.", "words": ["อะไร::what", "ก็ได้::that's fine too / whatever"] },
         { "thai": "ไม่ต้องรีบ", "translit": "mâi tɔ̂ng rîip", "english": "no rush / take your time", "words": ["ไม่ต้อง::don't have to / no need", "รีบ::to hurry"] },
@@ -2700,6 +2704,7 @@
       "description": "Where the classifier goes: this one and which one, a cat or one cat, how many, every, each, some, the third, twenty baht each. Each card is a short phrase; the note gives the pattern.",
       "about": "To count: noun + number + classifier (แมวสามตัว). To point: noun + classifier + นี้, นั้น or ไหน (แมวตัวนี้). Both: noun + number + classifier + นี้ (แมวสองตัวนี้). กี่, ทุก, แต่ละ, หลาย, บาง and อีก come before the classifier; นึง, เดียว and ละ after it. Once it's clear what's meant, the classifier alone stands for the noun: ตัวนี้, อันไหน, ตัวสีแดง.",
       "phrases": true,
+      "suggest": false,
       "cards": [
         { "thai": "หนังสือเล่มนี้", "translit": "nǎng-sʉ̌ʉ lêm níi", "english": "this book", "note": "Noun + classifier + นี้ = this …: รถคันนี้, แมวตัวนี้.", "words": ["หนังสือ::book", "เล่ม::(classifier) books, knives", "นี้::this (after a noun)"] },
         { "thai": "รถคันนั้น", "translit": "rót khan nán", "english": "that car", "note": "Noun + classifier + นั้น = that …; โน้น = that … over there.", "words": ["รถ::car / vehicle", "คัน::(classifier) cars, vehicles, umbrellas, spoons", "นั้น::that (after a noun)"] },
@@ -2707,17 +2712,17 @@
         { "thai": "เสื้อสองตัวนี้", "translit": "sʉ̂a sɔ̌ɔng tua níi", "english": "these two shirts", "note": "Noun + number + classifier + นี้ = these …", "words": ["เสื้อ::shirt / top", "สอง::2 — two", "ตัว::(classifier) animals, clothing, furniture", "นี้::this (after a noun)"] },
         { "thai": "แมวหนึ่งตัว", "translit": "mɛɛo nʉ̀ng tua", "english": "one cat", "note": "Noun + number + classifier counts: แมวสามตัว = three cats.", "words": ["แมว::cat", "หนึ่ง::1 — one", "ตัว::(classifier) animals, clothing, furniture"] },
         { "thai": "แมวตัวหนึ่ง", "translit": "mɛɛo tua nʉ̀ng", "english": "a cat (bringing it into a story)", "note": "Classifier + หนึ่ง = a …: มีแมวตัวหนึ่ง… = There was a cat… Compare แมวหนึ่งตัว, one cat.", "words": ["แมว::cat", "ตัว::(classifier) animals, clothing, furniture", "หนึ่ง::1 — one"] },
-        { "thai": "ขอกาแฟแก้วนึง", "translit": "khɔ̌ɔ gaa-fɛɛ gɛ̂ɛo nʉng", "english": "a coffee, please", "note": "Classifier + นึง (spoken หนึ่ง) = a, one: how you order.", "words": ["ขอ::to ask for / may I", "กาแฟ::coffee", "แก้ว::(classifier) glasses (drinking)", "นึง::one (as spoken, after a classifier)"] },
-        { "thai": "ขออีกแก้ว", "translit": "khɔ̌ɔ ìik gɛ̂ɛo", "english": "another glass, please", "note": "อีก + classifier = one more: ขอเบียร์อีกขวด = another beer, please.", "words": ["ขอ::to ask for / may I", "อีก::again / more / another", "แก้ว::(classifier) glasses (drinking)"] },
-        { "thai": "กี่คน", "translit": "gìi khon", "english": "how many people?", "note": "กี่ + classifier = how many? กี่ขวด, กี่วัน.", "words": ["กี่::how many (with counter)", "คน::(classifier) people"] },
+        { "thai": "ขอกาแฟแก้วนึง", "translit": "khɔ̌ɔ gaa-fɛɛ gɛ̂ɛo nʉng", "english": "a coffee, please", "note": "Classifier + นึง (spoken หนึ่ง) = a, one: how you order.", "words": ["ขอ::to ask for / may I", "กาแฟ::coffee", "แก้ว::(classifier) glasses (drinking)", "นึง::one (as spoken, after a classifier)"], "suggest": true },
+        { "thai": "ขออีกแก้ว", "translit": "khɔ̌ɔ ìik gɛ̂ɛo", "english": "another glass, please", "note": "อีก + classifier = one more: ขอเบียร์อีกขวด = another beer, please.", "words": ["ขอ::to ask for / may I", "อีก::again / more / another", "แก้ว::(classifier) glasses (drinking)"], "suggest": true },
+        { "thai": "กี่คน", "translit": "gìi khon", "english": "how many people?", "note": "กี่ + classifier = how many? กี่ขวด, กี่วัน.", "words": ["กี่::how many (with counter)", "คน::(classifier) people"], "suggest": true },
         { "thai": "แต่ละคน", "translit": "tɛ̀ɛ-lá khon", "english": "each person", "note": "แต่ละ + classifier = each: แต่ละวัน = each day.", "words": ["แต่ละ::each", "คน::(classifier) people"] },
         { "thai": "หลายคน", "translit": "lǎai khon", "english": "many people", "note": "หลาย + classifier = many, several: หลายครั้ง = many times.", "words": ["หลาย::many / several", "คน::(classifier) people"] },
         { "thai": "สองสามคน", "translit": "sɔ̌ɔng sǎam khon", "english": "two or three people", "note": "Two numbers in a row = about that many: สามสี่วัน = three or four days.", "words": ["สอง::2 — two", "สาม::3 — three", "คน::(classifier) people"] },
-        { "thai": "ทั้งสองคน", "translit": "tháng sɔ̌ɔng khon", "english": "both of them", "note": "ทั้ง + number + classifier = all … of them: ทั้งสามคน = all three.", "words": ["ทั้ง::both / all / entire", "สอง::2 — two", "คน::(classifier) people"] },
+        { "thai": "ทั้งสองคน", "translit": "tháng sɔ̌ɔng khon", "english": "both of them", "note": "ทั้ง + number + classifier = all … of them: ทั้งสามคน = all three.", "words": ["ทั้ง::both / all / entire", "สอง::2 — two", "คน::(classifier) people"], "suggest": true },
         { "thai": "เล่มที่สาม", "translit": "lêm thîi sǎam", "english": "the third book", "note": "Classifier + ที่ + number = the …th: คนที่สอง = the second person.", "words": ["เล่ม::(classifier) books, knives", "ที่::-th (ordinal: the second, the third…)", "สาม::3 — three"] },
         { "thai": "ลูกละยี่สิบบาท", "translit": "lûuk lá yîi-sìp bàat", "english": "twenty baht each", "note": "Classifier + ละ + price = … each: ตัวละสามร้อย = 300 each (shirts).", "words": ["ลูก::(classifier) fruit, balls, mountains, keys", "ละ::per / each", "ยี่สิบ::20 — twenty", "บาท::baht (currency)"] },
         { "thai": "คนละร้อย", "translit": "khon lá rɔ́ɔi", "english": "a hundred each", "note": "คนละ + amount = … each (per person). คนละ + a classifier also means different: คนละเรื่อง = a different matter.", "words": ["คน::(classifier) people", "ละ::per / each", "ร้อย::100 — hundred"] },
-        { "thai": "เอาตัวสีแดง", "translit": "ao tua sǐi-dɛɛng", "english": "I'll take the red one", "note": "The classifier stands in for the noun: ตัวสีแดง = the red one (a shirt).", "words": ["เอา::to take / want (a thing)", "ตัว::(classifier) animals, clothing, furniture", "สี::colour", "แดง::red"] },
+        { "thai": "เอาตัวสีแดง", "translit": "ao tua sǐi-dɛɛng", "english": "I'll take the red one", "note": "The classifier stands in for the noun: ตัวสีแดง = the red one (a shirt).", "words": ["เอา::to take / want (a thing)", "ตัว::(classifier) animals, clothing, furniture", "สี::colour", "แดง::red"], "suggest": true },
         { "thai": "ห้องสองห้อง", "translit": "hɔ̂ng sɔ̌ɔng hɔ̂ng", "english": "two rooms", "note": "Some nouns are their own classifier: คนสามคน, ประเทศสองประเทศ.", "words": ["ห้อง::room", "สอง::2 — two", "ห้อง::(classifier) rooms"] }
       ]
     },
@@ -3408,7 +3413,7 @@
         { "thai": "ยังไม่ได้กิน", "translit": "yang mâi dâai gin", "english": "I haven't eaten yet", "note": "ยังไม่ได้ + verb = haven't … yet.", "words": ["ยัง::still / yet / not yet", "ไม่::not / no", "ได้::can / get / did", "กิน::to eat"] },
         { "thai": "เขากำลังทำงานอยู่", "translit": "kháo gam-lang tham-ngaan yùu", "english": "she's working (right now)", "note": "กำลัง + verb + อยู่ = be …-ing. Either half can be left out.", "words": ["เขา::he / she / they", "กำลัง::currently / -ing (before verb)", "ทำงาน::to work", "อยู่::to be at / stay / live"] },
         { "thai": "กำลังจะไป", "translit": "gam-lang jà pai", "english": "I'm about to go", "note": "กำลังจะ + verb = about to.", "words": ["กำลัง::currently / -ing (before verb)", "จะ::will / going to", "ไป::to go"] },
-        { "thai": "พรุ่งนี้จะไปทะเล", "translit": "phrûng-níi jà pai thá-lee", "english": "tomorrow I'll go to the sea", "note": "จะ + verb = will.", "words": ["พรุ่งนี้::tomorrow", "จะ::will / going to", "ไป::to go", "ทะเล::sea / ocean"] },
+        { "thai": "พรุ่งนี้จะไปทะเล", "translit": "phrûng-níi jà pai thá-lee", "english": "tomorrow I'll go to the sea", "note": "จะ + verb = will.", "words": ["พรุ่งนี้::tomorrow", "จะ::will / going to", "ไป::to go", "ทะเล::sea / ocean"], "suggest": false },
         { "thai": "ฝนจะตกแล้ว", "translit": "fǒn jà tòk lɛ́ɛo", "english": "it's about to rain", "note": "จะ … แล้ว = any moment now.", "words": ["ฝน::rain", "จะ::will / going to", "ตก::to fall / drop / fail", "แล้ว::already / and then"] },
         { "thai": "เพิ่งมาถึง", "translit": "phə̂ng maa thʉ̌ng", "english": "I've just arrived", "note": "เพิ่ง + verb = have just.", "words": ["เพิ่ง::just (recently)", "มา::to come", "ถึง::to arrive / reach / until"] },
         { "thai": "ยังอยู่ที่นี่", "translit": "yang yùu thîi-nîi", "english": "I'm still here", "note": "ยัง + verb = still.", "words": ["ยัง::still / yet / not yet", "อยู่::to be at / stay / live", "ที่นี่::here"] },
@@ -3417,7 +3422,7 @@
         { "thai": "เมื่อก่อนเคยสูบบุหรี่", "translit": "mʉ̂a gɔ̀ɔn khəəi sùup bù-rìi", "english": "I used to smoke", "note": "เคย also = used to.", "words": ["เมื่อ::when / at the time (past or future)", "ก่อน::before / first", "เคย::have ever / used to (do)", "สูบ::to smoke", "บุหรี่::cigarette"] },
         { "thai": "เมื่อวานไม่ได้ไป", "translit": "mʉ̂a-waan mâi dâai pai", "english": "I didn't go yesterday", "note": "ไม่ได้ + verb = didn't.", "words": ["เมื่อวาน::yesterday", "ไม่::not / no", "ได้::can / get / did", "ไป::to go"] },
         { "thai": "ไม่ได้โกรธ", "translit": "mâi dâai gròot", "english": "I'm not angry (really, I'm not)", "note": "ไม่ได้ + a word = it isn't that: a firm denial.", "words": ["ไม่::not / no", "ได้::can / get / did", "โกรธ::angry"] },
-        { "thai": "เรียนภาษาไทยมาสองปีแล้ว", "translit": "rian phaa-sǎa-thai maa sɔ̌ɔng pii lɛ́ɛo", "english": "I've been learning Thai for two years", "note": "Verb + มา + a time + แล้ว = have been …-ing for.", "words": ["เรียน::to study / learn", "ภาษาไทย::Thai (subject)", "มา::to come", "สอง::2 — two", "ปี::year", "แล้ว::already / and then"] },
+        { "thai": "เรียนภาษาไทยมาสองปีแล้ว", "translit": "rian phaa-sǎa-thai maa sɔ̌ɔng pii lɛ́ɛo", "english": "I've been learning Thai for two years", "note": "Verb + มา + a time + แล้ว = have been …-ing for.", "words": ["เรียน::to study / learn", "ภาษาไทย::Thai (subject)", "มา::to come", "สอง::2 — two", "ปี::year", "แล้ว::already / and then"], "suggest": false },
         { "thai": "ไปมาแล้ว", "translit": "pai maa lɛ́ɛo", "english": "I've been (there)", "note": "Verb + มาแล้ว = have done it (and come back).", "words": ["ไป::to go", "มา::to come", "แล้ว::already / and then"] }
       ]
     },
@@ -3455,11 +3460,11 @@
       "description": "ให้ makes, lets or gives; โดน and ถูก are the passive; ได้ before a verb is \"got to\". Each card is a short sentence; the note gives the pattern.",
       "phrases": true,
       "cards": [
-        { "thai": "แม่ให้ไปซื้อของ", "translit": "mɛ̂ɛ hâi pai sʉ́ʉ khɔ̌ɔng", "english": "mum had me go shopping", "note": "ให้ + verb = make or have someone do it.", "words": ["แม่::mother / mum", "ให้::to give / let / for", "ไป::to go", "ซื้อ::to buy", "ของ::of / belonging to"] },
+        { "thai": "แม่ให้ไปซื้อของ", "translit": "mɛ̂ɛ hâi pai sʉ́ʉ khɔ̌ɔng", "english": "mum had me go shopping", "note": "ให้ + verb = make or have someone do it.", "words": ["แม่::mother / mum", "ให้::to give / let / for", "ไป::to go", "ซื้อ::to buy", "ของ::of / belonging to"], "suggest": false },
         { "thai": "ให้ฉันช่วยนะ", "translit": "hâi chǎn chûai ná", "english": "let me help", "note": "ให้ + person + verb = let them do it.", "words": ["ให้::to give / let / for", "ฉัน::I / me (female, informal)", "ช่วย::to help / please (do)", "นะ::softener / \"you know?\""] },
         { "thai": "อยากให้คุณมา", "translit": "yàak hâi khun maa", "english": "I want you to come", "note": "อยากให้ + person + verb = want someone to.", "words": ["อยาก::to want (to do)", "ให้::to give / let / for", "คุณ::you (polite)", "มา::to come"] },
         { "thai": "บอกให้รอ", "translit": "bɔ̀ɔk hâi rɔɔ", "english": "they told me to wait", "note": "บอกให้ + verb = tell someone to.", "words": ["บอก::to tell / say", "ให้::to give / let / for", "รอ::to wait"] },
-        { "thai": "ซื้อให้แม่", "translit": "sʉ́ʉ hâi mɛ̂ɛ", "english": "I bought it for Mum", "note": "Verb + ให้ + person = for someone.", "words": ["ซื้อ::to buy", "ให้::to give / let / for", "แม่::mother / mum"] },
+        { "thai": "ซื้อให้แม่", "translit": "sʉ́ʉ hâi mɛ̂ɛ", "english": "I bought it for Mum", "note": "Verb + ให้ + person = for someone.", "words": ["ซื้อ::to buy", "ให้::to give / let / for", "แม่::mother / mum"], "suggest": false },
         { "thai": "เขียนให้ชัด ๆ", "translit": "khǐan hâi chát chát", "english": "write it clearly", "note": "Verb + ให้ + a word = do it so it's …", "words": ["เขียน::to write", "ให้::to give / let / for", "ชัด ๆ::clearly / plainly"] },
         { "thai": "ทำให้เสียใจ", "translit": "tham-hâi sǐa-jai", "english": "it made me sad", "note": "ทำให้ + a feeling = make someone feel.", "words": ["ทำให้::to make / cause", "เสียใจ::sorry / sad"] },
         { "thai": "ทำให้ตกใจ", "translit": "tham-hâi tòk-jai", "english": "you gave me a fright", "note": "ทำให้ตกใจ = to startle.", "words": ["ทำให้::to make / cause", "ตกใจ::startled / shocked"] },
@@ -3467,8 +3472,8 @@
         { "thai": "โดนขโมยกระเป๋า", "translit": "doon khà-mooi grà-pǎo", "english": "I had my bag stolen", "note": "โดน + verb + thing = had something …-ed.", "words": ["โดน::to get (hit) — bad-news passive", "ขโมย::to steal / thief", "กระเป๋า::bag"] },
         { "thai": "โดนตำรวจจับ", "translit": "doon tam-rùat jàp", "english": "he got arrested by the police", "words": ["โดน::to get (hit) — bad-news passive", "ตำรวจ::police / police officer", "จับ::to catch / hold / arrest"] },
         { "thai": "โดนแม่ดุ", "translit": "doon mɛ̂ɛ dù", "english": "I got told off by Mum", "note": "ดุ = to scold.", "words": ["โดน::to get (hit) — bad-news passive", "แม่::mother / mum", "ดุ::stern / to scold"] },
-        { "thai": "ถูกเลือกเป็นหัวหน้า", "translit": "thùuk lʉ̂ak pen hǔa-nâa", "english": "she was chosen as leader", "note": "ถูก + verb = was …-ed: more formal, and not always bad.", "words": ["ถูก::cheap / correct", "เลือก::to choose", "เป็น::to be (identity / role)", "หัวหน้า::head / chief / boss"] },
-        { "thai": "ได้ไปญี่ปุ่น", "translit": "dâai pai yîi-pùn", "english": "I got to go to Japan", "note": "ได้ + verb = got the chance to.", "words": ["ได้::can / get / did", "ไป::to go", "ญี่ปุ่น::Japan"] },
+        { "thai": "ถูกเลือกเป็นหัวหน้า", "translit": "thùuk lʉ̂ak pen hǔa-nâa", "english": "she was chosen as leader", "note": "ถูก + verb = was …-ed: more formal, and not always bad.", "words": ["ถูก::cheap / correct", "เลือก::to choose", "เป็น::to be (identity / role)", "หัวหน้า::head / chief / boss"], "suggest": false },
+        { "thai": "ได้ไปญี่ปุ่น", "translit": "dâai pai yîi-pùn", "english": "I got to go to Japan", "note": "ได้ + verb = got the chance to.", "words": ["ได้::can / get / did", "ไป::to go", "ญี่ปุ่น::Japan"], "suggest": false },
         { "thai": "ได้รับรางวัล", "translit": "dâai-ráp raang-wan", "english": "I won a prize", "note": "ได้รับ = to receive.", "words": ["ได้รับ::to receive", "รางวัล::prize / award"] }
       ]
     },
@@ -3494,7 +3499,7 @@
         { "thai": "กินไปคุยไป", "translit": "gin pai khui pai", "english": "chatting while eating", "note": "Verb ไป verb ไป = doing two things at once.", "words": ["กิน::to eat", "ไป::to go", "คุย::to chat / talk", "ไป::to go"] },
         { "thai": "พอถึงบ้าน ก็นอนเลย", "translit": "phɔɔ thʉ̌ng bâan gɔ̂ nɔɔn ləəi", "english": "as soon as I got home, I went to bed", "note": "พอ … ก็ … = as soon as. เลย = straight away.", "words": ["พอ::enough / as soon as", "ถึง::to arrive / reach / until", "บ้าน::house / home", "ก็::then / also / well…", "นอน::to sleep / lie down", "เลย::completely / immediately / really"] },
         { "thai": "ล้างมือก่อนกินข้าว", "translit": "láang mʉʉ gɔ̀ɔn gin khâao", "english": "wash your hands before eating", "note": "ก่อน + verb = before.", "words": ["ล้าง::to wash", "มือ::hand", "ก่อน::before / first", "กิน::to eat", "ข้าว::rice"] },
-        { "thai": "หลังจากกินข้าวแล้ว", "translit": "lǎng-jàak gin khâao lɛ́ɛo", "english": "after eating …", "note": "หลังจาก … แล้ว = after.", "words": ["หลังจาก::after", "กิน::to eat", "ข้าว::rice", "แล้ว::already / and then"] },
+        { "thai": "หลังจากกินข้าวแล้ว", "translit": "lǎng-jàak gin khâao lɛ́ɛo", "english": "after eating …", "note": "หลังจาก … แล้ว = after.", "words": ["หลังจาก::after", "กิน::to eat", "ข้าว::rice", "แล้ว::already / and then"], "suggest": false },
         { "thai": "รอจนกว่าจะเสร็จ", "translit": "rɔɔ jon-gwàa jà sèt", "english": "wait until it's done", "note": "จนกว่าจะ + verb = until.", "words": ["รอ::to wait", "จนกว่า::until", "จะ::will / going to", "เสร็จ::finished / done"] },
         { "thai": "เหมือนแต่ไม่เหมือน", "translit": "mʉ̌an tɛ̀ɛ mâi mʉ̌an", "english": "same same but different", "note": "Lit. \"same but not same\". Thais know the T-shirt joke too.", "words": ["เหมือน::like / as / similar", "แต่::but", "ไม่::not / no", "เหมือน::like / as / similar"] }
       ]
@@ -80750,7 +80755,7 @@
         { "thai": "ขอแย้งนิดนึง", "translit": "khɔ̌ɔ yɛ́ɛng nít nʉng", "english": "may I disagree a little?", "note": "Softened, as disagreement in Thai meetings usually is.", "words": ["ขอ::to ask for / may I", "แย้ง::to object, disagree", "นิด::a little, a bit", "นึง::one (as spoken, after a classifier)"] },
         { "thai": "ใครรับผิดชอบ", "translit": "khrai ráp-phìt-chɔ̂ɔp", "english": "who's responsible?", "words": ["ใคร::who", "รับผิดชอบ::to be responsible for"] },
         { "thai": "ต้องเสร็จเมื่อไหร่", "translit": "tɔ̂ng sèt mʉ̂a-rài", "english": "when does it need to be done by?", "words": ["ต้อง::must / have to", "เสร็จ::finished / done", "เมื่อไหร่::when"] },
-        { "thai": "ภายในวันศุกร์", "translit": "phaai-nai wan-sùk", "english": "by Friday", "note": "ภายใน = within, by.", "words": ["ภายใน::within, inside", "วันศุกร์::Friday"] },
+        { "thai": "ภายในวันศุกร์", "translit": "phaai-nai wan-sùk", "english": "by Friday", "note": "ภายใน = within, by.", "words": ["ภายใน::within, inside", "วันศุกร์::Friday"], "suggest": false },
         { "thai": "ขอข้ามไปก่อน", "translit": "khɔ̌ɔ khâam pai gɔ̀ɔn", "english": "let's skip this for now", "words": ["ขอ::to ask for / may I", "ข้าม::across / over", "ไป::to go", "ก่อน::before / first"] },
         { "thai": "ไว้คุยกันต่อ", "translit": "wái khui gan tɔ̀ɔ", "english": "let's discuss it another time", "words": ["ไว้::(keep / for later)", "คุย::to chat / talk", "กัน::together / each other", "ต่อ::to continue / connect / per"] }
       ]

@@ -68,6 +68,13 @@ def audit(decks):
         # A topic of phrases (Small Talk, Sentence Patterns…), left out of Vocabulary (2026-11-14): true or absent.
         if 'phrases' in dk and dk['phrases'] is not True:
             errors['topic "phrases" not true (leave it out for words)'].append(dk['name'])
+        # Left out of Vocabulary's Phrases from your words (2026-11-28): a drill's fill-ins (6 am, two
+        # hours, this book). `suggest: false` on a phrase topic or card; `true` on a card brings one back.
+        if 'suggest' in dk and (dk['suggest'] is not False or not dk.get('phrases')):
+            errors['topic "suggest" not false, or not on a topic of phrases'].append(dk['name'])
+        for c in dk['cards']:
+            if 'suggest' in c and (not isinstance(c['suggest'], bool) or not dk.get('phrases')):
+                errors['card "suggest" not true / false, or not in a topic of phrases'].append(f"{dk['name']}: {c['english']}")
     for label, key in (('duplicate topic id', 'id'), ('duplicate topic name', 'name')):
         errors[label] += [v for v, n in Counter(dk[key] for dk in decks).items() if n > 1]
     seen_cats, last = [], None
@@ -93,7 +100,7 @@ def audit(decks):
         for k in ('thai', 'translit', 'english'):
             if not c.get(k):
                 errors['card missing a field'].append(f'{where} ({k})')
-        fields = {'thai', 'translit', 'english', 'note', 'say', 'partners', 'words'}
+        fields = {'thai', 'translit', 'english', 'note', 'say', 'partners', 'words', 'suggest'}
         if set(c) - fields:
             errors['unknown card field'].append(f'{where} {set(c) - fields}')
         # A phrase's words (2026-10-10): card keys that exist somewhere and spell the phrase. Spaces don't

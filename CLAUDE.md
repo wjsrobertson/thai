@@ -38,7 +38,9 @@ Edit stories with `tools/stories.py`. After changing cards or stories, run in or
 4. `python3 -u tools/gen_audio.py` (edge-tts; recordings are named by a hash of what's said)
 5. `python3 -u tools/word_timings.py`, if story lines changed
 
-A topic holds at most 25 cards, and every word in a story needs a topic card. Commit only the new
+A topic holds at most 25 cards, and every word in a story needs a topic card. In a topic of
+phrases, a drill's fill-ins (6 am, two hours, this book) get `"suggest": false`, so Vocabulary
+doesn't offer them as phrases to learn. Commit only the new
 mp3s that `data/audio/manifest.json` refers to. The voice's known misreadings are respelt in
 `spoken_text()` (tools/gen_audio.py); a new one goes there.
 

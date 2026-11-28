@@ -58,8 +58,10 @@ def words_of(th):
                 yield tok, w
 
 
+# A story's copy of a topic card: not its partners, nor `suggest` (whether Vocabulary suggests the
+# phrase, 2026-11-28: about the topic, and a story's cards aren't phrases to suggest).
 def story_copy(card):
-    return {k: v for k, v in card.items() if k != 'partners'}
+    return {k: v for k, v in card.items() if k not in ('partners', 'suggest')}
 
 
 class Index:

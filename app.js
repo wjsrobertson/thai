@@ -9569,6 +9569,12 @@ function renderVocabHome() {
 // table of List's rows (bookmark, spell, play), by topic or shortest first (Settings → Vocabulary).
 const VOCAB_PHRASE_PAGE = 50;
 let phraseCandidates = null; // [{ card, deck, words, thai: its words' Thai, each once }], built once
+// Not suggested (2026-11-28, the user's call: "1 o'clock, 2 o'clock… not really useful in the same way
+// as 'happy new year' or an idiom"): a drill's fill-ins, a pattern with one slot filled (6 am, the
+// 21st, two hours, this book), marked in decks.json `suggest: false` on the card, or on the topic with
+// `suggest: true` on its cards that are phrases in their own right (at what time?). Still in their
+// topics everywhere else. A card in another topic too is suggested from there.
+const phraseSuggested = (d, c) => (c.suggest ?? d.suggest) !== false;
 
 function vocabPhraseSets(known = knownMap()) {
   if (!phraseCandidates) {
@@ -9577,6 +9583,7 @@ function vocabPhraseSets(known = knownMap()) {
     for (const d of state.decks) {
       if (!d.phrases) continue;
       for (const c of d.cards) {
+        if (!phraseSuggested(d, c)) continue;
         const key = cardKey(c);
         const words = !seen.has(key) && phraseWords(c);
         seen.add(key);
