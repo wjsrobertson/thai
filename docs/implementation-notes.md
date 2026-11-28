@@ -2405,6 +2405,15 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   Continue / See are in the accent only in the open row (and One by one's Done), plain elsewhere.
   Checked headless (scratch `vrows.py`) at 390 × 844, Dark and Light,
   Most used open over two topics.
+- **Expand all / Collapse all on Phrases from your known vocabulary** (2026-11-28, the user's call:
+  "it should have an expand all button somewhere sensible (not at the same place as select into list
+  and add all to list)"): plain text with a double chevron at the tree's right, on a line of its own
+  just over it (`.vocab-phrase-tree-bar`, the page's 14 gap taken back to 2 either side), so it reads
+  as the tree's, apart from the bookmark buttons. It opens every category and topic in the tree
+  (`vocabPhraseTreeKeys`, the keys `vocabPhraseTree` uses, into `state.vocabPhraseOpen`), then says
+  Collapse all, which closes them; hidden when sorted shortest first or with nothing to open. Checked
+  headless (scratch `vphr.py`) at 390 × 844, Dark: 10 categories → Expand all → 31 heads and 39
+  phrases → Collapse all → 10; on One word short it said Expand all, as its topics weren't all open (what's open is shared); no script errors.
 - **A card a list, its dialog with the rest** (2026-11-28, the user's call, after the open row tried a
   raised background and then an accent outline: "nah that is messy too… I think this needs to look
   more like the stories section. We see each item in a separated list. when we click on one it pops

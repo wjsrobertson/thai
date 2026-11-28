@@ -205,6 +205,7 @@ const els = {
   vocabPhrasesDone: document.getElementById('vocab-phrases-done'),
   vocabPhraseKinds: [...document.querySelectorAll('[data-phrase-kind]')],
   vocabPhraseHelp: document.getElementById('vocab-phrase-help'),
+  vocabPhraseExpand: document.getElementById('vocab-phrase-expand'), // Expand all / Collapse all, by topic
   vocabPhraseAdd: document.getElementById('vocab-phrase-add'),
   vocabPhraseRows: document.getElementById('vocab-phrase-rows'),
   vocabPhraseMore: document.getElementById('vocab-phrase-more'),
@@ -9392,6 +9393,17 @@ function renderVocabPhrases() {
   };
   if (byTopic) rows.push(...vocabPhraseTree(list, phraseRow));
   else list.slice(0, state.vocabPhraseShown).forEach((p, i) => rows.push(phraseRow(p, i)));
+  // Expand all / Collapse all (2026-11-28, the user's call): every category and topic in the tree
+  // open, or none; Collapse all once they all are. Only by topic, with something to open.
+  const treeKeys = byTopic ? vocabPhraseTreeKeys(list) : [];
+  const allOpen = treeKeys.length > 0 && treeKeys.every((k) => state.vocabPhraseOpen.has(k));
+  els.vocabPhraseExpand.hidden = !treeKeys.length;
+  els.vocabPhraseExpand.replaceChildren(lineIcon('review-icon vocab-icon', '0 0 24 24', allOpen ? 'M7 11l5-5 5 5M7 18l5-5 5 5' : 'M7 6l5 5 5-5M7 13l5 5 5-5'), allOpen ? 'Collapse all' : 'Expand all');
+  els.vocabPhraseExpand.setAttribute('aria-label', `${allOpen ? 'Collapse' : 'Expand'} all topics`);
+  els.vocabPhraseExpand.onclick = () => {
+    for (const k of treeKeys) state.vocabPhraseOpen[allOpen ? 'delete' : 'add'](k);
+    renderVocabPhrases();
+  };
   // Empty: a line, unless what's left is sorted (the user's call, 2026-11-26: "None left: you've
   // sorted all 3" was a box not needed); Show 3 already sorted is then all there is.
   if (!list.length && !done) {
@@ -9456,6 +9468,13 @@ function vocabPhraseTree(list, row) {
     }
   }
   return out;
+}
+
+// The tree's keys, as vocabPhraseTree makes them: each category's and each topic's.
+function vocabPhraseTreeKeys(list) {
+  const keys = new Set();
+  for (const p of list) keys.add(`c:${p.deck.category || 'Uncategorized'}`).add(`t:${p.deck.id}`);
+  return [...keys];
 }
 
 async function addAllVocabPhrases(keys) {

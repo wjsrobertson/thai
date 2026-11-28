@@ -2345,6 +2345,12 @@ button.write-slot { padding: 0; background: none; border: 0; color: inherit; fon
 .vocab-phrase-sub { color: var(--muted); font-size: calc(14px * var(--fs, 1)); font-variant-numeric: tabular-nums; }
 .vocab-phrase-chevron { flex: none; color: var(--muted); font-size: 22px; line-height: 1; }
 .vocab-phrase-kinds { display: flex; }
+/* Expand all / Collapse all: plain text at the tree's right, over it (2026-11-28). The page's gap
+   (14) above and below it is taken back to 2, so it reads as the tree's. */
+.vocab-phrase-tree-bar { display: flex; justify-content: flex-end; margin: -12px 0 -12px; }
+.vocab-phrase-tree-bar:has(> [hidden]) { display: none; }
+.vocab-phrase-expand { display: inline-flex; align-items: center; min-height: 44px; padding: 0 4px; background: none; border: 0; color: var(--button-ink); font-size: calc(15px * var(--fs, 1)); }
+@media (hover: hover) { .vocab-phrase-expand:hover { color: var(--accent); } }
 .vocab-phrase-kinds .seg-btn { flex: 1; min-height: 44px; font-size: 15px; }
 .vocab-phrase-help { margin: 0; color: var(--muted); font-size: calc(15px * var(--fs, 1)); line-height: 1.45; }
 /* Add all and One by one, side by side (they wrap on a narrow screen); under the list, Show or Hide
