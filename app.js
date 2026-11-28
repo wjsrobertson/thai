@@ -6254,13 +6254,14 @@ const PAGE_ICONS = {
 // two arrows). `filled` when the word's in the list (it was a ✓), as a saved story's is.
 // The vocabulary panel's buttons each have an icon (2026-11-28, the user's call: "all buttons should have
 // icons here too"): go through again (an arrow round, with a cross for the ones you didn't know),
-// one at a time (Flashcards' stack), add all (a bookmark with a plus), take off the page (a circled
+// Select into list and Add all to list the bookmark, as those buttons have elsewhere in the app (the
+// user's call, the same day: a card stack and a bookmark-plus at first), take off the page (a circled
 // minus), stop (a square), and the row's Start / Continue (play) or See (an eye).
 const VOCAB_ICONS = {
   unknown: 'M3 12a9 9 0 1 0 2.64-6.36L3 8.3M3 3v5.3h5.3M9.8 9.8l4.4 4.4M14.2 9.8l-4.4 4.4',
   all: 'M3 12a9 9 0 1 0 2.64-6.36L3 8.3M3 3v5.3h5.3',
-  sort: PAGE_ICONS.flashcards,
-  addAll: 'M6 3h12v18l-6-4.5L6 21zM12 7v6M9 10h6',
+  sort: PAGE_ICONS.mylist,
+  addAll: PAGE_ICONS.mylist,
   remove: 'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM8 12h8',
   stop: 'M7 7h10v10H7z',
   play: 'M8 5v14l11-7z',
@@ -10239,7 +10240,7 @@ function vocabActions(id, src, p, known = knownMap(), { pass = null, removable =
       grid.append(el('p', 'vocab-actions-note', keys.length === 1 ? `It's in ${name}` : `All ${fmtCount(keys.length)} are in ${name}`));
     } else {
       if (wordSortQueue(src, known).length) {
-        // "Sort one by one" till 2026-11-27 (the user's call), as a topic's; the bookmark Add all has till 2026-11-28
+        // "Sort one by one" till 2026-11-27 (the user's call), as a topic's
         const sort = vocabButton('Select into list', `Go through the words in ${src.name} you didn't know one at a time, adding the ones you want to ${name}`, () => openSort('words', wordSortQueue(src)), 'sort');
         grid.append(sort);
       }

@@ -2384,8 +2384,9 @@ can trust our users"), so Undo is for a slip of the thumb rather than a check.
   ink). Each pair's heading is semibold with a hairline above it, the first too on a list's panel
   (between the bars and the actions; not at a run's end). The panel's buttons are in ink, not the
   ghost's muted. Every button has an icon (`VOCAB_ICONS`, `vocabIcon`, 18 px): Didn't know a circled
-  arrow round with a cross, All the same without the cross, Select into list Flashcards' stack (it
-  had Add all's bookmark), Add all a bookmark with a plus, Remove from vocabulary a circled minus,
+  arrow round with a cross, All the same without the cross, Select into list and Add all to list
+  the bookmark, as elsewhere in the app (the user's call, the same day; a card stack and a
+  bookmark-plus at first), Remove from vocabulary a circled minus,
   Stop going through again a square, New words and the row's Start / Continue a solid play, See an
   eye. Start / Continue / See are in the accent (text and outline), as the row's main action. The
   words' heading carries the count Add all's label lost, and no longer the list's name (the user's call, the
