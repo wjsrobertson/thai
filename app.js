@@ -7305,11 +7305,12 @@ let popReturning = false; // while ‹ shows the one before again: it isn't said
 
 function popEnter(open) {
   window.CSS?.highlights?.delete(HOVER_HIGHLIGHT); // a phrase's lit word (showPhrasePop)
+  const fromStory = els.wordModal.classList.contains('story');
   els.wordModal.classList.remove('story'); // a story's dialog (showStoryPop) sets it again
   vocabPopId = null; // a list's (showVocabPop) sets it again
   els.wordModalEn.classList.remove('now-playing'); // its title, while Read says it
   if (!wordPop) wordPop = { lastFocus: document.activeElement, here: null, back: [] };
-  else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop });
+  else if (!popReturning && wordPop.here) wordPop.back.push({ open: wordPop.here, scroll: els.wordModalBody.scrollTop, story: fromStory });
   wordPop.here = open;
   els.wordModalBack.hidden = !wordPop.back.length;
 }
@@ -7372,7 +7373,7 @@ function bindDialogSwipe() {
       panel.style.transform = ''; // eases back (.modal-panel's transition)
       return;
     }
-    if (mode === 'down') hideWordPop();
+    if (mode === 'down') closeWordPop();
     else popBack();
   };
   panel.addEventListener('touchend', end);
@@ -7458,6 +7459,19 @@ function showWordModal() {
   els.wordModal.style.setProperty('--modal-top', `${Math.round(Math.max(0, ...rows.map((r) => r.bottom)))}px`);
   els.wordModal.hidden = false;
   setModalOpen(true);
+}
+
+// The user closing the dialog (✕, the backdrop, Escape, a swipe down): a word or phrase opened from
+// a story goes back to the story, not out to the stories list under it (2026-11-28, the user's call:
+// "When you close the word dialog, the app should drop you back in the story"); then a close shuts it.
+function closeWordPop() {
+  const at = wordPop ? wordPop.back.findLastIndex((b) => b.story) : -1;
+  if (at < 0) {
+    hideWordPop();
+    return;
+  }
+  wordPop.back.length = at + 1;
+  popBack();
 }
 
 function hideWordPop() {
@@ -11317,7 +11331,7 @@ function bindEvents() {
   els.toast.addEventListener('pointerleave', () => holdToast(false));
   els.toast.addEventListener('focusin', () => holdToast(true));
   els.toast.addEventListener('focusout', () => holdToast(false));
-  els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', hideWordPop));
+  els.wordModal.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', closeWordPop));
   els.wordModalBack.addEventListener('click', popBack);
   bindDialogSwipe();
 
@@ -11418,7 +11432,7 @@ function bindEvents() {
     if (wordPop) {
       if (e.key === 'Escape') {
         e.preventDefault();
-        hideWordPop();
+        closeWordPop();
       } else if (e.key === 'Backspace' && wordPop.back.length) {
         e.preventDefault();
         popBack();

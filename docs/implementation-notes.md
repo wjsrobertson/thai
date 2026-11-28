@@ -3009,6 +3009,19 @@ no 'Add stories' button. I think for consistency we should have an add stories w
   & Politeness → "Add to 'My stories'? 1 of 19", Old Friends' card; Add, No, Add, Undo (1 saved); P;
   the other 18 answered → the list with 9 and the toast; no sideways scroll, no script errors.
 
+## Closing a word opened from a story goes back to the story (2026-11-28)
+
+The user's report: "when you have a story open and you click on a word… When you close the word
+dialog, the app should drop you back in the story, but it actually takes you to the story list page".
+The story is the word dialog in its story look (showStoryPop), and a word or phrase tapped in it is
+the next page of the same dialog (popEnter, ‹ back), so ✕ shut the whole dialog. Now each page
+stacked by popEnter notes whether it was a story (`story` on its `back` entry), and the user's own
+closes (✕, the backdrop, Escape, a swipe down: `closeWordPop`) go back to the latest story in the
+stack, however deep (story → word → another word: ✕ is the story), and close only from the story
+itself or with none under. Closes the app does itself (a tab, Open in topic) still shut it
+(`hideWordPop`). Checked headless (scratch `storyclose.py`) at 390 × 844: story → word → ✕, Escape and
+the backdrop each show the story again, ‹ hidden; ✕ on the story closes; no script errors.
+
 ## Recall: Hard and Easy (2026-11-28)
 
 The user's call: "change the options to only have 2 - Hard and Easy... swiping left is hard, right is
